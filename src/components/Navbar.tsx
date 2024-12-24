@@ -5,10 +5,26 @@ export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
-    { name: "RHCA", href: "#rhca" },
-    { name: "Index Medicus", href: "#index-medicus" },
-    { name: "Atlas ADC", href: "#atlas" },
-    { name: "IGM", href: "#igm" },
+    { 
+      name: "RHCA", 
+      href: "#rhca",
+      logo: "/lovable-uploads/e8fe216b-7e19-48a9-9251-22c63959d38c.png"
+    },
+    { 
+      name: "Index Medicus", 
+      href: "#index-medicus",
+      logo: "/lovable-uploads/5d3116e3-d5c7-4fb3-a6ae-8ddf2d710f55.png"
+    },
+    { 
+      name: "Atlas ADC", 
+      href: "#atlas",
+      logo: "/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png"
+    },
+    { 
+      name: "IGM", 
+      href: "#igm",
+      logo: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png"
+    },
   ];
 
   return (
@@ -27,12 +43,17 @@ export const Navbar = () => {
               <a
                 key={item.name}
                 href={item.href}
-                className="text-primary hover:text-secondary transition-colors"
+                className="flex items-center space-x-2 text-primary hover:text-secondary transition-colors"
               >
-                {item.name}
+                <img 
+                  src={item.logo} 
+                  alt={`${item.name} logo`} 
+                  className="w-6 h-6 object-contain"
+                />
+                <span>{item.name}</span>
               </a>
             ))}
-            <button className="bg-accent text-white px-4 py-2 rounded-md hover:bg-accent/90 transition-colors">
+            <button className="bg-secondary text-white px-4 py-2 rounded-md hover:bg-secondary/90 transition-colors">
               Soumettre
             </button>
           </div>
@@ -57,12 +78,17 @@ export const Navbar = () => {
               <a
                 key={item.name}
                 href={item.href}
-                className="block px-3 py-2 text-primary hover:text-secondary transition-colors"
+                className="flex items-center space-x-2 px-3 py-2 text-primary hover:text-secondary transition-colors"
               >
-                {item.name}
+                <img 
+                  src={item.logo} 
+                  alt={`${item.name} logo`} 
+                  className="w-6 h-6 object-contain"
+                />
+                <span>{item.name}</span>
               </a>
             ))}
-            <button className="w-full mt-2 bg-accent text-white px-4 py-2 rounded-md hover:bg-accent/90 transition-colors">
+            <button className="w-full mt-2 bg-secondary text-white px-4 py-2 rounded-md hover:bg-secondary/90 transition-colors">
               Soumettre
             </button>
           </div>

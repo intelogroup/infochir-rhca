@@ -32,10 +32,6 @@ export default {
           DEFAULT: "#41b06e",
           foreground: "#ffffff",
         },
-        accent: {
-          DEFAULT: "#f97316",
-          foreground: "#ffffff",
-        },
         muted: {
           DEFAULT: "#f8fafc",
           foreground: "#0c417b",
