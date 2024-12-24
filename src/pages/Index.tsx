@@ -8,12 +8,11 @@ import { useState } from "react";
 import { BookOpen, Database, Newspaper } from "lucide-react";
 import { HeroSection } from "@/components/home/HeroSection";
 import { StatsSection } from "@/components/home/StatsSection";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { IndexMedicusGrid } from "@/components/IndexMedicusGrid";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const [email, setEmail] = useState("");
-  const [showAtlasDialog, setShowAtlasDialog] = useState(false);
+  const navigate = useNavigate();
 
   const products = [
     {
@@ -28,7 +27,7 @@ const Index = () => {
       title: "Index Medicus",
       description: "Accédez à des références médicales organisées par auteur et thème.",
       icon: Database,
-      href: "#index-medicus",
+      href: "/index-medicus",
       logo: "/lovable-uploads/f2409464-47cf-4348-ada0-e328e86be01b.png"
     },
     {
@@ -73,25 +72,17 @@ const Index = () => {
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {products.map((product, index) => (
-              <div key={product.title} className="animate-fade-up" style={{ animationDelay: `${index * 100}ms` }}>
+            {products.map((product) => (
+              <div 
+                key={product.title} 
+                className="animate-fade-up cursor-pointer" 
+                style={{ animationDelay: '100ms' }}
+                onClick={() => navigate(product.href)}
+              >
                 <ProductCard {...product} />
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Index Medicus Section */}
-      <section id="index-medicus" className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Index Medicus</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Explorez notre base de données médicale complète
-            </p>
-          </div>
-          <IndexMedicusGrid />
         </div>
       </section>
 
@@ -117,32 +108,6 @@ const Index = () => {
           </form>
         </div>
       </section>
-
-      <Dialog open={showAtlasDialog} onOpenChange={setShowAtlasDialog}>
-        <DialogContent className="sm:max-w-[800px]">
-          <DialogHeader>
-            <DialogTitle>Atlas ADC</DialogTitle>
-          </DialogHeader>
-          <div className="mt-4">
-            <img 
-              src="/lovable-uploads/c2887190-a8a5-4f96-9268-79835f4cd5b6.png"
-              alt="Atlas ADC Preview"
-              className="w-full rounded-lg shadow-lg"
-            />
-            <p className="mt-4 text-gray-600">
-              Explorez notre base visuelle complète pour faciliter vos diagnostics et améliorer votre pratique médicale.
-            </p>
-            <div className="mt-6 flex justify-end">
-              <Button variant="outline" onClick={() => setShowAtlasDialog(false)} className="mr-2">
-                Fermer
-              </Button>
-              <Button>
-                Explorer l'Atlas
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       <Footer />
     </div>

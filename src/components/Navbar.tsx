@@ -1,25 +1,27 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   const navItems = [
     { 
       name: "RHCA", 
-      href: "#rhca"
+      href: "/rhca"
     },
     { 
       name: "Index Medicus", 
-      href: "#index-medicus"
+      href: "/index-medicus"
     },
     { 
       name: "Atlas ADC", 
-      href: "#atlas"
+      href: "/adc"
     },
     { 
       name: "IGM", 
-      href: "#igm"
+      href: "/igm"
     },
   ];
 
@@ -28,7 +30,7 @@ export const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center space-x-2">
-            <a href="/" className="flex-shrink-0 flex items-center">
+            <Link to="/" className="flex-shrink-0 flex items-center">
               <img 
                 src="/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png"
                 alt="Info Chir Logo"
@@ -37,20 +39,20 @@ export const Navbar = () => {
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-xl font-bold ml-2">
                 INFOCHIR
               </span>
-            </a>
+            </Link>
           </div>
 
           {/* Desktop menu */}
           <div className="hidden md:flex items-center justify-center flex-1">
             <div className="flex items-center space-x-8">
               {navItems.map((item) => (
-                <a
+                <button
                   key={item.name}
-                  href={item.href}
+                  onClick={() => navigate(item.href)}
                   className="text-gray-700 hover:text-primary transition-colors duration-200 h-16 flex items-center font-medium"
                 >
                   {item.name}
-                </a>
+                </button>
               ))}
             </div>
           </div>
@@ -72,13 +74,16 @@ export const Navbar = () => {
         <div className="md:hidden absolute w-full bg-white/90 backdrop-blur-sm border-b border-gray-200/50">
           <div className="px-4 pt-2 pb-3 space-y-2">
             {navItems.map((item) => (
-              <a
+              <button
                 key={item.name}
-                href={item.href}
-                className="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100/50 transition-colors duration-200 font-medium"
+                onClick={() => {
+                  navigate(item.href);
+                  setIsOpen(false);
+                }}
+                className="flex w-full items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100/50 transition-colors duration-200 font-medium"
               >
                 {item.name}
-              </a>
+              </button>
             ))}
           </div>
         </div>
