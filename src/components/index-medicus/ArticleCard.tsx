@@ -1,23 +1,38 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Calendar, User, Eye, Quote, Download, Share2 } from "lucide-react";
 import { Article } from "./types";
+import { toast } from "sonner";
 
 interface ArticleCardProps {
   article: Article;
 }
 
 export const ArticleCard = ({ article }: ArticleCardProps) => {
+  const handleDownload = () => {
+    toast.success("Le téléchargement va commencer...");
+  };
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href + '#' + article.id);
+    toast.success("Lien copié dans le presse-papier");
+  };
+
   return (
-    <Card className="hover:shadow-lg transition-shadow overflow-hidden">
+    <Card className="hover:shadow-lg transition-shadow overflow-hidden group">
       <div className="flex flex-col md:flex-row">
-        {article.imageUrl && (
-          <div className="md:w-48 h-48 md:h-auto">
+        {article.imageUrl ? (
+          <div className="md:w-48 h-48 md:h-auto relative overflow-hidden">
             <img 
               src={article.imageUrl} 
               alt={article.title}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
+          </div>
+        ) : (
+          <div className="md:w-48 h-48 md:h-auto bg-gradient-to-br from-primary/5 to-secondary/5 flex items-center justify-center">
+            <User className="h-12 w-12 text-primary/20" />
           </div>
         )}
         <div className="flex-1">
@@ -27,12 +42,26 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
                 <CardTitle className="text-xl mb-2 hover:text-primary transition-colors">
                   {article.title}
                 </CardTitle>
-                <div className="flex items-center gap-2 text-sm text-gray-500">
+                <div className="flex items-center gap-2 text-sm text-gray-500 flex-wrap">
                   <User className="h-4 w-4" />
                   {article.authors.join(", ")}
                   <span className="mx-2">•</span>
                   <Calendar className="h-4 w-4" />
                   {article.date}
+                  {article.views && (
+                    <>
+                      <span className="mx-2">•</span>
+                      <Eye className="h-4 w-4" />
+                      {article.views} vues
+                    </>
+                  )}
+                  {article.citations && (
+                    <>
+                      <span className="mx-2">•</span>
+                      <Quote className="h-4 w-4" />
+                      {article.citations} citations
+                    </>
+                  )}
                 </div>
               </div>
               <div className="flex gap-2">
@@ -45,7 +74,7 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
             <p className="text-gray-600 mb-4 line-clamp-2">
               {article.abstract}
             </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 mb-4">
               {article.tags.map((tag) => (
                 <Badge 
                   key={tag} 
@@ -55,6 +84,26 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
                   {tag}
                 </Badge>
               ))}
+            </div>
+            <div className="flex gap-2 flex-wrap">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="gap-2"
+                onClick={handleDownload}
+              >
+                <Download className="h-4 w-4" />
+                Télécharger PDF
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="gap-2"
+                onClick={handleShare}
+              >
+                <Share2 className="h-4 w-4" />
+                Partager
+              </Button>
             </div>
           </CardContent>
         </div>

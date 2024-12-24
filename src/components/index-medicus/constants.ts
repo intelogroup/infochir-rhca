@@ -5,7 +5,10 @@ export const categories = [
   "Radiologie",
   "Cardiologie",
   "Neurologie",
-  "Orthopédie"
+  "Orthopédie",
+  "Pédiatrie",
+  "Gynécologie",
+  "Dermatologie"
 ];
 
 export const sources = [
@@ -46,5 +49,110 @@ export const mockArticles = [
     source: "ADC",
     abstract: "Analyse détaillée des approches diagnostiques en traumatologie...",
     tags: ["radiologie", "traumatologie", "diagnostic"]
+  },
+  {
+    id: "4",
+    title: "Avancées en Cardiologie Interventionnelle",
+    authors: ["Dr. Marc Dupont", "Dr. Claire Lefebvre"],
+    date: "2024-02-12",
+    category: "Cardiologie",
+    source: "RHCA",
+    abstract: "Nouvelles techniques d'intervention cardiaque minimalement invasives...",
+    tags: ["cardiologie", "intervention", "innovation"],
+    imageUrl: "https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?w=800&auto=format"
+  },
+  {
+    id: "5",
+    title: "Traitement de l'Épilepsie Réfractaire",
+    authors: ["Dr. Antoine Rousseau"],
+    date: "2024-02-11",
+    category: "Neurologie",
+    source: "IGM",
+    abstract: "Étude sur les nouvelles approches thérapeutiques pour l'épilepsie résistante...",
+    tags: ["neurologie", "épilepsie", "traitement"]
+  },
+  {
+    id: "6",
+    title: "Innovations en Chirurgie Orthopédique",
+    authors: ["Dr. Julie Martin", "Dr. Thomas Petit"],
+    date: "2024-02-10",
+    category: "Orthopédie",
+    source: "ADC",
+    abstract: "Les dernières avancées en matière de prothèses et techniques chirurgicales...",
+    tags: ["orthopédie", "prothèses", "innovation"],
+    imageUrl: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&auto=format"
+  },
+  {
+    id: "7",
+    title: "Prise en Charge des Maladies Respiratoires Chroniques",
+    authors: ["Dr. Emma Blanc"],
+    date: "2024-02-09",
+    category: "Pneumologie",
+    source: "RHCA",
+    abstract: "Nouvelles stratégies de traitement pour les patients atteints de BPCO...",
+    tags: ["pneumologie", "BPCO", "traitement chronique"]
+  },
+  {
+    id: "8",
+    title: "Imagerie Cérébrale Avancée",
+    authors: ["Dr. Lucas Dubois", "Dr. Sarah Cohen"],
+    date: "2024-02-08",
+    category: "Neurologie",
+    source: "IGM",
+    abstract: "Applications de l'IA dans l'interprétation des images cérébrales...",
+    tags: ["neurologie", "imagerie", "IA"],
+    imageUrl: "https://images.unsplash.com/photo-1559757175-7b21e7afdd2b?w=800&auto=format"
+  },
+  {
+    id: "9",
+    title: "Dermatologie Pédiatrique",
+    authors: ["Dr. Marie-Claire Laurent"],
+    date: "2024-02-07",
+    category: "Dermatologie",
+    source: "ADC",
+    abstract: "Nouvelles approches dans le traitement des affections cutanées chez l'enfant...",
+    tags: ["dermatologie", "pédiatrie", "traitement"]
+  },
+  {
+    id: "10",
+    title: "Gynécologie Obstétrique Moderne",
+    authors: ["Dr. Sophie Martin", "Dr. Philippe Durand"],
+    date: "2024-02-06",
+    category: "Gynécologie",
+    source: "RHCA",
+    abstract: "Évolution des pratiques en obstétrique et suivi de grossesse...",
+    tags: ["gynécologie", "obstétrique", "grossesse"],
+    imageUrl: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&auto=format"
+  },
+  {
+    id: "11",
+    title: "Pédiatrie d'Urgence",
+    authors: ["Dr. Alexandre Petit"],
+    date: "2024-02-05",
+    category: "Pédiatrie",
+    source: "IGM",
+    abstract: "Protocoles actualisés pour la prise en charge des urgences pédiatriques...",
+    tags: ["pédiatrie", "urgences", "protocoles"]
+  },
+  {
+    id: "12",
+    title: "Chirurgie Cardiaque Robotique",
+    authors: ["Dr. François Lemaire", "Dr. Marie Dupont"],
+    date: "2024-02-04",
+    category: "Chirurgie",
+    source: "ADC",
+    abstract: "L'utilisation de la robotique dans la chirurgie cardiaque moderne...",
+    tags: ["chirurgie", "robotique", "cardiologie"],
+    imageUrl: "https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=800&auto=format"
+  },
+  {
+    id: "13",
+    title: "Dermatologie Interventionnelle",
+    authors: ["Dr. Isabelle Roux"],
+    date: "2024-02-03",
+    category: "Dermatologie",
+    source: "RHCA",
+    abstract: "Nouvelles techniques mini-invasives en dermatologie esthétique...",
+    tags: ["dermatologie", "intervention", "esthétique"]
   }
 ];

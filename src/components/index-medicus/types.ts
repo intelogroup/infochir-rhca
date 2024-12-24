@@ -8,4 +8,6 @@ export interface Article {
   abstract: string;
   tags: string[];
   imageUrl?: string;
+  views?: number;
+  citations?: number;
 }
