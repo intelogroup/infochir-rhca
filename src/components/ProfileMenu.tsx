@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,6 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -25,43 +25,44 @@ export const ProfileMenu = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data } = await supabase
-          .from('profiles')
-          .select('full_name, avatar_url')
-          .eq('id', user.id)
-          .single();
-        
-        if (data) {
-          setProfile(data);
-          setNewName(data.full_name || "");
-        }
-      }
+      if (!user) return;
+
+      const { data } = await supabase
+        .from('profiles')
+        .select('full_name, avatar_url')
+        .eq('id', user.id)
+        .single();
+
+      setProfile(data);
+      setNewName(data?.full_name || "");
     };
 
     fetchProfile();
   }, []);
 
-  const handleLogout = async () => {
+  const handleSignOut = async () => {
     await supabase.auth.signOut();
-    navigate("/auth");
+    navigate('/auth');
   };
 
   const handleUpdateName = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("No user found");
+
       const { error } = await supabase
         .from('profiles')
         .update({ full_name: newName })
         .eq('id', user.id);
 
-      if (error) {
-        toast.error("Failed to update name");
-      } else {
-        setProfile(prev => prev ? { ...prev, full_name: newName } : null);
-        setIsEditing(false);
-        toast.success("Name updated successfully");
-      }
+      if (error) throw error;
+
+      setProfile(prev => prev ? { ...prev, full_name: newName } : null);
+      setIsEditing(false);
+      toast.success("Name updated successfully");
+    } catch (error) {
+      console.error("Error updating name:", error);
+      toast.error("Failed to update name");
     }
   };
 
@@ -112,10 +113,10 @@ export const ProfileMenu = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-          <Avatar>
-            <AvatarImage src={profile.avatar_url || undefined} />
-            <AvatarFallback>{profile.full_name?.[0]?.toUpperCase() || "U"}</AvatarFallback>
+        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={profile.avatar_url || undefined} alt={profile.full_name || "User avatar"} />
+            <AvatarFallback>{(profile.full_name?.[0] || "A").toUpperCase()}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
@@ -169,10 +170,10 @@ export const ProfileMenu = () => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          className="text-red-600 cursor-pointer"
-          onClick={handleLogout}
+          className="cursor-pointer"
+          onClick={handleSignOut}
         >
-          Log out
+          Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
