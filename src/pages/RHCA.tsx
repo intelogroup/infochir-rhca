@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
+import { IssuesGrid } from "@/components/IssuesGrid";
 
 const RHCA = () => {
   return (
@@ -30,29 +31,35 @@ const RHCA = () => {
         </div>
 
         {/* Main content */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-          <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-              Soumission d'articles
-            </h2>
-            <p className="text-gray-600 mb-6">
-              Nous accueillons les articles originaux, les revues systématiques, les cas cliniques et les lettres à l'éditeur.
-            </p>
-            <Button className="w-full">
-              Soumettre un manuscrit
-            </Button>
+        <div className="grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          <div className="lg:col-span-2">
+            <IssuesGrid />
           </div>
+          
+          <div className="space-y-8">
+            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+              <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+                Soumission d'articles
+              </h2>
+              <p className="text-gray-600 mb-6">
+                Nous accueillons les articles originaux, les revues systématiques, les cas cliniques et les lettres à l'éditeur.
+              </p>
+              <Button className="w-full">
+                Soumettre un manuscrit
+              </Button>
+            </div>
 
-          <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-              Instructions aux auteurs
-            </h2>
-            <p className="text-gray-600 mb-6">
-              Consultez nos directives détaillées pour la préparation et la soumission de votre manuscrit.
-            </p>
-            <Button variant="outline" className="w-full">
-              Voir les directives
-            </Button>
+            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+              <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+                Instructions aux auteurs
+              </h2>
+              <p className="text-gray-600 mb-6">
+                Consultez nos directives détaillées pour la préparation et la soumission de votre manuscrit.
+              </p>
+              <Button variant="outline" className="w-full">
+                Voir les directives
+              </Button>
+            </div>
           </div>
         </div>
       </div>
