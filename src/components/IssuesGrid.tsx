@@ -153,20 +153,23 @@ export const IssuesGrid = () => {
         </Select>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-4">
         {sortedYears.map((year) => (
-          <div key={year} className="space-y-3">
-            <h2 className="text-xl font-bold text-primary">{year}</h2>
-            <div className="grid gap-3">
+          <div key={year} className="space-y-2">
+            <h2 className="text-lg font-bold text-primary">{year}</h2>
+            <div className="grid gap-2">
               {issuesByYear[year].map((issue) => (
-                <Card key={issue.id} className="group hover:shadow-md transition-shadow transform scale-90 origin-top-left">
-                  <CardHeader className="p-3">
-                    <div className="flex justify-between items-center gap-3">
+                <Card 
+                  key={issue.id} 
+                  className="group hover:shadow-md transition-shadow transform scale-75 origin-top-left -ml-8"
+                >
+                  <CardHeader className="p-2">
+                    <div className="flex justify-between items-center gap-2">
                       <div className="flex-1 min-w-0">
-                        <CardTitle className="text-base font-medium text-primary truncate">
+                        <CardTitle className="text-sm font-medium text-primary truncate">
                           {issue.title}
                         </CardTitle>
-                        <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-1">
+                        <div className="flex items-center gap-1 text-xs text-gray-500">
                           <span className="whitespace-nowrap">{issue.volume} • {issue.issue}</span>
                           <span className="text-primary">|</span>
                           <Calendar className="h-3 w-3" />
@@ -175,14 +178,12 @@ export const IssuesGrid = () => {
                           <span>{issue.articleCount} articles</span>
                         </div>
                       </div>
-                      <div className="flex gap-1.5 shrink-0">
-                        <Button variant="outline" size="sm" className="h-7 px-2 text-xs gap-1">
+                      <div className="flex gap-1 shrink-0">
+                        <Button variant="outline" size="sm" className="h-6 px-1.5 text-xs">
                           <Eye className="h-3 w-3" />
-                          <span className="hidden sm:inline">Consulter</span>
                         </Button>
-                        <Button size="sm" className="h-7 px-2 text-xs gap-1">
+                        <Button size="sm" className="h-6 px-1.5 text-xs">
                           <Download className="h-3 w-3" />
-                          <span className="hidden sm:inline">PDF</span>
                         </Button>
                       </div>
                     </div>
