@@ -9,6 +9,7 @@ import { BookOpen, Database, Newspaper } from "lucide-react";
 import { HeroSection } from "@/components/home/HeroSection";
 import { StatsSection } from "@/components/home/StatsSection";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { IndexMedicusGrid } from "@/components/IndexMedicusGrid";
 
 const Index = () => {
   const [email, setEmail] = useState("");
@@ -78,6 +79,19 @@ const Index = () => {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Index Medicus Section */}
+      <section id="index-medicus" className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">Index Medicus</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Explorez notre base de données médicale complète
+            </p>
+          </div>
+          <IndexMedicusGrid />
         </div>
       </section>
 
