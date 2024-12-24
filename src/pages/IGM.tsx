@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Search, Filter, Calendar, User, BookOpen, Tag } from "lucide-react";
 import { Link } from "react-router-dom";
-import { IndexMedicusGrid } from "@/components/IndexMedicusGrid";
+import { IssuesGrid } from "@/components/IssuesGrid";
 
 const IGM = () => {
   return (
@@ -62,7 +62,7 @@ const IGM = () => {
           </div>
         </div>
 
-        <IndexMedicusGrid />
+        <IssuesGrid />
       </div>
     </div>
   );
