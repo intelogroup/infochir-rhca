@@ -9,24 +9,28 @@ const Index = () => {
       description: "Revue Haïtienne de Chirurgie et d'Anesthésiologie - Publiez vos articles scientifiques.",
       icon: Book,
       href: "#rhca",
+      logo: "/lovable-uploads/e8fe216b-7e19-48a9-9251-22c63959d38c.png"
     },
     {
       title: "Index Medicus",
       description: "Accédez à des références médicales organisées par auteur et thème.",
       icon: Database,
       href: "#index-medicus",
+      logo: "/lovable-uploads/5d3116e3-d5c7-4fb3-a6ae-8ddf2d710f55.png"
     },
     {
       title: "Atlas ADC",
       description: "Explorez une base visuelle unique pour faciliter vos diagnostics.",
       icon: Image,
       href: "#atlas",
+      logo: "/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png"
     },
     {
       title: "IGM",
       description: "Restez informé des dernières nouvelles et évolutions du domaine médical.",
       icon: Newspaper,
       href: "#igm",
+      logo: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png"
     },
   ];
 
