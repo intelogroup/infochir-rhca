@@ -11,7 +11,11 @@ const AuthPage = () => {
   useEffect(() => {
     // Check if user is already signed in
     const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error) {
+        console.error("Error checking user:", error);
+        return;
+      }
       if (user) {
         navigate("/");
       }
@@ -66,9 +70,8 @@ const AuthPage = () => {
               },
             }}
             providers={[]}
-            redirectTo={`${window.location.origin}/auth/callback`}
+            redirectTo={window.location.origin}
             onlyThirdPartyProviders={false}
-            view="sign_in"
             showLinks={true}
             localization={{
               variables: {
