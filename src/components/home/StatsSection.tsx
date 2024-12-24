@@ -11,8 +11,8 @@ const stats = [
 export const StatsSection = () => {
   return (
     <section className="relative -mt-10 mb-16">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 scale-[0.7] origin-top">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-center gap-6 scale-[0.5] origin-top">
           {stats.map((stat, index) => (
             <Card 
               key={stat.label} 
