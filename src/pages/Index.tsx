@@ -82,10 +82,10 @@ const Index = () => {
       </section>
 
       {/* Newsletter Section */}
-      <section className="py-16 bg-gradient-to-br from-primary to-primary-light text-white">
+      <section className="py-16 bg-gradient-to-br from-primary to-primary-light">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <Newspaper className="w-12 h-12 mx-auto mb-6 opacity-80" />
-          <h2 className="text-3xl font-bold mb-4">Restez informé</h2>
+          <Newspaper className="w-12 h-12 mx-auto mb-6 text-white/80" />
+          <h2 className="text-3xl font-bold mb-4 text-white">Restez informé</h2>
           <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
             Abonnez-vous à notre newsletter pour recevoir les dernières publications et actualités
           </p>
@@ -97,14 +97,13 @@ const Index = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <Button type="submit" variant="secondary" className="whitespace-nowrap">
+            <Button variant="secondary" type="submit" className="whitespace-nowrap">
               S'abonner
             </Button>
           </form>
         </div>
       </section>
 
-      {/* Atlas Dialog */}
       <Dialog open={showAtlasDialog} onOpenChange={setShowAtlasDialog}>
         <DialogContent className="sm:max-w-[800px]">
           <DialogHeader>
@@ -119,6 +118,14 @@ const Index = () => {
             <p className="mt-4 text-gray-600">
               Explorez notre base visuelle complète pour faciliter vos diagnostics et améliorer votre pratique médicale.
             </p>
+            <div className="mt-6 flex justify-end">
+              <Button variant="outline" onClick={() => setShowAtlasDialog(false)} className="mr-2">
+                Fermer
+              </Button>
+              <Button>
+                Explorer l'Atlas
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

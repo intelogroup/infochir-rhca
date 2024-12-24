@@ -3,10 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter, Calendar } from "lucide-react";
+import { Search, Filter, Calendar, Tag, BookOpen, User } from "lucide-react";
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import { addDays } from "date-fns";
 import { DateRange } from "react-day-picker";
+import { Badge } from "@/components/ui/badge";
 
 interface Article {
   id: string;
@@ -17,6 +18,7 @@ interface Article {
   source: "RHCA" | "IGM" | "ADC";
   abstract: string;
   tags: string[];
+  imageUrl?: string;
 }
 
 const mockArticles: Article[] = [
@@ -28,7 +30,8 @@ const mockArticles: Article[] = [
     category: "Chirurgie",
     source: "RHCA",
     abstract: "Une étude approfondie des techniques innovantes en chirurgie mini-invasive...",
-    tags: ["laparoscopie", "chirurgie mini-invasive", "innovation"]
+    tags: ["laparoscopie", "chirurgie mini-invasive", "innovation"],
+    imageUrl: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&auto=format"
   },
   {
     id: "2",
@@ -103,88 +106,104 @@ export const IndexMedicusGrid = () => {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <Input
-            type="text"
-            placeholder="Rechercher par titre, auteur..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
+      <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              type="text"
+              placeholder="Rechercher par titre, auteur..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+          </div>
 
-        <Select onValueChange={setSelectedCategory}>
-          <SelectTrigger>
-            <SelectValue placeholder="Catégorie" />
-          </SelectTrigger>
-          <SelectContent>
-            {categories.map((category) => (
-              <SelectItem key={category} value={category}>
-                {category}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <Select onValueChange={setSelectedCategory}>
+            <SelectTrigger>
+              <SelectValue placeholder="Catégorie" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((category) => (
+                <SelectItem key={category} value={category}>
+                  {category}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        <Select onValueChange={setSelectedSource}>
-          <SelectTrigger>
-            <SelectValue placeholder="Source" />
-          </SelectTrigger>
-          <SelectContent>
-            {sources.map((source) => (
-              <SelectItem key={source} value={source}>
-                {source}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <Select onValueChange={setSelectedSource}>
+            <SelectTrigger>
+              <SelectValue placeholder="Source" />
+            </SelectTrigger>
+            <SelectContent>
+              {sources.map((source) => (
+                <SelectItem key={source} value={source}>
+                  {source}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        <DatePickerWithRange date={date} setDate={setDate} />
+          <DatePickerWithRange date={date} setDate={setDate} />
 
-        <div className="lg:col-span-4">
-          <Button onClick={handleSearch} className="w-full">
-            Rechercher
-          </Button>
+          <div className="lg:col-span-4">
+            <Button onClick={handleSearch} className="w-full gap-2">
+              <Search className="h-4 w-4" />
+              Rechercher
+            </Button>
+          </div>
         </div>
       </div>
 
       <div className="grid gap-6">
         {filteredArticles.map((article) => (
-          <Card key={article.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle className="text-xl mb-2">
-                    {article.title}
-                  </CardTitle>
-                  <p className="text-sm text-gray-500">
-                    {article.authors.join(", ")} • {article.date}
+          <Card key={article.id} className="hover:shadow-lg transition-shadow overflow-hidden">
+            <div className="flex flex-col md:flex-row">
+              {article.imageUrl && (
+                <div className="md:w-48 h-48 md:h-auto">
+                  <img 
+                    src={article.imageUrl} 
+                    alt={article.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+              <div className="flex-1">
+                <CardHeader>
+                  <div className="flex justify-between items-start gap-4">
+                    <div>
+                      <CardTitle className="text-xl mb-2 hover:text-primary transition-colors">
+                        {article.title}
+                      </CardTitle>
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <User className="h-4 w-4" />
+                        {article.authors.join(", ")}
+                        <span className="mx-2">•</span>
+                        <Calendar className="h-4 w-4" />
+                        {article.date}
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Badge variant="secondary">{article.source}</Badge>
+                      <Badge variant="outline">{article.category}</Badge>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 mb-4 line-clamp-2">
+                    {article.abstract}
                   </p>
-                </div>
-                <div className="flex gap-2">
-                  <span className="px-2 py-1 bg-primary/10 text-primary rounded text-sm">
-                    {article.source}
-                  </span>
-                  <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-sm">
-                    {article.category}
-                  </span>
-                </div>
+                  <div className="flex flex-wrap gap-2">
+                    {article.tags.map((tag) => (
+                      <Badge key={tag} variant="secondary" className="bg-primary/5 text-primary hover:bg-primary/10">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
               </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600 mb-4">
-                {article.abstract}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {article.tags.map((tag) => (
-                  <span key={tag} className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-sm">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </CardContent>
+            </div>
           </Card>
         ))}
       </div>
