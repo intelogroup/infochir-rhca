@@ -7,15 +7,29 @@ interface ProductCardProps {
   icon: LucideIcon;
   href: string;
   logo?: string;
+  bgImage?: string;
 }
 
-export const ProductCard = ({ title, description, icon: Icon, href, logo }: ProductCardProps) => {
+export const ProductCard = ({ title, description, icon: Icon, href, logo, bgImage }: ProductCardProps) => {
   return (
     <Link
       to={href}
-      className="group relative flex flex-col items-center rounded-3xl bg-white p-8 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 border border-gray-100"
+      className="group relative flex flex-col items-center rounded-3xl bg-white p-8 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 border border-gray-100 overflow-hidden"
     >
-      <div className="flex items-center justify-center mb-8">
+      {/* Background image overlay on hover */}
+      {bgImage && (
+        <div 
+          className="absolute inset-0 opacity-0 group-hover:opacity-[0.03] transition-opacity duration-300"
+          style={{
+            backgroundImage: `url(${bgImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+          }}
+        />
+      )}
+      
+      <div className="relative z-10 flex items-center justify-center mb-8">
         {logo ? (
           <div className="relative h-20 w-20 overflow-hidden rounded-2xl transition-transform duration-300 group-hover:scale-110">
             <img 
@@ -31,11 +45,11 @@ export const ProductCard = ({ title, description, icon: Icon, href, logo }: Prod
         )}
       </div>
       
-      <h3 className="text-2xl font-semibold text-gray-900 mb-4 transition-colors duration-300 group-hover:text-primary">
+      <h3 className="relative z-10 text-2xl font-semibold text-gray-900 mb-4 transition-colors duration-300 group-hover:text-primary">
         {title}
       </h3>
       
-      <p className="text-gray-600 text-center leading-relaxed">
+      <p className="relative z-10 text-gray-600 text-center leading-relaxed">
         {description}
       </p>
     </Link>
