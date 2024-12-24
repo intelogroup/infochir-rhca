@@ -7,27 +7,19 @@ export const Navbar = () => {
   const navItems = [
     { 
       name: "RHCA", 
-      href: "#rhca",
-      logo: "/lovable-uploads/f65134f5-3929-4504-9567-104510b21f5d.png",
-      logoClass: "w-11 h-11"
+      href: "#rhca"
     },
     { 
       name: "Index Medicus", 
-      href: "#index-medicus",
-      logo: "/lovable-uploads/f2409464-47cf-4348-ada0-e328e86be01b.png",
-      logoClass: "w-8 h-8"
+      href: "#index-medicus"
     },
     { 
       name: "Atlas ADC", 
-      href: "#atlas",
-      logo: "/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png",
-      logoClass: "w-11 h-11"
+      href: "#atlas"
     },
     { 
       name: "IGM", 
-      href: "#igm",
-      logo: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png",
-      logoClass: "w-11 h-11"
+      href: "#igm"
     },
   ];
 
@@ -49,23 +41,18 @@ export const Navbar = () => {
           </div>
 
           {/* Desktop menu */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="flex items-center space-x-2 text-gray-700 hover:text-primary transition-colors duration-200 h-16 group"
-              >
-                <div className="flex items-center justify-center h-full">
-                  <img 
-                    src={item.logo} 
-                    alt={`${item.name} logo`} 
-                    className={`object-contain ${item.logoClass} transition-transform duration-200 group-hover:scale-105`}
-                  />
-                </div>
-                <span className="font-medium">{item.name}</span>
-              </a>
-            ))}
+          <div className="hidden md:flex items-center justify-center flex-1">
+            <div className="flex items-center space-x-8">
+              {navItems.map((item) => (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  className="text-gray-700 hover:text-primary transition-colors duration-200 h-16 flex items-center font-medium"
+                >
+                  {item.name}
+                </a>
+              ))}
+            </div>
           </div>
 
           {/* Mobile menu button */}
@@ -88,16 +75,9 @@ export const Navbar = () => {
               <a
                 key={item.name}
                 href={item.href}
-                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100/50 transition-colors duration-200"
+                className="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100/50 transition-colors duration-200 font-medium"
               >
-                <div className="flex items-center justify-center">
-                  <img 
-                    src={item.logo} 
-                    alt={`${item.name} logo`} 
-                    className={`object-contain ${item.logoClass}`}
-                  />
-                </div>
-                <span className="font-medium">{item.name}</span>
+                {item.name}
               </a>
             ))}
           </div>
