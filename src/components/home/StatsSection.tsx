@@ -2,10 +2,10 @@ import { Card } from "@/components/ui/card";
 import { Users, Globe2, BookOpen, TrendingUp } from "lucide-react";
 
 const stats = [
-  { label: "Utilisateurs actifs", value: "2,000+", icon: Users, color: "from-blue-500 to-blue-600" },
-  { label: "Pays représentés", value: "25+", icon: Globe2, color: "from-green-500 to-green-600" },
-  { label: "Articles publiés", value: "500+", icon: BookOpen, color: "from-purple-500 to-purple-600" },
-  { label: "Citations", value: "1,500+", icon: TrendingUp, color: "from-orange-500 to-orange-600" },
+  { label: "Utilisateurs actifs", value: "2,000+", icon: Users },
+  { label: "Pays représentés", value: "25+", icon: Globe2 },
+  { label: "Articles publiés", value: "500+", icon: BookOpen },
+  { label: "Citations", value: "1,500+", icon: TrendingUp },
 ];
 
 export const StatsSection = () => {
@@ -19,7 +19,7 @@ export const StatsSection = () => {
               className="p-6 bg-white shadow-lg hover:shadow-xl transition-shadow animate-fade-up" 
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${stat.color} flex items-center justify-center mb-4`}>
+              <div className="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center mb-4">
                 <stat.icon className="w-6 h-6 text-white" />
               </div>
               <div className="font-bold text-3xl mb-2">{stat.value}</div>
