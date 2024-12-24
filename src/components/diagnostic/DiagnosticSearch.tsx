@@ -36,7 +36,7 @@ export const DiagnosticSearch = ({
             <SelectValue placeholder="Spécialité" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Toutes les spécialités</SelectItem>
+            <SelectItem value="all">Toutes les spécialités</SelectItem>
             {specialties.map((specialty) => (
               <SelectItem key={specialty} value={specialty}>
                 {specialty}
