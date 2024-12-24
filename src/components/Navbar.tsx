@@ -9,25 +9,25 @@ export const Navbar = () => {
       name: "RHCA", 
       href: "#rhca",
       logo: "/lovable-uploads/e8fe216b-7e19-48a9-9251-22c63959d38c.png",
-      logoClass: "w-9 h-9" // Increased to 9x9
+      logoClass: "w-10 h-10" // Increased to 10x10
     },
     { 
       name: "Index Medicus", 
       href: "#index-medicus",
       logo: "/lovable-uploads/f2409464-47cf-4348-ada0-e328e86be01b.png",
-      logoClass: "w-9 h-9" // Increased to 9x9
+      logoClass: "w-8 h-8" // Kept at 8x8
     },
     { 
       name: "Atlas ADC", 
       href: "#atlas",
       logo: "/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png",
-      logoClass: "w-9 h-9" // Increased to 9x9
+      logoClass: "w-10 h-10" // Increased to 10x10
     },
     { 
       name: "IGM", 
       href: "#igm",
       logo: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png",
-      logoClass: "w-8 h-8" // Kept at 8x8
+      logoClass: "w-10 h-10" // Increased to 10x10
     },
   ];
 
