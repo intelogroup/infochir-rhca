@@ -35,9 +35,14 @@ export const Navbar = () => {
     <nav className="fixed w-full z-50 bg-white/80 backdrop-blur-sm border-b border-gray-200/50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex items-center">
+          <div className="flex items-center space-x-2">
             <a href="/" className="flex-shrink-0 flex items-center">
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-xl font-bold">
+              <img 
+                src="/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png"
+                alt="Info Chir Logo"
+                className="h-10 w-10 object-contain"
+              />
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-xl font-bold ml-2">
                 INFOCHIR
               </span>
             </a>
