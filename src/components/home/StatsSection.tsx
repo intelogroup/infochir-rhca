@@ -16,14 +16,18 @@ export const StatsSection = () => {
           {stats.map((stat, index) => (
             <Card 
               key={stat.label} 
-              className="p-4 bg-white shadow-lg hover:shadow-xl transition-shadow animate-fade-up rounded-3xl" 
+              className="p-4 bg-white shadow-lg hover:shadow-xl transition-shadow animate-fade-up rounded-3xl w-96" 
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center mb-4">
-                <stat.icon className="w-6 h-6 text-white" />
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center">
+                  <stat.icon className="w-6 h-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <div className="font-bold text-3xl">{stat.value}</div>
+                  <div className="text-gray-600">{stat.label}</div>
+                </div>
               </div>
-              <div className="font-bold text-3xl mb-2">{stat.value}</div>
-              <div className="text-gray-600">{stat.label}</div>
             </Card>
           ))}
         </div>
