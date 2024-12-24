@@ -123,36 +123,6 @@ const Index = () => {
         </DialogContent>
       </Dialog>
 
-      {/* IGM Dialog */}
-      <Dialog open={showIGMDialog} onOpenChange={setShowIGMDialog}>
-        <DialogContent className="sm:max-w-[800px]">
-          <DialogHeader>
-            <DialogTitle>IGM - Informations Générales Médicales</DialogTitle>
-          </DialogHeader>
-          <div className="mt-4">
-            <img 
-              src="/lovable-uploads/a7d3e225-a6f7-4502-b77f-a4ef7c51b191.png"
-              alt="IGM Preview"
-              className="w-full rounded-lg shadow-lg mb-6"
-            />
-            <div className="space-y-4">
-              <p className="text-gray-600">
-                IGM (Informations Générales Médicales) est votre source d'actualités médicales en Haïti. Notre plateforme offre :
-              </p>
-              <ul className="list-disc pl-6 space-y-2 text-gray-600">
-                <li>Des actualités médicales quotidiennes</li>
-                <li>Des analyses approfondies des tendances en santé</li>
-                <li>Des rapports sur les avancées médicales</li>
-                <li>Des informations sur les conférences et événements médicaux</li>
-              </ul>
-              <p className="text-gray-600">
-                Restez informé des dernières actualités et évolutions du domaine médical en Haïti et dans le monde.
-              </p>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
       <Footer />
     </div>
   );

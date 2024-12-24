@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Newspaper, Globe, Users, TrendingUp } from "lucide-react";
 import { Link } from "react-router-dom";
+import { MedicalCaseGrid } from "@/components/MedicalCaseGrid";
 
 const StatCard = ({ icon: Icon, title, value }: { icon: any; title: string; value: string }) => (
   <div className="bg-white/95 backdrop-blur-xs rounded-xl p-6 border border-gray-100">
@@ -109,14 +110,9 @@ const IGM = () => {
         {/* Main content */}
         <div className="grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           <div className="lg:col-span-2">
-            {/* Latest News Grid - To be implemented */}
-            <div className="grid gap-6">
-              <div className="bg-white rounded-xl p-6 border border-gray-100">
-                <h2 className="text-2xl font-semibold mb-4">Dernières Actualités</h2>
-                <p className="text-gray-600">
-                  La section des dernières actualités sera bientôt disponible.
-                </p>
-              </div>
+            <div className="bg-white rounded-xl p-6 border border-gray-100 mb-8">
+              <h2 className="text-2xl font-semibold mb-6">Cas Cliniques Récents</h2>
+              <MedicalCaseGrid />
             </div>
           </div>
           
