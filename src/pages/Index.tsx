@@ -34,7 +34,7 @@ const Index = () => {
       title: "Atlas ADC",
       description: "Explorez une base visuelle unique pour faciliter vos diagnostics.",
       icon: BookOpen,
-      onClick: () => setShowAtlasDialog(true),
+      href: "/adc",
       logo: "/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png"
     },
     {
