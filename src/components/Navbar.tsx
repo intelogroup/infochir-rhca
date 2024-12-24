@@ -8,7 +8,7 @@ export const Navbar = () => {
     { 
       name: "RHCA", 
       href: "#rhca",
-      logo: "/lovable-uploads/e8fe216b-7e19-48a9-9251-22c63959d38c.png",
+      logo: "/lovable-uploads/f65134f5-3929-4504-9567-104510b21f5d.png",
       logoClass: "w-11 h-11"
     },
     { 
@@ -61,9 +61,6 @@ export const Navbar = () => {
                 <span className="font-medium">{item.name}</span>
               </a>
             ))}
-            <button className="bg-gradient-to-r from-primary to-secondary text-white px-6 py-2 rounded-full hover:shadow-lg transition-all duration-200 font-medium">
-              Soumettre
-            </button>
           </div>
 
           {/* Mobile menu button */}
@@ -98,11 +95,6 @@ export const Navbar = () => {
                 <span className="font-medium">{item.name}</span>
               </a>
             ))}
-            <div className="pt-2">
-              <button className="w-full bg-gradient-to-r from-primary to-secondary text-white px-6 py-2 rounded-full hover:shadow-lg transition-all duration-200 font-medium">
-                Soumettre
-              </button>
-            </div>
           </div>
         </div>
       )}

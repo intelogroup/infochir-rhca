@@ -12,7 +12,7 @@ export const ProductCard = ({ title, description, icon: Icon, href, logo }: Prod
   return (
     <a
       href={href}
-      className="group relative overflow-hidden rounded-xl bg-white/40 backdrop-blur-sm border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 p-6"
+      className="group relative overflow-hidden rounded-xl bg-white/40 backdrop-blur-sm border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 p-8"
     >
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       
@@ -21,7 +21,7 @@ export const ProductCard = ({ title, description, icon: Icon, href, logo }: Prod
           <img 
             src={logo} 
             alt={`${title} logo`} 
-            className={`w-full h-full object-contain ${title === 'Index Medicus' ? 'scale-125' : ''}`} 
+            className="w-full h-full object-contain" 
           />
         </div>
       ) : (
@@ -30,7 +30,7 @@ export const ProductCard = ({ title, description, icon: Icon, href, logo }: Prod
         </div>
       )}
       
-      <h3 className="relative text-xl font-semibold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-3">
+      <h3 className="relative text-xl font-semibold text-primary mb-3">
         {title}
       </h3>
       
