@@ -9,7 +9,16 @@ const AuthPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    // Check if user is already signed in
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        navigate("/");
+      }
+    };
+    checkUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN") {
         toast.success("Successfully signed in!");
         navigate("/");
@@ -18,6 +27,11 @@ const AuthPage = () => {
         navigate("/auth");
       } else if (event === "USER_UPDATED") {
         toast.success("Profile updated successfully!");
+      } else if (event === "PASSWORD_RECOVERY") {
+        toast.info("Password recovery email sent!");
+      } else if (event === "USER_DELETED") {
+        toast.info("Account deleted successfully!");
+        navigate("/auth");
       }
     });
 
@@ -55,12 +69,25 @@ const AuthPage = () => {
               },
             }}
             providers={[]}
-            redirectTo={window.location.origin}
+            redirectTo={`${window.location.origin}/auth/callback`}
             onlyThirdPartyProviders={false}
             view="sign_in"
             showLinks={true}
-            additionalData={{
-              full_name: undefined,
+            localization={{
+              variables: {
+                sign_in: {
+                  email_label: 'Email',
+                  password_label: 'Password',
+                  button_label: 'Sign in',
+                  loading_button_label: 'Signing in...',
+                },
+                sign_up: {
+                  email_label: 'Email',
+                  password_label: 'Password',
+                  button_label: 'Sign up',
+                  loading_button_label: 'Signing up...',
+                },
+              },
             }}
           />
         </div>
