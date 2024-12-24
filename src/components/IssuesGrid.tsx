@@ -130,19 +130,19 @@ export const IssuesGrid = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex items-center gap-4 mb-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <Input
             type="text"
             placeholder="Rechercher des volumes..."
             value={searchTerm}
             onChange={(e) => handleSearch(e.target.value)}
-            className="pl-10"
+            className="pl-9 h-9"
           />
         </div>
         <Select value={sortBy} onValueChange={handleSort}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[160px] h-9">
             <SelectValue placeholder="Trier par" />
           </SelectTrigger>
           <SelectContent>
@@ -153,21 +153,21 @@ export const IssuesGrid = () => {
         </Select>
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-6">
         {sortedYears.map((year) => (
-          <div key={year} className="space-y-4">
-            <h2 className="text-2xl font-bold text-primary mb-4">{year}</h2>
-            <div className="grid gap-4">
+          <div key={year} className="space-y-3">
+            <h2 className="text-xl font-bold text-primary">{year}</h2>
+            <div className="grid gap-3">
               {issuesByYear[year].map((issue) => (
-                <Card key={issue.id} className="group hover:shadow-md transition-shadow">
-                  <CardHeader className="py-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg mb-1 text-primary">
+                <Card key={issue.id} className="group hover:shadow-md transition-shadow transform scale-90 origin-top-left">
+                  <CardHeader className="p-3">
+                    <div className="flex justify-between items-center gap-3">
+                      <div className="flex-1 min-w-0">
+                        <CardTitle className="text-base font-medium text-primary truncate">
                           {issue.title}
                         </CardTitle>
-                        <div className="flex items-center gap-2 text-sm text-gray-500">
-                          <span>{issue.volume} • {issue.issue}</span>
+                        <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-1">
+                          <span className="whitespace-nowrap">{issue.volume} • {issue.issue}</span>
                           <span className="text-primary">|</span>
                           <Calendar className="h-3 w-3" />
                           <span>{issue.month}/{issue.year}</span>
@@ -175,14 +175,14 @@ export const IssuesGrid = () => {
                           <span>{issue.articleCount} articles</span>
                         </div>
                       </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" className="gap-1">
+                      <div className="flex gap-1.5 shrink-0">
+                        <Button variant="outline" size="sm" className="h-7 px-2 text-xs gap-1">
                           <Eye className="h-3 w-3" />
-                          Consulter
+                          <span className="hidden sm:inline">Consulter</span>
                         </Button>
-                        <Button size="sm" className="gap-1">
+                        <Button size="sm" className="h-7 px-2 text-xs gap-1">
                           <Download className="h-3 w-3" />
-                          PDF
+                          <span className="hidden sm:inline">PDF</span>
                         </Button>
                       </div>
                     </div>
