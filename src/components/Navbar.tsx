@@ -8,23 +8,26 @@ export const Navbar = () => {
     { 
       name: "RHCA", 
       href: "#rhca",
-      logo: "/lovable-uploads/e8fe216b-7e19-48a9-9251-22c63959d38c.png"
+      logo: "/lovable-uploads/e8fe216b-7e19-48a9-9251-22c63959d38c.png",
+      logoClass: "w-8 h-8" // Matching size with Index Medicus
     },
     { 
       name: "Index Medicus", 
       href: "#index-medicus",
       logo: "/lovable-uploads/f2409464-47cf-4348-ada0-e328e86be01b.png",
-      logoClass: "w-8 h-8" // Keeping the larger size for Index Medicus
+      logoClass: "w-8 h-8"
     },
     { 
       name: "Atlas ADC", 
       href: "#atlas",
-      logo: "/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png"
+      logo: "/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png",
+      logoClass: "w-8 h-8" // Matching size with Index Medicus
     },
     { 
       name: "IGM", 
       href: "#igm",
-      logo: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png"
+      logo: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png",
+      logoClass: "w-8 h-8" // Matching size with Index Medicus
     },
   ];
 
@@ -50,7 +53,7 @@ export const Navbar = () => {
                   <img 
                     src={item.logo} 
                     alt={`${item.name} logo`} 
-                    className={`object-contain ${item.logoClass || 'w-6 h-6'}`}
+                    className={`object-contain ${item.logoClass}`}
                   />
                 </div>
                 <span className="font-medium">{item.name}</span>
@@ -87,7 +90,7 @@ export const Navbar = () => {
                   <img 
                     src={item.logo} 
                     alt={`${item.name} logo`} 
-                    className={`object-contain ${item.logoClass || 'w-6 h-6'}`}
+                    className={`object-contain ${item.logoClass}`}
                   />
                 </div>
                 <span className="font-medium">{item.name}</span>
