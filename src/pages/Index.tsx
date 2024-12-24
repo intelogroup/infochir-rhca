@@ -5,13 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useState } from "react";
-import { Mail, ArrowRight, Quote, BookOpen, Database, Newspaper } from "lucide-react";
+import { Mail, ArrowRight, BookOpen, Database, Newspaper } from "lucide-react";
 import { HeroSection } from "@/components/home/HeroSection";
 import { StatsSection } from "@/components/home/StatsSection";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const Index = () => {
   const [email, setEmail] = useState("");
-  const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const [showAtlasDialog, setShowAtlasDialog] = useState(false);
+  const [showIGMDialog, setShowIGMDialog] = useState(false);
 
   const products = [
     {
@@ -33,14 +35,14 @@ const Index = () => {
       title: "Atlas ADC",
       description: "Explorez une base visuelle unique pour faciliter vos diagnostics.",
       icon: BookOpen,
-      href: "#atlas",
+      onClick: () => setShowAtlasDialog(true),
       logo: "/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png"
     },
     {
       title: "IGM",
       description: "Restez informé des dernières nouvelles et évolutions du domaine médical.",
       icon: Newspaper,
-      href: "#igm",
+      onClick: () => setShowIGMDialog(true),
       logo: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png"
     },
   ];
@@ -102,6 +104,44 @@ const Index = () => {
           </form>
         </div>
       </section>
+
+      {/* Atlas Dialog */}
+      <Dialog open={showAtlasDialog} onOpenChange={setShowAtlasDialog}>
+        <DialogContent className="sm:max-w-[800px]">
+          <DialogHeader>
+            <DialogTitle>Atlas ADC</DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            <img 
+              src="/lovable-uploads/c2887190-a8a5-4f96-9268-79835f4cd5b6.png"
+              alt="Atlas ADC Preview"
+              className="w-full rounded-lg shadow-lg"
+            />
+            <p className="mt-4 text-gray-600">
+              Explorez notre base visuelle complète pour faciliter vos diagnostics et améliorer votre pratique médicale.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* IGM Dialog */}
+      <Dialog open={showIGMDialog} onOpenChange={setShowIGMDialog}>
+        <DialogContent className="sm:max-w-[800px]">
+          <DialogHeader>
+            <DialogTitle>IGM - Informations Générales Médicales</DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            <img 
+              src="/lovable-uploads/a7d3e225-a6f7-4502-b77f-a4ef7c51b191.png"
+              alt="IGM Preview"
+              className="w-full rounded-lg shadow-lg"
+            />
+            <p className="mt-4 text-gray-600">
+              Restez à jour avec les dernières actualités et évolutions du domaine médical.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Footer />
     </div>
