@@ -18,71 +18,62 @@ interface Issue {
 }
 
 const mockIssues: Issue[] = [
+  // 2024 Issues
   {
     id: 1,
-    title: "Avancées en Médecine Tropicale",
-    volume: "Volume 24",
-    issue: "Issue 4",
-    year: 2024,
-    month: 3,
-    abstract: "Cette édition présente les dernières découvertes dans le domaine de la médecine tropicale, incluant de nouvelles approches thérapeutiques...",
-    pdfUrl: "#",
-    articleCount: 12
-  },
-  {
-    id: 2,
-    title: "Recherches en Immunologie",
-    volume: "Volume 24",
-    issue: "Issue 3",
-    year: 2024,
-    month: 2,
-    abstract: "Un numéro spécial dédié aux avancées récentes en immunologie, avec un focus particulier sur les maladies auto-immunes...",
-    pdfUrl: "#",
-    articleCount: 15
-  },
-  {
-    id: 3,
-    title: "Études Cliniques en Cardiologie",
-    volume: "Volume 24",
-    issue: "Issue 2",
-    year: 2024,
-    month: 1,
-    abstract: "Collection d'études cliniques majeures en cardiologie interventionnelle et préventive...",
-    pdfUrl: "#",
-    articleCount: 10
-  },
-  {
-    id: 4,
-    title: "Perspectives en Neurologie",
-    volume: "Volume 24",
+    title: "Avancées en Immunothérapie",
+    volume: "Volume 25",
     issue: "Issue 1",
     year: 2024,
-    month: 1,
-    abstract: "Synthèse des dernières recherches en neurologie, incluant des études sur les maladies neurodégénératives...",
-    pdfUrl: "#",
-    articleCount: 8
-  },
-  {
-    id: 5,
-    title: "Innovations en Chirurgie",
-    volume: "Volume 23",
-    issue: "Issue 12",
-    year: 2023,
-    month: 12,
-    abstract: "Présentation des techniques chirurgicales innovantes et des résultats d'études multicentriques...",
+    month: 3,
+    abstract: "Nouvelles approches en immunothérapie et résultats cliniques...",
     pdfUrl: "#",
     articleCount: 14
   },
   {
-    id: 6,
-    title: "Médecine Préventive",
-    volume: "Volume 23",
+    id: 2,
+    title: "Maladies Infectieuses Émergentes",
+    volume: "Volume 25",
+    issue: "Issue 2",
+    year: 2024,
+    month: 2,
+    abstract: "Études sur les pathogènes émergents et stratégies de contrôle...",
+    pdfUrl: "#",
+    articleCount: 12
+  },
+  // 2023 Issues
+  {
+    id: 3,
+    title: "Oncologie Moléculaire",
+    volume: "Volume 24",
+    issue: "Issue 12",
+    year: 2023,
+    month: 12,
+    abstract: "Dernières avancées en oncologie moléculaire...",
+    pdfUrl: "#",
+    articleCount: 15
+  },
+  {
+    id: 4,
+    title: "Neurologie Clinique",
+    volume: "Volume 24",
     issue: "Issue 11",
     year: 2023,
     month: 11,
-    abstract: "Focus sur les stratégies de prévention et la santé publique, incluant des études épidémiologiques...",
+    abstract: "Recherches en neurologie clinique et thérapeutique...",
     pdfUrl: "#",
-    articleCount: 11
+    articleCount: 10
+  },
+  {
+    id: 5,
+    title: "Cardiologie Interventionnelle",
+    volume: "Volume 24",
+    issue: "Issue 10",
+    year: 2023,
+    month: 10,
+    abstract: "Innovations en cardiologie interventionnelle...",
+    pdfUrl: "#",
+    articleCount: 13
   }
 ];
 
@@ -123,9 +114,23 @@ export const IssuesGrid = () => {
     sortIssues(filteredIssues, value);
   };
 
+  // Group issues by year
+  const issuesByYear = filteredIssues.reduce((acc, issue) => {
+    if (!acc[issue.year]) {
+      acc[issue.year] = [];
+    }
+    acc[issue.year].push(issue);
+    return acc;
+  }, {} as Record<number, Issue[]>);
+
+  // Sort years in descending order
+  const sortedYears = Object.keys(issuesByYear)
+    .map(Number)
+    .sort((a, b) => b - a);
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4 mb-8">
+    <div className="space-y-4">
+      <div className="flex items-center gap-4 mb-6">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <Input
@@ -148,43 +153,44 @@ export const IssuesGrid = () => {
         </Select>
       </div>
 
-      <div className="grid gap-6 max-w-5xl mx-auto">
-        {filteredIssues.map((issue) => (
-          <Card key={issue.id} className="group hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle className="text-xl mb-2 text-primary">
-                    {issue.title}
-                  </CardTitle>
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <span>{issue.volume} • {issue.issue}</span>
-                    <span className="text-primary">|</span>
-                    <Calendar className="h-4 w-4" />
-                    <span>{issue.month}/
-                    {issue.year}</span>
-                    <span className="text-primary">|</span>
-                    <span>{issue.articleCount} articles</span>
-                  </div>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600 mb-6">
-                {issue.abstract}
-              </p>
-              <div className="flex gap-4">
-                <Button variant="outline" className="gap-2">
-                  <Eye className="h-4 w-4" />
-                  Consulter
-                </Button>
-                <Button className="gap-2">
-                  <Download className="h-4 w-4" />
-                  Télécharger PDF
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+      <div className="space-y-8">
+        {sortedYears.map((year) => (
+          <div key={year} className="space-y-4">
+            <h2 className="text-2xl font-bold text-primary mb-4">{year}</h2>
+            <div className="grid gap-4">
+              {issuesByYear[year].map((issue) => (
+                <Card key={issue.id} className="group hover:shadow-md transition-shadow">
+                  <CardHeader className="py-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <CardTitle className="text-lg mb-1 text-primary">
+                          {issue.title}
+                        </CardTitle>
+                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                          <span>{issue.volume} • {issue.issue}</span>
+                          <span className="text-primary">|</span>
+                          <Calendar className="h-3 w-3" />
+                          <span>{issue.month}/{issue.year}</span>
+                          <span className="text-primary">|</span>
+                          <span>{issue.articleCount} articles</span>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm" className="gap-1">
+                          <Eye className="h-3 w-3" />
+                          Consulter
+                        </Button>
+                        <Button size="sm" className="gap-1">
+                          <Download className="h-3 w-3" />
+                          PDF
+                        </Button>
+                      </div>
+                    </div>
+                  </CardHeader>
+                </Card>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
     </div>
