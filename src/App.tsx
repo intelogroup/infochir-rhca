@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import RHCA from "./pages/RHCA";
 import IGM from "./pages/IGM";
 import ADC from "./pages/ADC";
+import IndexMedicus from "./pages/IndexMedicus";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ const App = () => (
           <Route path="/rhca" element={<RHCA />} />
           <Route path="/igm" element={<IGM />} />
           <Route path="/adc" element={<ADC />} />
+          <Route path="/index-medicus" element={<IndexMedicus />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
