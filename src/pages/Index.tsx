@@ -9,7 +9,7 @@ const Index = () => {
       title: "RHCA",
       description: "Revue Haïtienne de Chirurgie et d'Anesthésiologie - Publiez vos articles scientifiques.",
       icon: Book,
-      href: "#rhca",
+      href: "/rhca",
       logo: "/lovable-uploads/f65134f5-3929-4504-9567-104510b21f5d.png"
     },
     {

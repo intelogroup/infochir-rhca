@@ -1,4 +1,5 @@
 import { LucideIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface ProductCardProps {
   title: string;
@@ -10,8 +11,8 @@ interface ProductCardProps {
 
 export const ProductCard = ({ title, description, icon: Icon, href, logo }: ProductCardProps) => {
   return (
-    <a
-      href={href}
+    <Link
+      to={href}
       className="group relative flex flex-col items-center rounded-3xl bg-white p-8 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 border border-gray-100"
     >
       <div className="flex items-center justify-center mb-8">
@@ -37,6 +38,6 @@ export const ProductCard = ({ title, description, icon: Icon, href, logo }: Prod
       <p className="text-gray-600 text-center leading-relaxed">
         {description}
       </p>
-    </a>
+    </Link>
   );
 };
