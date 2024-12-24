@@ -25,7 +25,7 @@ export const mockArticles = [
     authors: ["Dr. Jean Martin", "Dr. Marie Dubois"],
     date: "2024-02-15",
     category: "Chirurgie",
-    source: "RHCA",
+    source: "RHCA" as const,
     abstract: "Une étude approfondie des techniques innovantes en chirurgie mini-invasive...",
     tags: ["laparoscopie", "chirurgie mini-invasive", "innovation"],
     imageUrl: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&auto=format"
@@ -36,7 +36,7 @@ export const mockArticles = [
     authors: ["Dr. Pierre Lambert"],
     date: "2024-02-14",
     category: "Pneumologie",
-    source: "IGM",
+    source: "IGM" as const,
     abstract: "Présentation d'un cas de pneumonie avec manifestations atypiques...",
     tags: ["pneumonie", "diagnostic", "cas clinique"]
   },
@@ -46,7 +46,7 @@ export const mockArticles = [
     authors: ["Dr. Sophie Bernard", "Dr. Luc Moreau"],
     date: "2024-02-13",
     category: "Radiologie",
-    source: "ADC",
+    source: "ADC" as const,
     abstract: "Analyse détaillée des approches diagnostiques en traumatologie...",
     tags: ["radiologie", "traumatologie", "diagnostic"]
   },
@@ -56,7 +56,7 @@ export const mockArticles = [
     authors: ["Dr. Marc Dupont", "Dr. Claire Lefebvre"],
     date: "2024-02-12",
     category: "Cardiologie",
-    source: "RHCA",
+    source: "RHCA" as const,
     abstract: "Nouvelles techniques d'intervention cardiaque minimalement invasives...",
     tags: ["cardiologie", "intervention", "innovation"],
     imageUrl: "https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?w=800&auto=format"
@@ -67,7 +67,7 @@ export const mockArticles = [
     authors: ["Dr. Antoine Rousseau"],
     date: "2024-02-11",
     category: "Neurologie",
-    source: "IGM",
+    source: "IGM" as const,
     abstract: "Étude sur les nouvelles approches thérapeutiques pour l'épilepsie résistante...",
     tags: ["neurologie", "épilepsie", "traitement"]
   },
@@ -77,7 +77,7 @@ export const mockArticles = [
     authors: ["Dr. Julie Martin", "Dr. Thomas Petit"],
     date: "2024-02-10",
     category: "Orthopédie",
-    source: "ADC",
+    source: "ADC" as const,
     abstract: "Les dernières avancées en matière de prothèses et techniques chirurgicales...",
     tags: ["orthopédie", "prothèses", "innovation"],
     imageUrl: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=800&auto=format"
@@ -88,7 +88,7 @@ export const mockArticles = [
     authors: ["Dr. Emma Blanc"],
     date: "2024-02-09",
     category: "Pneumologie",
-    source: "RHCA",
+    source: "RHCA" as const,
     abstract: "Nouvelles stratégies de traitement pour les patients atteints de BPCO...",
     tags: ["pneumologie", "BPCO", "traitement chronique"]
   },
@@ -98,7 +98,7 @@ export const mockArticles = [
     authors: ["Dr. Lucas Dubois", "Dr. Sarah Cohen"],
     date: "2024-02-08",
     category: "Neurologie",
-    source: "IGM",
+    source: "IGM" as const,
     abstract: "Applications de l'IA dans l'interprétation des images cérébrales...",
     tags: ["neurologie", "imagerie", "IA"],
     imageUrl: "https://images.unsplash.com/photo-1559757175-7b21e7afdd2b?w=800&auto=format"
@@ -109,7 +109,7 @@ export const mockArticles = [
     authors: ["Dr. Marie-Claire Laurent"],
     date: "2024-02-07",
     category: "Dermatologie",
-    source: "ADC",
+    source: "ADC" as const,
     abstract: "Nouvelles approches dans le traitement des affections cutanées chez l'enfant...",
     tags: ["dermatologie", "pédiatrie", "traitement"]
   },
@@ -119,7 +119,7 @@ export const mockArticles = [
     authors: ["Dr. Sophie Martin", "Dr. Philippe Durand"],
     date: "2024-02-06",
     category: "Gynécologie",
-    source: "RHCA",
+    source: "RHCA" as const,
     abstract: "Évolution des pratiques en obstétrique et suivi de grossesse...",
     tags: ["gynécologie", "obstétrique", "grossesse"],
     imageUrl: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&auto=format"
@@ -130,7 +130,7 @@ export const mockArticles = [
     authors: ["Dr. Alexandre Petit"],
     date: "2024-02-05",
     category: "Pédiatrie",
-    source: "IGM",
+    source: "IGM" as const,
     abstract: "Protocoles actualisés pour la prise en charge des urgences pédiatriques...",
     tags: ["pédiatrie", "urgences", "protocoles"]
   },
@@ -140,7 +140,7 @@ export const mockArticles = [
     authors: ["Dr. François Lemaire", "Dr. Marie Dupont"],
     date: "2024-02-04",
     category: "Chirurgie",
-    source: "ADC",
+    source: "ADC" as const,
     abstract: "L'utilisation de la robotique dans la chirurgie cardiaque moderne...",
     tags: ["chirurgie", "robotique", "cardiologie"],
     imageUrl: "https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=800&auto=format"
@@ -151,7 +151,7 @@ export const mockArticles = [
     authors: ["Dr. Isabelle Roux"],
     date: "2024-02-03",
     category: "Dermatologie",
-    source: "RHCA",
+    source: "RHCA" as const,
     abstract: "Nouvelles techniques mini-invasives en dermatologie esthétique...",
     tags: ["dermatologie", "intervention", "esthétique"]
   }
