@@ -16,7 +16,7 @@ const Index = () => {
       description: "Accédez à des références médicales organisées par auteur et thème.",
       icon: Database,
       href: "#index-medicus",
-      logo: "/lovable-uploads/5d3116e3-d5c7-4fb3-a6ae-8ddf2d710f55.png"
+      logo: "/lovable-uploads/f2409464-47cf-4348-ada0-e328e86be01b.png"
     },
     {
       title: "Atlas ADC",

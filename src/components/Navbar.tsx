@@ -13,8 +13,8 @@ export const Navbar = () => {
     { 
       name: "Index Medicus", 
       href: "#index-medicus",
-      logo: "/lovable-uploads/5d3116e3-d5c7-4fb3-a6ae-8ddf2d710f55.png",
-      logoClass: "w-8 h-8" // Larger size for Index Medicus
+      logo: "/lovable-uploads/f2409464-47cf-4348-ada0-e328e86be01b.png",
+      logoClass: "w-8 h-8" // Keeping the larger size for Index Medicus
     },
     { 
       name: "Atlas ADC", 
