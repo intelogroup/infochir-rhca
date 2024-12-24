@@ -20,7 +20,7 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
   };
 
   return (
-    <Card className="hover:shadow-lg transition-shadow overflow-hidden group">
+    <Card className="hover:shadow-lg transition-shadow overflow-hidden group scale-[0.7] origin-top">
       <div className="flex flex-col md:flex-row">
         {article.imageUrl ? (
           <div className="md:w-48 h-48 md:h-auto relative overflow-hidden">

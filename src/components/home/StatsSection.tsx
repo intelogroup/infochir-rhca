@@ -11,12 +11,12 @@ const stats = [
 export const StatsSection = () => {
   return (
     <section className="relative -mt-10 mb-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, index) => (
             <Card 
               key={stat.label} 
-              className="p-6 bg-white shadow-lg hover:shadow-xl transition-shadow animate-fade-up" 
+              className="p-4 bg-white shadow-lg hover:shadow-xl transition-shadow animate-fade-up scale-[0.7] origin-top" 
               style={{ animationDelay: `${index * 100}ms` }}
             >
               <div className="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center mb-4">

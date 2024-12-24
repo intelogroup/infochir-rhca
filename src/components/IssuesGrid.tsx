@@ -79,7 +79,7 @@ export const IssuesGrid = () => {
         </Button>
       </div>
 
-      <div className="grid gap-6">
+      <div className="grid gap-6 max-w-5xl mx-auto scale-[0.7] origin-top">
         {filteredIssues.map((issue) => (
           <Card key={issue.id} className="group hover:shadow-lg transition-shadow">
             <CardHeader>

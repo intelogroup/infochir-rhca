@@ -250,7 +250,7 @@ const diagnosticCases: DiagnosticCase[] = [
 
 export const DiagnosticGrid = () => {
   return (
-    <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-7xl mx-auto scale-[0.7] origin-top">
       {diagnosticCases.map((diagnosticCase) => (
         <Card key={diagnosticCase.id} className="overflow-hidden hover:shadow-lg transition-shadow">
           <div className="aspect-[4/3] relative overflow-hidden">
