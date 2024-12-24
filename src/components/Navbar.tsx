@@ -44,14 +44,16 @@ export const Navbar = () => {
               <a
                 key={item.name}
                 href={item.href}
-                className="flex items-center space-x-2 text-primary hover:text-secondary transition-colors"
+                className="flex items-center space-x-2 text-primary hover:text-secondary transition-colors h-16"
               >
-                <img 
-                  src={item.logo} 
-                  alt={`${item.name} logo`} 
-                  className={`object-contain ${item.logoClass || 'w-6 h-6'}`}
-                />
-                <span>{item.name}</span>
+                <div className="flex items-center justify-center h-full">
+                  <img 
+                    src={item.logo} 
+                    alt={`${item.name} logo`} 
+                    className={`object-contain ${item.logoClass || 'w-6 h-6'}`}
+                  />
+                </div>
+                <span className="font-medium">{item.name}</span>
               </a>
             ))}
             <button className="bg-gradient-to-r from-[#0c417b] to-[#41b06e] text-white px-4 py-2 rounded-md hover:opacity-90 transition-all">
@@ -81,12 +83,14 @@ export const Navbar = () => {
                 href={item.href}
                 className="flex items-center space-x-2 px-3 py-2 text-primary hover:text-secondary transition-colors"
               >
-                <img 
-                  src={item.logo} 
-                  alt={`${item.name} logo`} 
-                  className={`object-contain ${item.logoClass || 'w-6 h-6'}`}
-                />
-                <span>{item.name}</span>
+                <div className="flex items-center justify-center">
+                  <img 
+                    src={item.logo} 
+                    alt={`${item.name} logo`} 
+                    className={`object-contain ${item.logoClass || 'w-6 h-6'}`}
+                  />
+                </div>
+                <span className="font-medium">{item.name}</span>
               </a>
             ))}
             <button className="w-full mt-2 bg-gradient-to-r from-[#0c417b] to-[#41b06e] text-white px-4 py-2 rounded-md hover:opacity-90 transition-all">
