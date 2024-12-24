@@ -81,7 +81,7 @@ export const IssuesGrid = () => {
 
       <div className="grid gap-6 max-w-5xl mx-auto scale-[0.7] origin-top">
         {filteredIssues.map((issue) => (
-          <Card key={issue.id} className="group hover:shadow-lg transition-shadow">
+          <Card key={issue.id} className="group hover:shadow-lg transition-shadow rounded-3xl">
             <CardHeader>
               <div className="flex justify-between items-start">
                 <div>
