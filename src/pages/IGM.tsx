@@ -13,7 +13,7 @@ const IGM = () => {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          opacity: '0.03'
+          opacity: '0.2'
         }}
       />
 
