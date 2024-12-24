@@ -13,7 +13,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 const Index = () => {
   const [email, setEmail] = useState("");
   const [showAtlasDialog, setShowAtlasDialog] = useState(false);
-  const [showIGMDialog, setShowIGMDialog] = useState(false);
 
   const products = [
     {
@@ -36,16 +35,14 @@ const Index = () => {
       description: "Explorez une base visuelle unique pour faciliter vos diagnostics.",
       icon: BookOpen,
       onClick: () => setShowAtlasDialog(true),
-      logo: "/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png",
-      href: "#atlas"
+      logo: "/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png"
     },
     {
       title: "IGM",
       description: "Restez informé des dernières nouvelles et évolutions du domaine médical.",
       icon: Newspaper,
-      onClick: () => setShowIGMDialog(true),
-      logo: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png",
-      href: "#igm"
+      href: "/igm",
+      logo: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png"
     },
   ];
 
