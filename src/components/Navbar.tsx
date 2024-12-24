@@ -53,7 +53,7 @@ export const Navbar = () => {
                 <span>{item.name}</span>
               </a>
             ))}
-            <button className="bg-secondary text-white px-4 py-2 rounded-md hover:bg-secondary/90 transition-colors">
+            <button className="bg-gradient-to-r from-primary to-secondary text-white px-4 py-2 rounded-md hover:opacity-90 transition-all">
               Soumettre
             </button>
           </div>
@@ -88,7 +88,7 @@ export const Navbar = () => {
                 <span>{item.name}</span>
               </a>
             ))}
-            <button className="w-full mt-2 bg-secondary text-white px-4 py-2 rounded-md hover:bg-secondary/90 transition-colors">
+            <button className="w-full mt-2 bg-gradient-to-r from-primary to-secondary text-white px-4 py-2 rounded-md hover:opacity-90 transition-all">
               Soumettre
             </button>
           </div>

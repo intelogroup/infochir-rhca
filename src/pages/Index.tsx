@@ -47,7 +47,7 @@ const Index = () => {
           <p className="text-xl text-white/90 max-w-2xl mx-auto mb-8 animate-fade-up">
             La plateforme de référence pour les professionnels de santé en Haïti
           </p>
-          <button className="bg-accent hover:bg-accent/90 text-white px-8 py-3 rounded-md text-lg font-medium transition-colors animate-fade-up">
+          <button className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white px-8 py-3 rounded-md text-lg font-medium transition-all animate-fade-up">
             Commencer
           </button>
         </div>
@@ -76,7 +76,7 @@ const Index = () => {
           <p className="text-gray-600 max-w-2xl mx-auto mb-8">
             Participez au développement de la médecine en Haïti en partageant vos connaissances et expériences.
           </p>
-          <button className="bg-secondary hover:bg-secondary/90 text-white px-8 py-3 rounded-md text-lg font-medium transition-colors">
+          <button className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white px-8 py-3 rounded-md text-lg font-medium transition-all">
             Créer un compte
           </button>
         </div>
