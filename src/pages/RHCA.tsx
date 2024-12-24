@@ -5,8 +5,20 @@ import { IssuesGrid } from "@/components/IssuesGrid";
 
 const RHCA = () => {
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen bg-[#f8fafc] relative">
+      {/* Background image with overlay */}
+      <div 
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: 'url("https://images.unsplash.com/photo-1473091534298-04dcbce3278c")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: '0.03'
+        }}
+      />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Back button */}
         <Link to="/" className="inline-block mb-8">
           <Button variant="ghost" className="gap-2">
@@ -63,7 +75,8 @@ const RHCA = () => {
           </div>
           
           <div className="space-y-8">
-            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+            {/* Submission section */}
+            <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-8 shadow-sm border border-gray-100">
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">
                 Soumission d'articles
               </h2>
@@ -75,7 +88,8 @@ const RHCA = () => {
               </Button>
             </div>
 
-            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+            {/* Instructions section */}
+            <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-8 shadow-sm border border-gray-100">
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">
                 Instructions aux auteurs
               </h2>
@@ -87,7 +101,8 @@ const RHCA = () => {
               </Button>
             </div>
 
-            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+            {/* Editorial board section */}
+            <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-8 shadow-sm border border-gray-100">
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">
                 Comité éditorial
               </h2>
