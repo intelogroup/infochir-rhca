@@ -3,16 +3,6 @@ import { DiagnosticSearch } from "./diagnostic/DiagnosticSearch";
 import { DiagnosticCard } from "./diagnostic/DiagnosticCard";
 import { DiagnosticCase, YearGroup } from "./diagnostic/types";
 
-interface DiagnosticCase {
-  id: string;
-  title: string;
-  description: string;
-  imageUrl: string;
-  specialty: string;
-  diagnosis: string;
-  date: string;
-}
-
 const diagnosticCases: DiagnosticCase[] = [
   {
     id: "1",
