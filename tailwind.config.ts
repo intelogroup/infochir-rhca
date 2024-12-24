@@ -27,10 +27,12 @@ export default {
         primary: {
           DEFAULT: "#0c417b",
           foreground: "#ffffff",
+          light: "#1565c0",
         },
         secondary: {
           DEFAULT: "#41b06e",
           foreground: "#ffffff",
+          light: "#4caf50",
         },
         muted: {
           DEFAULT: "#f8fafc",
@@ -51,6 +53,9 @@ export default {
       },
       animation: {
         "fade-up": "fade-up 0.5s ease-out",
+      },
+      backdropBlur: {
+        xs: '2px',
       },
     },
   },

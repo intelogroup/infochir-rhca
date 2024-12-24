@@ -9,35 +9,37 @@ export const Navbar = () => {
       name: "RHCA", 
       href: "#rhca",
       logo: "/lovable-uploads/e8fe216b-7e19-48a9-9251-22c63959d38c.png",
-      logoClass: "w-10 h-10" // Increased to 10x10
+      logoClass: "w-11 h-11"
     },
     { 
       name: "Index Medicus", 
       href: "#index-medicus",
       logo: "/lovable-uploads/f2409464-47cf-4348-ada0-e328e86be01b.png",
-      logoClass: "w-8 h-8" // Kept at 8x8
+      logoClass: "w-8 h-8"
     },
     { 
       name: "Atlas ADC", 
       href: "#atlas",
       logo: "/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png",
-      logoClass: "w-10 h-10" // Increased to 10x10
+      logoClass: "w-11 h-11"
     },
     { 
       name: "IGM", 
       href: "#igm",
       logo: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png",
-      logoClass: "w-10 h-10" // Increased to 10x10
+      logoClass: "w-11 h-11"
     },
   ];
 
   return (
-    <nav className="bg-white shadow-sm fixed w-full z-50">
+    <nav className="fixed w-full z-50 bg-white/80 backdrop-blur-sm border-b border-gray-200/50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <a href="/" className="flex-shrink-0 flex items-center">
-              <span className="text-primary text-xl font-bold">INFOCHIR</span>
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-xl font-bold">
+                INFOCHIR
+              </span>
             </a>
           </div>
 
@@ -47,19 +49,19 @@ export const Navbar = () => {
               <a
                 key={item.name}
                 href={item.href}
-                className="flex items-center space-x-2 text-primary hover:text-secondary transition-colors h-16"
+                className="flex items-center space-x-2 text-gray-700 hover:text-primary transition-colors duration-200 h-16 group"
               >
                 <div className="flex items-center justify-center h-full">
                   <img 
                     src={item.logo} 
                     alt={`${item.name} logo`} 
-                    className={`object-contain ${item.logoClass}`}
+                    className={`object-contain ${item.logoClass} transition-transform duration-200 group-hover:scale-105`}
                   />
                 </div>
                 <span className="font-medium">{item.name}</span>
               </a>
             ))}
-            <button className="bg-gradient-to-r from-[#0c417b] to-[#41b06e] text-white px-4 py-2 rounded-md hover:opacity-90 transition-all">
+            <button className="bg-gradient-to-r from-primary to-secondary text-white px-6 py-2 rounded-full hover:shadow-lg transition-all duration-200 font-medium">
               Soumettre
             </button>
           </div>
@@ -68,7 +70,7 @@ export const Navbar = () => {
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-primary p-2"
+              className="text-gray-700 p-2 rounded-lg hover:bg-gray-100/50 transition-colors duration-200"
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -78,13 +80,13 @@ export const Navbar = () => {
 
       {/* Mobile menu */}
       {isOpen && (
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+        <div className="md:hidden absolute w-full bg-white/90 backdrop-blur-sm border-b border-gray-200/50">
+          <div className="px-4 pt-2 pb-3 space-y-2">
             {navItems.map((item) => (
               <a
                 key={item.name}
                 href={item.href}
-                className="flex items-center space-x-2 px-3 py-2 text-primary hover:text-secondary transition-colors"
+                className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100/50 transition-colors duration-200"
               >
                 <div className="flex items-center justify-center">
                   <img 
@@ -96,12 +98,14 @@ export const Navbar = () => {
                 <span className="font-medium">{item.name}</span>
               </a>
             ))}
-            <button className="w-full mt-2 bg-gradient-to-r from-[#0c417b] to-[#41b06e] text-white px-4 py-2 rounded-md hover:opacity-90 transition-all">
-              Soumettre
-            </button>
+            <div className="pt-2">
+              <button className="w-full bg-gradient-to-r from-primary to-secondary text-white px-6 py-2 rounded-full hover:shadow-lg transition-all duration-200 font-medium">
+                Soumettre
+              </button>
+            </div>
           </div>
         </div>
       )}
     </nav>
   );
-}
+};

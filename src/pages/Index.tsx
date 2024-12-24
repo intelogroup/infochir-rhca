@@ -35,50 +35,57 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-muted">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
       <Navbar />
       
       {/* Hero Section */}
-      <section className="pt-24 pb-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-primary to-primary/90">
-        <div className="max-w-7xl mx-auto text-center">
+      <section className="relative pt-24 pb-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/90 to-secondary/90" />
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDIwIDAgTCAwIDAgMCAyMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-10" />
+        
+        <div className="relative max-w-7xl mx-auto text-center">
           <h1 className="text-4xl sm:text-5xl font-bold text-white mb-6 animate-fade-up">
             Votre espace scientifique en ligne
           </h1>
           <p className="text-xl text-white/90 max-w-2xl mx-auto mb-8 animate-fade-up">
             La plateforme de référence pour les professionnels de santé en Haïti
           </p>
-          <button className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white px-8 py-3 rounded-md text-lg font-medium transition-all animate-fade-up">
+          <button className="bg-white text-primary hover:bg-white/90 px-8 py-3 rounded-full text-lg font-medium transition-all animate-fade-up shadow-lg hover:shadow-xl">
             Commencer
           </button>
         </div>
       </section>
 
       {/* Products Grid */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
+      <section className="relative -mt-12 py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold text-primary text-center mb-12">
-            Nos Ressources
-          </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {products.map((product) => (
-              <ProductCard key={product.title} {...product} />
+            {products.map((product, index) => (
+              <div key={product.title} className="animate-fade-up" style={{ animationDelay: `${index * 100}ms` }}>
+                <ProductCard {...product} />
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-primary mb-6">
-            Rejoignez notre communauté scientifique
-          </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto mb-8">
-            Participez au développement de la médecine en Haïti en partageant vos connaissances et expériences.
-          </p>
-          <button className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white px-8 py-3 rounded-md text-lg font-medium transition-all">
-            Créer un compte
-          </button>
+      <section className="relative py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-secondary p-8 sm:p-12">
+            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDIwIDAgTCAwIDAgMCAyMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-10" />
+            <div className="relative text-center">
+              <h2 className="text-3xl font-bold text-white mb-6">
+                Rejoignez notre communauté scientifique
+              </h2>
+              <p className="text-white/90 max-w-2xl mx-auto mb-8">
+                Participez au développement de la médecine en Haïti en partageant vos connaissances et expériences.
+              </p>
+              <button className="bg-white text-primary hover:bg-white/90 px-8 py-3 rounded-full text-lg font-medium transition-all shadow-lg hover:shadow-xl">
+                Créer un compte
+              </button>
+            </div>
+          </div>
         </div>
       </section>
     </div>
