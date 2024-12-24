@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, Filter, Calendar } from "lucide-react";
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import { addDays } from "date-fns";
+import { DateRange } from "react-day-picker";
 
 interface Article {
   id: string;
@@ -72,7 +73,7 @@ export const IndexMedicusGrid = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Toutes les catégories");
   const [selectedSource, setSelectedSource] = useState("Toutes les sources");
-  const [date, setDate] = useState({
+  const [date, setDate] = useState<DateRange | undefined>({
     from: new Date(2024, 0, 1),
     to: addDays(new Date(), 1),
   });
@@ -91,8 +92,8 @@ export const IndexMedicusGrid = () => {
         article.source === selectedSource;
       
       const articleDate = new Date(article.date);
-      const matchesDate = (!date.from || articleDate >= date.from) &&
-        (!date.to || articleDate <= date.to);
+      const matchesDate = !date?.from || !date?.to || 
+        (articleDate >= date.from && articleDate <= date.to);
 
       return matchesSearch && matchesCategory && matchesSource && matchesDate;
     });
