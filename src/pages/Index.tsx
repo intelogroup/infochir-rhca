@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useState } from "react";
-import { Mail, ArrowRight, BookOpen, Database, Newspaper } from "lucide-react";
+import { BookOpen, Database, Newspaper } from "lucide-react";
 import { HeroSection } from "@/components/home/HeroSection";
 import { StatsSection } from "@/components/home/StatsSection";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -36,14 +36,16 @@ const Index = () => {
       description: "Explorez une base visuelle unique pour faciliter vos diagnostics.",
       icon: BookOpen,
       onClick: () => setShowAtlasDialog(true),
-      logo: "/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png"
+      logo: "/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png",
+      href: "#atlas"
     },
     {
       title: "IGM",
       description: "Restez informé des dernières nouvelles et évolutions du domaine médical.",
       icon: Newspaper,
       onClick: () => setShowIGMDialog(true),
-      logo: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png"
+      logo: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png",
+      href: "#igm"
     },
   ];
 
@@ -85,7 +87,7 @@ const Index = () => {
       {/* Newsletter Section */}
       <section className="py-16 bg-gradient-to-br from-primary to-primary-light text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <Mail className="w-12 h-12 mx-auto mb-6 opacity-80" />
+          <Newspaper className="w-12 h-12 mx-auto mb-6 opacity-80" />
           <h2 className="text-3xl font-bold mb-4">Restez informé</h2>
           <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
             Abonnez-vous à notre newsletter pour recevoir les dernières publications et actualités
@@ -134,11 +136,22 @@ const Index = () => {
             <img 
               src="/lovable-uploads/a7d3e225-a6f7-4502-b77f-a4ef7c51b191.png"
               alt="IGM Preview"
-              className="w-full rounded-lg shadow-lg"
+              className="w-full rounded-lg shadow-lg mb-6"
             />
-            <p className="mt-4 text-gray-600">
-              Restez à jour avec les dernières actualités et évolutions du domaine médical.
-            </p>
+            <div className="space-y-4">
+              <p className="text-gray-600">
+                IGM (Informations Générales Médicales) est votre source d'actualités médicales en Haïti. Notre plateforme offre :
+              </p>
+              <ul className="list-disc pl-6 space-y-2 text-gray-600">
+                <li>Des actualités médicales quotidiennes</li>
+                <li>Des analyses approfondies des tendances en santé</li>
+                <li>Des rapports sur les avancées médicales</li>
+                <li>Des informations sur les conférences et événements médicaux</li>
+              </ul>
+              <p className="text-gray-600">
+                Restez informé des dernières actualités et évolutions du domaine médical en Haïti et dans le monde.
+              </p>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
