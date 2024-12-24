@@ -41,7 +41,6 @@ const Index = () => {
       {/* Hero Section */}
       <section className="relative pt-24 pb-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/90 to-secondary/10" />
-        <div className="absolute inset-0 bg-white/5 backdrop-blur-[2px]" />
         
         <div className="relative max-w-7xl mx-auto text-center">
           <h1 className="text-4xl sm:text-5xl font-bold text-white mb-6 animate-fade-up">
@@ -73,7 +72,6 @@ const Index = () => {
       <section className="relative py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/90 to-secondary/10 p-8 sm:p-12">
-            <div className="absolute inset-0 bg-white/5 backdrop-blur-[2px]" />
             <div className="relative text-center">
               <h2 className="text-3xl font-bold text-white mb-6">
                 Rejoignez notre communauté scientifique
