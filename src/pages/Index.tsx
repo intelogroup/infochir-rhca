@@ -1,6 +1,7 @@
 import { Book, Database, Image, Newspaper } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { ProductCard } from "@/components/ProductCard";
+import { Footer } from "@/components/Footer";
 
 const Index = () => {
   const products = [
@@ -40,7 +41,7 @@ const Index = () => {
       
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary opacity-90" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary" />
         
         <div className="relative max-w-7xl mx-auto text-center">
           <h1 className="text-5xl sm:text-6xl font-bold text-white mb-8 animate-fade-up tracking-tight">
@@ -86,6 +87,8 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 };
