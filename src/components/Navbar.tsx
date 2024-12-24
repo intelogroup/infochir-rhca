@@ -13,7 +13,8 @@ export const Navbar = () => {
     { 
       name: "Index Medicus", 
       href: "#index-medicus",
-      logo: "/lovable-uploads/5d3116e3-d5c7-4fb3-a6ae-8ddf2d710f55.png"
+      logo: "/lovable-uploads/5d3116e3-d5c7-4fb3-a6ae-8ddf2d710f55.png",
+      logoClass: "w-8 h-8" // Larger size for Index Medicus
     },
     { 
       name: "Atlas ADC", 
@@ -48,12 +49,12 @@ export const Navbar = () => {
                 <img 
                   src={item.logo} 
                   alt={`${item.name} logo`} 
-                  className="w-6 h-6 object-contain"
+                  className={`object-contain ${item.logoClass || 'w-6 h-6'}`}
                 />
                 <span>{item.name}</span>
               </a>
             ))}
-            <button className="bg-gradient-to-r from-primary to-secondary text-white px-4 py-2 rounded-md hover:opacity-90 transition-all">
+            <button className="bg-gradient-to-r from-[#0c417b] to-[#41b06e] text-white px-4 py-2 rounded-md hover:opacity-90 transition-all">
               Soumettre
             </button>
           </div>
@@ -83,12 +84,12 @@ export const Navbar = () => {
                 <img 
                   src={item.logo} 
                   alt={`${item.name} logo`} 
-                  className="w-6 h-6 object-contain"
+                  className={`object-contain ${item.logoClass || 'w-6 h-6'}`}
                 />
                 <span>{item.name}</span>
               </a>
             ))}
-            <button className="w-full mt-2 bg-gradient-to-r from-primary to-secondary text-white px-4 py-2 rounded-md hover:opacity-90 transition-all">
+            <button className="w-full mt-2 bg-gradient-to-r from-[#0c417b] to-[#41b06e] text-white px-4 py-2 rounded-md hover:opacity-90 transition-all">
               Soumettre
             </button>
           </div>
@@ -96,4 +97,4 @@ export const Navbar = () => {
       )}
     </nav>
   );
-};
+}

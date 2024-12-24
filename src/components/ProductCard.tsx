@@ -16,7 +16,11 @@ export const ProductCard = ({ title, description, icon: Icon, href, logo }: Prod
     >
       {logo ? (
         <div className="h-24 w-24 mx-auto mb-4 group-hover:scale-110 transition-transform duration-200">
-          <img src={logo} alt={`${title} logo`} className="w-full h-full object-contain" />
+          <img 
+            src={logo} 
+            alt={`${title} logo`} 
+            className={`w-full h-full object-contain ${title === 'Index Medicus' ? 'scale-125' : ''}`} 
+          />
         </div>
       ) : (
         <div className="h-12 w-12 bg-muted rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200">
