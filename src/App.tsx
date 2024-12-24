@@ -14,7 +14,8 @@ const queryClient = new QueryClient();
 
 const AppContent = () => {
   const location = useLocation();
-  const showNavbar = location.pathname !== '/igm';
+  const hideNavbarPaths = ['/igm', '/rhca', '/index-medicus', '/adc'];
+  const showNavbar = !hideNavbarPaths.includes(location.pathname);
 
   return (
     <>

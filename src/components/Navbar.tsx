@@ -16,7 +16,7 @@ export const Navbar = () => {
       href: "/index-medicus"
     },
     { 
-      name: "Atlas ADC", 
+      name: "Atlas", 
       href: "/adc"
     },
     { 
