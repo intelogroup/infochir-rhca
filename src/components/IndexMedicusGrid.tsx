@@ -14,7 +14,7 @@ export const IndexMedicusGrid = () => {
     from: new Date(2024, 0, 1),
     to: addDays(new Date(), 1),
   });
-  const [filteredArticles, setFilteredArticles] = useState<Article[]>([...mockArticles]);
+  const [filteredArticles, setFilteredArticles] = useState<Article[]>(mockArticles);
 
   const handleSearch = () => {
     const filtered = mockArticles.filter(article => {
@@ -35,7 +35,7 @@ export const IndexMedicusGrid = () => {
       return matchesSearch && matchesCategory && matchesSource && matchesDate;
     });
 
-    setFilteredArticles([...filtered]);
+    setFilteredArticles(filtered);
   };
 
   return (

@@ -47,4 +47,4 @@ export const mockArticles = [
     abstract: "Analyse détaillée des approches diagnostiques en traumatologie...",
     tags: ["radiologie", "traumatologie", "diagnostic"]
   }
-] as const;
+];
