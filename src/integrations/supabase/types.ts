@@ -9,6 +9,146 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      article_authors: {
+        Row: {
+          article_id: string
+          author_id: number
+        }
+        Insert: {
+          article_id: string
+          author_id: number
+        }
+        Update: {
+          article_id?: string
+          author_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "article_authors_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "article_authors_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "authors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      article_tags: {
+        Row: {
+          article_id: string
+          tag_id: number
+        }
+        Insert: {
+          article_id: string
+          tag_id: number
+        }
+        Update: {
+          article_id?: string
+          tag_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "article_tags_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "article_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      articles: {
+        Row: {
+          abstract: string
+          category_id: number | null
+          citations: number | null
+          created_at: string | null
+          date: string
+          id: string
+          image_url: string | null
+          source: Database["public"]["Enums"]["article_source"]
+          title: string
+          updated_at: string | null
+          views: number | null
+        }
+        Insert: {
+          abstract: string
+          category_id?: number | null
+          citations?: number | null
+          created_at?: string | null
+          date?: string
+          id?: string
+          image_url?: string | null
+          source: Database["public"]["Enums"]["article_source"]
+          title: string
+          updated_at?: string | null
+          views?: number | null
+        }
+        Update: {
+          abstract?: string
+          category_id?: number | null
+          citations?: number | null
+          created_at?: string | null
+          date?: string
+          id?: string
+          image_url?: string | null
+          source?: Database["public"]["Enums"]["article_source"]
+          title?: string
+          updated_at?: string | null
+          views?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "articles_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      authors: {
+        Row: {
+          id: number
+          name: string
+        }
+        Insert: {
+          id?: number
+          name: string
+        }
+        Update: {
+          id?: number
+          name?: string
+        }
+        Relationships: []
+      }
+      categories: {
+        Row: {
+          id: number
+          name: string
+        }
+        Insert: {
+          id?: number
+          name: string
+        }
+        Update: {
+          id?: number
+          name?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -30,6 +170,21 @@ export type Database = {
         }
         Relationships: []
       }
+      tags: {
+        Row: {
+          id: number
+          name: string
+        }
+        Insert: {
+          id?: number
+          name: string
+        }
+        Update: {
+          id?: number
+          name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -38,7 +193,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      article_source: "RHCA" | "IGM" | "ADC"
     }
     CompositeTypes: {
       [_ in never]: never
