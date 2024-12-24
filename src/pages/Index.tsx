@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useState } from "react";
-import { Mail, ArrowRight, Quote } from "lucide-react";
+import { Mail, ArrowRight, Quote, BookOpen, Database, Newspaper } from "lucide-react";
 import { HeroSection } from "@/components/home/HeroSection";
 import { StatsSection } from "@/components/home/StatsSection";
 
@@ -17,7 +17,7 @@ const Index = () => {
     {
       title: "RHCA",
       description: "Revue Haïtienne de Chirurgie et d'Anesthésiologie - Publiez vos articles scientifiques.",
-      icon: Book,
+      icon: BookOpen,
       href: "/rhca",
       logo: "/lovable-uploads/f65134f5-3929-4504-9567-104510b21f5d.png",
       bgImage: "/lovable-uploads/3686281a-0f1a-46e8-a03f-c56d49e3d791.png"
@@ -32,7 +32,7 @@ const Index = () => {
     {
       title: "Atlas ADC",
       description: "Explorez une base visuelle unique pour faciliter vos diagnostics.",
-      icon: Image,
+      icon: BookOpen,
       href: "#atlas",
       logo: "/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png"
     },
