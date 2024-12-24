@@ -33,11 +33,25 @@ const AuthPage = () => {
         toast.success("Profile updated successfully!");
       } else if (event === "PASSWORD_RECOVERY") {
         toast.info("Password recovery email sent!");
+      } else if (event === "USER_DELETED") {
+        toast.error("Account deleted successfully!");
+        navigate("/auth");
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  const handleAuthError = (error: Error) => {
+    const errorMessage = error.message;
+    if (errorMessage.includes("User already registered")) {
+      toast.error("This email is already registered. Please sign in instead.");
+    } else if (errorMessage.includes("Invalid login credentials")) {
+      toast.error("Invalid email or password. Please try again.");
+    } else {
+      toast.error(errorMessage);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -71,8 +85,7 @@ const AuthPage = () => {
             }}
             providers={[]}
             redirectTo={window.location.origin}
-            onlyThirdPartyProviders={false}
-            showLinks={true}
+            onError={handleAuthError}
             localization={{
               variables: {
                 sign_in: {
