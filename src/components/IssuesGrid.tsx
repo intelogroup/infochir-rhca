@@ -129,7 +129,7 @@ export const IssuesGrid = () => {
     .sort((a, b) => b - a);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 px-4">
       <div className="flex items-center gap-4 mb-4">
         <div className="relative flex-1">
           <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -161,9 +161,9 @@ export const IssuesGrid = () => {
               {issuesByYear[year].map((issue) => (
                 <Card 
                   key={issue.id} 
-                  className="group hover:shadow-md transition-shadow transform scale-75 origin-top-left -ml-8"
+                  className="group hover:shadow-md transition-shadow transform scale-90 origin-left"
                 >
-                  <CardHeader className="p-2">
+                  <CardHeader className="p-3">
                     <div className="flex justify-between items-center gap-2">
                       <div className="flex-1 min-w-0">
                         <CardTitle className="text-sm font-medium text-primary truncate">
@@ -179,10 +179,10 @@ export const IssuesGrid = () => {
                         </div>
                       </div>
                       <div className="flex gap-1 shrink-0">
-                        <Button variant="outline" size="sm" className="h-6 px-1.5 text-xs">
+                        <Button variant="outline" size="sm" className="h-6 w-6 p-0">
                           <Eye className="h-3 w-3" />
                         </Button>
-                        <Button size="sm" className="h-6 px-1.5 text-xs">
+                        <Button size="sm" className="h-6 w-6 p-0">
                           <Download className="h-3 w-3" />
                         </Button>
                       </div>
