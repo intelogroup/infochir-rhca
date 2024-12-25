@@ -5,17 +5,15 @@ import { PrivateRoute } from "./auth/PrivateRoute";
 import { AdminRoute } from "./auth/AdminRoute";
 import { LoadingSpinner } from "./auth/LoadingSpinner";
 
-// Lazy load page components with descriptive chunk names
-const Index = lazy(() => import(/* webpackChunkName: "index" */ "@/pages/Index"));
-const RHCA = lazy(() => import(/* webpackChunkName: "rhca" */ "@/pages/RHCA"));
-const IGM = lazy(() => import(/* webpackChunkName: "igm" */ "@/pages/IGM"));
-const ADC = lazy(() => import(/* webpackChunkName: "adc" */ "@/pages/ADC"));
-const IndexMedicus = lazy(() => import(/* webpackChunkName: "index-medicus" */ "@/pages/IndexMedicus"));
-const Admin = lazy(() => import(/* webpackChunkName: "admin" */ "@/pages/Admin"));
-const AuthPage = lazy(() => import(/* webpackChunkName: "auth" */ "@/pages/Auth"));
-const NotFound = lazy(() => import(/* webpackChunkName: "not-found" */ "@/pages/NotFound"));
+const Index = lazy(() => import("@/pages/Index"));
+const RHCA = lazy(() => import("@/pages/RHCA"));
+const IGM = lazy(() => import("@/pages/IGM"));
+const ADC = lazy(() => import("@/pages/ADC"));
+const IndexMedicus = lazy(() => import("@/pages/IndexMedicus"));
+const Admin = lazy(() => import("@/pages/Admin"));
+const AuthPage = lazy(() => import("@/pages/Auth"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
 
-// Route configuration with metadata
 const routes = [
   {
     path: "/",
@@ -61,16 +59,6 @@ const routes = [
   },
 ];
 
-// Enhanced loading component for route transitions
-const RouteLoadingSpinner = () => (
-  <div className="min-h-[50vh] flex items-center justify-center animate-fade-in">
-    <div className="bg-white/95 backdrop-blur-sm rounded-lg p-8 shadow-lg">
-      <LoadingSpinner />
-      <p className="text-sm text-gray-500 mt-4">Loading...</p>
-    </div>
-  </div>
-);
-
 export const AppRoutes = () => {
   const location = useLocation();
   const currentRoute = routes.find((route) => route.path === location.pathname);
@@ -79,45 +67,32 @@ export const AppRoutes = () => {
   return (
     <>
       {showNavbar && <Navbar />}
-      <div className="min-h-screen animate-fade-in">
-        <Suspense fallback={<RouteLoadingSpinner />}>
-          <Routes>
-            {routes.map(({ path, element, private: isPrivate, isAdmin }) => (
-              <Route
-                key={path}
-                path={path}
-                element={
-                  isAdmin ? (
-                    <AdminRoute>
-                      <Suspense fallback={<RouteLoadingSpinner />}>
-                        {element}
-                      </Suspense>
-                    </AdminRoute>
-                  ) : isPrivate ? (
-                    <PrivateRoute>
-                      <Suspense fallback={<RouteLoadingSpinner />}>
-                        {element}
-                      </Suspense>
-                    </PrivateRoute>
-                  ) : (
-                    <Suspense fallback={<RouteLoadingSpinner />}>
-                      {element}
-                    </Suspense>
-                  )
-                }
-              />
-            ))}
-            <Route 
-              path="*" 
+      <Suspense 
+        fallback={
+          <div className="min-h-screen flex items-center justify-center">
+            <LoadingSpinner />
+          </div>
+        }
+      >
+        <Routes>
+          {routes.map(({ path, element, private: isPrivate, isAdmin }) => (
+            <Route
+              key={path}
+              path={path}
               element={
-                <Suspense fallback={<RouteLoadingSpinner />}>
-                  <NotFound />
-                </Suspense>
-              } 
+                isAdmin ? (
+                  <AdminRoute>{element}</AdminRoute>
+                ) : isPrivate ? (
+                  <PrivateRoute>{element}</PrivateRoute>
+                ) : (
+                  element
+                )
+              }
             />
-          </Routes>
-        </Suspense>
-      </div>
+          ))}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
     </>
   );
 };

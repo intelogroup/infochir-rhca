@@ -12,11 +12,10 @@ const AuthPage = () => {
 
   useEffect(() => {
     if (user) {
-      navigate("/");
+      navigate("/", { replace: true });
     }
   }, [user, navigate]);
 
-  // Show loading spinner while checking auth status
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -25,12 +24,10 @@ const AuthPage = () => {
     );
   }
 
-  // If user is authenticated, don't render anything (will redirect)
   if (user) {
     return null;
   }
 
-  // Render auth form for non-authenticated users
   return (
     <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8">

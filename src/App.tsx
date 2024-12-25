@@ -7,7 +7,6 @@ import { BrowserRouter } from "react-router-dom";
 import { AppRoutes } from "./components/AppRoutes";
 import { AuthProvider } from "./components/auth/AuthProvider";
 import { LoadingSpinner } from "./components/auth/LoadingSpinner";
-import { ErrorBoundary } from "./components/ErrorBoundary";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,23 +18,21 @@ const queryClient = new QueryClient({
 });
 
 const App = () => (
-  <ErrorBoundary>
-    <QueryClientProvider client={queryClient}>
-      <Suspense fallback={<LoadingSpinner />}>
+  <QueryClientProvider client={queryClient}>
+    <Suspense fallback={<LoadingSpinner />}>
+      <BrowserRouter>
         <AuthProvider>
           <TooltipProvider>
             <div className="min-h-screen bg-background">
               <Toaster />
               <Sonner />
-              <BrowserRouter>
-                <AppRoutes />
-              </BrowserRouter>
+              <AppRoutes />
             </div>
           </TooltipProvider>
         </AuthProvider>
-      </Suspense>
-    </QueryClientProvider>
-  </ErrorBoundary>
+      </BrowserRouter>
+    </Suspense>
+  </QueryClientProvider>
 );
 
 export default App;
