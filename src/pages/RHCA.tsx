@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen, Users, Globe, Award } from "lucide-react";
 import { Link } from "react-router-dom";
-import { IssuesGrid } from "@/components/rhca/IssuesGrid";
+import { ArticleList } from "@/components/rhca/ArticleList";
 import { AdminPanel } from "@/components/rhca/admin/AdminPanel";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -119,7 +119,7 @@ const RHCA = () => {
 
         <div className="grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           <div className="lg:col-span-2">
-            {isAdmin ? <AdminPanel /> : <IssuesGrid />}
+            {isAdmin ? <AdminPanel /> : <ArticleList />}
           </div>
           
           <div className="space-y-8">
