@@ -17,6 +17,18 @@ export const IssuesGrid = () => {
 
   const fetchArticles = async () => {
     try {
+      // First, list all files in the articles bucket
+      const { data: storageFiles, error: storageError } = await supabase
+        .storage
+        .from('articles')
+        .list();
+
+      if (storageError) {
+        console.error('Error fetching storage files:', storageError);
+        toast.error("Erreur lors du chargement des fichiers");
+        return;
+      }
+
       const { data: articles, error } = await supabase
         .from('articles')
         .select(`
@@ -38,19 +50,27 @@ export const IssuesGrid = () => {
       }
 
       // Transform the articles into the Issue format
-      const transformedArticles = articles.map(article => ({
-        id: article.id,
-        title: article.title,
-        volume: article.category?.name ? `Volume ${article.category.name}` : undefined,
-        issue: `Issue ${new Date(article.date).getMonth() + 1}`,
-        date: new Date(article.date).toISOString(),
-        abstract: article.abstract,
-        pdfUrl: article.pdf_url,
-        articleCount: 1,
-        authors: article.article_authors?.map((aa: any) => aa.author.name) || [],
-        tags: article.article_tags?.map((at: any) => at.tag.name) || []
-      }));
+      const transformedArticles = articles.map(article => {
+        // Find matching PDF file from storage
+        const pdfFile = storageFiles?.find(file => 
+          file.name.toLowerCase().includes(article.title.toLowerCase().replace(/\s+/g, '-'))
+        );
 
+        return {
+          id: article.id,
+          title: article.title,
+          volume: article.category?.name ? `Volume ${article.category.name}` : undefined,
+          issue: `Issue ${new Date(article.date).getMonth() + 1}`,
+          date: new Date(article.date).toISOString(),
+          abstract: article.abstract,
+          pdfUrl: pdfFile ? `${supabase.storage.from('articles').getPublicUrl(pdfFile.name).data.publicUrl}` : article.pdf_url,
+          articleCount: 1,
+          authors: article.article_authors?.map((aa: any) => aa.author.name) || [],
+          tags: article.article_tags?.map((at: any) => at.tag.name) || []
+        };
+      });
+
+      console.log('Transformed articles:', transformedArticles);
       setFilteredIssues(transformedArticles);
     } catch (error) {
       console.error('Error fetching articles:', error);
