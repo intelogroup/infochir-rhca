@@ -3,12 +3,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, isLoading: authLoading, user } = useAuth();
+  const { isAuthenticated, isLoading: authLoading, user, error: authError } = useAuth();
   const location = useLocation();
 
-  const { data: isAdmin, isLoading: adminCheckLoading } = useQuery({
+  const { data: isAdmin, isLoading: adminCheckLoading, error: adminError } = useQuery({
     queryKey: ['isAdmin', user?.id],
     queryFn: async () => {
       if (!user) return false;
@@ -20,7 +22,7 @@ export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
       
       if (error) {
         console.error('Error checking admin status:', error);
-        return false;
+        throw error;
       }
       
       return !!data;
@@ -29,7 +31,25 @@ export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   });
 
   if (authLoading || adminCheckLoading) {
-    return <LoadingSpinner />;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  if (authError || adminError) {
+    const error = authError || adminError;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+        <Alert variant="destructive" className="max-w-md">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            {error instanceof Error ? error.message : 'An error occurred while checking permissions'}
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
   }
 
   if (!isAuthenticated) {
@@ -37,6 +57,7 @@ export const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (!isAdmin) {
+    toast.error("You don't have permission to access this page");
     return <Navigate to="/" replace />;
   }
 
