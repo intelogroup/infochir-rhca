@@ -7,14 +7,14 @@ import { supabase } from "@/integrations/supabase/client";
 interface IssueCardProps {
   id: string;
   title: string;
-  volume: string;
-  issue: string;
+  volume?: string;
+  issue_number?: number;
   date: string;
   articleCount?: number;
   pdf_url?: string;
 }
 
-export const IssueCard = ({ id, title, volume, issue, date, articleCount, pdf_url }: IssueCardProps) => {
+export const IssueCard = ({ id, title, volume, issue_number, date, articleCount, pdf_url }: IssueCardProps) => {
   const handleDownload = async () => {
     if (!pdf_url) {
       toast.error("Le PDF n'est pas encore disponible");
@@ -50,7 +50,9 @@ export const IssueCard = ({ id, title, volume, issue, date, articleCount, pdf_ur
               {title}
             </CardTitle>
             <div className="flex items-center gap-1 text-xs text-gray-500">
-              <span className="whitespace-nowrap">{volume} • {issue}</span>
+              <span className="whitespace-nowrap">
+                {volume} • Issue {issue_number}
+              </span>
               <span className="text-primary">|</span>
               <Calendar className="h-3 w-3" />
               <span>{new Date(date).toLocaleDateString()}</span>
