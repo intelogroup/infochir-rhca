@@ -28,20 +28,26 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check initial session
+    let mounted = true;
+
     const checkSession = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) throw error;
-        setIsAuthenticated(!!session);
+        if (mounted) {
+          setIsAuthenticated(!!session);
+          setIsLoading(false);
+        }
       } catch (error) {
         console.error("Session check error:", error);
-        setIsAuthenticated(false);
-      } finally {
-        setIsLoading(false);
+        if (mounted) {
+          setIsAuthenticated(false);
+          setIsLoading(false);
+        }
       }
     };
 
+    // Initial session check
     checkSession();
 
     // Listen for auth changes
@@ -49,22 +55,23 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
       console.log("Auth state changed:", event, !!session);
       
       if (event === 'SIGNED_OUT') {
-        setIsAuthenticated(false);
+        if (mounted) setIsAuthenticated(false);
       } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        // Verify the session is valid
-        const { data, error } = await supabase.auth.getUser();
-        if (error) {
+        try {
+          const { data, error } = await supabase.auth.getUser();
+          if (error) throw error;
+          if (mounted) setIsAuthenticated(!!data.user);
+        } catch (error) {
           console.error("Error getting user:", error);
-          setIsAuthenticated(false);
-        } else {
-          setIsAuthenticated(!!data.user);
+          if (mounted) setIsAuthenticated(false);
         }
       }
       
-      setIsLoading(false);
+      if (mounted) setIsLoading(false);
     });
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, []);
