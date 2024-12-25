@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { MonthGroup } from "./MonthGroup";
 import { YearGroup as YearGroupType } from "./types";
 
@@ -6,7 +7,7 @@ interface YearGroupProps {
   monthNames: string[];
 }
 
-export const YearGroup = ({ yearGroup, monthNames }: YearGroupProps) => {
+export const YearGroup = memo(({ yearGroup, monthNames }: YearGroupProps) => {
   return (
     <div key={yearGroup.year}>
       <h2 className="text-2xl font-bold mb-4">{yearGroup.year}</h2>
@@ -21,4 +22,6 @@ export const YearGroup = ({ yearGroup, monthNames }: YearGroupProps) => {
       </div>
     </div>
   );
-};
+});
+
+YearGroup.displayName = "YearGroup";

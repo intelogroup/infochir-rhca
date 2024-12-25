@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { DiagnosticCard } from "./DiagnosticCard";
 import { MonthGroup as MonthGroupType } from "./types";
 
@@ -6,7 +7,7 @@ interface MonthGroupProps {
   monthName: string;
 }
 
-export const MonthGroup = ({ monthGroup, monthName }: MonthGroupProps) => {
+export const MonthGroup = memo(({ monthGroup, monthName }: MonthGroupProps) => {
   return (
     <div key={monthGroup.month}>
       <h3 className="text-lg font-semibold mb-3 text-gray-600">
@@ -22,4 +23,6 @@ export const MonthGroup = ({ monthGroup, monthName }: MonthGroupProps) => {
       </div>
     </div>
   );
-};
+});
+
+MonthGroup.displayName = "MonthGroup";
