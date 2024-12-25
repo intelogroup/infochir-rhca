@@ -11,23 +11,24 @@ const AuthPage = () => {
   const { user, isLoading } = useAuth();
 
   useEffect(() => {
-    if (user) {
-      navigate("/");
-    }
-  }, [user, navigate]);
+    // Check if user is authenticated and redirect
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate("/");
+      }
+    };
+    
+    checkAuth();
+  }, [navigate]);
 
-  // Only show loading spinner while checking auth status
+  // Show loading spinner only during initial auth check
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner />
       </div>
     );
-  }
-
-  // Don't render anything if user is authenticated (will redirect)
-  if (user) {
-    return null;
   }
 
   // Render auth form for non-authenticated users
