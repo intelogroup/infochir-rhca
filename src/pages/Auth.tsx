@@ -38,8 +38,6 @@ const AuthPage = () => {
         toast.info('Signed out');
       } else if (event === 'USER_UPDATED') {
         toast.success('User profile updated');
-      } else if (event === 'USER_DELETED') {
-        toast.error('User account deleted');
       }
     });
 
@@ -51,6 +49,12 @@ const AuthPage = () => {
   if (isLoading) {
     return <LoadingSpinner />;
   }
+
+  const handleAuthError = (error: Error) => {
+    console.error('Auth error:', error);
+    setAuthError(error.message);
+    toast.error('Authentication error occurred');
+  };
 
   return (
     <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center px-4">
@@ -98,11 +102,6 @@ const AuthPage = () => {
             providers={[]}
             view="sign_in"
             redirectTo={window.location.origin}
-            onError={(error) => {
-              console.error('Auth error:', error);
-              setAuthError(error.message);
-              toast.error('Authentication error occurred');
-            }}
           />
           
           {process.env.NODE_ENV === 'development' && (
