@@ -24,6 +24,25 @@ export const DiagnosticGrid = () => {
     selectedSpecialty
   );
 
+  // Calculate dynamic height based on viewport
+  const calculateListHeight = () => {
+    const viewportHeight = window.innerHeight;
+    const topOffset = 200; // Account for header, search, and padding
+    return viewportHeight - topOffset;
+  };
+
+  const [listHeight, setListHeight] = useState(calculateListHeight());
+
+  // Update height on window resize
+  useCallback(() => {
+    const handleResize = () => {
+      setListHeight(calculateListHeight());
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const Row = useCallback(({ index, style }: { index: number; style: React.CSSProperties }) => {
     const yearGroup = filteredAndGroupedCases[index];
     return (
@@ -48,7 +67,7 @@ export const DiagnosticGrid = () => {
 
       <div className="h-[calc(100vh-200px)] overflow-hidden rounded-xl bg-white/95 backdrop-blur-xs p-6 border border-gray-100">
         <List
-          height={800}
+          height={listHeight}
           itemCount={filteredAndGroupedCases.length}
           itemSize={650}
           width="100%"
