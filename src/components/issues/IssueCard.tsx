@@ -24,7 +24,6 @@ export const IssueCard = ({ id, title, volume, issue, date, articleCount, pdfUrl
     try {
       console.log('Attempting to download:', pdfUrl);
       
-      // Download the file directly using the storage download method
       const { data, error } = await supabase.storage
         .from('articles')
         .download(pdfUrl);
@@ -35,12 +34,6 @@ export const IssueCard = ({ id, title, volume, issue, date, articleCount, pdfUrl
         return;
       }
       
-      if (!(data instanceof Blob)) {
-        console.error('Invalid data format:', typeof data);
-        toast.error("Format de fichier invalide");
-        return;
-      }
-
       // Create a download link
       const url = window.URL.createObjectURL(data);
       const a = document.createElement('a');
