@@ -14,6 +14,7 @@ const AuthPage = () => {
         const { data: { user }, error } = await supabase.auth.getUser();
         if (error) {
           console.error("Error checking user:", error);
+          toast.error("Error checking authentication status");
           return;
         }
         if (user) {
@@ -21,6 +22,7 @@ const AuthPage = () => {
         }
       } catch (error) {
         console.error("Error checking user:", error);
+        toast.error("Error checking authentication status");
       }
     };
     checkUser();
@@ -36,6 +38,10 @@ const AuthPage = () => {
         toast.success("Profile updated successfully!");
       } else if (event === "PASSWORD_RECOVERY") {
         toast.info("Password recovery email sent!");
+      } else if (event === "USER_DELETED") {
+        toast.info("Account deleted successfully");
+      } else if (event === "SIGNED_UP") {
+        toast.success("Account created successfully! Please check your email for verification.");
       }
     });
 
@@ -86,9 +92,9 @@ const AuthPage = () => {
                 },
                 sign_up: {
                   email_label: 'Email',
-                  password_label: 'Password',
-                  button_label: 'Sign up',
-                  loading_button_label: 'Signing up...',
+                  password_label: 'Create a password (minimum 6 characters)',
+                  button_label: 'Create account',
+                  loading_button_label: 'Creating account...',
                   social_provider_text: 'Sign up with {{provider}}',
                   link_text: 'Don\'t have an account? Sign up',
                 },
