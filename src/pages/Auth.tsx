@@ -10,6 +10,7 @@ const AuthPage = () => {
   const navigate = useNavigate();
   const { user, isLoading } = useAuth();
 
+  // Redirect to home if already authenticated
   useEffect(() => {
     if (user) {
       navigate("/");
@@ -17,23 +18,31 @@ const AuthPage = () => {
   }, [user, navigate]);
 
   if (isLoading) {
-    return <LoadingSpinner />;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center px-4">
-      <div className="max-w-md w-full">
-        <div className="text-center mb-8">
+    <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-8">
+        <div className="text-center">
           <img 
             src="/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png"
             alt="Logo"
-            className="h-12 w-12 mx-auto mb-4"
+            className="mx-auto h-16 w-16 object-contain"
           />
-          <h1 className="text-2xl font-bold text-gray-900">Welcome to INFOCHIR</h1>
-          <p className="text-gray-600 mt-2">Please sign in to continue</p>
+          <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900">
+            Welcome to INFOCHIR
+          </h2>
+          <p className="mt-2 text-sm text-gray-600">
+            Please sign in to access the platform
+          </p>
         </div>
 
-        <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+        <div className="bg-white shadow-sm border border-gray-200 rounded-xl p-6 space-y-6">
           <Auth
             supabaseClient={supabase}
             appearance={{
@@ -47,9 +56,10 @@ const AuthPage = () => {
                 },
               },
               className: {
-                container: 'w-full',
-                button: 'w-full px-4 py-2 rounded-lg',
-                input: 'rounded-lg',
+                container: 'space-y-4',
+                button: 'w-full px-4 py-2.5 rounded-lg font-medium',
+                input: 'rounded-lg border-gray-300',
+                label: 'text-sm font-medium text-gray-700',
               },
             }}
             providers={[]}
