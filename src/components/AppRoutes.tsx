@@ -13,17 +13,26 @@ import { useAuthState } from "@/hooks/useAuthState";
 
 export const AppRoutes = () => {
   const location = useLocation();
-  const { isAuthenticated } = useAuthState();
+  const { isAuthenticated, isLoading } = useAuthState();
   const hideNavbarPaths = ['/igm', '/rhca', '/index-medicus', '/adc', '/auth', '/admin'];
   const showNavbar = !hideNavbarPaths.includes(location.pathname);
 
-  // Redirect to auth page if not authenticated and not already on auth page
-  if (!isAuthenticated && location.pathname !== '/auth') {
+  // Show loading spinner while checking auth state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  // Only redirect if not loading and not authenticated
+  if (!isLoading && !isAuthenticated && location.pathname !== '/auth') {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
-  // Redirect to home if authenticated and trying to access auth page
-  if (isAuthenticated && location.pathname === '/auth') {
+  // Only redirect if not loading and authenticated
+  if (!isLoading && isAuthenticated && location.pathname === '/auth') {
     return <Navigate to="/" replace />;
   }
 
