@@ -27,7 +27,7 @@ const AuthPage = () => {
 
     checkSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event, session?.user?.email);
       
       if (event === 'SIGNED_IN' && session) {
@@ -37,6 +37,10 @@ const AuthPage = () => {
         toast.info("Signed out");
       } else if (event === 'USER_UPDATED') {
         console.log("User updated");
+      } else if (event === 'PASSWORD_RECOVERY') {
+        toast.info("Password recovery email sent");
+      } else if (event === 'USER_DELETED') {
+        toast.error("Account deleted");
       }
     });
 
@@ -90,6 +94,10 @@ const AuthPage = () => {
             view="sign_in"
             redirectTo={window.location.origin}
             showLinks={false}
+            onError={(error) => {
+              console.error("Auth error:", error);
+              toast.error(error.message || "Authentication failed");
+            }}
           />
         </div>
       </div>
