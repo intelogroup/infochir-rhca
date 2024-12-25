@@ -75,16 +75,6 @@ const AuthPage = () => {
             }}
             providers={[]}
             redirectTo={window.location.origin}
-            onError={(error) => {
-              console.error("Auth error:", error);
-              if (error.message.includes("Invalid login credentials")) {
-                toast.error("Invalid email or password. Please try again.");
-              } else if (error.message.includes("Email not confirmed")) {
-                toast.error("Please confirm your email address before signing in.");
-              } else {
-                toast.error(error.message);
-              }
-            }}
             localization={{
               variables: {
                 sign_in: {
@@ -92,12 +82,26 @@ const AuthPage = () => {
                   password_label: 'Password',
                   button_label: 'Sign in',
                   loading_button_label: 'Signing in...',
+                  social_provider_text: 'Sign in with {{provider}}',
+                  link_text: 'Already have an account? Sign in',
                 },
                 sign_up: {
                   email_label: 'Email',
                   password_label: 'Password',
                   button_label: 'Sign up',
                   loading_button_label: 'Signing up...',
+                  social_provider_text: 'Sign up with {{provider}}',
+                  link_text: 'Don\'t have an account? Sign up',
+                },
+                magic_link: {
+                  button_label: 'Send magic link',
+                  loading_button_label: 'Sending magic link...',
+                },
+                forgotten_password: {
+                  link_text: 'Forgot password?',
+                  button_label: 'Send reset password instructions',
+                  loading_button_label: 'Please wait...',
+                  confirmation_text: 'Check your email for the password reset link',
                 },
               },
             }}
