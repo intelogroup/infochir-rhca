@@ -33,16 +33,13 @@ const AuthPage = () => {
         toast.success("Profile updated successfully!");
       } else if (event === "PASSWORD_RECOVERY") {
         toast.info("Password recovery email sent!");
-      } else if (event === "USER_DELETED") {
-        toast.error("Account deleted successfully!");
-        navigate("/auth");
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const handleAuthError = (error: Error) => {
+  const handleError = (error: Error) => {
     const errorMessage = error.message;
     if (errorMessage.includes("User already registered")) {
       toast.error("This email is already registered. Please sign in instead.");
@@ -85,7 +82,6 @@ const AuthPage = () => {
             }}
             providers={[]}
             redirectTo={window.location.origin}
-            onError={handleAuthError}
             localization={{
               variables: {
                 sign_in: {
