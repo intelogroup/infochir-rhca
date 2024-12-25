@@ -23,9 +23,18 @@ const queryClient = new QueryClient({
   },
 });
 
-const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+interface AuthState {
+  isAuthenticated: boolean;
+  isAdmin: boolean;
+  isLoading: boolean;
+}
+
+const useAuthState = () => {
+  const [authState, setAuthState] = useState<AuthState>({
+    isAuthenticated: false,
+    isAdmin: false,
+    isLoading: true,
+  });
 
   useEffect(() => {
     let mounted = true;
@@ -34,40 +43,67 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) throw error;
-        if (mounted) {
-          setIsAuthenticated(!!session);
-          setIsLoading(false);
+
+        if (mounted && session) {
+          // Check if user is admin
+          const { data: adminData } = await supabase
+            .from('admin_users')
+            .select('*')
+            .eq('user_id', session.user.id)
+            .single();
+
+          setAuthState({
+            isAuthenticated: true,
+            isAdmin: !!adminData,
+            isLoading: false,
+          });
+        } else if (mounted) {
+          setAuthState({
+            isAuthenticated: false,
+            isAdmin: false,
+            isLoading: false,
+          });
         }
       } catch (error) {
         console.error("Session check error:", error);
         if (mounted) {
-          setIsAuthenticated(false);
-          setIsLoading(false);
+          setAuthState({
+            isAuthenticated: false,
+            isAdmin: false,
+            isLoading: false,
+          });
         }
       }
     };
 
-    // Initial session check
     checkSession();
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event, !!session);
-      
       if (event === 'SIGNED_OUT') {
-        if (mounted) setIsAuthenticated(false);
+        if (mounted) {
+          setAuthState({
+            isAuthenticated: false,
+            isAdmin: false,
+            isLoading: false,
+          });
+        }
       } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        try {
-          const { data, error } = await supabase.auth.getUser();
-          if (error) throw error;
-          if (mounted) setIsAuthenticated(!!data.user);
-        } catch (error) {
-          console.error("Error getting user:", error);
-          if (mounted) setIsAuthenticated(false);
+        if (session) {
+          const { data: adminData } = await supabase
+            .from('admin_users')
+            .select('*')
+            .eq('user_id', session.user.id)
+            .single();
+
+          if (mounted) {
+            setAuthState({
+              isAuthenticated: true,
+              isAdmin: !!adminData,
+              isLoading: false,
+            });
+          }
         }
       }
-      
-      if (mounted) setIsLoading(false);
     });
 
     return () => {
@@ -75,6 +111,12 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
       subscription.unsubscribe();
     };
   }, []);
+
+  return authState;
+};
+
+const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated, isLoading } = useAuthState();
 
   if (isLoading) {
     return (
@@ -85,6 +127,29 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   }
 
   return isAuthenticated ? <>{children}</> : <Navigate to="/auth" />;
+};
+
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated, isAdmin, isLoading } = useAuthState();
+  const location = useLocation();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/auth" state={{ from: location }} replace />;
+  }
+
+  if (!isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
 };
 
 const AppContent = () => {
@@ -98,7 +163,7 @@ const AppContent = () => {
       <Routes>
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/" element={<PrivateRoute><Index /></PrivateRoute>} />
-        <Route path="/admin" element={<PrivateRoute><Admin /></PrivateRoute>} />
+        <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
         <Route path="/rhca" element={<PrivateRoute><RHCA /></PrivateRoute>} />
         <Route path="/igm" element={<PrivateRoute><IGM /></PrivateRoute>} />
         <Route path="/adc" element={<PrivateRoute><ADC /></PrivateRoute>} />
