@@ -31,14 +31,20 @@ export const IssuesGrid = () => {
 
       if (error) throw error;
 
-      setIssues(articles.map(article => ({
+      // Filter for reanimation articles (assuming they have "Réanimation" in the title)
+      const reanimationArticles = articles.filter(article => 
+        article.title.toLowerCase().includes('réanimation') ||
+        article.title.toLowerCase().includes('reanimation')
+      );
+
+      setIssues(reanimationArticles.map(article => ({
         id: article.id,
         title: article.title,
         volume: article.volume,
-        issue: `Issue ${article.issue_number}`,
+        issue_number: article.issue_number,
         date: article.date,
         articleCount: article.article_count,
-        pdfUrl: article.pdf_url
+        pdf_url: article.pdf_url
       })));
     } catch (error) {
       console.error('Error fetching issues:', error);
@@ -58,9 +64,15 @@ export const IssuesGrid = () => {
 
   return (
     <div className="space-y-4">
-      {issues.map((issue) => (
-        <IssueCard key={issue.id} {...issue} />
-      ))}
+      {issues.length === 0 ? (
+        <div className="text-center py-8 text-gray-500">
+          Aucun article de réanimation disponible pour le moment
+        </div>
+      ) : (
+        issues.map((issue) => (
+          <IssueCard key={issue.id} {...issue} />
+        ))
+      )}
     </div>
   );
 };
