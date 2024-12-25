@@ -1,66 +1,86 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { ArticlesList } from "./ArticleList";
-import { ArticleForm } from "./ArticleForm";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { ArticleFormDialog } from "./ArticleFormDialog";
+import { ArticlesTable } from "./ArticlesTable";
+import { toast } from "sonner";
+
+interface Article {
+  id: string;
+  title: string;
+  abstract: string;
+  date: string;
+  volume?: string;
+  issue_number?: number;
+  article_count?: number;
+  source: "RHCA" | "IGM" | "ATLAS";
+  pdf_url: string | null;
+}
 
 export const AdminPanel = () => {
-  const [articles, setArticles] = useState([]);
+  const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingArticle, setEditingArticle] = useState<Article | null>(null);
 
   const fetchArticles = async () => {
-    const { data, error } = await supabase
-      .from("articles")
-      .select("*")
-      .order("date", { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from("articles")
+        .select("*")
+        .eq("source", "RHCA")
+        .order("date", { ascending: false });
 
-    if (error) {
+      if (error) throw error;
+      setArticles(data || []);
+    } catch (error) {
       console.error("Error fetching articles:", error);
-      return;
+      toast.error("Error loading articles");
+    } finally {
+      setIsLoading(false);
     }
-
-    setArticles(data);
-    setIsLoading(false);
   };
 
   useEffect(() => {
     fetchArticles();
   }, []);
 
+  const handleEdit = (article: Article) => {
+    setEditingArticle(article);
+    setIsDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+    setEditingArticle(null);
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Articles</h1>
+          <h2 className="text-2xl font-bold text-gray-900">RHCA Admin Panel</h2>
           <p className="text-sm text-gray-500">Manage your articles here</p>
         </div>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Article
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New Article</DialogTitle>
-            </DialogHeader>
-            <ArticleForm onSuccess={fetchArticles} />
-          </DialogContent>
-        </Dialog>
+        <Button onClick={() => setIsDialogOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          Add Article
+        </Button>
       </div>
-      <ArticlesList 
-        articles={articles} 
-        isLoading={isLoading} 
-        onUpdate={fetchArticles} 
+
+      <ArticlesTable
+        articles={articles}
+        onEdit={handleEdit}
+        onUpdate={fetchArticles}
+        isLoading={isLoading}
+      />
+
+      <ArticleFormDialog
+        article={editingArticle}
+        isOpen={isDialogOpen}
+        onClose={handleCloseDialog}
+        onSuccess={fetchArticles}
       />
     </div>
   );
