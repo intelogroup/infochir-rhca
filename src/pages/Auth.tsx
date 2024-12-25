@@ -1,51 +1,38 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
+import { useAuthState } from "@/hooks/useAuthState";
 
 const AuthPage = () => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(true);
+  const location = useLocation();
+  const { isAuthenticated, isLoading } = useAuthState();
+  const from = (location.state as any)?.from?.pathname || "/";
 
   useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) throw error;
-        if (session) {
-          navigate("/");
-        }
-      } catch (error) {
-        console.error("Session check error:", error);
-        toast.error("Error checking session");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    if (isAuthenticated && !isLoading) {
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, isLoading, navigate, from]);
 
-    // Check current session
-    checkSession();
-
-    // Listen for auth changes
+  useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event, !!session);
-      
       if (event === 'SIGNED_IN') {
         toast.success("Successfully signed in!");
-        navigate("/");
+        navigate(from, { replace: true });
       } else if (event === 'SIGNED_OUT') {
         toast.info("Signed out");
-      } else if (event === 'USER_UPDATED') {
-        console.log("User updated");
+        navigate('/auth', { replace: true });
       }
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [navigate, from]);
 
   if (isLoading) {
     return (
@@ -88,7 +75,6 @@ const AuthPage = () => {
               },
             }}
             providers={[]}
-            view="sign_in"
             redirectTo={window.location.origin}
           />
         </div>
