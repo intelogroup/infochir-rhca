@@ -90,45 +90,54 @@ export type Database = {
       articles: {
         Row: {
           abstract: string
+          article_count: number | null
           category_id: number | null
           citations: number | null
           created_at: string | null
           date: string
           id: string
           image_url: string | null
+          issue_number: number | null
           pdf_url: string | null
           source: Database["public"]["Enums"]["article_source"]
           title: string
           updated_at: string | null
           views: number | null
+          volume: string | null
         }
         Insert: {
           abstract: string
+          article_count?: number | null
           category_id?: number | null
           citations?: number | null
           created_at?: string | null
           date?: string
           id?: string
           image_url?: string | null
+          issue_number?: number | null
           pdf_url?: string | null
           source: Database["public"]["Enums"]["article_source"]
           title: string
           updated_at?: string | null
           views?: number | null
+          volume?: string | null
         }
         Update: {
           abstract?: string
+          article_count?: number | null
           category_id?: number | null
           citations?: number | null
           created_at?: string | null
           date?: string
           id?: string
           image_url?: string | null
+          issue_number?: number | null
           pdf_url?: string | null
           source?: Database["public"]["Enums"]["article_source"]
           title?: string
           updated_at?: string | null
           views?: number | null
+          volume?: string | null
         }
         Relationships: [
           {
