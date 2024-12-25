@@ -1,102 +1,22 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { User, AuthChangeEvent } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import type { AuthError, User, AuthChangeEvent } from "@supabase/supabase-js";
 
 interface AuthContextType {
   user: User | null;
-  isLoading: boolean;
   isAuthenticated: boolean;
+  isAdmin: boolean;
+  isLoading: boolean;
   error: Error | null;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  isLoading: true,
   isAuthenticated: false,
+  isAdmin: false,
+  isLoading: true,
   error: null,
 });
-
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
-  useEffect(() => {
-    let mounted = true;
-
-    const checkSession = async () => {
-      try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        if (sessionError) throw sessionError;
-        
-        if (mounted) {
-          setUser(session?.user ?? null);
-          setError(null);
-        }
-      } catch (err) {
-        console.error("Error checking session:", err);
-        if (mounted) {
-          setError(err instanceof Error ? err : new Error('Failed to check authentication status'));
-          toast.error("Failed to check authentication status");
-        }
-      } finally {
-        if (mounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    checkSession();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session) => {
-      console.log("Auth state changed:", event, session?.user?.email);
-      
-      if (mounted) {
-        setUser(session?.user ?? null);
-        setError(null);
-
-        switch (event) {
-          case "SIGNED_IN":
-            toast.success(`Welcome ${session?.user.email}`);
-            break;
-          case "SIGNED_OUT":
-            toast.info("Signed out");
-            break;
-          case "USER_UPDATED":
-            toast.success("Profile updated");
-            break;
-          case "USER_DELETED":
-            toast.info("Account deleted");
-            break;
-          case "PASSWORD_RECOVERY":
-            toast.info("Password recovery email sent");
-            break;
-          default:
-            break;
-        }
-      }
-    });
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  return (
-    <AuthContext.Provider 
-      value={{ 
-        user, 
-        isLoading, 
-        isAuthenticated: !!user,
-        error,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
-};
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -104,4 +24,77 @@ export const useAuth = () => {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
+};
+
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    const checkAdminStatus = async (userId: string) => {
+      try {
+        const { data, error } = await supabase
+          .from("admin_users")
+          .select("is_super_admin")
+          .eq("user_id", userId)
+          .single();
+
+        if (error) throw error;
+        setIsAdmin(!!data?.is_super_admin);
+      } catch (err) {
+        console.error("Error checking admin status:", err);
+        setError(err instanceof Error ? err : new Error("Failed to check admin status"));
+      }
+    };
+
+    const handleAuthChange = async (event: AuthChangeEvent, session: any) => {
+      setIsLoading(true);
+      try {
+        if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "TOKEN_REFRESHED") {
+          const currentUser = session?.user ?? null;
+          setUser(currentUser);
+          if (currentUser) {
+            await checkAdminStatus(currentUser.id);
+          } else {
+            setIsAdmin(false);
+          }
+        }
+      } catch (err) {
+        console.error("Auth change error:", err);
+        setError(err instanceof Error ? err : new Error("Authentication error"));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // Initial session check
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        checkAdminStatus(session.user.id);
+      }
+      setIsLoading(false);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthChange);
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  return (
+    <AuthContext.Provider value={{
+      user,
+      isAuthenticated: !!user,
+      isAdmin,
+      isLoading,
+      error,
+    }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
