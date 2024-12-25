@@ -11,13 +11,17 @@ const AuthPage = () => {
   useEffect(() => {
     // Check if user is already signed in
     const checkUser = async () => {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      if (error) {
+      try {
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (error) {
+          console.error("Error checking user:", error);
+          return;
+        }
+        if (user) {
+          navigate("/");
+        }
+      } catch (error) {
         console.error("Error checking user:", error);
-        return;
-      }
-      if (user) {
-        navigate("/");
       }
     };
     checkUser();
@@ -38,17 +42,6 @@ const AuthPage = () => {
 
     return () => subscription.unsubscribe();
   }, [navigate]);
-
-  const handleError = (error: Error) => {
-    const errorMessage = error.message;
-    if (errorMessage.includes("User already registered")) {
-      toast.error("This email is already registered. Please sign in instead.");
-    } else if (errorMessage.includes("Invalid login credentials")) {
-      toast.error("Invalid email or password. Please try again.");
-    } else {
-      toast.error(errorMessage);
-    }
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -82,6 +75,16 @@ const AuthPage = () => {
             }}
             providers={[]}
             redirectTo={window.location.origin}
+            onError={(error) => {
+              console.error("Auth error:", error);
+              if (error.message.includes("Invalid login credentials")) {
+                toast.error("Invalid email or password. Please try again.");
+              } else if (error.message.includes("Email not confirmed")) {
+                toast.error("Please confirm your email address before signing in.");
+              } else {
+                toast.error(error.message);
+              }
+            }}
             localization={{
               variables: {
                 sign_in: {
