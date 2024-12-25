@@ -19,21 +19,36 @@ export const IssuesGrid = () => {
     try {
       const { data: articles, error } = await supabase
         .from('articles')
-        .select('*')
+        .select(`
+          *,
+          category:categories(name),
+          article_authors(
+            author:authors(name)
+          ),
+          article_tags(
+            tag:tags(name)
+          )
+        `)
         .order('date', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching articles:', error);
+        toast.error("Erreur lors du chargement des articles");
+        return;
+      }
 
       // Transform the articles into the Issue format
       const transformedArticles = articles.map(article => ({
         id: article.id,
         title: article.title,
-        volume: "Volume " + (new Date(article.date).getFullYear() - 1999),
-        issue: "Issue " + (new Date(article.date).getMonth() + 1),
+        volume: article.category?.name ? `Volume ${article.category.name}` : undefined,
+        issue: `Issue ${new Date(article.date).getMonth() + 1}`,
         date: new Date(article.date).toISOString(),
         abstract: article.abstract,
         pdfUrl: article.pdf_url,
-        articleCount: 1
+        articleCount: 1,
+        authors: article.article_authors?.map((aa: any) => aa.author.name) || [],
+        tags: article.article_tags?.map((at: any) => at.tag.name) || []
       }));
 
       setFilteredIssues(transformedArticles);
