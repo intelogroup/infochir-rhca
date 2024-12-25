@@ -26,21 +26,13 @@ export const AppRoutes = () => {
     );
   }
 
-  // Only redirect if not loading and not authenticated
-  if (!isLoading && !isAuthenticated && location.pathname !== '/auth') {
-    return <Navigate to="/auth" state={{ from: location }} replace />;
-  }
-
-  // Only redirect if not loading and authenticated
-  if (!isLoading && isAuthenticated && location.pathname === '/auth') {
-    return <Navigate to="/" replace />;
-  }
-
   return (
     <>
       {showNavbar && <Navbar />}
       <Routes>
-        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/auth" element={
+          isAuthenticated ? <Navigate to="/" replace /> : <AuthPage />
+        } />
         <Route path="/" element={<PrivateRoute><Index /></PrivateRoute>} />
         <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
         <Route path="/rhca" element={<PrivateRoute><RHCA /></PrivateRoute>} />

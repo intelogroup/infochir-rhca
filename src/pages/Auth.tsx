@@ -13,15 +13,21 @@ const AuthPage = () => {
   const from = (location.state as any)?.from?.pathname || "/";
 
   useEffect(() => {
-    if (isAuthenticated && !isLoading) {
-      navigate(from, { replace: true });
-    }
-  }, [isAuthenticated, isLoading, navigate, from]);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN') {
+        toast.success("Successfully signed in!");
+        navigate(from, { replace: true });
+      } else if (event === 'SIGNED_OUT') {
+        toast.info("Signed out");
+        navigate('/auth', { replace: true });
+      }
+    });
 
-  // Add console logs to help debug the issue
-  console.log("Auth state:", { isAuthenticated, isLoading });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate, from]);
 
-  // Show loading spinner only briefly
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -30,8 +36,8 @@ const AuthPage = () => {
     );
   }
 
-  // If already authenticated, don't show the auth form
   if (isAuthenticated) {
+    navigate(from, { replace: true });
     return null;
   }
 
