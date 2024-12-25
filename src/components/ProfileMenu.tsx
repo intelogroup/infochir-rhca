@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { AvatarUpload } from "./profile/AvatarUpload";
 import { NameEditor } from "./profile/NameEditor";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 interface Profile {
   full_name: string | null;
@@ -90,12 +91,10 @@ export const ProfileMenu = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <AvatarUpload
-            userId={userId}
-            avatarUrl={profile.avatar_url}
-            fullName={profile.full_name}
-            onAvatarUpdate={(url) => setProfile(prev => prev ? { ...prev, avatar_url: url } : null)}
-          />
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={profile.avatar_url || undefined} alt={profile.full_name || "User avatar"} />
+            <AvatarFallback>{(profile.full_name?.[0] || "A").toUpperCase()}</AvatarFallback>
+          </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
@@ -105,6 +104,12 @@ export const ProfileMenu = () => {
               userId={userId}
               initialName={profile.full_name || ""}
               onNameUpdate={(name) => setProfile(prev => prev ? { ...prev, full_name: name } : null)}
+            />
+            <AvatarUpload
+              userId={userId}
+              avatarUrl={profile.avatar_url}
+              fullName={profile.full_name}
+              onAvatarUpdate={(url) => setProfile(prev => prev ? { ...prev, avatar_url: url } : null)}
             />
           </div>
         </DropdownMenuLabel>
