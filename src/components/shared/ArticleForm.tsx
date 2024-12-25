@@ -6,12 +6,24 @@ import { Textarea } from "@/components/ui/textarea";
 import { PDFUploader } from "@/components/pdf/PDFUploader";
 import { Loader2 } from "lucide-react";
 import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { articleFormSchema, ArticleFormValues } from "@/lib/validations/article";
+import { toast } from "sonner";
 
 interface ArticleFormProps {
   article?: Article | null;
@@ -26,112 +38,142 @@ export const ArticleForm = ({
   isLoading,
   sources = ["RHCA", "IGM", "ATLAS", "ADC"]
 }: ArticleFormProps) => {
-  const [title, setTitle] = useState(article?.title || "");
-  const [abstract, setAbstract] = useState(article?.abstract || "");
-  const [volume, setVolume] = useState(article?.volume || "");
-  const [issueNumber, setIssueNumber] = useState(article?.issue_number?.toString() || "");
-  const [source, setSource] = useState<ArticleSource>(article?.source || sources[0]);
+  const form = useForm<ArticleFormValues>({
+    resolver: zodResolver(articleFormSchema),
+    defaultValues: {
+      title: article?.title || "",
+      abstract: article?.abstract || "",
+      volume: article?.volume || "",
+      issueNumber: article?.issue_number || undefined,
+      source: article?.source || sources[0],
+    },
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await onSubmit({
-      title,
-      abstract,
-      volume,
-      issue_number: parseInt(issueNumber),
-      source,
-    });
+  const handleSubmit = async (values: ArticleFormValues) => {
+    try {
+      await onSubmit({
+        title: values.title,
+        abstract: values.abstract,
+        volume: values.volume,
+        issue_number: values.issueNumber,
+        source: values.source,
+      });
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast.error("Failed to save article");
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label htmlFor="title" className="block text-sm font-medium mb-1">
-          Title
-        </label>
-        <Input
-          id="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Title</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
-      
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="volume" className="block text-sm font-medium mb-1">
-            Volume
-          </label>
-          <Input
-            id="volume"
-            value={volume}
-            onChange={(e) => setVolume(e.target.value)}
-            required
+        
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="volume"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Volume</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="issueNumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Issue Number</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="number" 
+                    {...field} 
+                    onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
         </div>
-        <div>
-          <label htmlFor="issueNumber" className="block text-sm font-medium mb-1">
-            Issue Number
-          </label>
-          <Input
-            id="issueNumber"
-            type="number"
-            value={issueNumber}
-            onChange={(e) => setIssueNumber(e.target.value)}
-            required
-          />
-        </div>
-      </div>
 
-      <div>
-        <label htmlFor="source" className="block text-sm font-medium mb-1">
-          Source
-        </label>
-        <Select value={source} onValueChange={(value) => setSource(value as ArticleSource)}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select source" />
-          </SelectTrigger>
-          <SelectContent>
-            {sources.map((s) => (
-              <SelectItem key={s} value={s}>
-                {s}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div>
-        <label htmlFor="abstract" className="block text-sm font-medium mb-1">
-          Abstract
-        </label>
-        <Textarea
-          id="abstract"
-          value={abstract}
-          onChange={(e) => setAbstract(e.target.value)}
-          required
+        <FormField
+          control={form.control}
+          name="source"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Source</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select source" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {sources.map((source) => (
+                    <SelectItem key={source} value={source}>
+                      {source}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
 
-      <div>
-        <label className="block text-sm font-medium mb-1">
-          PDF Upload
-        </label>
-        <PDFUploader />
-      </div>
+        <FormField
+          control={form.control}
+          name="abstract"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Abstract</FormLabel>
+              <FormControl>
+                <Textarea {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      <Button type="submit" disabled={isLoading} className="w-full">
-        {isLoading ? (
-          <>
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            Saving...
-          </>
-        ) : article ? (
-          "Update Article"
-        ) : (
-          "Add Article"
-        )}
-      </Button>
-    </form>
+        <div>
+          <label className="block text-sm font-medium mb-1">
+            PDF Upload
+          </label>
+          <PDFUploader />
+        </div>
+
+        <Button type="submit" disabled={isLoading} className="w-full">
+          {isLoading ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Saving...
+            </>
+          ) : article ? (
+            "Update Article"
+          ) : (
+            "Add Article"
+          )}
+        </Button>
+      </form>
+    </Form>
   );
 };

@@ -21,7 +21,7 @@ export const ProductCard = ({
               className="w-full h-full object-contain" 
             />
           </div>
-        ) : (
+        ) : Icon && (
           <div className="relative h-16 w-16 flex items-center justify-center rounded-2xl bg-primary/5 transition-transform duration-300 group-hover:scale-110">
             <Icon className="text-primary h-8 w-8" />
           </div>
