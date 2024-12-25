@@ -24,9 +24,7 @@ const AuthPage = () => {
     );
   }
 
-  if (user) {
-    return null;
-  }
+  if (user) return null;
 
   return (
     <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center p-4">

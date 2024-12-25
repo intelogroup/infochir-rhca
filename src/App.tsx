@@ -19,19 +19,19 @@ const queryClient = new QueryClient({
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <Suspense fallback={<LoadingSpinner />}>
-      <BrowserRouter>
-        <AuthProvider>
-          <TooltipProvider>
+    <BrowserRouter>
+      <AuthProvider>
+        <TooltipProvider>
+          <Suspense fallback={<LoadingSpinner />}>
             <div className="min-h-screen bg-background">
               <Toaster />
               <Sonner />
               <AppRoutes />
             </div>
-          </TooltipProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </Suspense>
+          </Suspense>
+        </TooltipProvider>
+      </AuthProvider>
+    </BrowserRouter>
   </QueryClientProvider>
 );
 
