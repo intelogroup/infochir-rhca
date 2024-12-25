@@ -5,7 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { LoadingSpinner } from "@/components/auth/LoadingSpinner";
-import { toast } from "sonner";
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -16,18 +15,6 @@ const AuthPage = () => {
       navigate("/");
     }
   }, [user, navigate]);
-
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN') {
-        toast.success('Successfully signed in!');
-      } else if (event === 'SIGNED_OUT') {
-        toast.info('Signed out');
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -66,7 +53,6 @@ const AuthPage = () => {
               },
             }}
             providers={[]}
-            view="sign_in"
             redirectTo={window.location.origin}
           />
         </div>

@@ -26,14 +26,10 @@ export const useAuthManagement = () => {
         .eq('user_id', userId)
         .maybeSingle();
 
-      if (adminError && adminError.code !== 'PGRST116') {
-        console.error("Error checking admin status:", adminError);
-        return false;
-      }
-
+      if (adminError) throw adminError;
       return !!adminData;
     } catch (error) {
-      console.error("Error in admin check:", error);
+      console.error("Error checking admin status:", error);
       return false;
     }
   };
@@ -70,7 +66,6 @@ export const useAuthManagement = () => {
             isLoading: false,
             error: error instanceof Error ? error.message : "Authentication error occurred",
           });
-          toast.error("Authentication error occurred");
         }
       }
     };
