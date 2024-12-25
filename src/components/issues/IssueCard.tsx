@@ -22,15 +22,34 @@ export const IssueCard = ({ id, title, volume, issue, date, articleCount, pdfUrl
     }
     
     try {
+      // First, check if the file exists in the bucket
+      const { data: fileData, error: fileError } = await supabase
+        .storage
+        .from('articles')
+        .list('', {
+          search: pdfUrl
+        });
+
+      if (fileError || !fileData?.length) {
+        console.error('File not found:', fileError || 'No file data');
+        toast.error("Le fichier PDF n'a pas été trouvé");
+        return;
+      }
+
       // Get the signed URL for the file
       const { data } = await supabase
         .storage
         .from('articles')
-        .getPublicUrl(pdfUrl);
+        .createSignedUrl(pdfUrl, 60); // URL valid for 60 seconds
+
+      if (!data?.signedUrl) {
+        toast.error("Erreur lors de la génération du lien de téléchargement");
+        return;
+      }
 
       // Create a temporary link to download the file
       const link = document.createElement('a');
-      link.href = data.publicUrl;
+      link.href = data.signedUrl;
       link.download = `${title}.pdf`; // Set the download filename
       document.body.appendChild(link);
       link.click();
