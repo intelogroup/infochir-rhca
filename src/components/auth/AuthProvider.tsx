@@ -3,19 +3,18 @@ import { User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-interface AuthContextType {
+interface AuthState {
   user: User | null;
   isAdmin: boolean;
   isLoading: boolean;
   error: string | null;
 }
 
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  isAdmin: false,
-  isLoading: true,
-  error: null,
-});
+interface AuthContextType extends AuthState {
+  signOut: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextType | null>(null);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -26,71 +25,88 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [authState, setAuthState] = useState<AuthState>({
+    user: null,
+    isAdmin: false,
+    isLoading: true,
+    error: null,
+  });
+
+  const checkAdminStatus = async (userId: string) => {
+    try {
+      const { data: adminData, error: adminError } = await supabase
+        .from('admin_users')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+
+      if (adminError && adminError.code !== 'PGRST116') {
+        console.error("Error checking admin status:", adminError);
+        return false;
+      }
+
+      return !!adminData;
+    } catch (error) {
+      console.error("Error in admin check:", error);
+      return false;
+    }
+  };
 
   useEffect(() => {
-    const checkUser = async () => {
+    const initializeAuth = async () => {
       try {
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         if (userError) throw userError;
 
         if (user) {
-          setUser(user);
-          // Check admin status
-          const { data: adminData, error: adminError } = await supabase
-            .from('admin_users')
-            .select('*')
-            .eq('user_id', user.id)
-            .single();
-
-          if (adminError && adminError.code !== 'PGRST116') {
-            console.error("Error checking admin status:", adminError);
-          }
-
-          setIsAdmin(!!adminData);
+          const isAdmin = await checkAdminStatus(user.id);
+          setAuthState({
+            user,
+            isAdmin,
+            isLoading: false,
+            error: null,
+          });
+        } else {
+          setAuthState({
+            user: null,
+            isAdmin: false,
+            isLoading: false,
+            error: null,
+          });
         }
-      } catch (err) {
-        console.error("Auth error:", err);
-        setError(err instanceof Error ? err.message : "Authentication error occurred");
+      } catch (error) {
+        console.error("Auth error:", error);
+        setAuthState({
+          user: null,
+          isAdmin: false,
+          isLoading: false,
+          error: error instanceof Error ? error.message : "Authentication error occurred",
+        });
         toast.error("Authentication error occurred");
-      } finally {
-        setIsLoading(false);
       }
     };
 
-    // Initial check
-    checkUser();
+    initializeAuth();
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event);
-      
-      if (event === 'SIGNED_IN') {
-        if (session?.user) {
-          setUser(session.user);
-          // Check admin status
-          const { data: adminData, error: adminError } = await supabase
-            .from('admin_users')
-            .select('*')
-            .eq('user_id', session.user.id)
-            .single();
-
-          if (adminError && adminError.code !== 'PGRST116') {
-            console.error("Error checking admin status:", adminError);
-          }
-
-          setIsAdmin(!!adminData);
-        }
+      if (event === 'SIGNED_IN' && session?.user) {
+        const isAdmin = await checkAdminStatus(session.user.id);
+        setAuthState({
+          user: session.user,
+          isAdmin,
+          isLoading: false,
+          error: null,
+        });
         toast.success("Successfully signed in!");
       } else if (event === 'SIGNED_OUT') {
-        setUser(null);
-        setIsAdmin(false);
+        setAuthState({
+          user: null,
+          isAdmin: false,
+          isLoading: false,
+          error: null,
+        });
         toast.info("Signed out");
       }
-      setIsLoading(false);
     });
 
     return () => {
@@ -98,8 +114,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
+  const signOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+    } catch (error) {
+      console.error("Error signing out:", error);
+      toast.error("Failed to sign out");
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isAdmin, isLoading, error }}>
+    <AuthContext.Provider value={{ ...authState, signOut }}>
       {children}
     </AuthContext.Provider>
   );
