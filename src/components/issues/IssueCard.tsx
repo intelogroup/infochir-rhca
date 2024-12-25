@@ -24,32 +24,13 @@ export const IssueCard = ({ id, title, volume, issue, date, articleCount, pdfUrl
     try {
       console.log('Attempting to download:', pdfUrl);
       
-      // First check if the file exists
-      const { data: fileExists, error: listError } = await supabase.storage
-        .from('articles')
-        .list('', {
-          search: pdfUrl
-        });
-
-      if (listError) {
-        console.error('Error checking file:', listError);
-        toast.error("Erreur lors de la vérification du fichier");
-        return;
-      }
-
-      if (!fileExists || fileExists.length === 0) {
-        console.error('File not found:', pdfUrl);
-        toast.error("Le fichier PDF n'existe pas dans le stockage");
-        return;
-      }
-
-      // Download the file
-      const { data, error: downloadError } = await supabase.storage
+      // Download the file directly using the storage download method
+      const { data, error } = await supabase.storage
         .from('articles')
         .download(pdfUrl);
         
-      if (downloadError) {
-        console.error('Error downloading file:', downloadError);
+      if (error) {
+        console.error('Error downloading file:', error);
         toast.error("Erreur lors du téléchargement du fichier");
         return;
       }
