@@ -2,6 +2,9 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen, Users, Globe, Award } from "lucide-react";
 import { Link } from "react-router-dom";
 import { IssuesGrid } from "@/components/IssuesGrid";
+import { AdminPanel } from "@/components/rhca/AdminPanel";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const StatCard = ({ icon: Icon, title, value }: { icon: any; title: string; value: string }) => (
   <div className="bg-white/95 backdrop-blur-xs rounded-xl p-6 border border-gray-100">
@@ -18,6 +21,30 @@ const StatCard = ({ icon: Icon, title, value }: { icon: any; title: string; valu
 );
 
 const RHCA = () => {
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('admin_users')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Error checking admin status:', error);
+        return;
+      }
+
+      setIsAdmin(!!data);
+    };
+
+    checkAdminStatus();
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#f8fafc] relative">
       {/* Background image with overlay */}
@@ -110,9 +137,14 @@ const RHCA = () => {
         {/* Main content */}
         <div className="grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
           <div className="lg:col-span-2">
-            <IssuesGrid />
+            {isAdmin ? (
+              <AdminPanel />
+            ) : (
+              <IssuesGrid />
+            )}
           </div>
           
+          {/* Sidebar */}
           <div className="space-y-8">
             {/* Submission section */}
             <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
