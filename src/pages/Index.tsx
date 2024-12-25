@@ -48,20 +48,23 @@ const NewsletterSection = () => {
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) {
-      toast.error("Veuillez entrer une adresse email");
-      return;
-    }
-
-    if (!email.includes('@')) {
-      toast.error("Veuillez entrer une adresse email valide");
-      return;
-    }
-
-    setIsSubmitting(true);
+    
     try {
-      // Simulate API call
+      if (!email) {
+        toast.error("Veuillez entrer une adresse email");
+        return;
+      }
+
+      if (!email.includes('@')) {
+        toast.error("Veuillez entrer une adresse email valide");
+        return;
+      }
+
+      setIsSubmitting(true);
+      
+      // Simulate API call - replace with actual newsletter subscription logic
       await new Promise(resolve => setTimeout(resolve, 1000));
+      
       toast.success("Merci de votre inscription à notre newsletter!");
       setEmail("");
     } catch (error) {
@@ -119,9 +122,16 @@ const ProductsGrid = () => {
           {products.map((product, index) => (
             <div 
               key={product.title} 
-              className="animate-fade-up" 
+              className="animate-fade-up cursor-pointer" 
               style={{ animationDelay: `${index * 100}ms` }}
-              onClick={() => navigate(product.href)}
+              onClick={() => {
+                try {
+                  navigate(product.href);
+                } catch (error) {
+                  console.error("Navigation error:", error);
+                  toast.error("Une erreur est survenue lors de la navigation");
+                }
+              }}
             >
               <ProductCard {...product} />
             </div>
