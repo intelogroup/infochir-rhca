@@ -11,7 +11,7 @@ interface IssueCardProps {
   issue_number?: number;
   date: string;
   article_count?: number;
-  pdf_url: string | null; // Changed to match database schema
+  pdf_url: string | null;
 }
 
 export const IssueCard = ({ id, title, volume, issue_number, date, article_count, pdf_url }: IssueCardProps) => {

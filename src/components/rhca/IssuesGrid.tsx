@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { IssueCard } from "./IssueCard";
+import { Loader2 } from "lucide-react";
 
 interface Issue {
   id: string;
@@ -23,21 +24,26 @@ export const IssuesGrid = () => {
 
   const fetchIssues = async () => {
     try {
+      console.log("Fetching RHCA articles...");
       const { data: articles, error } = await supabase
         .from('articles')
         .select('*')
         .eq('source', 'RHCA')
         .order('date', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching articles:', error);
+        throw error;
+      }
 
-      // Filter for reanimation articles (assuming they have "Réanimation" in the title)
-      const reanimationArticles = articles.filter(article => 
-        article.title.toLowerCase().includes('réanimation') ||
-        article.title.toLowerCase().includes('reanimation')
-      );
+      console.log('Fetched articles:', articles);
 
-      setIssues(reanimationArticles.map(article => ({
+      if (!articles || articles.length === 0) {
+        setIssues([]);
+        return;
+      }
+
+      const transformedIssues = articles.map(article => ({
         id: article.id,
         title: article.title,
         volume: article.volume,
@@ -45,7 +51,10 @@ export const IssuesGrid = () => {
         date: article.date,
         article_count: article.article_count,
         pdf_url: article.pdf_url
-      })));
+      }));
+
+      console.log('Transformed issues:', transformedIssues);
+      setIssues(transformedIssues);
     } catch (error) {
       console.error('Error fetching issues:', error);
       toast.error("Erreur lors du chargement des articles");
@@ -57,7 +66,7 @@ export const IssuesGrid = () => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -66,7 +75,7 @@ export const IssuesGrid = () => {
     <div className="space-y-4">
       {issues.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
-          Aucun article de réanimation disponible pour le moment
+          Aucun article disponible pour le moment
         </div>
       ) : (
         issues.map((issue) => (
