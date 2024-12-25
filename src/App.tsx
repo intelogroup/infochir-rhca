@@ -13,11 +13,18 @@ const queryClient = new QueryClient({
       retry: 1,
       refetchOnWindowFocus: false,
       staleTime: 5 * 60 * 1000, // 5 minutes
+      meta: {
+        onError: (error: unknown) => {
+          console.error('Query error:', error);
+          const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+          console.error('Error details:', errorMessage);
+        }
+      }
     },
   },
 });
 
-const App = () => (
+const App = (): JSX.Element => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
