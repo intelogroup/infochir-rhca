@@ -38,10 +38,20 @@ export const AdminPanel = () => {
   const handleSubmit = async (formData: Partial<Article>) => {
     setIsSubmitting(true);
     try {
+      // Ensure required fields are present
+      if (!formData.title || !formData.abstract || !formData.source) {
+        throw new Error("Missing required fields");
+      }
+
+      const articleData = {
+        ...formData,
+        date: formData.date || new Date().toISOString(),
+      };
+
       if (editingArticle) {
         const { error } = await supabase
           .from("articles")
-          .update(formData)
+          .update(articleData)
           .eq("id", editingArticle.id);
 
         if (error) throw error;
@@ -49,7 +59,7 @@ export const AdminPanel = () => {
       } else {
         const { error } = await supabase
           .from("articles")
-          .insert(formData);
+          .insert(articleData);
 
         if (error) throw error;
         toast.success("Article added successfully");
