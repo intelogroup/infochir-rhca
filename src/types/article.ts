@@ -1,4 +1,4 @@
-export type ArticleSource = "RHCA" | "IGM" | "ATLAS";
+export type ArticleSource = "RHCA" | "IGM" | "ATLAS" | "ADC";
 
 export interface Article {
   id: string;
