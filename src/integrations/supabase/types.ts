@@ -228,7 +228,7 @@ export type Database = {
       }
     }
     Enums: {
-      article_source: "RHCA" | "IGM" | "ADC"
+      article_source: "RHCA" | "IGM" | "ADC" | "ATLAS"
     }
     CompositeTypes: {
       [_ in never]: never
