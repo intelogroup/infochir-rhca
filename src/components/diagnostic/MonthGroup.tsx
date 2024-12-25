@@ -8,6 +8,10 @@ interface MonthGroupProps {
 }
 
 export const MonthGroup = memo(({ monthGroup, monthName }: MonthGroupProps) => {
+  if (!monthGroup?.cases?.length) {
+    return null;
+  }
+
   return (
     <div className="mb-8">
       <h3 className="text-lg font-semibold mb-4 text-gray-800">

@@ -8,15 +8,25 @@ interface DiagnosticCardProps {
 }
 
 export const DiagnosticCard = memo(({ diagnosticCase }: DiagnosticCardProps) => {
+  if (!diagnosticCase) {
+    return null;
+  }
+
   return (
     <Card className="overflow-hidden hover:shadow-md transition-shadow duration-200 rounded-xl border border-gray-100">
       <div className="aspect-[4/3] relative overflow-hidden">
-        <img
-          loading="lazy"
-          src={diagnosticCase.imageUrl}
-          alt={diagnosticCase.title}
-          className="object-cover w-full h-full transition-transform duration-300 ease-in-out"
-        />
+        {diagnosticCase.imageUrl && (
+          <img
+            loading="lazy"
+            src={diagnosticCase.imageUrl}
+            alt={diagnosticCase.title}
+            className="object-cover w-full h-full transition-transform duration-300 ease-in-out"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = "https://via.placeholder.com/400x300?text=Image+Not+Found";
+            }}
+          />
+        )}
       </div>
       <CardHeader className="p-3">
         <div className="flex justify-between items-start gap-2">
