@@ -22,7 +22,7 @@ export const ProductCard = ({
     <>
       <div className="relative z-10 flex items-center justify-center mb-8">
         {logo ? (
-          <div className="relative h-24 w-24 overflow-hidden rounded-2xl transition-transform duration-300 group-hover:scale-110">
+          <div className="relative h-20 w-20 overflow-hidden rounded-2xl transition-transform duration-300 group-hover:scale-110">
             <img 
               src={logo} 
               alt={`${title} logo`} 
@@ -50,7 +50,7 @@ export const ProductCard = ({
     return (
       <button
         onClick={onClick}
-        className="w-full group relative flex flex-col items-center rounded-2xl bg-white p-8 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 border border-gray-100/50 backdrop-blur-sm"
+        className="w-full group relative flex flex-col items-center rounded-3xl bg-white p-8 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 border border-gray-100"
       >
         <CardContent />
       </button>
@@ -60,7 +60,7 @@ export const ProductCard = ({
   return (
     <Link
       to={href || "#"}
-      className="group relative flex flex-col items-center rounded-2xl bg-white p-8 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 border border-gray-100/50 backdrop-blur-sm"
+      className="group relative flex flex-col items-center rounded-3xl bg-white p-8 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 border border-gray-100"
     >
       <CardContent />
     </Link>

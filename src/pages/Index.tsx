@@ -60,7 +60,10 @@ const NewsletterSection = () => {
       }
 
       setIsSubmitting(true);
+      
+      // Simulate API call - replace with actual newsletter subscription logic
       await new Promise(resolve => setTimeout(resolve, 1000));
+      
       toast.success("Merci de votre inscription à notre newsletter!");
       setEmail("");
     } catch (error) {
@@ -72,7 +75,7 @@ const NewsletterSection = () => {
   };
 
   return (
-    <section className="py-16 bg-gradient-to-br from-primary to-secondary">
+    <section className="py-16 bg-gradient-to-br from-primary to-primary-light">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <Newspaper className="w-12 h-12 mx-auto mb-6 text-white/80" />
         <h2 className="text-3xl font-bold mb-4 text-white">Restez informé</h2>
@@ -91,7 +94,7 @@ const NewsletterSection = () => {
           <Button 
             variant="secondary" 
             type="submit" 
-            className="whitespace-nowrap bg-white text-primary hover:bg-white/90"
+            className="whitespace-nowrap"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Inscription..." : "S'abonner"}
@@ -106,7 +109,7 @@ const ProductsGrid = () => {
   const navigate = useNavigate();
   
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50/50">
+    <section className="py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Nos Produits</h2>
@@ -118,7 +121,7 @@ const ProductsGrid = () => {
           {products.map((product, index) => (
             <div 
               key={product.title} 
-              className="animate-fade-up" 
+              className="animate-fade-up cursor-pointer" 
               style={{ animationDelay: `${index * 100}ms` }}
               onClick={() => {
                 try {
