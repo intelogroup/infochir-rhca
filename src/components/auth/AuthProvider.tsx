@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         .from('admin_users')
         .select('*')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
       if (adminError && adminError.code !== 'PGRST116') {
         console.error("Error checking admin status:", adminError);
@@ -53,6 +53,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
+    let mounted = true;
+
     const initializeAuth = async () => {
       try {
         const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -60,29 +62,35 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         if (user) {
           const isAdmin = await checkAdminStatus(user.id);
-          setAuthState({
-            user,
-            isAdmin,
-            isLoading: false,
-            error: null,
-          });
+          if (mounted) {
+            setAuthState({
+              user,
+              isAdmin,
+              isLoading: false,
+              error: null,
+            });
+          }
         } else {
+          if (mounted) {
+            setAuthState({
+              user: null,
+              isAdmin: false,
+              isLoading: false,
+              error: null,
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Auth error:", error);
+        if (mounted) {
           setAuthState({
             user: null,
             isAdmin: false,
             isLoading: false,
-            error: null,
+            error: error instanceof Error ? error.message : "Authentication error occurred",
           });
+          toast.error("Authentication error occurred");
         }
-      } catch (error) {
-        console.error("Auth error:", error);
-        setAuthState({
-          user: null,
-          isAdmin: false,
-          isLoading: false,
-          error: error instanceof Error ? error.message : "Authentication error occurred",
-        });
-        toast.error("Authentication error occurred");
       }
     };
 
@@ -91,25 +99,30 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session?.user) {
         const isAdmin = await checkAdminStatus(session.user.id);
-        setAuthState({
-          user: session.user,
-          isAdmin,
-          isLoading: false,
-          error: null,
-        });
-        toast.success("Successfully signed in!");
+        if (mounted) {
+          setAuthState({
+            user: session.user,
+            isAdmin,
+            isLoading: false,
+            error: null,
+          });
+          toast.success("Successfully signed in!");
+        }
       } else if (event === 'SIGNED_OUT') {
-        setAuthState({
-          user: null,
-          isAdmin: false,
-          isLoading: false,
-          error: null,
-        });
-        toast.info("Signed out");
+        if (mounted) {
+          setAuthState({
+            user: null,
+            isAdmin: false,
+            isLoading: false,
+            error: null,
+          });
+          toast.info("Signed out");
+        }
       }
     });
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, []);
