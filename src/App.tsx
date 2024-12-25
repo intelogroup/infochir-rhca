@@ -14,39 +14,68 @@ import Admin from "./pages/Admin";
 import { Navbar } from "./components/Navbar";
 import AuthPage from "./pages/Auth";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check current session on mount
-    const checkSession = async () => {
+    // Initialize session state
+    const initializeSession = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        setIsAuthenticated(!!session);
+        // Get the current session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) throw sessionError;
+        
+        // If no session, try to refresh it
+        if (!session) {
+          const { data: { session: refreshedSession }, error: refreshError } = 
+            await supabase.auth.refreshSession();
+          if (refreshError) throw refreshError;
+          setIsAuthenticated(!!refreshedSession);
+        } else {
+          setIsAuthenticated(!!session);
+        }
       } catch (error) {
-        console.error("Error checking session:", error);
+        console.error("Session error:", error);
         setIsAuthenticated(false);
       } finally {
         setIsLoading(false);
       }
     };
 
-    checkSession();
+    initializeSession();
 
     // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsAuthenticated(!!session);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event, !!session);
+      if (event === 'SIGNED_OUT') {
+        setIsAuthenticated(false);
+      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        setIsAuthenticated(true);
+      }
       setIsLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
   return isAuthenticated ? <>{children}</> : <Navigate to="/auth" />;
