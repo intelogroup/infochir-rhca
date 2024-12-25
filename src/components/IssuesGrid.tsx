@@ -1,90 +1,66 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Download, Eye, Calendar } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface Issue {
-  id: number;
+  id: string;
   title: string;
-  volume: string;
-  issue: string;
-  year: number;
-  month: number;
+  volume?: string;
+  issue?: string;
+  date: string;
   abstract: string;
-  pdfUrl: string;
-  articleCount: number;
+  pdfUrl?: string;
+  articleCount?: number;
 }
-
-const mockIssues: Issue[] = [
-  // 2024 Issues
-  {
-    id: 1,
-    title: "Avancées en Immunothérapie",
-    volume: "Volume 25",
-    issue: "Issue 1",
-    year: 2024,
-    month: 3,
-    abstract: "Nouvelles approches en immunothérapie et résultats cliniques...",
-    pdfUrl: "#",
-    articleCount: 14
-  },
-  {
-    id: 2,
-    title: "Maladies Infectieuses Émergentes",
-    volume: "Volume 25",
-    issue: "Issue 2",
-    year: 2024,
-    month: 2,
-    abstract: "Études sur les pathogènes émergents et stratégies de contrôle...",
-    pdfUrl: "#",
-    articleCount: 12
-  },
-  // 2023 Issues
-  {
-    id: 3,
-    title: "Oncologie Moléculaire",
-    volume: "Volume 24",
-    issue: "Issue 12",
-    year: 2023,
-    month: 12,
-    abstract: "Dernières avancées en oncologie moléculaire...",
-    pdfUrl: "#",
-    articleCount: 15
-  },
-  {
-    id: 4,
-    title: "Neurologie Clinique",
-    volume: "Volume 24",
-    issue: "Issue 11",
-    year: 2023,
-    month: 11,
-    abstract: "Recherches en neurologie clinique et thérapeutique...",
-    pdfUrl: "#",
-    articleCount: 10
-  },
-  {
-    id: 5,
-    title: "Cardiologie Interventionnelle",
-    volume: "Volume 24",
-    issue: "Issue 10",
-    year: 2023,
-    month: 10,
-    abstract: "Innovations en cardiologie interventionnelle...",
-    pdfUrl: "#",
-    articleCount: 13
-  }
-];
 
 export const IssuesGrid = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("latest");
-  const [filteredIssues, setFilteredIssues] = useState(mockIssues);
+  const [filteredIssues, setFilteredIssues] = useState<Issue[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchArticles();
+  }, []);
+
+  const fetchArticles = async () => {
+    try {
+      const { data: articles, error } = await supabase
+        .from('articles')
+        .select('*')
+        .order('date', { ascending: false });
+
+      if (error) throw error;
+
+      // Transform the articles into the Issue format
+      const transformedArticles = articles.map(article => ({
+        id: article.id,
+        title: article.title,
+        volume: "Volume " + (new Date(article.date).getFullYear() - 1999), // Example volume calculation
+        issue: "Issue " + (new Date(article.date).getMonth() + 1),
+        date: new Date(article.date).toISOString(),
+        abstract: article.abstract,
+        pdfUrl: article.pdf_url,
+        articleCount: 1 // This could be updated if we want to group articles
+      }));
+
+      setFilteredIssues(transformedArticles);
+    } catch (error) {
+      console.error('Error fetching articles:', error);
+      toast.error("Erreur lors du chargement des articles");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
-    const filtered = mockIssues.filter(issue =>
+    const filtered = filteredIssues.filter(issue =>
       issue.title.toLowerCase().includes(value.toLowerCase()) ||
       issue.abstract.toLowerCase().includes(value.toLowerCase())
     );
@@ -95,13 +71,17 @@ export const IssuesGrid = () => {
     let sorted = [...issues];
     switch (sortType) {
       case "latest":
-        sorted.sort((a, b) => (b.year * 12 + b.month) - (a.year * 12 + a.month));
+        sorted.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         break;
       case "year":
-        sorted.sort((a, b) => b.year - a.year);
+        sorted.sort((a, b) => 
+          new Date(b.date).getFullYear() - new Date(a.date).getFullYear()
+        );
         break;
       case "month":
-        sorted.sort((a, b) => b.month - a.month);
+        sorted.sort((a, b) => 
+          new Date(b.date).getMonth() - new Date(a.date).getMonth()
+        );
         break;
       default:
         break;
@@ -114,12 +94,43 @@ export const IssuesGrid = () => {
     sortIssues(filteredIssues, value);
   };
 
+  const handleDownload = async (issue: Issue) => {
+    if (!issue.pdfUrl) {
+      toast.error("Le PDF n'est pas encore disponible");
+      return;
+    }
+    
+    try {
+      const { data, error } = await supabase.storage
+        .from('articles')
+        .download(issue.pdfUrl);
+        
+      if (error) throw error;
+      
+      // Create a download link
+      const url = window.URL.createObjectURL(data);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${issue.title}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast.success("Téléchargement démarré");
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      toast.error("Erreur lors du téléchargement");
+    }
+  };
+
   // Group issues by year
   const issuesByYear = filteredIssues.reduce((acc, issue) => {
-    if (!acc[issue.year]) {
-      acc[issue.year] = [];
+    const year = new Date(issue.date).getFullYear();
+    if (!acc[year]) {
+      acc[year] = [];
     }
-    acc[issue.year].push(issue);
+    acc[year].push(issue);
     return acc;
   }, {} as Record<number, Issue[]>);
 
@@ -127,6 +138,10 @@ export const IssuesGrid = () => {
   const sortedYears = Object.keys(issuesByYear)
     .map(Number)
     .sort((a, b) => b - a);
+
+  if (isLoading) {
+    return <div className="p-4">Chargement des articles...</div>;
+  }
 
   return (
     <div className="space-y-4 px-4">
@@ -173,16 +188,24 @@ export const IssuesGrid = () => {
                           <span className="whitespace-nowrap">{issue.volume} • {issue.issue}</span>
                           <span className="text-primary">|</span>
                           <Calendar className="h-3 w-3" />
-                          <span>{issue.month}/{issue.year}</span>
-                          <span className="text-primary">|</span>
-                          <span>{issue.articleCount} articles</span>
+                          <span>{new Date(issue.date).toLocaleDateString()}</span>
+                          {issue.articleCount && (
+                            <>
+                              <span className="text-primary">|</span>
+                              <span>{issue.articleCount} articles</span>
+                            </>
+                          )}
                         </div>
                       </div>
                       <div className="flex gap-1 shrink-0">
                         <Button variant="outline" size="sm" className="h-6 w-6 p-0">
                           <Eye className="h-3 w-3" />
                         </Button>
-                        <Button size="sm" className="h-6 w-6 p-0">
+                        <Button 
+                          size="sm" 
+                          className="h-6 w-6 p-0"
+                          onClick={() => handleDownload(issue)}
+                        >
                           <Download className="h-3 w-3" />
                         </Button>
                       </div>
