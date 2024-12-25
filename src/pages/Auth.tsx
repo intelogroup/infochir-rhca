@@ -25,15 +25,13 @@ const AuthPage = () => {
       }
     };
 
-    // Check current session
     checkSession();
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event, !!session);
+      console.log("Auth state changed:", event, session?.user?.email);
       
-      if (event === 'SIGNED_IN') {
-        toast.success("Successfully signed in!");
+      if (event === 'SIGNED_IN' && session) {
+        toast.success(`Welcome ${session.user.email}`);
         navigate("/");
       } else if (event === 'SIGNED_OUT') {
         toast.info("Signed out");
@@ -85,11 +83,16 @@ const AuthPage = () => {
                 container: 'w-full',
                 button: 'w-full px-4 py-2 rounded-lg',
                 input: 'rounded-lg',
+                message: 'text-sm text-red-600',
               },
             }}
             providers={[]}
             view="sign_in"
             redirectTo={window.location.origin}
+            onError={(error) => {
+              console.error("Auth error:", error);
+              toast.error(error.message);
+            }}
           />
         </div>
       </div>
