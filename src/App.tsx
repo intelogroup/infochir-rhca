@@ -1,12 +1,7 @@
-import { Suspense } from "react";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { AppRoutes } from "./components/AppRoutes";
 import { AuthProvider } from "./components/auth/AuthProvider";
-import { LoadingSpinner } from "./components/auth/LoadingSpinner";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,15 +16,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
       <AuthProvider>
-        <TooltipProvider>
-          <Suspense fallback={<LoadingSpinner />}>
-            <div className="min-h-screen bg-background">
-              <Toaster />
-              <Sonner />
-              <AppRoutes />
-            </div>
-          </Suspense>
-        </TooltipProvider>
+        <AppRoutes />
       </AuthProvider>
     </BrowserRouter>
   </QueryClientProvider>
