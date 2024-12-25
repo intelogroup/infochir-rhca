@@ -9,27 +9,33 @@ interface DiagnosticCardProps {
 
 export const DiagnosticCard = memo(({ diagnosticCase }: DiagnosticCardProps) => {
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow rounded-xl">
+    <Card className="overflow-hidden hover:shadow-md transition-shadow duration-200 rounded-xl border border-gray-100">
       <div className="aspect-[4/3] relative overflow-hidden">
         <img
           loading="lazy"
           src={diagnosticCase.imageUrl}
           alt={diagnosticCase.title}
-          className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
+          className="object-cover w-full h-full transition-transform duration-300 ease-in-out"
         />
       </div>
-      <CardHeader className="p-2">
+      <CardHeader className="p-3">
         <div className="flex justify-between items-start gap-2">
-          <CardTitle className="text-xs font-medium line-clamp-2">{diagnosticCase.title}</CardTitle>
-          <Badge variant="outline" className="text-[10px] whitespace-nowrap">
+          <CardTitle className="text-sm font-medium line-clamp-2">
+            {diagnosticCase.title}
+          </CardTitle>
+          <Badge variant="outline" className="text-xs whitespace-nowrap">
             {diagnosticCase.specialty}
           </Badge>
         </div>
-        <CardDescription className="text-[10px]">{diagnosticCase.date}</CardDescription>
+        <CardDescription className="text-xs">
+          {diagnosticCase.date}
+        </CardDescription>
       </CardHeader>
-      <CardContent className="p-2 pt-0">
-        <p className="text-[10px] text-gray-600 mb-1 line-clamp-2">{diagnosticCase.description}</p>
-        <p className="text-[10px] font-semibold">
+      <CardContent className="p-3 pt-0">
+        <p className="text-xs text-gray-600 mb-2 line-clamp-2">
+          {diagnosticCase.description}
+        </p>
+        <p className="text-xs font-semibold">
           Diagnostic: <span className="text-primary">{diagnosticCase.diagnosis}</span>
         </p>
       </CardContent>

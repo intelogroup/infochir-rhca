@@ -27,9 +27,8 @@ export const DiagnosticGrid = () => {
   const Row = useCallback(({ index, style }: { index: number; style: React.CSSProperties }) => {
     const yearGroup = filteredAndGroupedCases[index];
     return (
-      <div style={style} className="py-4">
+      <div style={style}>
         <YearGroupComponent
-          key={yearGroup.year}
           yearGroup={yearGroup}
           monthNames={monthNames}
         />
@@ -38,7 +37,7 @@ export const DiagnosticGrid = () => {
   }, [filteredAndGroupedCases, monthNames]);
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto px-4">
       <DiagnosticSearch
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -47,11 +46,11 @@ export const DiagnosticGrid = () => {
         specialties={specialties}
       />
 
-      <div className="h-[800px] overflow-hidden">
+      <div className="h-[calc(100vh-200px)] overflow-hidden rounded-xl bg-white/95 backdrop-blur-xs p-6 border border-gray-100">
         <List
           height={800}
           itemCount={filteredAndGroupedCases.length}
-          itemSize={600}
+          itemSize={650}
           width="100%"
           className="scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400"
           overscanCount={2}

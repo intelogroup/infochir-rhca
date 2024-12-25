@@ -9,9 +9,11 @@ interface YearGroupProps {
 
 export const YearGroup = memo(({ yearGroup, monthNames }: YearGroupProps) => {
   return (
-    <div key={yearGroup.year}>
-      <h2 className="text-2xl font-bold mb-4">{yearGroup.year}</h2>
-      <div className="space-y-6">
+    <div className="mb-8">
+      <h2 className="text-2xl font-bold mb-6 text-gray-900">
+        {yearGroup.year}
+      </h2>
+      <div className="space-y-8">
         {yearGroup.months.map((monthGroup) => (
           <MonthGroup
             key={monthGroup.month}

@@ -9,11 +9,11 @@ interface MonthGroupProps {
 
 export const MonthGroup = memo(({ monthGroup, monthName }: MonthGroupProps) => {
   return (
-    <div key={monthGroup.month}>
-      <h3 className="text-lg font-semibold mb-3 text-gray-600">
+    <div className="mb-8">
+      <h3 className="text-lg font-semibold mb-4 text-gray-800">
         {monthName}
       </h3>
-      <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {monthGroup.cases.map((diagnosticCase) => (
           <DiagnosticCard
             key={diagnosticCase.id}
