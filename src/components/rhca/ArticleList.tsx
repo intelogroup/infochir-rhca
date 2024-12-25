@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { IssueCard } from "./IssueCard";
 import { Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface Article {
   id: string;
@@ -17,29 +18,47 @@ interface Article {
 export const ArticleList = () => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          navigate('/auth');
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from('articles')
+          .select('*')
+          .eq('source', 'RHCA')
+          .order('date', { ascending: false });
+
+        if (error) throw error;
+
+        setArticles(data || []);
+      } catch (error) {
+        console.error('Error fetching articles:', error);
+        toast.error("Erreur lors du chargement des articles");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     fetchArticles();
-  }, []);
 
-  const fetchArticles = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('articles')
-        .select('*')
-        .eq('source', 'RHCA')
-        .order('date', { ascending: false });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        navigate('/auth');
+      }
+    });
 
-      if (error) throw error;
-
-      setArticles(data || []);
-    } catch (error) {
-      console.error('Error fetching articles:', error);
-      toast.error("Erreur lors du chargement des articles");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   if (isLoading) {
     return (
