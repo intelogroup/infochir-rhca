@@ -3,18 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import type { Article } from "@/types/article";
 
-interface IssueCardProps {
-  id: string;
-  title: string;
-  volume?: string;
-  issue_number?: number;
-  date: string;
-  articleCount?: number;
-  pdf_url?: string;
-}
+type IssueCardProps = Pick<Article, 'id' | 'title' | 'volume' | 'issue_number' | 'date' | 'article_count' | 'pdf_url'>;
 
-export const IssueCard = ({ id, title, volume, issue_number, date, articleCount, pdf_url }: IssueCardProps) => {
+export const IssueCard = ({ id, title, volume, issue_number, date, article_count, pdf_url }: IssueCardProps) => {
   const handleDownload = async () => {
     if (!pdf_url) {
       toast.error("Le PDF n'est pas encore disponible");
@@ -56,10 +49,10 @@ export const IssueCard = ({ id, title, volume, issue_number, date, articleCount,
               <span className="text-primary">|</span>
               <Calendar className="h-3 w-3" />
               <span>{new Date(date).toLocaleDateString()}</span>
-              {articleCount && (
+              {article_count && (
                 <>
                   <span className="text-primary">|</span>
-                  <span>{articleCount} articles</span>
+                  <span>{article_count} articles</span>
                 </>
               )}
             </div>

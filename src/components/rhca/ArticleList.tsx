@@ -4,16 +4,7 @@ import { toast } from "sonner";
 import { IssueCard } from "./IssueCard";
 import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
-interface Article {
-  id: string;
-  title: string;
-  volume?: string;
-  issue_number?: number;
-  date: string;
-  article_count?: number;
-  pdf_url?: string;
-}
+import type { Article } from "@/types/article";
 
 export const ArticleList = () => {
   const [articles, setArticles] = useState<Article[]>([]);
