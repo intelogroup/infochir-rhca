@@ -85,15 +85,37 @@ export const IndexMedicusGrid = () => {
       </div>
 
       {isLoading ? (
-        <div className="space-y-4">
-          {[...Array(3)].map((_, i) => (
-            <Skeleton key={`skeleton-article-${i}`} className="h-32 w-full" />
-          ))}
+        <div className="space-y-6">
+          <Skeleton className="h-12 w-full" /> {/* Search bar skeleton */}
+          {viewMode === 'table' ? (
+            <div className="space-y-2">
+              <div className="grid grid-cols-6 gap-4">
+                {[...Array(6)].map((_, i) => (
+                  <Skeleton key={`header-${i}`} className="h-8" />
+                ))}
+              </div>
+              {[...Array(5)].map((_, i) => (
+                <div key={`row-${i}`} className="grid grid-cols-6 gap-4">
+                  {[...Array(6)].map((_, j) => (
+                    <Skeleton key={`cell-${i}-${j}`} className="h-12" />
+                  ))}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {[...Array(6)].map((_, i) => (
+                <Skeleton key={`card-${i}`} className="h-64" />
+              ))}
+            </div>
+          )}
         </div>
-      ) : viewMode === 'table' ? (
-        <ArticlesTable articles={filteredArticles} />
       ) : (
-        <ArticlesGrid articles={filteredArticles} isLoading={false} />
+        viewMode === 'table' ? (
+          <ArticlesTable articles={filteredArticles} />
+        ) : (
+          <ArticlesGrid articles={filteredArticles} isLoading={false} />
+        )
       )}
     </div>
   );

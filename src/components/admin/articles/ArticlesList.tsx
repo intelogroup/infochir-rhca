@@ -19,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Article {
   id: string;
@@ -36,29 +37,46 @@ interface ArticlesListProps {
 
 export const ArticlesList = ({ articles, isLoading, onUpdate }: ArticlesListProps) => {
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   const handleDelete = async (id: string) => {
     const confirmed = window.confirm("Are you sure you want to delete this article?");
     if (!confirmed) return;
 
-    const { error } = await supabase
-      .from("articles")
-      .delete()
-      .eq("id", id);
+    setIsDeleting(id);
+    try {
+      const { error } = await supabase
+        .from("articles")
+        .delete()
+        .eq("id", id);
 
-    if (error) {
+      if (error) throw error;
+
+      toast.success("Article deleted successfully");
+      onUpdate();
+    } catch (error) {
+      console.error("Error deleting article:", error);
       toast.error("Error deleting article");
-      return;
+    } finally {
+      setIsDeleting(null);
     }
-
-    toast.success("Article deleted successfully");
-    onUpdate();
   };
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="space-y-4">
+        <div className="grid grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={`header-${i}`} className="h-8" />
+          ))}
+        </div>
+        {[...Array(5)].map((_, i) => (
+          <div key={`row-${i}`} className="grid grid-cols-4 gap-4">
+            {[...Array(4)].map((_, j) => (
+              <Skeleton key={`cell-${i}-${j}`} className="h-12" />
+            ))}
+          </div>
+        ))}
       </div>
     );
   }
@@ -112,8 +130,13 @@ export const ArticlesList = ({ articles, isLoading, onUpdate }: ArticlesListProp
                   variant="ghost"
                   size="sm"
                   onClick={() => handleDelete(article.id)}
+                  disabled={isDeleting === article.id}
                 >
-                  <Trash className="h-4 w-4" />
+                  {isDeleting === article.id ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Trash className="h-4 w-4" />
+                  )}
                 </Button>
               </TableCell>
             </TableRow>

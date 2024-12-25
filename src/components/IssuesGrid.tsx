@@ -41,11 +41,20 @@ export const IssuesGrid = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-6">
         <Skeleton className="h-12 w-full" /> {/* Search bar skeleton */}
-        {[...Array(3)].map((_, i) => (
-          <Skeleton key={`skeleton-${i}`} className="h-32 w-full" />
-        ))}
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <div key={`skeleton-${i}`} className="space-y-2">
+              <Skeleton className="h-8 w-48" /> {/* Title skeleton */}
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {[...Array(3)].map((_, j) => (
+                  <Skeleton key={`card-skeleton-${i}-${j}`} className="h-32 w-full" />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
