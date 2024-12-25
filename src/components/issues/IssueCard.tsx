@@ -22,43 +22,45 @@ export const IssueCard = ({ id, title, volume, issue, date, articleCount, pdfUrl
     }
     
     try {
-      // First check if the file exists and validate its content type
-      const { data: fileExists } = await supabase.storage
+      console.log('Attempting to download:', pdfUrl);
+      
+      // First check if the file exists
+      const { data: fileExists, error: listError } = await supabase.storage
         .from('articles')
         .list('', {
           search: pdfUrl
         });
 
+      if (listError) {
+        console.error('Error checking file:', listError);
+        toast.error("Erreur lors de la vérification du fichier");
+        return;
+      }
+
       if (!fileExists || fileExists.length === 0) {
-        toast.error("Le fichier PDF n'existe pas");
+        console.error('File not found:', pdfUrl);
+        toast.error("Le fichier PDF n'existe pas dans le stockage");
         return;
       }
 
-      // Check if the file is actually a PDF by its content type
-      const file = fileExists[0];
-      if (!file.metadata?.mimetype?.includes('pdf')) {
-        toast.error("Le fichier n'est pas un PDF valide");
-        console.error('Invalid file type:', file.metadata?.mimetype);
-        return;
-      }
-
-      const { data, error } = await supabase.storage
+      // Download the file
+      const { data, error: downloadError } = await supabase.storage
         .from('articles')
         .download(pdfUrl);
         
-      if (error) {
-        console.error('Error downloading file:', error);
+      if (downloadError) {
+        console.error('Error downloading file:', downloadError);
         toast.error("Erreur lors du téléchargement du fichier");
         return;
       }
       
-      // Additional validation of the downloaded data
-      if (!(data instanceof Blob) || data.size === 0) {
-        toast.error("Le fichier PDF est corrompu ou vide");
-        console.error('Invalid PDF data:', data);
+      if (!(data instanceof Blob)) {
+        console.error('Invalid data format:', typeof data);
+        toast.error("Format de fichier invalide");
         return;
       }
 
+      // Create a download link
       const url = window.URL.createObjectURL(data);
       const a = document.createElement('a');
       a.href = url;
@@ -70,8 +72,8 @@ export const IssueCard = ({ id, title, volume, issue, date, articleCount, pdfUrl
       
       toast.success("Téléchargement démarré");
     } catch (error) {
-      console.error('Error downloading file:', error);
-      toast.error("Erreur lors du téléchargement");
+      console.error('Unexpected error:', error);
+      toast.error("Une erreur inattendue s'est produite");
     }
   };
 
