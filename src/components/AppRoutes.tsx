@@ -5,17 +5,17 @@ import { PrivateRoute } from "./auth/PrivateRoute";
 import { AdminRoute } from "./auth/AdminRoute";
 import { LoadingSpinner } from "./auth/LoadingSpinner";
 
-// Lazy load page components
-const Index = lazy(() => import("@/pages/Index"));
-const RHCA = lazy(() => import("@/pages/RHCA"));
-const IGM = lazy(() => import("@/pages/IGM"));
-const ADC = lazy(() => import("@/pages/ADC"));
-const IndexMedicus = lazy(() => import("@/pages/IndexMedicus"));
-const Admin = lazy(() => import("@/pages/Admin"));
-const AuthPage = lazy(() => import("@/pages/Auth"));
-const NotFound = lazy(() => import("@/pages/NotFound"));
+// Lazy load page components with descriptive chunk names
+const Index = lazy(() => import(/* webpackChunkName: "index" */ "@/pages/Index"));
+const RHCA = lazy(() => import(/* webpackChunkName: "rhca" */ "@/pages/RHCA"));
+const IGM = lazy(() => import(/* webpackChunkName: "igm" */ "@/pages/IGM"));
+const ADC = lazy(() => import(/* webpackChunkName: "adc" */ "@/pages/ADC"));
+const IndexMedicus = lazy(() => import(/* webpackChunkName: "index-medicus" */ "@/pages/IndexMedicus"));
+const Admin = lazy(() => import(/* webpackChunkName: "admin" */ "@/pages/Admin"));
+const AuthPage = lazy(() => import(/* webpackChunkName: "auth" */ "@/pages/Auth"));
+const NotFound = lazy(() => import(/* webpackChunkName: "not-found" */ "@/pages/NotFound"));
 
-// Route configuration
+// Route configuration with metadata
 const routes = [
   {
     path: "/",
@@ -61,6 +61,13 @@ const routes = [
   },
 ];
 
+// Custom loading component for route transitions
+const RouteLoadingSpinner = () => (
+  <div className="min-h-[50vh] flex items-center justify-center">
+    <LoadingSpinner />
+  </div>
+);
+
 export const AppRoutes = () => {
   const location = useLocation();
   const currentRoute = routes.find((route) => route.path === location.pathname);
@@ -69,7 +76,7 @@ export const AppRoutes = () => {
   return (
     <>
       {showNavbar && <Navbar />}
-      <Suspense fallback={<LoadingSpinner />}>
+      <Suspense fallback={<RouteLoadingSpinner />}>
         <Routes>
           {routes.map(({ path, element, private: isPrivate, isAdmin }) => (
             <Route
@@ -77,16 +84,33 @@ export const AppRoutes = () => {
               path={path}
               element={
                 isAdmin ? (
-                  <AdminRoute>{element}</AdminRoute>
+                  <AdminRoute>
+                    <Suspense fallback={<RouteLoadingSpinner />}>
+                      {element}
+                    </Suspense>
+                  </AdminRoute>
                 ) : isPrivate ? (
-                  <PrivateRoute>{element}</PrivateRoute>
+                  <PrivateRoute>
+                    <Suspense fallback={<RouteLoadingSpinner />}>
+                      {element}
+                    </Suspense>
+                  </PrivateRoute>
                 ) : (
-                  element
+                  <Suspense fallback={<RouteLoadingSpinner />}>
+                    {element}
+                  </Suspense>
                 )
               }
             />
           ))}
-          <Route path="*" element={<NotFound />} />
+          <Route 
+            path="*" 
+            element={
+              <Suspense fallback={<RouteLoadingSpinner />}>
+                <NotFound />
+              </Suspense>
+            } 
+          />
         </Routes>
       </Suspense>
     </>
