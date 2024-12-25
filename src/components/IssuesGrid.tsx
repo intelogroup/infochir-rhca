@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { SearchAndSort } from "./issues/SearchAndSort";
-import { YearGroup } from "./issues/YearGroup";
+import { IssuesList } from "./issues/IssuesList";
 import type { Issue } from "./issues/types";
 
 export const IssuesGrid = () => {
@@ -29,7 +29,7 @@ export const IssuesGrid = () => {
         return;
       }
 
-      const { data: articles, error } = await supabase
+      const { data: articles, error: articlesError } = await supabase
         .from('articles')
         .select(`
           *,
@@ -43,18 +43,26 @@ export const IssuesGrid = () => {
         `)
         .order('date', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching articles:', error);
+      if (articlesError) {
+        console.error('Error fetching articles:', articlesError);
         toast.error("Erreur lors du chargement des articles");
         return;
       }
 
-      // Transform the articles into the Issue format
+      if (!articles) {
+        console.error('No articles found');
+        toast.error("Aucun article trouvé");
+        return;
+      }
+
+      // Transform the articles into the Issue format with improved PDF matching
       const transformedArticles = articles.map(article => {
-        // Find matching PDF file from storage
-        const pdfFile = storageFiles?.find(file => 
-          file.name.toLowerCase().includes(article.title.toLowerCase().replace(/\s+/g, '-'))
-        );
+        // Find matching PDF file from storage using a more robust matching
+        const pdfFile = storageFiles?.find(file => {
+          const normalizedFileName = file.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+          const normalizedTitle = article.title.toLowerCase().replace(/[^a-z0-9]/g, '');
+          return normalizedFileName.includes(normalizedTitle);
+        });
 
         return {
           id: article.id,
@@ -63,8 +71,10 @@ export const IssuesGrid = () => {
           issue: `Issue ${new Date(article.date).getMonth() + 1}`,
           date: new Date(article.date).toISOString(),
           abstract: article.abstract,
-          pdfUrl: pdfFile ? `${supabase.storage.from('articles').getPublicUrl(pdfFile.name).data.publicUrl}` : article.pdf_url,
-          articleCount: 1,
+          pdfUrl: pdfFile 
+            ? `${supabase.storage.from('articles').getPublicUrl(pdfFile.name).data.publicUrl}` 
+            : article.pdf_url,
+          articleCount: article.article_count ?? 1,
           authors: article.article_authors?.map((aa: any) => aa.author.name) || [],
           tags: article.article_tags?.map((at: any) => at.tag.name) || []
         };
@@ -84,13 +94,19 @@ export const IssuesGrid = () => {
     setSearchTerm(value);
     const filtered = filteredIssues.filter(issue =>
       issue.title.toLowerCase().includes(value.toLowerCase()) ||
-      issue.abstract.toLowerCase().includes(value.toLowerCase())
+      issue.abstract?.toLowerCase().includes(value.toLowerCase()) ||
+      issue.authors.some(author => 
+        author.toLowerCase().includes(value.toLowerCase())
+      ) ||
+      issue.tags.some(tag => 
+        tag.toLowerCase().includes(value.toLowerCase())
+      )
     );
     sortIssues(filtered, sortBy);
   };
 
   const sortIssues = (issues: Issue[], sortType: string) => {
-    let sorted = [...issues];
+    const sorted = [...issues];
     switch (sortType) {
       case "latest":
         sorted.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -105,8 +121,6 @@ export const IssuesGrid = () => {
           new Date(b.date).getMonth() - new Date(a.date).getMonth()
         );
         break;
-      default:
-        break;
     }
     setFilteredIssues(sorted);
   };
@@ -115,21 +129,6 @@ export const IssuesGrid = () => {
     setSortBy(value);
     sortIssues(filteredIssues, value);
   };
-
-  // Group issues by year
-  const issuesByYear = filteredIssues.reduce((acc, issue) => {
-    const year = new Date(issue.date).getFullYear();
-    if (!acc[year]) {
-      acc[year] = [];
-    }
-    acc[year].push(issue);
-    return acc;
-  }, {} as Record<number, Issue[]>);
-
-  // Sort years in descending order
-  const sortedYears = Object.keys(issuesByYear)
-    .map(Number)
-    .sort((a, b) => b - a);
 
   if (isLoading) {
     return <div className="p-4">Chargement des articles...</div>;
@@ -143,16 +142,7 @@ export const IssuesGrid = () => {
         onSearch={handleSearch}
         onSort={handleSort}
       />
-
-      <div className="space-y-4">
-        {sortedYears.map((year) => (
-          <YearGroup 
-            key={year}
-            year={year}
-            issues={issuesByYear[year]}
-          />
-        ))}
-      </div>
+      <IssuesList issues={filteredIssues} />
     </div>
   );
 };
