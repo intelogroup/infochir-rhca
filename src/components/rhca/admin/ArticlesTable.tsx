@@ -29,6 +29,7 @@ interface Article {
   volume?: string;
   issue_number?: number;
   pdf_url: string | null;
+  source: "RHCA" | "IGM" | "ATLAS" | "ADC";
 }
 
 interface ArticlesTableProps {

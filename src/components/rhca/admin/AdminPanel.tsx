@@ -14,7 +14,7 @@ interface Article {
   volume?: string;
   issue_number?: number;
   article_count?: number;
-  source: "RHCA" | "IGM" | "ATLAS";
+  source: "RHCA" | "IGM" | "ATLAS" | "ADC";
   pdf_url: string | null;
 }
 
