@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useState } from "react";
-import { BookOpen, Database, Newspaper } from "lucide-react";
+import { BookOpen, Database, Newspaper, Mail } from "lucide-react";
 import { HeroSection } from "@/components/home/HeroSection";
 import { StatsSection } from "@/components/home/StatsSection";
 import { useNavigate } from "react-router-dom";
@@ -77,7 +77,7 @@ const NewsletterSection = () => {
   return (
     <section className="py-16 bg-gradient-to-br from-primary to-primary-light">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <Newspaper className="w-12 h-12 mx-auto mb-6 text-white/80" />
+        <Mail className="w-12 h-12 mx-auto mb-6 text-white/80" />
         <h2 className="text-3xl font-bold mb-4 text-white">Restez informé</h2>
         <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
           Abonnez-vous à notre newsletter pour recevoir les dernières publications et actualités
