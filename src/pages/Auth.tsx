@@ -89,6 +89,7 @@ const AuthPage = () => {
             providers={[]}
             view="sign_in"
             redirectTo={window.location.origin}
+            showLinks={false}
           />
         </div>
       </div>
