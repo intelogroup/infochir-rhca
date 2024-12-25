@@ -1,6 +1,4 @@
-import { Database } from "@/integrations/supabase/types";
-
-export type ArticleSource = Database["public"]["Enums"]["article_source"];
+export type ArticleSource = "RHCA" | "IGM" | "ATLAS";
 
 export interface Article {
   id: string;
