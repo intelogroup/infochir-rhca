@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { User } from "@supabase/supabase-js";
+import { User, AuthChangeEvent } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     checkSession();
 
     // Subscribe to auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session) => {
       console.log("Auth state changed:", event, session?.user?.email);
       setUser(session?.user ?? null);
 
@@ -51,8 +51,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         case "USER_UPDATED":
           toast.success("Profile updated");
           break;
-        case "USER_DELETED":
-          toast.info("Account deleted");
+        default:
           break;
       }
     });
