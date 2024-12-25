@@ -1,71 +1,56 @@
-import { memo } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DiagnosticCase } from "./types";
+import { useState } from "react";
 
 interface DiagnosticCardProps {
-  diagnosticCase: DiagnosticCase;
+  title: string;
+  description: string;
+  imageUrl: string;
+  date: string;
+  category: string;
+  author: string;
 }
 
-export const DiagnosticCard = memo(({ diagnosticCase }: DiagnosticCardProps) => {
-  if (!diagnosticCase) {
-    console.warn("DiagnosticCard received null or undefined diagnosticCase");
-    return null;
-  }
+export const DiagnosticCard = ({
+  title,
+  description,
+  imageUrl,
+  date,
+  category,
+  author,
+}: DiagnosticCardProps) => {
+  const [imgError, setImgError] = useState(false);
 
-  const {
-    title = "Untitled",
-    imageUrl,
-    specialty,
-    date,
-    description,
-    diagnosis
-  } = diagnosticCase;
-
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    const target = e.target as HTMLImageElement;
-    console.warn(`Image failed to load: ${target.src}`);
-    target.src = "https://via.placeholder.com/400x300?text=Image+Not+Found";
+  const handleImageError = () => {
+    setImgError(true);
+    console.log("Using fallback image for:", title);
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow duration-200 rounded-xl border border-gray-100">
-      <div className="aspect-[4/3] relative overflow-hidden">
-        {imageUrl && (
-          <img
-            loading="lazy"
-            src={imageUrl}
-            alt={title}
-            className="object-cover w-full h-full transition-transform duration-300 ease-in-out hover:scale-105"
-            onError={handleImageError}
-          />
-        )}
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+      <div className="relative h-48 overflow-hidden">
+        <img
+          src={imgError ? "/placeholder.svg" : imageUrl}
+          alt={title}
+          onError={handleImageError}
+          className="w-full h-full object-cover transition-transform hover:scale-105"
+        />
       </div>
-      <CardHeader className="p-3">
-        <div className="flex justify-between items-start gap-2">
-          <CardTitle className="text-sm font-medium line-clamp-2">
-            {title}
-          </CardTitle>
-          {specialty && (
-            <Badge variant="outline" className="text-xs whitespace-nowrap">
-              {specialty}
-            </Badge>
-          )}
+      <CardHeader>
+        <div className="flex items-center justify-between mb-2">
+          <Badge variant="secondary" className="text-xs">
+            {category}
+          </Badge>
+          <span className="text-xs text-muted-foreground">{date}</span>
         </div>
-        <CardDescription className="text-xs">
-          {date ? new Date(date).toLocaleDateString() : "Date not available"}
-        </CardDescription>
+        <h3 className="font-semibold text-lg leading-tight mb-2">{title}</h3>
       </CardHeader>
-      <CardContent className="p-3 pt-0">
-        <p className="text-xs text-gray-600 mb-2 line-clamp-2">
-          {description || "No description available"}
-        </p>
-        <p className="text-xs font-semibold">
-          Diagnostic: <span className="text-primary">{diagnosis || "Not specified"}</span>
-        </p>
+      <CardContent>
+        <p className="text-sm text-muted-foreground line-clamp-2">{description}</p>
       </CardContent>
+      <CardFooter>
+        <p className="text-sm text-muted-foreground">Par {author}</p>
+      </CardFooter>
     </Card>
   );
-});
-
-DiagnosticCard.displayName = "DiagnosticCard";
+};
