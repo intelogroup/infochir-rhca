@@ -28,22 +28,10 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Initialize session state
-    const initializeSession = async () => {
+    const checkSession = async () => {
       try {
-        // Get the current session
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        if (sessionError) throw sessionError;
-        
-        // If no session, try to refresh it
-        if (!session) {
-          const { data: { session: refreshedSession }, error: refreshError } = 
-            await supabase.auth.refreshSession();
-          if (refreshError) throw refreshError;
-          setIsAuthenticated(!!refreshedSession);
-        } else {
-          setIsAuthenticated(!!session);
-        }
+        const { data: { session } } = await supabase.auth.getSession();
+        setIsAuthenticated(!!session);
       } catch (error) {
         console.error("Session error:", error);
         setIsAuthenticated(false);
@@ -52,16 +40,11 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
       }
     };
 
-    initializeSession();
+    checkSession();
 
-    // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed:", event, !!session);
-      if (event === 'SIGNED_OUT') {
-        setIsAuthenticated(false);
-      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        setIsAuthenticated(true);
-      }
+      setIsAuthenticated(!!session);
       setIsLoading(false);
     });
 
