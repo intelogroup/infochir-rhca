@@ -14,6 +14,7 @@ interface AvatarUploadProps {
 
 export const AvatarUpload = ({ userId, avatarUrl, fullName, onAvatarUpdate }: AvatarUploadProps) => {
   const [isUploading, setIsUploading] = useState(false);
+  const [showUpload, setShowUpload] = useState(false);
 
   const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -52,11 +53,18 @@ export const AvatarUpload = ({ userId, avatarUrl, fullName, onAvatarUpdate }: Av
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div 
+      className="relative group"
+      onMouseEnter={() => setShowUpload(true)}
+      onMouseLeave={() => setShowUpload(false)}
+      onFocus={() => setShowUpload(true)}
+      onBlur={() => setShowUpload(false)}
+    >
       <Avatar className="h-8 w-8">
         <AvatarImage src={avatarUrl || undefined} alt={fullName || "User avatar"} />
         <AvatarFallback>{(fullName?.[0] || "A").toUpperCase()}</AvatarFallback>
       </Avatar>
+      
       <Input
         type="file"
         accept="image/*"
@@ -65,13 +73,18 @@ export const AvatarUpload = ({ userId, avatarUrl, fullName, onAvatarUpdate }: Av
         id="avatar-upload"
         disabled={isUploading}
       />
-      <label
-        htmlFor="avatar-upload"
-        className="flex items-center gap-2 px-2 py-1 text-sm text-gray-700 hover:bg-gray-100 rounded cursor-pointer"
-      >
-        <Upload size={16} />
-        <span>{isUploading ? "Uploading..." : "Update avatar"}</span>
-      </label>
+      
+      {showUpload && (
+        <label
+          htmlFor="avatar-upload"
+          className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full cursor-pointer transition-opacity opacity-0 group-hover:opacity-100 focus-within:opacity-100"
+          tabIndex={0}
+          role="button"
+          aria-label="Update avatar"
+        >
+          <Upload className="h-4 w-4 text-white" />
+        </label>
+      )}
     </div>
   );
 };
