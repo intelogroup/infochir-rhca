@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { ArticleList } from "../shared/ArticleList";
 import { ArticleFormDialog } from "../shared/ArticleFormDialog";
+import { ArticleActions } from "./articles/ArticleActions";
 import { toast } from "sonner";
 import type { Article } from "@/types/article";
 
@@ -38,12 +37,10 @@ export const AdminPanel = () => {
   const handleSubmit = async (formData: Partial<Article>) => {
     setIsSubmitting(true);
     try {
-      // Ensure required fields are present
       if (!formData.title || !formData.abstract || !formData.source) {
         throw new Error("Missing required fields");
       }
 
-      // Create a properly typed article data object
       const articleData: Omit<Article, 'id'> = {
         title: formData.title,
         abstract: formData.abstract,
@@ -108,16 +105,7 @@ export const AdminPanel = () => {
 
   return (
     <div className="space-y-8">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Articles</h2>
-          <p className="text-sm text-gray-500">Manage your articles here</p>
-        </div>
-        <Button onClick={() => setIsDialogOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Article
-        </Button>
-      </div>
+      <ArticleActions onAddClick={() => setIsDialogOpen(true)} />
 
       <ArticleList
         articles={articles}
