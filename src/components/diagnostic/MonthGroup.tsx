@@ -21,7 +21,12 @@ export const MonthGroup = memo(({ monthGroup, monthName }: MonthGroupProps) => {
         {monthGroup.cases.map((diagnosticCase) => (
           <DiagnosticCard
             key={diagnosticCase.id}
-            diagnosticCase={diagnosticCase}
+            title={diagnosticCase.title}
+            description={diagnosticCase.description}
+            imageUrl={diagnosticCase.imageUrl}
+            date={new Date(diagnosticCase.date).toLocaleDateString()}
+            category={diagnosticCase.specialty}
+            author={diagnosticCase.diagnosis}
           />
         ))}
       </div>
