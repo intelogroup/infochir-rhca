@@ -2,11 +2,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, User, Eye, Quote, Download, Share2 } from "lucide-react";
-import { Article } from "./types";
+import type { ArticleWithRelations } from "@/types/article";
 import { toast } from "sonner";
 
 interface ArticleCardProps {
-  article: Article;
+  article: ArticleWithRelations;
 }
 
 export const ArticleCard = ({ article }: ArticleCardProps) => {
@@ -22,10 +22,10 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
   return (
     <Card className="hover:shadow-lg transition-shadow overflow-hidden group scale-[0.7] origin-top rounded-3xl">
       <div className="flex flex-col md:flex-row">
-        {article.imageUrl ? (
+        {article.image_url ? (
           <div className="md:w-48 h-48 md:h-auto relative overflow-hidden">
             <img 
-              src={article.imageUrl} 
+              src={article.image_url} 
               alt={article.title}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
@@ -44,10 +44,10 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
                 </CardTitle>
                 <div className="flex items-center gap-2 text-sm text-gray-500 flex-wrap">
                   <User className="h-4 w-4" />
-                  {article.authors.join(", ")}
+                  {article.article_authors?.map(a => a.author.name).join(", ")}
                   <span className="mx-2">•</span>
                   <Calendar className="h-4 w-4" />
-                  {article.date}
+                  {new Date(article.date).toLocaleDateString()}
                   {article.views && (
                     <>
                       <span className="mx-2">•</span>
@@ -66,7 +66,7 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
               </div>
               <div className="flex gap-2">
                 <Badge variant="secondary">{article.source}</Badge>
-                <Badge variant="outline">{article.category}</Badge>
+                <Badge variant="outline">{article.category?.name}</Badge>
               </div>
             </div>
           </CardHeader>
@@ -75,13 +75,13 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
               {article.abstract}
             </p>
             <div className="flex flex-wrap gap-2 mb-4">
-              {article.tags.map((tag) => (
+              {article.article_tags?.map((t) => (
                 <Badge 
-                  key={tag} 
+                  key={t.tag.name} 
                   variant="secondary" 
                   className="bg-primary/5 text-primary hover:bg-primary/10"
                 >
-                  {tag}
+                  {t.tag.name}
                 </Badge>
               ))}
             </div>

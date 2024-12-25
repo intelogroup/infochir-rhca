@@ -2,8 +2,8 @@ import { useState } from "react";
 import { DateRange } from "react-day-picker";
 import { addDays } from "date-fns";
 import { SearchBar } from "./index-medicus/SearchBar";
-import { categories, sources, mockArticles } from "./index-medicus/constants";
-import type { Article } from "./index-medicus/types";
+import { categories, sources } from "./index-medicus/constants";
+import type { Article } from "@/types/article";
 import {
   Table,
   TableBody,
@@ -15,6 +15,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FileText, Download } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const IndexMedicusGrid = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -24,28 +25,40 @@ export const IndexMedicusGrid = () => {
     from: new Date(2024, 0, 1),
     to: addDays(new Date(), 1),
   });
-  const [filteredArticles, setFilteredArticles] = useState<Article[]>(mockArticles);
+  const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
 
-  const handleSearch = () => {
-    const filtered = mockArticles.filter(article => {
-      const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        article.authors.some(author => author.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        article.abstract.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesCategory = selectedCategory === "Toutes les catégories" || 
-        article.category === selectedCategory;
-      
-      const matchesSource = selectedSource === "Toutes les sources" ||
-        article.source === selectedSource;
-      
-      const articleDate = new Date(article.date);
-      const matchesDate = !date?.from || !date?.to || 
-        (articleDate >= date.from && articleDate <= date.to);
+  const handleSearch = async () => {
+    let query = supabase
+      .from('articles')
+      .select(`
+        *,
+        category:categories(name),
+        article_authors(author:authors(name)),
+        article_tags(tag:tags(name))
+      `);
 
-      return matchesSearch && matchesCategory && matchesSource && matchesDate;
-    });
+    // Apply filters
+    if (searchTerm) {
+      query = query.or(`title.ilike.%${searchTerm}%,abstract.ilike.%${searchTerm}%`);
+    }
 
-    setFilteredArticles(filtered);
+    if (selectedSource !== "Toutes les sources") {
+      query = query.eq('source', selectedSource);
+    }
+
+    if (date?.from && date?.to) {
+      query = query.gte('date', date.from.toISOString())
+                  .lte('date', date.to.toISOString());
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Error fetching articles:', error);
+      return;
+    }
+
+    setFilteredArticles(data || []);
   };
 
   return (
@@ -81,15 +94,17 @@ export const IndexMedicusGrid = () => {
             {filteredArticles.map((article) => (
               <TableRow key={article.id}>
                 <TableCell className="font-medium">{article.title}</TableCell>
-                <TableCell>{article.authors.join(", ")}</TableCell>
+                <TableCell>
+                  {article.article_authors?.map(a => a.author.name).join(", ")}
+                </TableCell>
                 <TableCell>{new Date(article.date).toLocaleDateString()}</TableCell>
-                <TableCell>{article.category}</TableCell>
+                <TableCell>{article.category?.name}</TableCell>
                 <TableCell>{article.source}</TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
-                    {article.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary" className="text-xs">
-                        {tag}
+                    {article.article_tags?.map((t) => (
+                      <Badge key={t.tag.name} variant="secondary" className="text-xs">
+                        {t.tag.name}
                       </Badge>
                     ))}
                   </div>
