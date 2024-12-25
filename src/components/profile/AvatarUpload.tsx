@@ -21,30 +21,18 @@ export const AvatarUpload = ({ userId, avatarUrl, fullName, onAvatarUpdate }: Av
 
     try {
       setIsUploading(true);
-
-      // First, delete the existing avatar if there is one
-      if (avatarUrl) {
-        const existingPath = avatarUrl.split('/').pop();
-        if (existingPath) {
-          await supabase.storage
-            .from('avatars')
-            .remove([existingPath]);
-        }
-      }
-
-      // Upload the new avatar
       const fileExt = file.name.split('.').pop();
-      const fileName = `${userId}-${Date.now()}.${fileExt}`;
+      const filePath = `${userId}/avatar.${fileExt}`;
       
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(fileName, file, { upsert: true });
+        .upload(filePath, file, { upsert: true });
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
-        .getPublicUrl(fileName);
+        .getPublicUrl(filePath);
 
       const { error: updateError } = await supabase
         .from('profiles')
