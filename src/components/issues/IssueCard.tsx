@@ -22,11 +22,27 @@ export const IssueCard = ({ id, title, volume, issue, date, articleCount, pdfUrl
     }
     
     try {
+      // First check if the file exists
+      const { data: fileExists } = await supabase.storage
+        .from('articles')
+        .list('', {
+          search: pdfUrl
+        });
+
+      if (!fileExists || fileExists.length === 0) {
+        toast.error("Le fichier PDF n'existe pas");
+        return;
+      }
+
       const { data, error } = await supabase.storage
         .from('articles')
         .download(pdfUrl);
         
-      if (error) throw error;
+      if (error) {
+        console.error('Error downloading file:', error);
+        toast.error("Erreur lors du téléchargement du fichier");
+        return;
+      }
       
       const url = window.URL.createObjectURL(data);
       const a = document.createElement('a');
