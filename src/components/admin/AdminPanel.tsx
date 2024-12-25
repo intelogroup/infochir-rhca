@@ -43,9 +43,20 @@ export const AdminPanel = () => {
         throw new Error("Missing required fields");
       }
 
-      const articleData = {
-        ...formData,
+      // Create a properly typed article data object
+      const articleData: Omit<Article, 'id'> = {
+        title: formData.title,
+        abstract: formData.abstract,
+        source: formData.source,
         date: formData.date || new Date().toISOString(),
+        volume: formData.volume,
+        issue_number: formData.issue_number,
+        article_count: formData.article_count,
+        pdf_url: formData.pdf_url || null,
+        image_url: formData.image_url || null,
+        views: formData.views || 0,
+        citations: formData.citations || 0,
+        category_id: formData.category_id,
       };
 
       if (editingArticle) {
@@ -70,7 +81,7 @@ export const AdminPanel = () => {
       fetchArticles();
     } catch (error) {
       console.error("Error saving article:", error);
-      toast.error("Error saving article");
+      toast.error(error instanceof Error ? error.message : "Error saving article");
     } finally {
       setIsSubmitting(false);
     }
