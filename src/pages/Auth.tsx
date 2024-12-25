@@ -10,13 +10,13 @@ const AuthPage = () => {
   const navigate = useNavigate();
   const { user, isLoading } = useAuth();
 
-  // Redirect to home if already authenticated
   useEffect(() => {
     if (user) {
       navigate("/");
     }
   }, [user, navigate]);
 
+  // Only show loading spinner while checking auth status
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -25,6 +25,12 @@ const AuthPage = () => {
     );
   }
 
+  // Don't render anything if user is authenticated (will redirect)
+  if (user) {
+    return null;
+  }
+
+  // Render auth form for non-authenticated users
   return (
     <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8">
@@ -42,7 +48,7 @@ const AuthPage = () => {
           </p>
         </div>
 
-        <div className="bg-white shadow-sm border border-gray-200 rounded-xl p-6 space-y-6">
+        <div className="bg-white shadow-sm border border-gray-200 rounded-xl p-6">
           <Auth
             supabaseClient={supabase}
             appearance={{
