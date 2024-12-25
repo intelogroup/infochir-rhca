@@ -7,7 +7,7 @@ import { NewsletterSection } from "@/components/home/NewsletterSection";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
+    <div className="min-h-screen bg-[#f8fafc]" role="main" aria-label="Page d'accueil">
       <Navbar />
       <HeroSection />
       <StatsSection />
