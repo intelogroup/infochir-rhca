@@ -1,13 +1,13 @@
 import { SearchBar } from "./index-medicus/SearchBar";
 import { ArticlesTable } from "./index-medicus/ArticlesTable";
+import { ArticlesGrid } from "./index-medicus/ArticlesGrid";
+import { ViewModeToggle } from "./index-medicus/ViewModeToggle";
+import { LoadingState } from "./index-medicus/LoadingState";
 import { categories, sources } from "./index-medicus/constants";
 import { useIndexMedicusSearch } from "@/hooks/useIndexMedicusSearch";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { ArticlesGrid } from "./index-medicus/ArticlesGrid";
 
 export const IndexMedicusGrid = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('table');
@@ -27,7 +27,6 @@ export const IndexMedicusGrid = () => {
   } = useIndexMedicusSearch();
 
   if (!Array.isArray(categories) || !Array.isArray(sources)) {
-    console.error("Categories and sources must be arrays");
     return (
       <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
@@ -67,49 +66,10 @@ export const IndexMedicusGrid = () => {
         sources={sources}
       />
 
-      <div className="flex justify-end gap-2 mb-4">
-        <Button
-          variant={viewMode === 'grid' ? 'default' : 'outline'}
-          onClick={() => setViewMode('grid')}
-          size="sm"
-        >
-          Grille
-        </Button>
-        <Button
-          variant={viewMode === 'table' ? 'default' : 'outline'}
-          onClick={() => setViewMode('table')}
-          size="sm"
-        >
-          Tableau
-        </Button>
-      </div>
+      <ViewModeToggle viewMode={viewMode} setViewMode={setViewMode} />
 
       {isLoading ? (
-        <div className="space-y-6">
-          <Skeleton className="h-12 w-full" /> {/* Search bar skeleton */}
-          {viewMode === 'table' ? (
-            <div className="space-y-2">
-              <div className="grid grid-cols-6 gap-4">
-                {[...Array(6)].map((_, i) => (
-                  <Skeleton key={`header-${i}`} className="h-8" />
-                ))}
-              </div>
-              {[...Array(5)].map((_, i) => (
-                <div key={`row-${i}`} className="grid grid-cols-6 gap-4">
-                  {[...Array(6)].map((_, j) => (
-                    <Skeleton key={`cell-${i}-${j}`} className="h-12" />
-                  ))}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {[...Array(6)].map((_, i) => (
-                <Skeleton key={`card-${i}`} className="h-64" />
-              ))}
-            </div>
-          )}
-        </div>
+        <LoadingState viewMode={viewMode} />
       ) : (
         viewMode === 'table' ? (
           <ArticlesTable articles={filteredArticles} />
