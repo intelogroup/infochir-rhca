@@ -21,7 +21,7 @@ export const AdminArticleList = () => {
         .order("date", { ascending: false });
 
       if (error) throw error;
-      setArticles(data || []);
+      setArticles(data as Article[]);
     } catch (error) {
       console.error("Error fetching articles:", error);
       toast.error("Error loading articles");
