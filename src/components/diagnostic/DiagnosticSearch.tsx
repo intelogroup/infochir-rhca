@@ -1,6 +1,7 @@
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "sonner";
 
 interface DiagnosticSearchProps {
   searchTerm: string;
@@ -17,10 +18,30 @@ export const DiagnosticSearch = ({
   setSelectedSpecialty,
   specialties,
 }: DiagnosticSearchProps) => {
+  // Validate specialties prop
   if (!Array.isArray(specialties)) {
     console.error("Specialties prop must be an array");
+    toast.error("Une erreur est survenue lors du chargement des spécialités");
     return null;
   }
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setSearchTerm(e.target.value);
+    } catch (error) {
+      console.error("Error updating search term:", error);
+      toast.error("Une erreur est survenue lors de la recherche");
+    }
+  };
+
+  const handleSpecialtyChange = (value: string) => {
+    try {
+      setSelectedSpecialty(value);
+    } catch (error) {
+      console.error("Error updating specialty:", error);
+      toast.error("Une erreur est survenue lors de la sélection de la spécialité");
+    }
+  };
 
   return (
     <div className="bg-white/95 backdrop-blur-xs rounded-xl p-4 border border-gray-100 mb-6">
@@ -31,14 +52,15 @@ export const DiagnosticSearch = ({
             type="text"
             placeholder="Rechercher par titre, description..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={handleSearchChange}
             className="pl-10"
+            aria-label="Rechercher des diagnostics"
           />
         </div>
 
         <Select 
           value={selectedSpecialty} 
-          onValueChange={setSelectedSpecialty}
+          onValueChange={handleSpecialtyChange}
           defaultValue="all"
         >
           <SelectTrigger className="bg-white">
