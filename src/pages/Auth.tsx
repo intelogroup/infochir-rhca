@@ -9,7 +9,6 @@ const AuthPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is already signed in
     const checkUser = async () => {
       try {
         const { data: { user }, error } = await supabase.auth.getUser();
@@ -74,7 +73,7 @@ const AuthPage = () => {
               },
             }}
             providers={[]}
-            redirectTo={window.location.origin}
+            redirectTo={window.location.origin + window.location.pathname}
             localization={{
               variables: {
                 sign_in: {
