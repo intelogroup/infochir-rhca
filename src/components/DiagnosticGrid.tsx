@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { FixedSizeList as List } from "react-window";
 import { DiagnosticSearch } from "./diagnostic/DiagnosticSearch";
 import { YearGroup as YearGroupComponent } from "./diagnostic/YearGroup";
 import { diagnosticCases } from "./diagnostic/data";
@@ -23,6 +24,19 @@ export const DiagnosticGrid = () => {
     selectedSpecialty
   );
 
+  const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
+    const yearGroup = filteredAndGroupedCases[index];
+    return (
+      <div style={style}>
+        <YearGroupComponent
+          key={yearGroup.year}
+          yearGroup={yearGroup}
+          monthNames={monthNames}
+        />
+      </div>
+    );
+  };
+
   return (
     <div className="max-w-7xl mx-auto scale-[0.85] origin-top">
       <DiagnosticSearch
@@ -33,15 +47,14 @@ export const DiagnosticGrid = () => {
         specialties={specialties}
       />
 
-      <div className="space-y-8">
-        {filteredAndGroupedCases.map((yearGroup) => (
-          <YearGroupComponent
-            key={yearGroup.year}
-            yearGroup={yearGroup}
-            monthNames={monthNames}
-          />
-        ))}
-      </div>
+      <List
+        height={800} // Adjust this value based on your needs
+        itemCount={filteredAndGroupedCases.length}
+        itemSize={400} // Adjust this value based on your content
+        width="100%"
+      >
+        {Row}
+      </List>
     </div>
   );
 };

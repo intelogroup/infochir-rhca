@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DiagnosticCase } from "./types";
@@ -6,11 +7,12 @@ interface DiagnosticCardProps {
   diagnosticCase: DiagnosticCase;
 }
 
-export const DiagnosticCard = ({ diagnosticCase }: DiagnosticCardProps) => {
+export const DiagnosticCard = memo(({ diagnosticCase }: DiagnosticCardProps) => {
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow rounded-xl">
       <div className="aspect-[4/3] relative overflow-hidden">
         <img
+          loading="lazy"
           src={diagnosticCase.imageUrl}
           alt={diagnosticCase.title}
           className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
@@ -33,4 +35,6 @@ export const DiagnosticCard = ({ diagnosticCase }: DiagnosticCardProps) => {
       </CardContent>
     </Card>
   );
-};
+});
+
+DiagnosticCard.displayName = "DiagnosticCard";
