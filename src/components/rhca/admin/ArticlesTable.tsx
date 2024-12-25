@@ -21,16 +21,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useState } from "react";
-
-interface Article {
-  id: string;
-  title: string;
-  date: string;
-  volume?: string;
-  issue_number?: number;
-  pdf_url: string | null;
-  source: "RHCA" | "IGM" | "ATLAS" | "ADC";
-}
+import type { Article } from "@/types/article";
 
 interface ArticlesTableProps {
   articles: Article[];

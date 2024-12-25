@@ -5,18 +5,7 @@ import { Plus } from "lucide-react";
 import { ArticleFormDialog } from "./ArticleFormDialog";
 import { ArticlesTable } from "./ArticlesTable";
 import { toast } from "sonner";
-
-interface Article {
-  id: string;
-  title: string;
-  abstract: string;
-  date: string;
-  volume?: string;
-  issue_number?: number;
-  article_count?: number;
-  source: "RHCA" | "IGM" | "ATLAS" | "ADC";
-  pdf_url: string | null;
-}
+import type { Article } from "@/types/article";
 
 export const AdminPanel = () => {
   const [articles, setArticles] = useState<Article[]>([]);

@@ -12,17 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-
-interface Article {
-  id: string;
-  title: string;
-  abstract: string;
-  date: string;
-  volume?: string;
-  issue_number?: number;
-  article_count?: number;
-  source: "RHCA" | "IGM" | "ATLAS" | "ADC";
-}
+import type { Article } from "@/types/article";
 
 interface ArticleFormDialogProps {
   article?: Article | null;
