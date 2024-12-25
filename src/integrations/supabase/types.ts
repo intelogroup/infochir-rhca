@@ -78,6 +78,7 @@ export type Database = {
           date: string
           id: string
           image_url: string | null
+          pdf_url: string | null
           source: Database["public"]["Enums"]["article_source"]
           title: string
           updated_at: string | null
@@ -91,6 +92,7 @@ export type Database = {
           date?: string
           id?: string
           image_url?: string | null
+          pdf_url?: string | null
           source: Database["public"]["Enums"]["article_source"]
           title: string
           updated_at?: string | null
@@ -104,6 +106,7 @@ export type Database = {
           date?: string
           id?: string
           image_url?: string | null
+          pdf_url?: string | null
           source?: Database["public"]["Enums"]["article_source"]
           title?: string
           updated_at?: string | null
