@@ -1,21 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, BookOpen, Users, Search, Database } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { DiagnosticGrid } from "@/components/DiagnosticGrid";
-
-const StatCard = ({ icon: Icon, title, value }: { icon: any; title: string; value: string }) => (
-  <div className="bg-white/95 backdrop-blur-xs rounded-xl p-4 border border-gray-100">
-    <div className="flex items-center gap-3">
-      <div className="p-2 bg-primary/5 rounded-lg">
-        <Icon className="h-5 w-5 text-primary" />
-      </div>
-      <div>
-        <p className="text-sm text-gray-600">{title}</p>
-        <p className="text-xl font-semibold text-gray-900">{value}</p>
-      </div>
-    </div>
-  </div>
-);
+import { StatsSection } from "@/components/adc/StatsSection";
+import { Sidebar } from "@/components/adc/Sidebar";
 
 const ADC = () => {
   return (
@@ -52,28 +40,7 @@ const ADC = () => {
             Une base de données visuelle complète pour faciliter le diagnostic clinique et améliorer la pratique médicale.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-12">
-            <StatCard 
-              icon={BookOpen} 
-              title="Cas Documentés" 
-              value="1000+" 
-            />
-            <StatCard 
-              icon={Users} 
-              title="Utilisateurs Actifs" 
-              value="500+" 
-            />
-            <StatCard 
-              icon={Search} 
-              title="Spécialités" 
-              value="25+" 
-            />
-            <StatCard 
-              icon={Database} 
-              title="Images Archivées" 
-              value="5000+" 
-            />
-          </div>
+          <StatsSection />
         </div>
 
         <div className="grid lg:grid-cols-6 gap-6 max-w-[90rem] mx-auto">
@@ -84,43 +51,8 @@ const ADC = () => {
             </div>
           </div>
           
-          <div className="space-y-6">
-            <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                Recherche Avancée
-              </h2>
-              <p className="text-sm text-gray-600 mb-4">
-                Utilisez notre moteur de recherche avancé pour trouver des cas spécifiques par pathologie, spécialité ou symptômes.
-              </p>
-              <Button className="w-full">
-                Lancer une recherche
-              </Button>
-            </div>
-
-            <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                Spécialités
-              </h2>
-              <ul className="space-y-2 text-sm">
-                <li className="text-gray-600">Radiologie</li>
-                <li className="text-gray-600">Cardiologie</li>
-                <li className="text-gray-600">Neurologie</li>
-                <li className="text-gray-600">Orthopédie</li>
-                <li className="text-gray-600">Pneumologie</li>
-              </ul>
-            </div>
-
-            <div className="bg-white/95 backdrop-blur-xs rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                Contribution
-              </h2>
-              <p className="text-sm text-gray-600 mb-4">
-                Partagez vos cas cliniques avec la communauté médicale et contribuez à l'enrichissement de notre base de données.
-              </p>
-              <Button variant="outline" className="w-full">
-                Soumettre un cas
-              </Button>
-            </div>
+          <div className="lg:col-span-1">
+            <Sidebar />
           </div>
         </div>
       </div>
