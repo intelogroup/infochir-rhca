@@ -4,6 +4,7 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { AuthError } from "@supabase/supabase-js";
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -30,17 +31,27 @@ const AuthPage = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event, session?.user?.email);
       
-      if (event === 'SIGNED_IN' && session) {
-        toast.success(`Welcome ${session.user.email}`);
-        navigate("/");
-      } else if (event === 'SIGNED_OUT') {
-        toast.info("Signed out");
-      } else if (event === 'USER_UPDATED') {
-        console.log("User updated");
-      } else if (event === 'PASSWORD_RECOVERY') {
-        toast.info("Password recovery email sent");
-      } else if (event === 'USER_DELETED') {
-        toast.error("Account deleted");
+      switch (event) {
+        case 'SIGNED_IN':
+          if (session) {
+            toast.success(`Welcome ${session.user.email}`);
+            navigate("/");
+          }
+          break;
+        case 'SIGNED_OUT':
+          toast.info("Signed out");
+          break;
+        case 'USER_UPDATED':
+          console.log("User updated");
+          break;
+        case 'TOKEN_REFRESHED':
+          console.log("Token refreshed");
+          break;
+        case 'INITIAL_SESSION':
+          console.log("Initial session");
+          break;
+        default:
+          console.log("Unhandled auth event:", event);
       }
     });
 
@@ -56,6 +67,11 @@ const AuthPage = () => {
       </div>
     );
   }
+
+  const handleAuthError = (error: AuthError) => {
+    console.error("Auth error:", error);
+    toast.error(error.message || "Authentication failed");
+  };
 
   return (
     <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center px-4">
@@ -94,10 +110,6 @@ const AuthPage = () => {
             view="sign_in"
             redirectTo={window.location.origin}
             showLinks={false}
-            onError={(error) => {
-              console.error("Auth error:", error);
-              toast.error(error.message || "Authentication failed");
-            }}
           />
         </div>
       </div>
