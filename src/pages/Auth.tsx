@@ -3,56 +3,21 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { LoadingSpinner } from "@/components/auth/LoadingSpinner";
 
 const AuthPage = () => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(true);
+  const { user, isLoading } = useAuth();
 
   useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) throw error;
-        if (session) {
-          navigate("/");
-        }
-      } catch (error) {
-        console.error("Session check error:", error);
-        toast.error("Error checking session");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    // Check current session
-    checkSession();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event, !!session);
-      
-      if (event === 'SIGNED_IN') {
-        toast.success("Successfully signed in!");
-        navigate("/");
-      } else if (event === 'SIGNED_OUT') {
-        toast.info("Signed out");
-      } else if (event === 'USER_UPDATED') {
-        console.log("User updated");
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [navigate]);
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
