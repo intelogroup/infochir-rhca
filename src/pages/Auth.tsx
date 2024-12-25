@@ -99,10 +99,6 @@ const AuthPage = () => {
             providers={[]}
             view="sign_in"
             redirectTo={window.location.origin}
-            onError={(error) => {
-              console.error("Auth error:", error);
-              toast.error(error.message || "Authentication error occurred");
-            }}
           />
         </div>
       </div>
