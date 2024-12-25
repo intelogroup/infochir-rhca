@@ -14,9 +14,12 @@ export const useIndexMedicusSearch = () => {
   });
   const [filteredArticles, setFilteredArticles] = useState<ArticleWithRelations[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSearch = useCallback(async () => {
     setIsLoading(true);
+    setError(null);
+    
     try {
       let query = supabase
         .from('articles')
@@ -44,16 +47,16 @@ export const useIndexMedicusSearch = () => {
                     .lte('date', date.to.toISOString());
       }
 
-      const { data, error } = await query;
+      const { data, error: supabaseError } = await query;
 
-      if (error) {
-        console.error('Error fetching articles:', error);
-        return;
+      if (supabaseError) {
+        throw supabaseError;
       }
 
       setFilteredArticles(data || []);
-    } catch (error) {
-      console.error('Error in handleSearch:', error);
+    } catch (err) {
+      console.error('Error in handleSearch:', err);
+      setError('Une erreur est survenue lors de la recherche');
     } finally {
       setIsLoading(false);
     }
@@ -70,6 +73,7 @@ export const useIndexMedicusSearch = () => {
     setDate,
     filteredArticles,
     isLoading,
+    error,
     handleSearch,
   };
 };

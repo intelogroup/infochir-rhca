@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, BookOpen, User, Tag, Calendar } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { IndexMedicusGrid } from "@/components/IndexMedicusGrid";
-import { StatsCard } from "@/components/adc/StatsCard";
+import { StatsSection } from "@/components/index-medicus/StatsSection";
 
 const IndexMedicus = () => {
   return (
@@ -39,28 +39,7 @@ const IndexMedicus = () => {
             Base de données médicale complète regroupant les publications, cas cliniques et diagnostics.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-            <StatsCard 
-              icon={BookOpen} 
-              title="Publications Totales" 
-              value="2500+" 
-            />
-            <StatsCard 
-              icon={User} 
-              title="Auteurs" 
-              value="500+" 
-            />
-            <StatsCard 
-              icon={Tag} 
-              title="Catégories" 
-              value="50+" 
-            />
-            <StatsCard 
-              icon={Calendar} 
-              title="Années d'Archives" 
-              value="10+" 
-            />
-          </div>
+          <StatsSection />
         </div>
 
         <IndexMedicusGrid />

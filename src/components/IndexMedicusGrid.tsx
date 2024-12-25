@@ -2,6 +2,9 @@ import { SearchBar } from "./index-medicus/SearchBar";
 import { ArticlesGrid } from "./index-medicus/ArticlesGrid";
 import { categories, sources } from "./index-medicus/constants";
 import { useIndexMedicusSearch } from "@/hooks/useIndexMedicusSearch";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 export const IndexMedicusGrid = () => {
   const {
@@ -15,6 +18,7 @@ export const IndexMedicusGrid = () => {
     setDate,
     filteredArticles,
     isLoading,
+    error,
     handleSearch,
   } = useIndexMedicusSearch();
 
@@ -34,10 +38,27 @@ export const IndexMedicusGrid = () => {
         sources={sources}
       />
 
-      <ArticlesGrid 
-        articles={filteredArticles}
-        isLoading={isLoading}
-      />
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Une erreur est survenue lors du chargement des articles. Veuillez réessayer.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {isLoading ? (
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} className="h-32 w-full" />
+          ))}
+        </div>
+      ) : (
+        <ArticlesGrid 
+          articles={filteredArticles}
+          isLoading={isLoading}
+        />
+      )}
     </div>
   );
 };
