@@ -3,7 +3,7 @@ import { DateRange } from "react-day-picker";
 import { addDays } from "date-fns";
 import { SearchBar } from "./index-medicus/SearchBar";
 import { categories, sources } from "./index-medicus/constants";
-import type { Article } from "@/types/article";
+import type { ArticleWithRelations } from "@/types/article";
 import {
   Table,
   TableBody,
@@ -25,7 +25,7 @@ export const IndexMedicusGrid = () => {
     from: new Date(2024, 0, 1),
     to: addDays(new Date(), 1),
   });
-  const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
+  const [filteredArticles, setFilteredArticles] = useState<ArticleWithRelations[]>([]);
 
   const handleSearch = async () => {
     let query = supabase
