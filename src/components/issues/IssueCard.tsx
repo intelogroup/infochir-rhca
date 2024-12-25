@@ -22,7 +22,7 @@ export const IssueCard = ({ id, title, volume, issue, date, articleCount, pdfUrl
     }
     
     try {
-      // First check if the file exists
+      // First check if the file exists and validate its content type
       const { data: fileExists } = await supabase.storage
         .from('articles')
         .list('', {
@@ -31,6 +31,14 @@ export const IssueCard = ({ id, title, volume, issue, date, articleCount, pdfUrl
 
       if (!fileExists || fileExists.length === 0) {
         toast.error("Le fichier PDF n'existe pas");
+        return;
+      }
+
+      // Check if the file is actually a PDF by its content type
+      const file = fileExists[0];
+      if (!file.metadata?.mimetype?.includes('pdf')) {
+        toast.error("Le fichier n'est pas un PDF valide");
+        console.error('Invalid file type:', file.metadata?.mimetype);
         return;
       }
 
@@ -44,6 +52,13 @@ export const IssueCard = ({ id, title, volume, issue, date, articleCount, pdfUrl
         return;
       }
       
+      // Additional validation of the downloaded data
+      if (!(data instanceof Blob) || data.size === 0) {
+        toast.error("Le fichier PDF est corrompu ou vide");
+        console.error('Invalid PDF data:', data);
+        return;
+      }
+
       const url = window.URL.createObjectURL(data);
       const a = document.createElement('a');
       a.href = url;
