@@ -9,38 +9,27 @@ const AuthPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkUser = async () => {
-      try {
-        const { data: { user }, error } = await supabase.auth.getUser();
-        if (error) {
-          console.error("Error checking user:", error);
-          toast.error("Error checking authentication status");
-          return;
-        }
-        if (user) {
-          navigate("/");
-        }
-      } catch (error) {
-        console.error("Error checking user:", error);
-        toast.error("Error checking authentication status");
+    // Check current session on mount
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        navigate("/");
       }
-    };
-    checkUser();
+    });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    // Set up auth state listener
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN") {
         toast.success("Successfully signed in!");
         navigate("/");
       } else if (event === "SIGNED_OUT") {
         toast.success("Successfully signed out!");
         navigate("/auth");
-      } else if (event === "USER_UPDATED") {
-        toast.success("Profile updated successfully!");
-      } else if (event === "PASSWORD_RECOVERY") {
-        toast.info("Password recovery email sent!");
       }
     });
 
+    // Cleanup subscription
     return () => subscription.unsubscribe();
   }, [navigate]);
 
@@ -78,36 +67,6 @@ const AuthPage = () => {
             view="sign_in"
             redirectTo={window.location.origin}
             showLinks={true}
-            localization={{
-              variables: {
-                sign_in: {
-                  email_label: 'Email',
-                  password_label: 'Password',
-                  button_label: 'Sign in',
-                  loading_button_label: 'Signing in...',
-                  social_provider_text: 'Sign in with {{provider}}',
-                  link_text: 'Already have an account? Sign in',
-                },
-                sign_up: {
-                  email_label: 'Email',
-                  password_label: 'Create a password (minimum 6 characters)',
-                  button_label: 'Create account',
-                  loading_button_label: 'Creating account...',
-                  social_provider_text: 'Sign up with {{provider}}',
-                  link_text: 'Don\'t have an account? Sign up',
-                },
-                magic_link: {
-                  button_label: 'Send magic link',
-                  loading_button_label: 'Sending magic link...',
-                },
-                forgotten_password: {
-                  link_text: 'Forgot password?',
-                  button_label: 'Send reset password instructions',
-                  loading_button_label: 'Please wait...',
-                  confirmation_text: 'Check your email for the password reset link',
-                },
-              },
-            }}
           />
         </div>
       </div>
