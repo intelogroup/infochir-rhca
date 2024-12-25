@@ -24,11 +24,13 @@ const App = () => (
       <Suspense fallback={<LoadingSpinner />}>
         <AuthProvider>
           <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <AppRoutes />
-            </BrowserRouter>
+            <div className="min-h-screen bg-background">
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <AppRoutes />
+              </BrowserRouter>
+            </div>
           </TooltipProvider>
         </AuthProvider>
       </Suspense>

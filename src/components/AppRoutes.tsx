@@ -61,10 +61,13 @@ const routes = [
   },
 ];
 
-// Custom loading component for route transitions
+// Enhanced loading component for route transitions
 const RouteLoadingSpinner = () => (
-  <div className="min-h-[50vh] flex items-center justify-center">
-    <LoadingSpinner />
+  <div className="min-h-[50vh] flex items-center justify-center animate-fade-in">
+    <div className="bg-white/95 backdrop-blur-sm rounded-lg p-8 shadow-lg">
+      <LoadingSpinner />
+      <p className="text-sm text-gray-500 mt-4">Loading...</p>
+    </div>
   </div>
 );
 
@@ -76,43 +79,45 @@ export const AppRoutes = () => {
   return (
     <>
       {showNavbar && <Navbar />}
-      <Suspense fallback={<RouteLoadingSpinner />}>
-        <Routes>
-          {routes.map(({ path, element, private: isPrivate, isAdmin }) => (
-            <Route
-              key={path}
-              path={path}
+      <div className="min-h-screen animate-fade-in">
+        <Suspense fallback={<RouteLoadingSpinner />}>
+          <Routes>
+            {routes.map(({ path, element, private: isPrivate, isAdmin }) => (
+              <Route
+                key={path}
+                path={path}
+                element={
+                  isAdmin ? (
+                    <AdminRoute>
+                      <Suspense fallback={<RouteLoadingSpinner />}>
+                        {element}
+                      </Suspense>
+                    </AdminRoute>
+                  ) : isPrivate ? (
+                    <PrivateRoute>
+                      <Suspense fallback={<RouteLoadingSpinner />}>
+                        {element}
+                      </Suspense>
+                    </PrivateRoute>
+                  ) : (
+                    <Suspense fallback={<RouteLoadingSpinner />}>
+                      {element}
+                    </Suspense>
+                  )
+                }
+              />
+            ))}
+            <Route 
+              path="*" 
               element={
-                isAdmin ? (
-                  <AdminRoute>
-                    <Suspense fallback={<RouteLoadingSpinner />}>
-                      {element}
-                    </Suspense>
-                  </AdminRoute>
-                ) : isPrivate ? (
-                  <PrivateRoute>
-                    <Suspense fallback={<RouteLoadingSpinner />}>
-                      {element}
-                    </Suspense>
-                  </PrivateRoute>
-                ) : (
-                  <Suspense fallback={<RouteLoadingSpinner />}>
-                    {element}
-                  </Suspense>
-                )
-              }
+                <Suspense fallback={<RouteLoadingSpinner />}>
+                  <NotFound />
+                </Suspense>
+              } 
             />
-          ))}
-          <Route 
-            path="*" 
-            element={
-              <Suspense fallback={<RouteLoadingSpinner />}>
-                <NotFound />
-              </Suspense>
-            } 
-          />
-        </Routes>
-      </Suspense>
+          </Routes>
+        </Suspense>
+      </div>
     </>
   );
 };
