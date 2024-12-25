@@ -6,14 +6,12 @@ import { ArticleFormDialog } from "./ArticleFormDialog";
 import { ArticlesTable } from "./ArticlesTable";
 import { toast } from "sonner";
 import type { Article } from "@/types/article";
-import { useAuthState } from "@/hooks/useAuthState";
 
 export const ArticleList = () => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
-  const { isAdmin } = useAuthState();
 
   const fetchArticles = async () => {
     try {
@@ -54,12 +52,10 @@ export const ArticleList = () => {
           <h2 className="text-2xl font-bold text-gray-900">Articles</h2>
           <p className="text-sm text-gray-500">Manage RHCA articles</p>
         </div>
-        {isAdmin && (
-          <Button onClick={() => setIsDialogOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Article
-          </Button>
-        )}
+        <Button onClick={() => setIsDialogOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          Add Article
+        </Button>
       </div>
 
       <ArticlesTable

@@ -1,49 +1,74 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/components/auth/AuthProvider";
-import { LoadingSpinner } from "@/components/auth/LoadingSpinner";
+import { toast } from "sonner";
 
 const AuthPage = () => {
   const navigate = useNavigate();
-  const { user, isLoading } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
-      navigate("/", { replace: true });
-    }
-  }, [user, navigate]);
+    const checkSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        if (session) {
+          navigate("/");
+        }
+      } catch (error) {
+        console.error("Session check error:", error);
+        toast.error("Error checking session");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // Check current session
+    checkSession();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event, !!session);
+      
+      if (event === 'SIGNED_IN') {
+        toast.success("Successfully signed in!");
+        navigate("/");
+      } else if (event === 'SIGNED_OUT') {
+        toast.info("Signed out");
+      } else if (event === 'USER_UPDATED') {
+        console.log("User updated");
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner />
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
 
-  if (user) return null;
-
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
+    <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center px-4">
+      <div className="max-w-md w-full">
+        <div className="text-center mb-8">
           <img 
             src="/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png"
             alt="Logo"
-            className="mx-auto h-16 w-16 object-contain"
+            className="h-12 w-12 mx-auto mb-4"
           />
-          <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900">
-            Welcome to INFOCHIR
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Please sign in to access the platform
-          </p>
+          <h1 className="text-2xl font-bold text-gray-900">Welcome to INFOCHIR</h1>
+          <p className="text-gray-600 mt-2">Please sign in to continue</p>
         </div>
 
-        <div className="bg-white shadow-sm border border-gray-200 rounded-xl p-6">
+        <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
           <Auth
             supabaseClient={supabase}
             appearance={{
@@ -57,13 +82,14 @@ const AuthPage = () => {
                 },
               },
               className: {
-                container: 'space-y-4',
-                button: 'w-full px-4 py-2.5 rounded-lg font-medium',
-                input: 'rounded-lg border-gray-300',
-                label: 'text-sm font-medium text-gray-700',
+                container: 'w-full',
+                button: 'w-full px-4 py-2 rounded-lg',
+                input: 'rounded-lg',
               },
             }}
             providers={[]}
+            view="sign_in"
+            redirectTo={window.location.origin}
           />
         </div>
       </div>
