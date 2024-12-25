@@ -46,11 +46,15 @@ const useAuthState = () => {
 
         if (mounted && session) {
           // Check if user is admin using maybeSingle() instead of single()
-          const { data: adminData } = await supabase
+          const { data: adminData, error: adminError } = await supabase
             .from('admin_users')
             .select('*')
             .eq('user_id', session.user.id)
             .maybeSingle();
+
+          if (adminError) {
+            console.error("Error checking admin status:", adminError);
+          }
 
           setAuthState({
             isAuthenticated: true,
@@ -89,19 +93,34 @@ const useAuthState = () => {
         }
       } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         if (session) {
-          // Use maybeSingle() here as well
-          const { data: adminData } = await supabase
-            .from('admin_users')
-            .select('*')
-            .eq('user_id', session.user.id)
-            .maybeSingle();
+          try {
+            // Use maybeSingle() here as well
+            const { data: adminData, error: adminError } = await supabase
+              .from('admin_users')
+              .select('*')
+              .eq('user_id', session.user.id)
+              .maybeSingle();
 
-          if (mounted) {
-            setAuthState({
-              isAuthenticated: true,
-              isAdmin: !!adminData,
-              isLoading: false,
-            });
+            if (adminError) {
+              console.error("Error checking admin status:", adminError);
+            }
+
+            if (mounted) {
+              setAuthState({
+                isAuthenticated: true,
+                isAdmin: !!adminData,
+                isLoading: false,
+              });
+            }
+          } catch (error) {
+            console.error("Error checking admin status:", error);
+            if (mounted) {
+              setAuthState({
+                isAuthenticated: true,
+                isAdmin: false,
+                isLoading: false,
+              });
+            }
           }
         }
       }
