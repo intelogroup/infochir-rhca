@@ -22,28 +22,46 @@ const StatCard = ({ icon: Icon, title, value }: { icon: any; title: string; valu
 
 const RHCA = () => {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkAdminStatus = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          setIsLoading(false);
+          return;
+        }
 
-      const { data, error } = await supabase
-        .from('admin_users')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+        const { data, error } = await supabase
+          .from('admin_users')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle();
 
-      if (error) {
+        if (error) {
+          console.error('Error checking admin status:', error);
+          return;
+        }
+
+        setIsAdmin(!!data);
+      } catch (error) {
         console.error('Error checking admin status:', error);
-        return;
+      } finally {
+        setIsLoading(false);
       }
-
-      setIsAdmin(!!data);
     };
 
     checkAdminStatus();
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#f8fafc] relative">
