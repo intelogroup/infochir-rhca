@@ -1,32 +1,94 @@
+import { Suspense, lazy } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { Navbar } from "./Navbar";
 import { PrivateRoute } from "./auth/PrivateRoute";
 import { AdminRoute } from "./auth/AdminRoute";
-import Index from "@/pages/Index";
-import RHCA from "@/pages/RHCA";
-import IGM from "@/pages/IGM";
-import ADC from "@/pages/ADC";
-import IndexMedicus from "@/pages/IndexMedicus";
-import Admin from "@/pages/Admin";
-import AuthPage from "@/pages/Auth";
+import { LoadingSpinner } from "./auth/LoadingSpinner";
+
+// Lazy load page components
+const Index = lazy(() => import("@/pages/Index"));
+const RHCA = lazy(() => import("@/pages/RHCA"));
+const IGM = lazy(() => import("@/pages/IGM"));
+const ADC = lazy(() => import("@/pages/ADC"));
+const IndexMedicus = lazy(() => import("@/pages/IndexMedicus"));
+const Admin = lazy(() => import("@/pages/Admin"));
+const AuthPage = lazy(() => import("@/pages/Auth"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
+
+// Route configuration
+const routes = [
+  {
+    path: "/",
+    element: <Index />,
+    private: true,
+    showNavbar: true,
+  },
+  {
+    path: "/auth",
+    element: <AuthPage />,
+    private: false,
+    showNavbar: false,
+  },
+  {
+    path: "/admin",
+    element: <Admin />,
+    isAdmin: true,
+    showNavbar: false,
+  },
+  {
+    path: "/rhca",
+    element: <RHCA />,
+    private: true,
+    showNavbar: false,
+  },
+  {
+    path: "/igm",
+    element: <IGM />,
+    private: true,
+    showNavbar: false,
+  },
+  {
+    path: "/adc",
+    element: <ADC />,
+    private: true,
+    showNavbar: false,
+  },
+  {
+    path: "/index-medicus",
+    element: <IndexMedicus />,
+    private: true,
+    showNavbar: false,
+  },
+];
 
 export const AppRoutes = () => {
   const location = useLocation();
-  const hideNavbarPaths = ['/igm', '/rhca', '/index-medicus', '/adc', '/auth', '/admin'];
-  const showNavbar = !hideNavbarPaths.includes(location.pathname);
+  const currentRoute = routes.find((route) => route.path === location.pathname);
+  const showNavbar = currentRoute?.showNavbar ?? true;
 
   return (
     <>
       {showNavbar && <Navbar />}
-      <Routes>
-        <Route path="/auth" element={<AuthPage />} />
-        <Route path="/" element={<PrivateRoute><Index /></PrivateRoute>} />
-        <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
-        <Route path="/rhca" element={<PrivateRoute><RHCA /></PrivateRoute>} />
-        <Route path="/igm" element={<PrivateRoute><IGM /></PrivateRoute>} />
-        <Route path="/adc" element={<PrivateRoute><ADC /></PrivateRoute>} />
-        <Route path="/index-medicus" element={<PrivateRoute><IndexMedicus /></PrivateRoute>} />
-      </Routes>
+      <Suspense fallback={<LoadingSpinner />}>
+        <Routes>
+          {routes.map(({ path, element, private: isPrivate, isAdmin }) => (
+            <Route
+              key={path}
+              path={path}
+              element={
+                isAdmin ? (
+                  <AdminRoute>{element}</AdminRoute>
+                ) : isPrivate ? (
+                  <PrivateRoute>{element}</PrivateRoute>
+                ) : (
+                  element
+                )
+              }
+            />
+          ))}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
     </>
   );
 };
