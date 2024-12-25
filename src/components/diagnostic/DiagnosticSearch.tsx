@@ -17,6 +17,11 @@ export const DiagnosticSearch = ({
   setSelectedSpecialty,
   specialties,
 }: DiagnosticSearchProps) => {
+  if (!Array.isArray(specialties)) {
+    console.error("Specialties prop must be an array");
+    return null;
+  }
+
   return (
     <div className="bg-white/95 backdrop-blur-xs rounded-xl p-4 border border-gray-100 mb-6">
       <div className="grid gap-4 md:grid-cols-2">
@@ -31,8 +36,12 @@ export const DiagnosticSearch = ({
           />
         </div>
 
-        <Select value={selectedSpecialty} onValueChange={setSelectedSpecialty}>
-          <SelectTrigger>
+        <Select 
+          value={selectedSpecialty} 
+          onValueChange={setSelectedSpecialty}
+          defaultValue="all"
+        >
+          <SelectTrigger className="bg-white">
             <SelectValue placeholder="Spécialité" />
           </SelectTrigger>
           <SelectContent>
