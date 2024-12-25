@@ -8,7 +8,6 @@ interface ProductCardProps {
   href?: string;
   onClick?: () => void;
   logo?: string;
-  bgImage?: string;
 }
 
 export const ProductCard = ({ 
@@ -17,23 +16,10 @@ export const ProductCard = ({
   icon: Icon, 
   href, 
   onClick,
-  logo, 
-  bgImage 
+  logo
 }: ProductCardProps) => {
   const CardContent = () => (
     <>
-      {bgImage && (
-        <div 
-          className="absolute inset-0 opacity-50 group-hover:opacity-[0.5] transition-opacity duration-300"
-          style={{
-            backgroundImage: `url(${bgImage})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-          }}
-        />
-      )}
-      
       <div className="relative z-10 flex items-center justify-center mb-8">
         {logo ? (
           <div className="relative h-20 w-20 overflow-hidden rounded-2xl transition-transform duration-300 group-hover:scale-110">
@@ -64,7 +50,7 @@ export const ProductCard = ({
     return (
       <button
         onClick={onClick}
-        className="w-full group relative flex flex-col items-center rounded-3xl bg-white p-8 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 border border-gray-100 overflow-hidden"
+        className="w-full group relative flex flex-col items-center rounded-3xl bg-white p-8 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 border border-gray-100"
       >
         <CardContent />
       </button>
@@ -74,7 +60,7 @@ export const ProductCard = ({
   return (
     <Link
       to={href || "#"}
-      className="group relative flex flex-col items-center rounded-3xl bg-white p-8 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 border border-gray-100 overflow-hidden"
+      className="group relative flex flex-col items-center rounded-3xl bg-white p-8 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 border border-gray-100"
     >
       <CardContent />
     </Link>
