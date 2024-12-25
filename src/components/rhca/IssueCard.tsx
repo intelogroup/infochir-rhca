@@ -3,9 +3,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import type { Article } from "@/types/article";
 
-type IssueCardProps = Pick<Article, 'id' | 'title' | 'volume' | 'issue_number' | 'date' | 'article_count' | 'pdf_url'>;
+interface IssueCardProps {
+  id: string;
+  title: string;
+  volume?: string;
+  issue_number?: number;
+  date: string;
+  article_count?: number;
+  pdf_url: string | null; // Changed to match database schema
+}
 
 export const IssueCard = ({ id, title, volume, issue_number, date, article_count, pdf_url }: IssueCardProps) => {
   const handleDownload = async () => {

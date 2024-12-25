@@ -10,7 +10,7 @@ interface Issue {
   issue_number?: number;
   date: string;
   article_count?: number;
-  pdf_url?: string;
+  pdf_url: string | null;
 }
 
 export const IssuesGrid = () => {
@@ -43,7 +43,7 @@ export const IssuesGrid = () => {
         volume: article.volume,
         issue_number: article.issue_number,
         date: article.date,
-        articleCount: article.article_count,
+        article_count: article.article_count,
         pdf_url: article.pdf_url
       })));
     } catch (error) {
