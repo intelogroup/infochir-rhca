@@ -23,47 +23,52 @@ export const Navbar = () => {
   const navItems = [
     { 
       name: "RHCA", 
-      href: "/rhca"
+      href: "/rhca",
+      description: "Revue Haïtienne de Chirurgie et d'Anesthésiologie"
     },
     { 
       name: "Index Medicus", 
-      href: "/index-medicus"
+      href: "/index-medicus",
+      description: "Base de données médicale"
     },
     { 
       name: "Atlas", 
-      href: "/adc"
+      href: "/adc",
+      description: "Atlas de Diagnostic Chirurgical"
     },
     { 
       name: "IGM", 
-      href: "/igm"
+      href: "/igm",
+      description: "Informations Générales Médicales"
     },
   ];
 
   return (
-    <nav className="fixed w-full z-50 bg-white/80 backdrop-blur-sm border-b border-gray-200/50 shadow-sm">
+    <nav className="fixed w-full z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex items-center space-x-2">
-            <Link to="/" className="flex-shrink-0 flex items-center">
+          {/* Logo section */}
+          <div className="flex items-center">
+            <Link to="/" className="flex-shrink-0 flex items-center space-x-2">
               <img 
                 src="/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png"
                 alt="Info Chir Logo"
                 className="h-10 w-10 object-contain"
               />
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-xl font-bold ml-2">
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-xl font-bold hidden sm:block">
                 INFOCHIR
               </span>
             </Link>
           </div>
 
-          {/* Desktop menu */}
-          <div className="hidden md:flex items-center justify-center flex-1">
-            <div className="flex items-center space-x-8">
+          {/* Desktop navigation */}
+          <div className="hidden md:flex items-center justify-center flex-1 px-8">
+            <div className="flex items-center justify-center space-x-6">
               {navItems.map((item) => (
                 <button
                   key={item.name}
                   onClick={() => navigate(item.href)}
-                  className="text-gray-700 hover:text-primary transition-colors duration-200 h-16 flex items-center font-medium"
+                  className="text-gray-700 hover:text-primary transition-colors duration-200 font-medium px-3 py-2 rounded-md hover:bg-gray-50"
                 >
                   {item.name}
                 </button>
@@ -71,29 +76,28 @@ export const Navbar = () => {
             </div>
           </div>
 
-          {/* Profile Menu */}
-          {isAuthenticated && (
-            <div className="flex items-center">
-              <ProfileMenu />
+          {/* Right section */}
+          <div className="flex items-center space-x-4">
+            {isAuthenticated && <ProfileMenu />}
+            
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="text-gray-700 p-2 rounded-lg hover:bg-gray-100/50 transition-colors duration-200"
+                aria-label={isOpen ? "Close menu" : "Open menu"}
+              >
+                {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </button>
             </div>
-          )}
-
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-700 p-2 rounded-lg hover:bg-gray-100/50 transition-colors duration-200"
-            >
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
           </div>
         </div>
       </div>
 
       {/* Mobile menu */}
       {isOpen && (
-        <div className="md:hidden absolute w-full bg-white/90 backdrop-blur-sm border-b border-gray-200/50">
-          <div className="px-4 pt-2 pb-3 space-y-2">
+        <div className="md:hidden absolute w-full bg-white/95 backdrop-blur-sm border-b border-gray-200/50 animate-fade-up">
+          <div className="px-4 pt-2 pb-3 space-y-1">
             {navItems.map((item) => (
               <button
                 key={item.name}
@@ -101,9 +105,10 @@ export const Navbar = () => {
                   navigate(item.href);
                   setIsOpen(false);
                 }}
-                className="flex w-full items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100/50 transition-colors duration-200 font-medium"
+                className="w-full text-left px-4 py-3 text-gray-700 hover:text-primary hover:bg-gray-50 rounded-md transition-colors duration-200 flex flex-col"
               >
-                {item.name}
+                <span className="font-medium">{item.name}</span>
+                <span className="text-sm text-gray-500">{item.description}</span>
               </button>
             ))}
           </div>
