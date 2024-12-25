@@ -7,4 +7,6 @@ export interface Issue {
   abstract: string;
   pdfUrl?: string;
   articleCount?: number;
+  authors?: string[];
+  tags?: string[];
 }

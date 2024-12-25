@@ -56,7 +56,7 @@ export const IssuesGrid = () => {
       }
 
       // Transform the articles into the Issue format with improved PDF matching
-      const transformedArticles = articles.map(article => {
+      const transformedArticles: Issue[] = articles.map(article => {
         // Find matching PDF file from storage using a more robust matching
         const pdfFile = storageFiles?.find(file => {
           const normalizedFileName = file.name.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -80,7 +80,6 @@ export const IssuesGrid = () => {
         };
       });
 
-      console.log('Transformed articles:', transformedArticles);
       setFilteredIssues(transformedArticles);
     } catch (error) {
       console.error('Error fetching articles:', error);
@@ -95,10 +94,10 @@ export const IssuesGrid = () => {
     const filtered = filteredIssues.filter(issue =>
       issue.title.toLowerCase().includes(value.toLowerCase()) ||
       issue.abstract?.toLowerCase().includes(value.toLowerCase()) ||
-      issue.authors.some(author => 
+      issue.authors?.some(author => 
         author.toLowerCase().includes(value.toLowerCase())
       ) ||
-      issue.tags.some(tag => 
+      issue.tags?.some(tag => 
         tag.toLowerCase().includes(value.toLowerCase())
       )
     );
