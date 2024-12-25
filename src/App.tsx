@@ -45,12 +45,12 @@ const useAuthState = () => {
         if (error) throw error;
 
         if (mounted && session) {
-          // Check if user is admin
+          // Check if user is admin using maybeSingle() instead of single()
           const { data: adminData } = await supabase
             .from('admin_users')
             .select('*')
             .eq('user_id', session.user.id)
-            .single();
+            .maybeSingle();
 
           setAuthState({
             isAuthenticated: true,
@@ -89,11 +89,12 @@ const useAuthState = () => {
         }
       } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         if (session) {
+          // Use maybeSingle() here as well
           const { data: adminData } = await supabase
             .from('admin_users')
             .select('*')
             .eq('user_id', session.user.id)
-            .single();
+            .maybeSingle();
 
           if (mounted) {
             setAuthState({
