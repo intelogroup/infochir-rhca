@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import { DateRange } from "react-day-picker";
+import { toast } from "sonner";
 
 interface SearchBarProps {
   searchTerm: string;
@@ -32,8 +33,51 @@ export const SearchBar = ({
   categories,
   sources,
 }: SearchBarProps) => {
+  // Validate required props
+  if (!Array.isArray(categories) || !Array.isArray(sources)) {
+    console.error("Categories and sources must be arrays");
+    toast.error("Une erreur est survenue lors du chargement des options de recherche");
+    return null;
+  }
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setSearchTerm(e.target.value);
+    } catch (error) {
+      console.error("Error updating search term:", error);
+      toast.error("Une erreur est survenue lors de la saisie");
+    }
+  };
+
+  const handleCategoryChange = (value: string) => {
+    try {
+      setSelectedCategory(value);
+    } catch (error) {
+      console.error("Error updating category:", error);
+      toast.error("Une erreur est survenue lors de la sélection de la catégorie");
+    }
+  };
+
+  const handleSourceChange = (value: string) => {
+    try {
+      setSelectedSource(value);
+    } catch (error) {
+      console.error("Error updating source:", error);
+      toast.error("Une erreur est survenue lors de la sélection de la source");
+    }
+  };
+
+  const handleSearch = () => {
+    try {
+      onSearch();
+    } catch (error) {
+      console.error("Error performing search:", error);
+      toast.error("Une erreur est survenue lors de la recherche");
+    }
+  };
+
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+    <div className="bg-white/95 backdrop-blur-xs rounded-xl p-6 border border-gray-100">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -41,13 +85,14 @@ export const SearchBar = ({
             type="text"
             placeholder="Rechercher par titre, auteur..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={handleSearchChange}
             className="pl-10"
+            aria-label="Rechercher des articles"
           />
         </div>
 
-        <Select onValueChange={setSelectedCategory}>
-          <SelectTrigger>
+        <Select onValueChange={handleCategoryChange} value={selectedCategory}>
+          <SelectTrigger aria-label="Sélectionner une catégorie">
             <SelectValue placeholder="Catégorie" />
           </SelectTrigger>
           <SelectContent>
@@ -59,8 +104,8 @@ export const SearchBar = ({
           </SelectContent>
         </Select>
 
-        <Select onValueChange={setSelectedSource}>
-          <SelectTrigger>
+        <Select onValueChange={handleSourceChange} value={selectedSource}>
+          <SelectTrigger aria-label="Sélectionner une source">
             <SelectValue placeholder="Source" />
           </SelectTrigger>
           <SelectContent>
@@ -75,7 +120,11 @@ export const SearchBar = ({
         <DatePickerWithRange date={date} setDate={setDate} />
 
         <div className="lg:col-span-4">
-          <Button onClick={onSearch} className="w-full gap-2">
+          <Button 
+            onClick={handleSearch} 
+            className="w-full gap-2"
+            aria-label="Lancer la recherche"
+          >
             <Search className="h-4 w-4" />
             Rechercher
           </Button>
