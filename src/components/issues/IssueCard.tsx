@@ -23,20 +23,14 @@ export const IssueCard = ({ id, title, volume, issue, date, articleCount, pdfUrl
     
     try {
       // Get the signed URL for the file
-      const { data: { publicUrl }, error: urlError } = await supabase
+      const { data } = await supabase
         .storage
         .from('articles')
         .getPublicUrl(pdfUrl);
 
-      if (urlError) {
-        console.error('Error getting public URL:', urlError);
-        toast.error("Erreur lors de la récupération du fichier");
-        return;
-      }
-
       // Create a temporary link to download the file
       const link = document.createElement('a');
-      link.href = publicUrl;
+      link.href = data.publicUrl;
       link.download = `${title}.pdf`; // Set the download filename
       document.body.appendChild(link);
       link.click();
