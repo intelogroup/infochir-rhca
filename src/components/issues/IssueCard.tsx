@@ -22,31 +22,29 @@ export const IssueCard = ({ id, title, volume, issue, date, articleCount, pdfUrl
     }
     
     try {
-      console.log('Attempting to download:', pdfUrl);
-      
-      const { data, error } = await supabase.storage
+      // Get the signed URL for the file
+      const { data: { publicUrl }, error: urlError } = await supabase
+        .storage
         .from('articles')
-        .download(pdfUrl);
-        
-      if (error) {
-        console.error('Error downloading file:', error);
-        toast.error("Erreur lors du téléchargement du fichier");
+        .getPublicUrl(pdfUrl);
+
+      if (urlError) {
+        console.error('Error getting public URL:', urlError);
+        toast.error("Erreur lors de la récupération du fichier");
         return;
       }
-      
-      // Create a download link
-      const url = window.URL.createObjectURL(data);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${title}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+
+      // Create a temporary link to download the file
+      const link = document.createElement('a');
+      link.href = publicUrl;
+      link.download = `${title}.pdf`; // Set the download filename
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
       
       toast.success("Téléchargement démarré");
     } catch (error) {
-      console.error('Unexpected error:', error);
+      console.error('Download error:', error);
       toast.error("Une erreur inattendue s'est produite");
     }
   };
@@ -80,6 +78,7 @@ export const IssueCard = ({ id, title, volume, issue, date, articleCount, pdfUrl
               size="sm" 
               className="h-6 w-6 p-0"
               onClick={handleDownload}
+              disabled={!pdfUrl}
             >
               <Download className="h-3 w-3" />
             </Button>
