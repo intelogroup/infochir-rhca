@@ -13,11 +13,13 @@ export const Navbar = () => {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 justify-between">
           <Link to="/" className="flex items-center space-x-2">
-            <img
-              src="/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png"
-              alt="Info Chir Logo"
-              className="h-10 w-10 object-contain"
-            />
+            <div className="h-10 w-10 overflow-hidden rounded-full">
+              <img
+                src="/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png"
+                alt="Info Chir Logo"
+                className="h-full w-full object-contain"
+              />
+            </div>
             <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-xl font-bold text-transparent">
               INFOCHIR
             </span>
