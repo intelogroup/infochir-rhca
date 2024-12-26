@@ -21,6 +21,7 @@ export const YearGroup = ({ year, issues }: YearGroupProps) => {
             date={issue.date}
             articleCount={issue.articleCount}
             pdfUrl={issue.pdfUrl}
+            coverImage={issue.coverImage}
           />
         ))}
       </div>
