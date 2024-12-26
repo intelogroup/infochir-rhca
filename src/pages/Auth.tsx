@@ -24,7 +24,7 @@ const AuthPage = () => {
         if (session) {
           console.log("Auth page: Session found, redirecting...");
           const returnTo = location.state?.from?.pathname || "/";
-          navigate(returnTo);
+          navigate(returnTo, { replace: true });
         }
       } catch (err) {
         console.error("Auth page: Session check error:", err);
@@ -42,7 +42,7 @@ const AuthPage = () => {
       if (event === 'SIGNED_IN' && session) {
         toast.success(`Welcome ${session.user.email}`);
         const returnTo = location.state?.from?.pathname || "/";
-        navigate(returnTo);
+        navigate(returnTo, { replace: true });
       }
     });
 

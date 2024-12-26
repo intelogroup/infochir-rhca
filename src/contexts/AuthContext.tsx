@@ -65,20 +65,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         
         if (sessionError) {
           console.error("Session initialization error:", sessionError);
-          if (mounted) {
-            setError(sessionError);
-            setIsLoading(false);
-          }
-          return;
+          throw sessionError;
         }
 
-        if (session?.user) {
+        if (session?.user && mounted) {
           console.log("Session found, user:", session.user.email);
-          if (mounted) {
-            setUser(session.user);
-            const adminStatus = await checkAdminStatus(session.user.id);
-            setIsAdmin(adminStatus);
-          }
+          setUser(session.user);
+          const adminStatus = await checkAdminStatus(session.user.id);
+          setIsAdmin(adminStatus);
+        } else if (mounted) {
+          setUser(null);
+          setIsAdmin(false);
         }
       } catch (err) {
         console.error("Auth initialization error:", err);
@@ -101,17 +98,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       if (!mounted) return;
 
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        if (session?.user) {
+      try {
+        if (event === 'SIGNED_IN' && session?.user) {
           setUser(session.user);
           const adminStatus = await checkAdminStatus(session.user.id);
           setIsAdmin(adminStatus);
-          setIsLoading(false);
+        } else if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+          setUser(null);
+          setIsAdmin(false);
         }
-      } else if (event === 'SIGNED_OUT') {
-        setUser(null);
-        setIsAdmin(false);
-        setIsLoading(false);
+      } catch (error) {
+        console.error("Error handling auth state change:", error);
+        setError(error instanceof Error ? error : new Error("Authentication state change failed"));
       }
     });
 
