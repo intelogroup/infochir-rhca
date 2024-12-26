@@ -102,8 +102,8 @@ export const HeroSection = () => {
       </AnimatePresence>
       
       <div className="relative max-w-7xl mx-auto text-left pt-16 pb-16">
-        <div className="max-w-xl lg:max-w-2xl">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-8 animate-fade-up tracking-tight leading-tight">
+        <div className="max-w-xl lg:max-w-3xl">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-8 animate-fade-up tracking-tight whitespace-nowrap">
             Votre espace scientifique en ligne
           </h1>
           <p className="text-lg sm:text-xl text-white/90 mb-10 animate-fade-up leading-relaxed">

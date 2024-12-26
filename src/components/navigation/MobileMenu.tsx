@@ -27,7 +27,7 @@ export const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      className="absolute w-full bg-white shadow-lg border-b border-gray-200/50 md:hidden"
+      className="absolute w-full bg-white shadow-lg border-b border-gray-200/50 md:hidden z-50"
     >
       <div className="space-y-1 px-4 py-3">
         {navItems.map((item) => (
