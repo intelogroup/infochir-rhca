@@ -9,13 +9,13 @@ export const Navbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 w-full border-b border-gray-200/50 bg-white/80 backdrop-blur-sm shadow-sm">
-      <div className="mx-auto max-w-[1920px] px-4 sm:px-6 lg:px-8">
-        <div className="flex h-20 justify-between">
-          <Link to="/" className="flex items-center space-x-3">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-24 justify-between">
+          <Link to="/" className="flex items-center space-x-2">
             <img
               src="/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png"
               alt="Info Chir Logo"
-              className="h-14 w-14 object-contain"
+              className="h-16 w-16 object-contain"
             />
             <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-2xl font-bold text-transparent">
               INFOCHIR/RHCA
