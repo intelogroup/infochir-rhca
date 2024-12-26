@@ -1,14 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Share2 } from "lucide-react";
 import { toast } from "sonner";
-
-interface Issue {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
-  views?: number;
-}
+import type { Issue } from "./types";
 
 export const IssuesTable = ({ issues }: { issues: Issue[] }) => {
   const handleShare = (issueId: string) => {
@@ -30,11 +23,11 @@ export const IssuesTable = ({ issues }: { issues: Issue[] }) => {
                 {issue.title}
               </h3>
               <p className="text-sm text-gray-600 mb-4">
-                {issue.description}
+                {issue.abstract}
               </p>
               <div className="flex items-center gap-4">
                 <span className="text-sm text-gray-500">
-                  Publié le {issue.date}
+                  Publié le {new Date(issue.date).toLocaleDateString()}
                 </span>
                 {issue.views && (
                   <span className="text-sm text-gray-500">
