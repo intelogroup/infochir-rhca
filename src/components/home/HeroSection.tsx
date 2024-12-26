@@ -83,15 +83,15 @@ export const HeroSection = () => {
             className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-90`}
           />
           <motion.div 
-            className="absolute inset-0"
+            className="absolute bottom-0 right-0 w-1/2 h-full"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             style={{ 
               backgroundImage: `url(${images[currentIndex]})`,
-              backgroundSize: '50% auto', // Changed from 100% to 50%
-              backgroundPosition: 'center 35%',
+              backgroundSize: '50% auto',
+              backgroundPosition: 'bottom right',
               backgroundRepeat: 'no-repeat',
               opacity: 0.6
             }}
@@ -99,14 +99,14 @@ export const HeroSection = () => {
         </div>
       </AnimatePresence>
       
-      <div className="relative max-w-7xl mx-auto text-center">
+      <div className="relative max-w-7xl mx-auto text-left">
         <h1 className="text-5xl sm:text-6xl font-bold text-white mb-8 animate-fade-up tracking-tight">
           Votre espace scientifique en ligne
         </h1>
-        <p className="text-xl text-white/90 max-w-2xl mx-auto mb-10 animate-fade-up leading-relaxed">
+        <p className="text-xl text-white/90 max-w-2xl mb-10 animate-fade-up leading-relaxed">
           La plateforme de référence pour les professionnels de santé en Haïti
         </p>
-        <div className="flex flex-wrap justify-center gap-4">
+        <div className="flex flex-wrap gap-4">
           <Button size="lg" variant="secondary" className="group">
             Soumettre votre article
             <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
