@@ -74,55 +74,49 @@ export const HeroSection = () => {
 
   return (
     <section ref={sectionRef} className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        {/* Left side - Images */}
-        <div className="relative aspect-[4/3] lg:aspect-square w-full">
-          <AnimatePresence mode="wait">
-            <div
-              key={currentIndex}
-              className="absolute inset-0 rounded-2xl overflow-hidden"
-            >
-              <div 
-                className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-90`}
-              />
-              <motion.div 
-                className="absolute inset-0"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                style={{ 
-                  backgroundImage: `url(${images[currentIndex]})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  opacity: 0.6
-                }}
-              />
-            </div>
-          </AnimatePresence>
+      <AnimatePresence mode="wait">
+        <div
+          key={currentIndex}
+          className="absolute inset-0"
+        >
+          <div 
+            className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-90`}
+          />
+          <motion.div 
+            className="absolute inset-0"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            style={{ 
+              backgroundImage: `url(${images[currentIndex]})`,
+              backgroundSize: '100% auto',
+              backgroundPosition: 'center 35%',
+              backgroundRepeat: 'no-repeat',
+              opacity: 0.6
+            }}
+          />
         </div>
-
-        {/* Right side - Content */}
-        <div className="text-left lg:pl-8">
-          <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 mb-6 animate-fade-up tracking-tight">
-            Votre espace scientifique en ligne
-          </h1>
-          <p className="text-xl text-gray-600 mb-8 animate-fade-up leading-relaxed">
-            La plateforme de référence pour les professionnels de santé en Haïti
-          </p>
-          <div className="flex flex-wrap gap-4">
-            <Button size="lg" variant="default" className="group bg-primary hover:bg-primary-light">
-              Soumettre votre article
-              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline"
-              className="border-primary text-primary hover:bg-primary/5"
-            >
-              En savoir plus
-            </Button>
-          </div>
+      </AnimatePresence>
+      
+      <div className="relative max-w-7xl mx-auto text-center">
+        <h1 className="text-5xl sm:text-6xl font-bold text-white mb-8 animate-fade-up tracking-tight">
+          Votre espace scientifique en ligne
+        </h1>
+        <p className="text-xl text-white/90 max-w-2xl mx-auto mb-10 animate-fade-up leading-relaxed">
+          La plateforme de référence pour les professionnels de santé en Haïti
+        </p>
+        <div className="flex flex-wrap justify-center gap-4">
+          <Button size="lg" variant="secondary" className="group">
+            Soumettre votre article
+            <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+          </Button>
+          <Button 
+            size="lg" 
+            className="bg-transparent hover:bg-white/10 text-white border-white border"
+          >
+            En savoir plus
+          </Button>
         </div>
       </div>
     </section>
