@@ -5,8 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const images = [
   '/lovable-uploads/3686281a-0f1a-46e8-a03f-c56d49e3d791.png',
-  '/lovable-uploads/76bfab45-eb57-49c4-b4c8-5a8c9c268c0e.png',
-  '/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png'
+  '/lovable-uploads/c77fedf7-c404-409a-9be9-fcce29fade51.png',
+  '/lovable-uploads/5196dc1b-4168-4231-bcea-509edcde49a5.png'
 ];
 
 const gradients = [
@@ -33,7 +33,7 @@ export const HeroSection = () => {
         }
         return nextIndex;
       });
-    }, 3000);
+    }, 5000); // Changed from 3000 to 5000 milliseconds
   };
 
   useEffect(() => {
