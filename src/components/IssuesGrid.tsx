@@ -1,88 +1,40 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 import { SearchAndSort } from "./issues/SearchAndSort";
 import { YearGroup } from "./issues/YearGroup";
 import type { Issue } from "./issues/types";
 
+const mockIssues: Issue[] = [
+  {
+    id: "1",
+    title: "Sample Article 1",
+    volume: "Volume 1",
+    issue: "Issue 1",
+    date: new Date().toISOString(),
+    abstract: "This is a sample abstract for testing purposes",
+    pdfUrl: "https://example.com/sample1.pdf",
+    articleCount: 1,
+  },
+  {
+    id: "2",
+    title: "Sample Article 2",
+    volume: "Volume 1",
+    issue: "Issue 2",
+    date: new Date(2023, 1, 1).toISOString(),
+    abstract: "Another sample abstract for testing",
+    pdfUrl: "https://example.com/sample2.pdf",
+    articleCount: 1,
+  },
+];
+
 export const IssuesGrid = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("latest");
-  const [filteredIssues, setFilteredIssues] = useState<Issue[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    fetchArticles();
-  }, []);
-
-  const fetchArticles = async () => {
-    try {
-      // First, list all files in the articles bucket
-      const { data: storageFiles, error: storageError } = await supabase
-        .storage
-        .from('articles')
-        .list();
-
-      if (storageError) {
-        console.error('Error fetching storage files:', storageError);
-        toast.error("Erreur lors du chargement des fichiers");
-        return;
-      }
-
-      const { data: articles, error } = await supabase
-        .from('articles')
-        .select(`
-          *,
-          category:categories(name),
-          article_authors(
-            author:authors(name)
-          ),
-          article_tags(
-            tag:tags(name)
-          )
-        `)
-        .order('date', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching articles:', error);
-        toast.error("Erreur lors du chargement des articles");
-        return;
-      }
-
-      // Transform the articles into the Issue format
-      const transformedArticles = articles.map(article => {
-        // Find matching PDF file from storage
-        const pdfFile = storageFiles?.find(file => 
-          file.name.toLowerCase().includes(article.title.toLowerCase().replace(/\s+/g, '-'))
-        );
-
-        return {
-          id: article.id,
-          title: article.title,
-          volume: article.category?.name ? `Volume ${article.category.name}` : undefined,
-          issue: `Issue ${new Date(article.date).getMonth() + 1}`,
-          date: new Date(article.date).toISOString(),
-          abstract: article.abstract,
-          pdfUrl: pdfFile ? `${supabase.storage.from('articles').getPublicUrl(pdfFile.name).data.publicUrl}` : article.pdf_url,
-          articleCount: 1,
-          authors: article.article_authors?.map((aa: any) => aa.author.name) || [],
-          tags: article.article_tags?.map((at: any) => at.tag.name) || []
-        };
-      });
-
-      console.log('Transformed articles:', transformedArticles);
-      setFilteredIssues(transformedArticles);
-    } catch (error) {
-      console.error('Error fetching articles:', error);
-      toast.error("Erreur lors du chargement des articles");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [filteredIssues, setFilteredIssues] = useState<Issue[]>(mockIssues);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
-    const filtered = filteredIssues.filter(issue =>
+    const filtered = mockIssues.filter(issue =>
       issue.title.toLowerCase().includes(value.toLowerCase()) ||
       issue.abstract.toLowerCase().includes(value.toLowerCase())
     );

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -30,27 +29,22 @@ interface Article {
   pdf_url: string | null;
 }
 
+const mockArticles: Article[] = [
+  {
+    id: "1",
+    title: "Sample Article 1",
+    abstract: "This is a sample abstract",
+    date: new Date().toISOString(),
+    pdf_url: null,
+  },
+];
+
 export const AdminPanel = () => {
-  const [articles, setArticles] = useState<Article[]>([]);
+  const [articles, setArticles] = useState<Article[]>(mockArticles);
   const [title, setTitle] = useState("");
   const [abstract, setAbstract] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
-
-  const fetchArticles = async () => {
-    const { data, error } = await supabase
-      .from("articles")
-      .select("*")
-      .eq("source", "RHCA")
-      .order("date", { ascending: false });
-
-    if (error) {
-      toast.error("Error fetching articles");
-      return;
-    }
-
-    setArticles(data);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,33 +52,28 @@ export const AdminPanel = () => {
 
     try {
       if (editingArticle) {
-        const { error } = await supabase
-          .from("articles")
-          .update({
-            title,
-            abstract,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", editingArticle.id);
-
-        if (error) throw error;
+        const updatedArticles = articles.map(article => 
+          article.id === editingArticle.id 
+            ? { ...article, title, abstract }
+            : article
+        );
+        setArticles(updatedArticles);
         toast.success("Article updated successfully");
       } else {
-        const { error } = await supabase.from("articles").insert({
+        const newArticle: Article = {
+          id: String(articles.length + 1),
           title,
           abstract,
-          source: "RHCA",
           date: new Date().toISOString(),
-        });
-
-        if (error) throw error;
+          pdf_url: null,
+        };
+        setArticles([...articles, newArticle]);
         toast.success("Article added successfully");
       }
 
       setTitle("");
       setAbstract("");
       setEditingArticle(null);
-      fetchArticles();
     } catch (error) {
       toast.error("Error saving article");
     } finally {
@@ -102,18 +91,9 @@ export const AdminPanel = () => {
     const confirmed = window.confirm("Are you sure you want to delete this article?");
     if (!confirmed) return;
 
-    const { error } = await supabase
-      .from("articles")
-      .delete()
-      .eq("id", id);
-
-    if (error) {
-      toast.error("Error deleting article");
-      return;
-    }
-
+    const updatedArticles = articles.filter(article => article.id !== id);
+    setArticles(updatedArticles);
     toast.success("Article deleted successfully");
-    fetchArticles();
   };
 
   return (

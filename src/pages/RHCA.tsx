@@ -23,26 +23,10 @@ const StatCard = ({ icon: Icon, title, value }: { icon: any; title: string; valu
 const RHCA = () => {
   const [isAdmin, setIsAdmin] = useState(false);
 
+  // Simplified admin check without Supabase
   useEffect(() => {
-    const checkAdminStatus = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from('admin_users')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
-      if (error) {
-        console.error('Error checking admin status:', error);
-        return;
-      }
-
-      setIsAdmin(!!data);
-    };
-
-    checkAdminStatus();
+    // For development, you can set this to true to see admin features
+    setIsAdmin(false);
   }, []);
 
   return (
