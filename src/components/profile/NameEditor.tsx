@@ -16,12 +16,17 @@ export const NameEditor = ({ userId, initialName, onNameUpdate }: NameEditorProp
 
   const handleUpdateName = async () => {
     try {
-      const { error } = await supabase
+      if (!newName.trim()) {
+        toast.error("Name cannot be empty");
+        return;
+      }
+
+      const { error: profileError } = await supabase
         .from('profiles')
         .update({ full_name: newName })
         .eq('id', userId);
 
-      if (error) throw error;
+      if (profileError) throw profileError;
 
       onNameUpdate(newName);
       setIsEditing(false);
@@ -39,12 +44,23 @@ export const NameEditor = ({ userId, initialName, onNameUpdate }: NameEditorProp
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
           className="h-8"
+          placeholder="Enter your name"
         />
         <Button
           size="sm"
           onClick={handleUpdateName}
         >
           Save
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => {
+            setNewName(initialName);
+            setIsEditing(false);
+          }}
+        >
+          Cancel
         </Button>
       </div>
     );

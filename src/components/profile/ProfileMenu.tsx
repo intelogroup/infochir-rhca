@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { AvatarUpload } from "./AvatarUpload";
+import { NameEditor } from "./NameEditor";
 
 export const ProfileMenu = () => {
   const navigate = useNavigate();
@@ -88,9 +89,19 @@ export const ProfileMenu = () => {
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel>
           <div className="flex flex-col gap-1">
-            <p className="text-sm font-medium leading-none">
-              {user.user_metadata?.full_name || "Anonymous"}
-            </p>
+            <NameEditor 
+              userId={user.id}
+              initialName={user.user_metadata?.full_name || "Anonymous"}
+              onNameUpdate={(name) => {
+                supabase.auth.updateUser({
+                  data: { full_name: name }
+                }).then(({ error }) => {
+                  if (error) {
+                    toast.error("Failed to update name");
+                  }
+                });
+              }}
+            />
             <p className="text-xs text-muted-foreground">
               {user.email}
             </p>
