@@ -31,21 +31,21 @@ export const ProductCard = ({
         {logo ? (
           <motion.div 
             whileHover={{ scale: 1.05 }}
-            className="relative h-28 w-28 overflow-hidden rounded-2xl shadow-lg transition-all duration-300"
+            className="relative h-36 w-36 overflow-hidden rounded-2xl shadow-lg transition-all duration-300"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5" />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10" />
             <img 
               src={logo} 
               alt={`${title} logo`} 
-              className="w-full h-full object-contain bg-white/80 backdrop-blur-sm p-3" 
+              className="w-full h-full object-contain bg-white/90 backdrop-blur-sm p-4" 
             />
           </motion.div>
         ) : (
           <motion.div 
             whileHover={{ scale: 1.05 }}
-            className="relative h-24 w-24 flex items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 transition-all duration-300"
+            className="relative h-32 w-32 flex items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 transition-all duration-300"
           >
-            <Icon className="text-primary h-12 w-12" />
+            <Icon className="text-primary h-16 w-16" />
           </motion.div>
         )}
       </div>
@@ -60,7 +60,7 @@ export const ProductCard = ({
     </motion.div>
   );
 
-  const cardClasses = "group relative flex flex-col items-center rounded-3xl bg-white/50 p-8 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border border-gray-100/50 backdrop-blur-sm hover:bg-white/80 overflow-hidden";
+  const cardClasses = "group relative flex flex-col items-center rounded-3xl bg-white/80 p-8 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border border-gray-200 backdrop-blur-sm hover:bg-white/95 overflow-hidden";
 
   if (onClick) {
     return (
@@ -69,7 +69,7 @@ export const ProductCard = ({
         className={cardClasses}
         whileHover={{ scale: 1.02 }}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         <CardContent />
       </motion.button>
     );
@@ -78,7 +78,7 @@ export const ProductCard = ({
   return (
     <motion.div whileHover={{ scale: 1.02 }}>
       <Link to={href || "#"} className={cardClasses}>
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         <CardContent />
       </Link>
     </motion.div>
