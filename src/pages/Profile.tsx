@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,7 @@ const Profile = () => {
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [session, setSession] = useState(null);
   const [formData, setFormData] = useState({
     fullName: "Dr. John Doe",
     email: "john.doe@example.com",
@@ -21,6 +22,22 @@ const Profile = () => {
     hospital: "Hôpital Universitaire",
     avatarUrl: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952"
   });
+
+  useEffect(() => {
+    // Check active session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const handleSave = () => {
     setIsEditing(false);
@@ -34,15 +51,27 @@ const Profile = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    if (!session) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to update your profile picture.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       setIsUploading(true);
       
       // Upload to Supabase Storage
       const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const { data, error: uploadError } = await supabase.storage
+      const fileName = `${session.user.id}-avatar.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(fileName, file);
+        .upload(fileName, file, {
+          upsert: true // Override if exists
+        });
 
       if (uploadError) throw uploadError;
 
@@ -68,6 +97,8 @@ const Profile = () => {
       setIsUploading(false);
     }
   };
+
+  // ... keep existing code (JSX for the profile form and layout)
 
   return (
     <div className="min-h-screen bg-[#f8fafc]">
