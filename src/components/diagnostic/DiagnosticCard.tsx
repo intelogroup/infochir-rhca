@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FilePdf, Share2, Download } from "lucide-react";
+import { FileText, Share2, Download } from "lucide-react";
 import { DiagnosticCase } from "./types";
 import { toast } from "sonner";
 
