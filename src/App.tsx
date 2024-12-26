@@ -10,6 +10,7 @@ import Donate from "./pages/Donate";
 import ADC from "./pages/ADC";
 import IGM from "./pages/IGM";
 import About from "./pages/About";
+import Annuaire from "./pages/Annuaire";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => {
                 <Route path="/settings" element={<div>Settings Page (Coming Soon)</div>} />
                 <Route path="/donate" element={<Donate />} />
                 <Route path="/about" element={<About />} />
+                <Route path="/annuaire" element={<Annuaire />} />
               </Routes>
             </div>
           </TooltipProvider>
