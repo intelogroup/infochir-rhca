@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { ProfileMenu } from "./ProfileMenu";
+import { ProfileMenu } from "./profile/ProfileMenu";
 import { Logo } from "./Navbar/Logo";
 import { NavItems } from "./Navbar/NavItems";
 import { MobileMenu } from "./Navbar/MobileMenu";
@@ -15,13 +15,14 @@ export const Navbar = () => {
   useEffect(() => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
+      console.log("Session check:", session?.user?.email);
       setIsAuthenticated(!!session);
     };
     
     checkSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed in Navbar:", event, session?.user?.email);
+      console.log("Auth state changed:", event, session?.user?.email);
       setIsAuthenticated(!!session);
       if (!session) {
         navigate("/auth");
@@ -39,11 +40,7 @@ export const Navbar = () => {
           <NavItems />
           
           <div className="flex items-center space-x-4">
-            {isAuthenticated && (
-              <div className="flex items-center">
-                <ProfileMenu />
-              </div>
-            )}
+            {isAuthenticated && <ProfileMenu />}
             
             <div className="md:hidden">
               <button
