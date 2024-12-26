@@ -2,25 +2,31 @@ import { useEffect, useState } from "react";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
-import { AuthError } from "@supabase/supabase-js";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 const AuthPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) throw error;
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) throw sessionError;
+        
         if (session) {
-          navigate("/");
+          const returnTo = location.state?.from?.pathname || "/";
+          navigate(returnTo);
         }
-      } catch (error) {
-        console.error("Session check error:", error);
-        toast.error("Error checking session");
+      } catch (err) {
+        console.error("Session check error:", err);
+        setError(err instanceof Error ? err : new Error("Failed to check authentication status"));
+        toast.error("Error checking authentication status");
       } finally {
         setIsLoading(false);
       }
@@ -31,34 +37,19 @@ const AuthPage = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event, session?.user?.email);
       
-      switch (event) {
-        case 'SIGNED_IN':
-          if (session) {
-            toast.success(`Welcome ${session.user.email}`);
-            navigate("/");
-          }
-          break;
-        case 'SIGNED_OUT':
-          toast.info("Signed out");
-          break;
-        case 'USER_UPDATED':
-          console.log("User updated");
-          break;
-        case 'TOKEN_REFRESHED':
-          console.log("Token refreshed");
-          break;
-        case 'INITIAL_SESSION':
-          console.log("Initial session");
-          break;
-        default:
-          console.log("Unhandled auth event:", event);
+      if (event === 'SIGNED_IN' && session) {
+        toast.success(`Welcome ${session.user.email}`);
+        const returnTo = location.state?.from?.pathname || "/";
+        navigate(returnTo);
+      } else if (event === 'SIGNED_OUT') {
+        toast.info("Signed out successfully");
       }
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [navigate, location]);
 
   if (isLoading) {
     return (
@@ -68,10 +59,18 @@ const AuthPage = () => {
     );
   }
 
-  const handleAuthError = (error: AuthError) => {
-    console.error("Auth error:", error);
-    toast.error(error.message || "Authentication failed");
-  };
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen p-4">
+        <Alert variant="destructive" className="max-w-md">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            {error.message}
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center px-4">
@@ -107,9 +106,11 @@ const AuthPage = () => {
               },
             }}
             providers={[]}
-            view="sign_in"
             redirectTo={window.location.origin}
-            showLinks={false}
+            onError={(error) => {
+              console.error("Auth error:", error);
+              toast.error(error.message || "Authentication failed");
+            }}
           />
         </div>
       </div>
