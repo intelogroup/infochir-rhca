@@ -1,4 +1,4 @@
-import { Calendar, Download, Eye } from "lucide-react";
+import { Calendar, Download, Eye, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -11,6 +11,8 @@ interface IssueCardProps {
   volume: string;
   issue: string;
   date: string;
+  abstract: string;
+  description?: string;
   articleCount?: number;
   pdfUrl?: string;
   coverImage?: string;
@@ -21,7 +23,9 @@ export const IssueCard = ({
   title, 
   volume, 
   issue, 
-  date, 
+  date,
+  abstract,
+  description,
   articleCount, 
   pdfUrl,
   coverImage 
@@ -34,6 +38,12 @@ export const IssueCard = ({
     
     window.open(pdfUrl, '_blank');
     toast.success("Ouverture du PDF...");
+  };
+
+  const handleShare = () => {
+    const shareUrl = `${window.location.origin}/igm/issues/${id}`;
+    navigator.clipboard.writeText(shareUrl);
+    toast.success("Lien copié dans le presse-papier");
   };
 
   return (
@@ -65,7 +75,7 @@ export const IssueCard = ({
                 <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
                   <Calendar className="h-4 w-4" />
                   <span>
-                    {format(new Date(date), 'MMMM yyyy', { locale: fr })}
+                    {format(new Date(date), 'dd MMMM yyyy', { locale: fr })}
                   </span>
                   {articleCount && (
                     <>
@@ -74,19 +84,39 @@ export const IssueCard = ({
                     </>
                   )}
                 </div>
+                {description && (
+                  <p className="text-sm text-gray-600 mt-2">
+                    Édité par: {description}
+                  </p>
+                )}
+                <p className="text-sm text-gray-600 mt-2 line-clamp-2">
+                  {abstract}
+                </p>
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" className="h-8 w-8 p-0">
-                  <Eye className="h-4 w-4" />
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-8 w-8 p-0"
+                  onClick={handleShare}
+                >
+                  <Share2 className="h-4 w-4" />
                 </Button>
                 <Button 
-                  variant="secondary"
+                  variant="outline"
                   size="sm" 
                   className="h-8 w-8 p-0"
                   onClick={handleDownload}
                   disabled={!pdfUrl}
                 >
                   <Download className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                >
+                  <Eye className="h-4 w-4" />
                 </Button>
               </div>
             </div>

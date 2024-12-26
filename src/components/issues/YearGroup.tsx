@@ -16,9 +16,11 @@ export const YearGroup = ({ year, issues }: YearGroupProps) => {
             key={issue.id}
             id={issue.id}
             title={issue.title}
-            volume={issue.volume || ""}
-            issue={issue.issue || ""}
+            volume={issue.volume}
+            issue={issue.issue}
             date={issue.date}
+            abstract={issue.abstract}
+            description={issue.description}
             articleCount={issue.articleCount}
             pdfUrl={issue.pdfUrl}
             coverImage={issue.coverImage}
