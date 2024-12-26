@@ -31,7 +31,13 @@ export const MedicalCaseGrid = () => {
   return (
     <div className="space-y-8">
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <DiagnosticSearch onSearch={setSearchTerm} />
+        <DiagnosticSearch 
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          selectedSpecialty=""
+          setSelectedSpecialty={() => {}}
+          specialties={[]}
+        />
       </div>
       
       {filteredCases.length === 0 ? (
