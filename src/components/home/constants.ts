@@ -4,7 +4,7 @@ import type { ProductCardProps } from "@/components/ProductCard";
 export const products: (ProductCardProps & { href: string })[] = [
   {
     title: "RHCA",
-    description: "Revue Haïtienne de Cardiologie et d'Angiologie",
+    description: "Revue Haïtienne de Chirurgie et d'Anesthésiologie",
     icon: BookOpen,
     href: "/rhca",
     logo: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png"
