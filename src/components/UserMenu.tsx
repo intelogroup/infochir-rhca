@@ -51,7 +51,7 @@ export const UserMenu = ({ avatarUrl }: UserMenuProps) => {
               </div>
               <Button
                 variant="ghost"
-                size="icon"
+                size="sm"
                 className="absolute bottom-0 right-0 h-6 w-6 rounded-full bg-primary hover:bg-primary/90"
                 onClick={handleAvatarUpdate}
               >
