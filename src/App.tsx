@@ -11,19 +11,21 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/rhca" element={<RHCA />} />
-          <Route path="/igm" element={<div>IGM Page (Coming Soon)</div>} />
-          <Route path="/adc" element={<div>Atlas ADC Page (Coming Soon)</div>} />
-          <Route path="/index-medicus" element={<div>Index Medicus Page (Coming Soon)</div>} />
-          <Route path="/profile" element={<div>Profile Page (Coming Soon)</div>} />
-          <Route path="/settings" element={<div>Settings Page (Coming Soon)</div>} />
-        </Routes>
-      </BrowserRouter>
+      <div className="min-h-screen">
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/rhca" element={<RHCA />} />
+            <Route path="/igm" element={<div>IGM Page (Coming Soon)</div>} />
+            <Route path="/adc" element={<div>Atlas ADC Page (Coming Soon)</div>} />
+            <Route path="/index-medicus" element={<div>Index Medicus Page (Coming Soon)</div>} />
+            <Route path="/profile" element={<div>Profile Page (Coming Soon)</div>} />
+            <Route path="/settings" element={<div>Settings Page (Coming Soon)</div>} />
+          </Routes>
+        </BrowserRouter>
+      </div>
     </TooltipProvider>
   </QueryClientProvider>
 );
