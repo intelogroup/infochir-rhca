@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
-import { IssuesGrid } from "@/components/IssuesGrid";
 import { useState } from "react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { LayoutGrid, List } from "lucide-react";
+import { LayoutGrid, List, BookOpen, Users, MessageCircle, Check } from "lucide-react";
 import { MainLayout } from "@/components/layouts/MainLayout";
+import { IssuesGrid } from "@/components/igm/IssuesGrid";
 
 const IGM = () => {
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
@@ -51,7 +51,8 @@ const IGM = () => {
           
           <div className="space-y-8">
             <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
-              <h2 className="text-2xl font-semibold text-primary mb-4">
+              <h2 className="text-2xl font-semibold text-primary mb-4 flex items-center gap-2">
+                <BookOpen className="h-5 w-5" />
                 Soumission d'articles
               </h2>
               <p className="text-gray-600 mb-6">
@@ -63,7 +64,8 @@ const IGM = () => {
             </div>
 
             <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
-              <h2 className="text-2xl font-semibold text-primary mb-4">
+              <h2 className="text-2xl font-semibold text-primary mb-4 flex items-center gap-2">
+                <MessageCircle className="h-5 w-5" />
                 Instructions aux auteurs
               </h2>
               <p className="text-gray-600 mb-6">
@@ -75,7 +77,8 @@ const IGM = () => {
             </div>
 
             <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
-              <h2 className="text-2xl font-semibold text-primary mb-4">
+              <h2 className="text-2xl font-semibold text-primary mb-4 flex items-center gap-2">
+                <Users className="h-5 w-5" />
                 Comité éditorial
               </h2>
               <p className="text-gray-600 mb-6">
@@ -89,7 +92,10 @@ const IGM = () => {
         </div>
 
         <div className="mt-16 bg-white rounded-2xl p-8 shadow-sm border border-gray-100 max-w-3xl mx-auto">
-          <h2 className="text-2xl font-semibold text-primary mb-4">Notre Mission</h2>
+          <h2 className="text-2xl font-semibold text-primary mb-4 flex items-center gap-2">
+            <Check className="h-5 w-5" />
+            Notre Mission
+          </h2>
           <p className="text-gray-600 mb-6">
             L'Info Gazette Médicale (IGM) est une publication périodique dédiée à l'information médicale en Haïti. Notre mission est de fournir des informations actualisées et pertinentes sur les avancées médicales et les pratiques cliniques.
           </p>
