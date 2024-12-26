@@ -74,13 +74,25 @@ export const ProductCard = ({
       transition={{ duration: 0.5 }}
       className="h-full"
     >
-      <Card className="group h-full bg-[#D3E4FD] hover:shadow-xl transition-all duration-300 border border-gray-200/50 overflow-hidden">
+      <Card className="group h-full bg-white hover:shadow-xl transition-all duration-300 border border-gray-200/50 overflow-hidden">
         <CardHeader className="space-y-4 relative">
           <div className="absolute top-0 right-0 p-4">
             <Badge 
               variant="secondary" 
-              className="bg-primary/5 text-primary flex items-center gap-2"
+              className="bg-white text-primary flex items-center gap-2"
             >
+              <motion.div
+                animate={{
+                  scale: [1, 1.2, 1],
+                  opacity: [1, 0, 1]
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  repeatType: "reverse"
+                }}
+                className="w-2 h-2 rounded-full bg-green-500"
+              />
               <span>Mise à jour disponible</span>
               {isAnimating && (
                 <motion.div
@@ -96,9 +108,14 @@ export const ProductCard = ({
                     ease: "easeInOut"
                   }}
                 >
-                  <Bell className="w-5 h-5 text-orange-500" style={{
-                    filter: "drop-shadow(0 0 8px rgba(249, 115, 22, 0.5))"
-                  }} />
+                  <Bell 
+                    className="w-5 h-5" 
+                    fill="#F97316"
+                    color="#F97316"
+                    style={{
+                      filter: "drop-shadow(0 0 8px rgba(249, 115, 22, 0.5))"
+                    }} 
+                  />
                 </motion.div>
               )}
             </Badge>
