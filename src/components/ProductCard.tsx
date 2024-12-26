@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Bell, Gift } from "lucide-react";
+import { ArrowRight, Bell } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface ProductCardProps {
@@ -14,7 +14,6 @@ interface ProductCardProps {
   href?: string;
   onClick?: () => void;
   logo?: string;
-  bgImage?: string;
   features?: string[];
 }
 
@@ -85,20 +84,21 @@ export const ProductCard = ({
               <span>Mise à jour disponible</span>
               {isAnimating && (
                 <motion.div
-                  initial={{ scale: 1, rotate: 0 }}
+                  initial={{ scale: 1 }}
                   animate={{ 
-                    scale: [1, 1.2, 1],
-                    rotate: [0, 10, -10, 0]
+                    scale: [1, 1.4, 1],
+                    rotate: [0, 15, -15, 0],
                   }}
                   transition={{
-                    duration: 2,
-                    repeat: 15, // Will repeat for 30 seconds (2s * 15)
-                    repeatType: "reverse"
+                    duration: 1,
+                    repeat: Infinity,
+                    repeatType: "reverse",
+                    ease: "easeInOut"
                   }}
-                  className="flex items-center gap-1"
                 >
-                  <Gift className="w-4 h-4" />
-                  <Bell className="w-4 h-4" />
+                  <Bell className="w-5 h-5 text-orange-500" style={{
+                    filter: "drop-shadow(0 0 8px rgba(249, 115, 22, 0.5))"
+                  }} />
                 </motion.div>
               )}
             </Badge>
