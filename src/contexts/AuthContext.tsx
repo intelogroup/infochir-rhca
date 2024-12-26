@@ -103,7 +103,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setUser(session.user);
           const adminStatus = await checkAdminStatus(session.user.id);
           setIsAdmin(adminStatus);
-        } else if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+        } else if (event === 'SIGNED_OUT') {
           setUser(null);
           setIsAdmin(false);
         }
