@@ -26,7 +26,7 @@ export const Footer = () => {
                 />
               </div>
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-xl font-bold">
-                INFOCHIR
+                INFOCHIR/RHCA
               </span>
             </Link>
             <p className="text-gray-600 text-sm leading-relaxed">
@@ -38,10 +38,10 @@ export const Footer = () => {
             >
               <Link
                 to="/donate"
-                className="inline-flex items-center px-6 py-3 rounded-full bg-primary hover:bg-primary/90 transition-colors duration-200 text-white"
+                className="inline-flex items-center px-4 py-2 text-sm rounded-full bg-primary hover:bg-primary/90 transition-colors duration-200 text-white"
               >
                 Faire un don
-                <Heart className="ml-2 h-5 w-5 text-secondary fill-secondary" />
+                <Heart className="ml-2 h-4 w-4 text-secondary fill-secondary" />
               </Link>
             </motion.div>
           </motion.div>

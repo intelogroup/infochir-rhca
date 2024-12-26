@@ -31,7 +31,7 @@ export const ProductCard = ({
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsAnimating(false);
-    }, 30000); // Animation will last for 30 seconds
+    }, 30000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -58,9 +58,9 @@ export const ProductCard = ({
         ];
       case "Index Medicus":
         return [
-          "Recherche par auteur/thème",
-          "Base de données scientifique",
-          "Références académiques"
+          "Repérer par auteur",
+          "Repérer par titre",
+          "Base de données scientifique"
         ];
       default:
         return features;
@@ -74,7 +74,7 @@ export const ProductCard = ({
       transition={{ duration: 0.5 }}
       className="h-full"
     >
-      <Card className="group h-full bg-white hover:shadow-xl transition-all duration-300 border border-gray-200 overflow-hidden">
+      <Card className="group h-full bg-[#D3E4FD] hover:shadow-xl transition-all duration-300 border border-gray-200/50 overflow-hidden">
         <CardHeader className="space-y-4 relative">
           <div className="absolute top-0 right-0 p-4">
             <Badge 
