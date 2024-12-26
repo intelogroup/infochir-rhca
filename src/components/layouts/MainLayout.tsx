@@ -1,5 +1,4 @@
 import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -13,7 +12,6 @@ export const MainLayout = ({ children, className = "" }: MainLayoutProps) => {
       <main className="pt-16">
         {children}
       </main>
-      <Footer />
     </div>
   );
 };
