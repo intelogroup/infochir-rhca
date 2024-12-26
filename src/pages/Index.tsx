@@ -13,7 +13,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 const Index = () => {
   const [email, setEmail] = useState("");
   const [showAtlasDialog, setShowAtlasDialog] = useState(false);
-  const [showIGMDialog, setShowIGMDialog] = useState(false);
 
   const products = [
     {
@@ -36,16 +35,14 @@ const Index = () => {
       description: "Explorez une base visuelle unique pour faciliter vos diagnostics.",
       icon: BookOpen,
       onClick: () => setShowAtlasDialog(true),
-      logo: "/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png",
-      href: "#atlas"
+      logo: "/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png"
     },
     {
       title: "IGM",
       description: "Restez informé des dernières nouvelles et évolutions du domaine médical.",
       icon: Newspaper,
-      onClick: () => setShowIGMDialog(true),
-      logo: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png",
-      href: "#igm"
+      href: "/igm",
+      logo: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png"
     },
   ];
 
@@ -122,36 +119,6 @@ const Index = () => {
             <p className="mt-4 text-gray-600">
               Explorez notre base visuelle complète pour faciliter vos diagnostics et améliorer votre pratique médicale.
             </p>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* IGM Dialog */}
-      <Dialog open={showIGMDialog} onOpenChange={setShowIGMDialog}>
-        <DialogContent className="sm:max-w-[800px]">
-          <DialogHeader>
-            <DialogTitle>IGM - Informations Générales Médicales</DialogTitle>
-          </DialogHeader>
-          <div className="mt-4">
-            <img 
-              src="/lovable-uploads/a7d3e225-a6f7-4502-b77f-a4ef7c51b191.png"
-              alt="IGM Preview"
-              className="w-full rounded-lg shadow-lg mb-6"
-            />
-            <div className="space-y-4">
-              <p className="text-gray-600">
-                IGM (Informations Générales Médicales) est votre source d'actualités médicales en Haïti. Notre plateforme offre :
-              </p>
-              <ul className="list-disc pl-6 space-y-2 text-gray-600">
-                <li>Des actualités médicales quotidiennes</li>
-                <li>Des analyses approfondies des tendances en santé</li>
-                <li>Des rapports sur les avancées médicales</li>
-                <li>Des informations sur les conférences et événements médicaux</li>
-              </ul>
-              <p className="text-gray-600">
-                Restez informé des dernières actualités et évolutions du domaine médical en Haïti et dans le monde.
-              </p>
-            </div>
           </div>
         </DialogContent>
       </Dialog>
