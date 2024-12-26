@@ -20,6 +20,8 @@ const quickLinks: FooterLink[] = [
   { name: "Comité éditorial", href: "#editorial" },
   { name: "Directives pour les auteurs", href: "#guidelines" },
   { name: "Nous contacter", href: "#contact" },
+  { name: "Annuaire", href: "/annuaire" },
+  { name: "À propos", href: "/about" },
 ];
 
 const resources: FooterLink[] = [
