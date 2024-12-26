@@ -7,6 +7,7 @@ import { StrictMode } from "react";
 import Index from "./pages/Index";
 import RHCA from "./pages/RHCA";
 import Profile from "./pages/Profile";
+import Donate from "./pages/Donate";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => {
                 <Route path="/index-medicus" element={<div>Index Medicus Page (Coming Soon)</div>} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/settings" element={<div>Settings Page (Coming Soon)</div>} />
+                <Route path="/donate" element={<Donate />} />
               </Routes>
             </div>
           </TooltipProvider>
