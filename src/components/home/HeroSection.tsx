@@ -10,9 +10,9 @@ const images = [
 ];
 
 const gradients = [
-  'from-[#1E40AF] via-[#3B82F6] to-[#0EA5E9]',
-  'from-[#1E3A8A] via-[#2563EB] to-[#3B82F6]',
-  'from-[#0C4A6E] via-[#0369A1] to-[#0284C7]'
+  'from-[#1E40AF] via-[#3B82F6] to-[#41b06e]',
+  'from-[#1E3A8A] via-[#2563EB] to-[#4caf50]',
+  'from-[#0C4A6E] via-[#0369A1] to-[#45a049]'
 ];
 
 export const HeroSection = () => {
@@ -94,8 +94,8 @@ export const HeroSection = () => {
               backgroundPosition: 'right bottom',
               backgroundRepeat: 'no-repeat',
               opacity: 0.9,
-              right: '10px', // Added 10px margin from right
-              paddingLeft: '5px' // Added 5px padding on the left
+              right: '10px',
+              paddingLeft: '5px'
             }}
           />
         </div>
