@@ -10,9 +10,9 @@ const images = [
 ];
 
 const gradients = [
-  'from-[#1E40AF] via-[#2563EB] to-[#41b06e]',
-  'from-[#1E3A8A] via-[#1D4ED8] to-[#4caf50]',
-  'from-[#0C4A6E] via-[#0EA5E9] to-[#45a049]'
+  'from-[#1E40AF] via-[#41b06e] to-[#41b06e]',
+  'from-[#1E3A8A] via-[#4caf50] to-[#4caf50]',
+  'from-[#0C4A6E] via-[#45a049] to-[#45a049]'
 ];
 
 export const HeroSection = () => {
