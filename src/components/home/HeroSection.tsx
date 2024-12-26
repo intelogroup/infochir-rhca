@@ -19,7 +19,10 @@ export const HeroSection = () => {
             Soumettre votre article
             <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
           </Button>
-          <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10">
+          <Button 
+            size="lg" 
+            className="bg-transparent hover:bg-white/10 text-white border-white border"
+          >
             En savoir plus
           </Button>
         </div>
