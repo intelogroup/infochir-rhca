@@ -78,19 +78,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setUser(session.user);
             const adminStatus = await checkAdminStatus(session.user.id);
             setIsAdmin(adminStatus);
-            setIsLoading(false);
-          }
-        } else {
-          if (mounted) {
-            setUser(null);
-            setIsAdmin(false);
-            setIsLoading(false);
           }
         }
       } catch (err) {
         console.error("Auth initialization error:", err);
         if (mounted) {
           setError(err instanceof Error ? err : new Error("Authentication initialization failed"));
+        }
+      } finally {
+        if (mounted) {
           setIsLoading(false);
         }
       }

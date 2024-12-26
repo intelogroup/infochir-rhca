@@ -29,7 +29,6 @@ const AuthPage = () => {
       } catch (err) {
         console.error("Auth page: Session check error:", err);
         setError(err instanceof Error ? err : new Error("Failed to check authentication status"));
-        toast.error("Error checking authentication status");
       } finally {
         setIsLoading(false);
       }
@@ -107,7 +106,7 @@ const AuthPage = () => {
               },
             }}
             providers={[]}
-            redirectTo={window.location.origin + location.pathname}
+            redirectTo={`${window.location.origin}${location.pathname}`}
           />
         </div>
       </div>
