@@ -18,12 +18,12 @@ export const UserMenu = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-          <div className="relative">
+        <Button variant="ghost" className="relative w-10 h-10 rounded-full">
+          <div className="relative w-10 h-10 rounded-full overflow-hidden">
             <img
               src="https://images.unsplash.com/photo-1581092795360-fd1ca04f0952"
               alt="Profile"
-              className="h-10 w-10 rounded-full object-cover ring-2 ring-white"
+              className="w-full h-full object-cover"
             />
             <div className="absolute -right-1 -bottom-1">
               <ChevronDown className="h-4 w-4 text-gray-500" />
@@ -34,11 +34,13 @@ export const UserMenu = () => {
       <DropdownMenuContent align="end" className="w-56 bg-white">
         <div className="flex items-center justify-center p-4">
           <div className="relative">
-            <img
-              src="https://images.unsplash.com/photo-1581092795360-fd1ca04f0952"
-              alt="Profile"
-              className="h-16 w-16 rounded-full object-cover ring-2 ring-white"
-            />
+            <div className="w-16 h-16 rounded-full overflow-hidden">
+              <img
+                src="https://images.unsplash.com/photo-1581092795360-fd1ca04f0952"
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+            </div>
             <Button
               variant="ghost"
               size="icon"
