@@ -44,7 +44,7 @@ export const IssueCard = ({
             <img 
               src={coverImage} 
               alt={`Couverture ${title} ${volume} ${issue}`}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-105"
             />
           ) : (
             <div className="w-full h-full bg-secondary/5 flex items-center justify-center">

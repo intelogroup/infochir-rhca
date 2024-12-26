@@ -13,7 +13,7 @@ const mockIssues: Issue[] = [
     date: new Date(2020, 8, 15).toISOString(), // September 2020
     abstract: "Numéro spécial sur les avancées en chirurgie mini-invasive",
     pdfUrl: "https://example.com/sample1.pdf",
-    coverImage: "/lovable-uploads/f65134f5-3929-4504-9567-104510b21f5d.png",
+    coverImage: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=500&h=700&fit=crop",
     articleCount: 8,
   },
   {
@@ -24,7 +24,7 @@ const mockIssues: Issue[] = [
     date: new Date(2020, 5, 15).toISOString(), // June 2020
     abstract: "Focus sur l'anesthésie en chirurgie pédiatrique",
     pdfUrl: "https://example.com/sample2.pdf",
-    coverImage: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png",
+    coverImage: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=500&h=700&fit=crop",
     articleCount: 6,
   },
   {
@@ -35,7 +35,7 @@ const mockIssues: Issue[] = [
     date: new Date(2020, 2, 1).toISOString(), // March 2020
     abstract: "Les dernières innovations en chirurgie orthopédique",
     pdfUrl: "https://example.com/sample3.pdf",
-    coverImage: "/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png",
+    coverImage: "https://images.unsplash.com/photo-1583912267550-d6c2ac3196c0?w=500&h=700&fit=crop",
     articleCount: 7,
   },
   {
@@ -46,7 +46,7 @@ const mockIssues: Issue[] = [
     date: new Date(2019, 11, 15).toISOString(),
     abstract: "Progrès en chirurgie cardiovasculaire",
     pdfUrl: "https://example.com/sample4.pdf",
-    coverImage: "/lovable-uploads/f2409464-47cf-4348-ada0-e328e86be01b.png",
+    coverImage: "https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=500&h=700&fit=crop",
     articleCount: 9,
   },
 ];
