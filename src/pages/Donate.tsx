@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CreditCard, Paypal, Apple, Bitcoin } from "lucide-react";
+import { CreditCard, Wallet, Apple, Bitcoin } from "lucide-react";
 
 const DonationAmounts = [10, 25, 50, 100, 250, 500];
 
@@ -67,8 +67,8 @@ const Donate = () => {
                       <CreditCard className="h-4 w-4" />
                       Carte
                     </TabsTrigger>
-                    <TabsTrigger value="paypal" className="flex items-center gap-2">
-                      <Paypal className="h-4 w-4" />
+                    <TabsTrigger value="wallet" className="flex items-center gap-2">
+                      <Wallet className="h-4 w-4" />
                       PayPal
                     </TabsTrigger>
                     <TabsTrigger value="apple" className="flex items-center gap-2">
@@ -90,7 +90,7 @@ const Donate = () => {
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="paypal" className="mt-4">
+                  <TabsContent value="wallet" className="mt-4">
                     <div className="text-center py-8 text-gray-600">
                       Vous serez redirigé vers PayPal pour finaliser votre don.
                     </div>
