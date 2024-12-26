@@ -12,8 +12,9 @@ const mockIssues: Issue[] = [
     issue: "No 41",
     date: new Date(2024, 8, 1).toISOString(), // September 2024
     abstract: "Édition spéciale sur les avancées en médecine tropicale. Édité par Dr. Jean Alouidor",
+    description: "Dr. Jean Alouidor",
     pdfUrl: "#",
-    coverImage: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png",
+    coverImage: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=500&h=700&fit=crop",
     articleCount: 12,
   },
   {
@@ -23,8 +24,9 @@ const mockIssues: Issue[] = [
     issue: "No 40",
     date: new Date(2024, 5, 1).toISOString(), // June 2024
     abstract: "Focus sur les maladies infectieuses émergentes. Édité par Dr. Jean Alouidor",
+    description: "Dr. Jean Alouidor",
     pdfUrl: "#",
-    coverImage: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png",
+    coverImage: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=500&h=700&fit=crop",
     articleCount: 8,
   },
   {
@@ -34,8 +36,9 @@ const mockIssues: Issue[] = [
     issue: "No 39",
     date: new Date(2024, 2, 1).toISOString(), // March 2024
     abstract: "Numéro sur la santé publique en Haïti. Édité par Dr. Jean Alouidor",
+    description: "Dr. Jean Alouidor",
     pdfUrl: "#",
-    coverImage: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png",
+    coverImage: "https://images.unsplash.com/photo-1583912267550-d6c2ac3196c0?w=500&h=700&fit=crop",
     articleCount: 10,
   },
   {
@@ -45,8 +48,9 @@ const mockIssues: Issue[] = [
     issue: "No 38",
     date: new Date(2023, 11, 1).toISOString(), // December 2023
     abstract: "Recherches sur la médecine préventive. Édité par Dr. Jean Alouidor",
+    description: "Dr. Jean Alouidor",
     pdfUrl: "#",
-    coverImage: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png",
+    coverImage: "https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=500&h=700&fit=crop",
     articleCount: 9,
   },
   {
@@ -56,8 +60,9 @@ const mockIssues: Issue[] = [
     issue: "No 37",
     date: new Date(2023, 8, 1).toISOString(), // September 2023
     abstract: "Innovations en cardiologie. Édité par Dr. Jean Alouidor",
+    description: "Dr. Jean Alouidor",
     pdfUrl: "#",
-    coverImage: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png",
+    coverImage: "https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?w=500&h=700&fit=crop",
     articleCount: 11,
   },
   {
@@ -67,8 +72,9 @@ const mockIssues: Issue[] = [
     issue: "No 36",
     date: new Date(2023, 5, 1).toISOString(), // June 2023
     abstract: "Actualités en pédiatrie. Édité par Dr. Jean Alouidor",
+    description: "Dr. Jean Alouidor",
     pdfUrl: "#",
-    coverImage: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png",
+    coverImage: "https://images.unsplash.com/photo-1581093588401-fbb62a02f120?w=500&h=700&fit=crop",
     articleCount: 7,
   },
   {
@@ -78,8 +84,9 @@ const mockIssues: Issue[] = [
     issue: "No 35",
     date: new Date(2022, 11, 1).toISOString(), // December 2022
     abstract: "Progrès en neurologie. Édité par Dr. Jean Alouidor",
+    description: "Dr. Jean Alouidor",
     pdfUrl: "#",
-    coverImage: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png",
+    coverImage: "https://images.unsplash.com/photo-1581093588401-fbb62a02f120?w=500&h=700&fit=crop",
     articleCount: 10,
   },
   {
@@ -89,8 +96,9 @@ const mockIssues: Issue[] = [
     issue: "No 34",
     date: new Date(2022, 8, 1).toISOString(), // September 2022
     abstract: "Études sur la médecine tropicale. Édité par Dr. Jean Alouidor",
+    description: "Dr. Jean Alouidor",
     pdfUrl: "#",
-    coverImage: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png",
+    coverImage: "https://images.unsplash.com/photo-1581093588401-fbb62a02f120?w=500&h=700&fit=crop",
     articleCount: 8,
   },
 ];
@@ -129,14 +137,7 @@ export const IssuesGrid = ({ viewMode = "grid" }: { viewMode?: "grid" | "table" 
           {sortedIssues.map((issue) => (
             <IssueCard
               key={issue.id}
-              id={issue.id}
-              title={issue.title}
-              volume={issue.volume}
-              issue={issue.issue}
-              date={issue.date}
-              articleCount={issue.articleCount}
-              pdfUrl={issue.pdfUrl}
-              coverImage={issue.coverImage}
+              {...issue}
             />
           ))}
         </div>
