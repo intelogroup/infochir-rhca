@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BankIcon, CreditCard, Wallet, Apple, Bitcoin, DollarSign } from "lucide-react";
+import { Building2, CreditCard, Wallet, Apple, Bitcoin, DollarSign } from "lucide-react";
 import { useState } from "react";
 
 const DonationAmounts = [10, 25, 50, 100, 250, 500];
@@ -53,7 +53,7 @@ const Donate = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <DollarSign className="h-5 w-5 text-primary" />
-                  Choose Amount
+                  Choose Amount (USD)
                 </CardTitle>
                 <CardDescription>Select a preset amount or enter a custom amount</CardDescription>
               </CardHeader>
@@ -100,7 +100,7 @@ const Donate = () => {
                       Card
                     </TabsTrigger>
                     <TabsTrigger value="bank" className="flex items-center gap-2">
-                      <BankIcon className="h-4 w-4" />
+                      <Building2 className="h-4 w-4" />
                       Bank
                     </TabsTrigger>
                     <TabsTrigger value="zelle" className="flex items-center gap-2">
