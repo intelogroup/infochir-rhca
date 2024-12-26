@@ -23,7 +23,7 @@ const mockCases: DiagnosticCase[] = [
     specialty: "Dermatologie",
     date: "12/04/24",
     diagnosis: "Mise à jour disponible",
-    imageUrl: "https://images.unsplash.com/photo-1518877593221-1f28583780b4?w=500&h=700&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1631815589968-fdb09a223b1e?w=500&h=700&fit=crop",
     pdfUrl: "#"
   },
   {
@@ -33,7 +33,7 @@ const mockCases: DiagnosticCase[] = [
     specialty: "Chirurgie mammaire",
     date: "30/03/23",
     diagnosis: "Version stable",
-    imageUrl: "https://images.unsplash.com/photo-1535268647677-300dbf3d71?w=500&h=700&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=500&h=700&fit=crop",
     pdfUrl: "#"
   },
   {
@@ -43,7 +43,7 @@ const mockCases: DiagnosticCase[] = [
     specialty: "Neurochirurgie",
     date: "11/10/21",
     diagnosis: "À mettre à jour",
-    imageUrl: "https://images.unsplash.com/photo-1438565434616-3ef039228b15?w=500&h=700&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1583912267550-d6c2f5e83dd1?w=500&h=700&fit=crop",
     pdfUrl: "#"
   },
   {
@@ -53,7 +53,7 @@ const mockCases: DiagnosticCase[] = [
     specialty: "Ophtalmologie",
     date: "11/10/21",
     diagnosis: "À mettre à jour",
-    imageUrl: "https://images.unsplash.com/photo-1583912267550-d6c2f5e83dd1?w=500&h=700&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=500&h=700&fit=crop",
     pdfUrl: "#"
   },
   {
@@ -83,7 +83,7 @@ const mockCases: DiagnosticCase[] = [
     specialty: "Chirurgie vasculaire",
     date: "12/04/24",
     diagnosis: "Mise à jour disponible",
-    imageUrl: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=500&h=700&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1583912267550-d6c2f5e83dd1?w=500&h=700&fit=crop",
     pdfUrl: "#"
   },
   {
@@ -93,7 +93,7 @@ const mockCases: DiagnosticCase[] = [
     specialty: "Chirurgie vasculaire",
     date: "17/08/22",
     diagnosis: "Version stable",
-    imageUrl: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=500&h=700&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=500&h=700&fit=crop",
     pdfUrl: "#"
   },
   {
@@ -103,7 +103,7 @@ const mockCases: DiagnosticCase[] = [
     specialty: "Chirurgie digestive",
     date: "À venir",
     diagnosis: "À venir",
-    imageUrl: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=500&h=700&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1631815589968-fdb09a223b1e?w=500&h=700&fit=crop",
     pdfUrl: "#"
   },
   {
@@ -123,7 +123,7 @@ const mockCases: DiagnosticCase[] = [
     specialty: "Chirurgie digestive",
     date: "02/01/22",
     diagnosis: "À mettre à jour",
-    imageUrl: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=500&h=700&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1583912267550-d6c2f5e83dd1?w=500&h=700&fit=crop",
     pdfUrl: "#"
   },
   {
@@ -133,7 +133,7 @@ const mockCases: DiagnosticCase[] = [
     specialty: "Chirurgie abdominale",
     date: "À venir",
     diagnosis: "À venir",
-    imageUrl: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=500&h=700&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=500&h=700&fit=crop",
     pdfUrl: "#"
   },
   {
@@ -143,7 +143,7 @@ const mockCases: DiagnosticCase[] = [
     specialty: "Chirurgie abdominale",
     date: "04/01/24",
     diagnosis: "Mise à jour disponible",
-    imageUrl: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=500&h=700&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1631815589968-fdb09a223b1e?w=500&h=700&fit=crop",
     pdfUrl: "#"
   },
   {
@@ -163,7 +163,7 @@ const mockCases: DiagnosticCase[] = [
     specialty: "Chirurgie pédiatrique",
     date: "22/11/22",
     diagnosis: "Version stable",
-    imageUrl: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=500&h=700&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1583912267550-d6c2f5e83dd1?w=500&h=700&fit=crop",
     pdfUrl: "#"
   },
   {
@@ -173,7 +173,7 @@ const mockCases: DiagnosticCase[] = [
     specialty: "Urologie",
     date: "18/02/23",
     diagnosis: "Version stable",
-    imageUrl: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=500&h=700&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=500&h=700&fit=crop",
     pdfUrl: "#"
   },
   {
@@ -183,7 +183,7 @@ const mockCases: DiagnosticCase[] = [
     specialty: "Gynécologie",
     date: "09/10/22",
     diagnosis: "Version stable",
-    imageUrl: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=500&h=700&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1631815589968-fdb09a223b1e?w=500&h=700&fit=crop",
     pdfUrl: "#"
   },
   {
@@ -203,7 +203,7 @@ const mockCases: DiagnosticCase[] = [
     specialty: "Endocrinologie",
     date: "02/01/22",
     diagnosis: "À mettre à jour",
-    imageUrl: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=500&h=700&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1583912267550-d6c2f5e83dd1?w=500&h=700&fit=crop",
     pdfUrl: "#"
   },
   {
@@ -213,7 +213,7 @@ const mockCases: DiagnosticCase[] = [
     specialty: "Urgences",
     date: "À venir",
     diagnosis: "À venir",
-    imageUrl: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=500&h=700&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=500&h=700&fit=crop",
     pdfUrl: "#"
   },
   {
@@ -223,7 +223,7 @@ const mockCases: DiagnosticCase[] = [
     specialty: "Chirurgie plastique",
     date: "À venir",
     diagnosis: "À venir",
-    imageUrl: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=500&h=700&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1631815589968-fdb09a223b1e?w=500&h=700&fit=crop",
     pdfUrl: "#"
   },
   {
