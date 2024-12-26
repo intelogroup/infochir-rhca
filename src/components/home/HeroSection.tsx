@@ -73,17 +73,17 @@ export const HeroSection = () => {
   }, [cycleCount]);
   
   return (
-    <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(100vh-6rem)]">
+    <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(100vh-6rem)] z-0">
       <AnimatePresence mode="wait">
         <div
           key={currentIndex}
-          className="absolute inset-0"
+          className="absolute inset-0 z-0"
         >
           <div 
-            className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-90`}
+            className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-90 z-0`}
           />
           <motion.div 
-            className="absolute bottom-0 right-0 w-1/2 h-4/5 md:h-3/4 lg:h-2/3"
+            className="absolute bottom-0 right-0 w-1/2 h-4/5 md:h-3/4 lg:h-2/3 z-0"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -101,7 +101,7 @@ export const HeroSection = () => {
         </div>
       </AnimatePresence>
       
-      <div className="relative max-w-7xl mx-auto text-left pt-16 pb-16">
+      <div className="relative max-w-7xl mx-auto text-left pt-16 pb-16 z-10">
         <div className="max-w-xl lg:max-w-3xl">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-8 animate-fade-up tracking-tight whitespace-nowrap">
             Votre espace scientifique en ligne
