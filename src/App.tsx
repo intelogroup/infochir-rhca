@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import RHCA from "./pages/RHCA";
 import Profile from "./pages/Profile";
 import Donate from "./pages/Donate";
+import ADC from "./pages/ADC";
 
 const queryClient = new QueryClient();
 
@@ -24,7 +25,7 @@ const App = () => {
                 <Route path="/" element={<Index />} />
                 <Route path="/rhca" element={<RHCA />} />
                 <Route path="/igm" element={<div>IGM Page (Coming Soon)</div>} />
-                <Route path="/adc" element={<div>Atlas ADC Page (Coming Soon)</div>} />
+                <Route path="/adc" element={<ADC />} />
                 <Route path="/index-medicus" element={<div>Index Medicus Page (Coming Soon)</div>} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/settings" element={<div>Settings Page (Coming Soon)</div>} />
