@@ -4,14 +4,29 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CreditCard, Wallet, Apple, Bitcoin } from "lucide-react";
+import { useState } from "react";
 
 const DonationAmounts = [10, 25, 50, 100, 250, 500];
 
 const Donate = () => {
+  const [selectedAmount, setSelectedAmount] = useState<number>(0);
+  const [customAmount, setCustomAmount] = useState<string>("");
+
+  const handleAmountSelect = (amount: number) => {
+    setSelectedAmount(amount);
+    setCustomAmount("");
+  };
+
+  const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCustomAmount(e.target.value);
+    setSelectedAmount(0);
+  };
+
+  const currentAmount = customAmount ? parseFloat(customAmount) : selectedAmount;
+
   return (
     <MainLayout>
       <div className="max-w-4xl mx-auto px-4 py-12">
-        {/* Encouragement Message */}
         <div className="text-center mb-12 animate-fade-up">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Soutenez RHCA</h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -21,7 +36,6 @@ const Donate = () => {
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
-          {/* Left Column - Amount Selection */}
           <div className="md:col-span-2">
             <Card>
               <CardHeader>
@@ -33,8 +47,9 @@ const Donate = () => {
                   {DonationAmounts.map((amount) => (
                     <Button
                       key={amount}
-                      variant="outline"
-                      className="h-16 text-lg hover:bg-primary hover:text-white"
+                      variant={selectedAmount === amount ? "default" : "outline"}
+                      className="h-16 text-lg"
+                      onClick={() => handleAmountSelect(amount)}
                     >
                       {amount}€
                     </Button>
@@ -47,6 +62,8 @@ const Donate = () => {
                       type="number"
                       placeholder="0"
                       className="pl-8 text-lg"
+                      value={customAmount}
+                      onChange={handleCustomAmountChange}
                     />
                     <span className="absolute left-3 top-1/2 -translate-y-1/2">€</span>
                   </div>
@@ -54,7 +71,6 @@ const Donate = () => {
               </CardContent>
             </Card>
 
-            {/* Payment Methods */}
             <Card className="mt-6">
               <CardHeader>
                 <CardTitle>Mode de paiement</CardTitle>
@@ -129,14 +145,13 @@ const Donate = () => {
                 </Tabs>
               </CardContent>
               <CardFooter>
-                <Button className="w-full bg-primary hover:bg-primary-light">
-                  Faire un don
+                <Button className="w-full" disabled={!currentAmount}>
+                  Faire un don de {currentAmount}€
                 </Button>
               </CardFooter>
             </Card>
           </div>
 
-          {/* Right Column - Summary */}
           <div>
             <Card>
               <CardHeader>
@@ -145,16 +160,16 @@ const Donate = () => {
               <CardContent className="space-y-4">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Don</span>
-                  <span className="font-medium">0.00€</span>
+                  <span className="font-medium">{currentAmount}€</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Frais de traitement</span>
-                  <span className="font-medium">0.00€</span>
+                  <span className="font-medium">{(currentAmount * 0.029).toFixed(2)}€</span>
                 </div>
                 <div className="border-t pt-4">
                   <div className="flex justify-between font-semibold">
                     <span>Total</span>
-                    <span>0.00€</span>
+                    <span>{(currentAmount * 1.029).toFixed(2)}€</span>
                   </div>
                 </div>
               </CardContent>
