@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { FooterSection, quickLinks, resources, socialLinks } from "./layouts/FooterSection";
 import { motion } from "framer-motion";
+import { Heart } from "lucide-react";
 
 export const Footer = () => {
   return (
@@ -31,6 +32,18 @@ export const Footer = () => {
             <p className="text-gray-600 text-sm leading-relaxed">
               Une plateforme de premier plan pour la recherche médicale et les connaissances chirurgicales en Haïti.
             </p>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              className="inline-block"
+            >
+              <Link
+                to="/donate"
+                className="inline-flex items-center px-6 py-3 rounded-full bg-primary text-white hover:bg-primary/90 transition-colors duration-200"
+              >
+                Faire un don
+                <Heart className="ml-2 h-5 w-5 text-secondary fill-secondary" />
+              </Link>
+            </motion.div>
           </motion.div>
 
           <motion.div

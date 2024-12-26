@@ -94,8 +94,7 @@ export const HeroSection = () => {
               backgroundPosition: 'right bottom',
               backgroundRepeat: 'no-repeat',
               opacity: 0.6,
-              right: 0,
-              marginRight: '-5%' // This pushes the image further right
+              right: '-10%' // Updated this value to move the image further right
             }}
           />
         </div>
