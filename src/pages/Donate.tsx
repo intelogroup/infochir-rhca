@@ -61,7 +61,7 @@ const Donate = () => {
                 <CardDescription>Choisissez votre méthode de paiement préférée</CardDescription>
               </CardHeader>
               <CardContent>
-                <Tabs defaultValue="card" className="w-full">
+                <Tabs defaultValue="card">
                   <TabsList className="grid grid-cols-4 w-full">
                     <TabsTrigger value="card" className="flex items-center gap-2">
                       <CreditCard className="h-4 w-4" />
@@ -81,30 +81,49 @@ const Donate = () => {
                     </TabsTrigger>
                   </TabsList>
 
-                  <TabsContent value="card" className="space-y-4 mt-4">
-                    <Input placeholder="Numéro de carte" />
-                    <div className="grid grid-cols-3 gap-4">
-                      <Input placeholder="MM/YY" className="col-span-1" />
-                      <Input placeholder="CVC" className="col-span-1" />
-                      <Input placeholder="Code postal" className="col-span-1" />
+                  <TabsContent value="card">
+                    <div className="space-y-4 mt-4">
+                      <Input placeholder="Numéro de carte" />
+                      <div className="grid grid-cols-3 gap-4">
+                        <Input placeholder="MM/YY" className="col-span-1" />
+                        <Input placeholder="CVC" className="col-span-1" />
+                        <Input placeholder="Code postal" className="col-span-1" />
+                      </div>
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="wallet" className="mt-4">
+                  <TabsContent value="wallet">
                     <div className="text-center py-8 text-gray-600">
-                      Vous serez redirigé vers PayPal pour finaliser votre don.
+                      <p>Vous serez redirigé vers PayPal pour finaliser votre don.</p>
+                      <Button variant="outline" className="mt-4">
+                        <Wallet className="mr-2 h-4 w-4" />
+                        Payer avec PayPal
+                      </Button>
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="apple" className="mt-4">
+                  <TabsContent value="apple">
                     <div className="text-center py-8 text-gray-600">
-                      Cliquez sur le bouton ci-dessous pour payer avec Apple Pay.
+                      <p>Cliquez sur le bouton ci-dessous pour payer avec Apple Pay.</p>
+                      <Button variant="outline" className="mt-4">
+                        <Apple className="mr-2 h-4 w-4" />
+                        Payer avec Apple Pay
+                      </Button>
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="crypto" className="mt-4">
+                  <TabsContent value="crypto">
                     <div className="text-center py-8 text-gray-600">
-                      Choisissez votre crypto-monnaie préférée pour faire un don.
+                      <p>Choisissez votre crypto-monnaie préférée pour faire un don.</p>
+                      <div className="grid grid-cols-2 gap-4 mt-4">
+                        <Button variant="outline">
+                          <Bitcoin className="mr-2 h-4 w-4" />
+                          Bitcoin
+                        </Button>
+                        <Button variant="outline">
+                          Ethereum
+                        </Button>
+                      </div>
                     </div>
                   </TabsContent>
                 </Tabs>
