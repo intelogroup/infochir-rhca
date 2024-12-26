@@ -38,7 +38,7 @@ export const Footer = () => {
             >
               <Link
                 to="/donate"
-                className="inline-flex items-center px-6 py-3 rounded-full bg-primary text-white hover:bg-primary/90 transition-colors duration-200"
+                className="inline-flex items-center px-6 py-3 rounded-full bg-primary hover:bg-primary/90 transition-colors duration-200 text-white"
               >
                 Faire un don
                 <Heart className="ml-2 h-5 w-5 text-secondary fill-secondary" />
