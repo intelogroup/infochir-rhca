@@ -5,6 +5,7 @@ import { ProductsGrid } from "@/components/home/ProductsGrid";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const Index = () => {
   const { isLoading, isAuthenticated } = useAuth();
@@ -12,18 +13,31 @@ const Index = () => {
 
   useEffect(() => {
     const checkSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error) {
-        console.error("Session check error:", error);
-        navigate("/auth");
-        return;
-      }
-      
-      if (!session) {
+      try {
+        console.log("Checking session...");
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error("Session check error:", error);
+          toast.error("Erreur de vérification de session");
+          navigate("/auth");
+          return;
+        }
+        
+        console.log("Session status:", session ? "Active" : "No session");
+        if (!session) {
+          console.log("No session found, redirecting to auth");
+          toast.error("Session expirée. Veuillez vous reconnecter.");
+          navigate("/auth");
+        }
+      } catch (error) {
+        console.error("Unexpected error during session check:", error);
+        toast.error("Une erreur inattendue est survenue");
         navigate("/auth");
       }
     };
 
+    console.log("Auth state:", { isLoading, isAuthenticated });
     if (!isLoading && !isAuthenticated) {
       checkSession();
     }
@@ -38,9 +52,11 @@ const Index = () => {
   }
 
   if (!isAuthenticated) {
+    console.log("Not authenticated, rendering null");
     return null;
   }
 
+  console.log("Rendering Index page content");
   return (
     <main className="min-h-screen bg-[#f8fafc]">
       <HeroSection />
