@@ -31,8 +31,7 @@ export const navItems: NavItem[] = [
     href: "/rhca",
     icon: BookOpen,
     description: "Revue Haïtienne de Chirurgie et d'Anesthésiologie",
-    logo: "/lovable-uploads/f65134f5-3929-4504-9567-104510b21f5d.png",
-    bgImage: "/lovable-uploads/3686281a-0f1a-46e8-a03f-c56d49e3d791.png"
+    logo: "/lovable-uploads/f65134f5-3929-4504-9567-104510b21f5d.png"
   },
   {
     name: "IGM",

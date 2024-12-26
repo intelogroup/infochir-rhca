@@ -1,4 +1,4 @@
-import { Newspaper } from "lucide-react";
+import { Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -20,8 +20,8 @@ export const NewsletterSection = () => {
   return (
     <section className="py-16 bg-gradient-to-br from-primary to-primary-light">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <Newspaper className="w-12 h-12 mx-auto mb-6 text-white/80" />
-        <h2 className="text-3xl font-bold mb-4 text-white">Restez informé</h2>
+        <Mail className="w-12 h-12 mx-auto mb-6 text-white/80" />
+        <h2 className="text-3xl font-bold mb-4 text-white">Abonnez-vous</h2>
         <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
           Abonnez-vous à notre newsletter pour recevoir les dernières publications et actualités
         </p>
