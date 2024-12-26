@@ -43,14 +43,14 @@ export const ProductsGrid = () => {
           </p>
         </div>
         <div 
-          className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
+          className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 px-4 sm:px-6 lg:px-8"
           role="list"
           aria-label="Liste des produits"
         >
           {products.map((product, index) => (
             <div 
               key={product.title} 
-              className="animate-fade-up cursor-pointer" 
+              className="animate-fade-up" 
               style={{ animationDelay: `${index * 100}ms` }}
               onClick={() => !isLoading && handleProductClick(product.href)}
               onKeyDown={(e) => {

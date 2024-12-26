@@ -10,7 +10,7 @@ export interface ProductCardProps {
 
 export const ProductCard = ({ title, description, icon: Icon, logo }: ProductCardProps) => {
   return (
-    <Card className="relative overflow-hidden group hover:shadow-lg transition-shadow">
+    <Card className="relative overflow-hidden group hover:shadow-lg transition-shadow h-full">
       <CardHeader className="space-y-4">
         {logo ? (
           <div className="w-16 h-16 mx-auto">
