@@ -91,11 +91,11 @@ export const ProductCard = ({
               className="bg-white text-primary flex items-center gap-2"
             >
               {showDot && (
-                <div className="w-2 h-2 rounded-full bg-green-500" />
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
               )}
               <span>Mise à jour disponible</span>
               <Bell 
-                className="w-5 h-5" 
+                className="w-4 h-4" 
                 fill="#F97316"
                 color="#F97316"
               />
