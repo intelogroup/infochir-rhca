@@ -6,6 +6,7 @@ export interface DiagnosticCase {
   specialty: string;
   diagnosis: string;
   date: string;
+  pdfUrl?: string;
 }
 
 export interface YearGroup {
