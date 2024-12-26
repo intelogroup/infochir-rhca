@@ -90,7 +90,7 @@ export const HeroSection = () => {
             transition={{ duration: 0.3 }}
             style={{ 
               backgroundImage: `url(${images[currentIndex]})`,
-              backgroundSize: '100% auto',
+              backgroundSize: '50% auto', // Changed from 100% to 50%
               backgroundPosition: 'center 35%',
               backgroundRepeat: 'no-repeat',
               opacity: 0.6
