@@ -44,7 +44,7 @@ export const ProductsGrid = () => {
       </div>
       {isLoading ? (
         <div className="flex justify-center py-12">
-          <LoadingSpinner size="lg" />
+          <LoadingSpinner className="h-8 w-8" />
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">

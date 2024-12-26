@@ -54,7 +54,7 @@ const AuthPage = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#f8fafc]">
-        <LoadingSpinner size="lg" />
+        <LoadingSpinner className="h-8 w-8" />
       </div>
     );
   }
