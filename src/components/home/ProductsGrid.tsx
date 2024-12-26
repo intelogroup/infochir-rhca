@@ -13,7 +13,6 @@ export const ProductsGrid = () => {
   const handleProductClick = async (href: string) => {
     try {
       setIsLoading(true);
-      // Check session before navigation
       const { data: { session }, error } = await supabase.auth.getSession();
       if (error) throw error;
       
@@ -43,8 +42,8 @@ export const ProductsGrid = () => {
         </p>
       </div>
       {isLoading ? (
-        <div className="flex justify-center py-12">
-          <LoadingSpinner className="h-8 w-8" />
+        <div className="flex justify-center items-center min-h-[200px]">
+          <LoadingSpinner className="h-8 w-8 text-primary" />
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">

@@ -6,6 +6,6 @@ interface LoadingSpinnerProps {
 
 export const LoadingSpinner = ({ className = "" }: LoadingSpinnerProps) => {
   return (
-    <Loader2 className={`h-4 w-4 animate-spin text-primary ${className}`} />
+    <Loader2 className={`animate-spin ${className}`} />
   );
 };

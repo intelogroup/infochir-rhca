@@ -16,7 +16,6 @@ const Index = () => {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        console.log("Checking session...");
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
@@ -26,7 +25,6 @@ const Index = () => {
           return;
         }
         
-        console.log("Session status:", session ? "Active" : "No session");
         if (!session) {
           console.log("No session found, redirecting to auth");
           toast.error("Session expirée. Veuillez vous reconnecter.");
