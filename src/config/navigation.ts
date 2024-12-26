@@ -30,28 +30,28 @@ export const navItems: NavItem[] = [
     name: "RHCA", 
     href: "/rhca",
     icon: BookOpen,
-    description: "Revue Haïtienne de Chirurgie et d'Anesthésiologie",
+    description: "Publiez vos articles scientifiques et contribuez à l'avancement des connaissances en chirurgie et anesthésiologie",
     logo: "/lovable-uploads/f65134f5-3929-4504-9567-104510b21f5d.png"
   },
   {
     name: "IGM",
     href: "/igm",
     icon: Newspaper,
-    description: "Informations Générales Médicales",
+    description: "Restez informé des dernières nouvelles et évolutions du domaine médical avec notre gazette médicale",
     logo: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png"
   },
   {
     name: "Atlas ADC",
     href: "/adc",
     icon: BookOpen,
-    description: "Atlas de Diagnostic Chirurgical",
+    description: "Explorez une base visuelle unique de diagnostics chirurgicaux pour faciliter vos pratiques cliniques",
     logo: "/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png"
   },
   {
     name: "Index Medicus",
     href: "/index-medicus",
     icon: Database,
-    description: "Base de données médicales",
+    description: "Accédez à une vaste base de données de références médicales organisées par auteur et thème",
     logo: "/lovable-uploads/f2409464-47cf-4348-ada0-e328e86be01b.png"
   }
 ];
