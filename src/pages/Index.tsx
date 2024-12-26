@@ -28,6 +28,7 @@ const Index = () => {
         if (!session) {
           toast.error("Session expirée. Veuillez vous reconnecter.");
           navigate("/auth");
+          return;
         }
       } catch (error) {
         console.error("Unexpected error during session check:", error);
@@ -36,12 +37,25 @@ const Index = () => {
       }
     };
 
-    if (!isAuthenticated) {
-      checkSession();
-    }
-  }, [isAuthenticated, navigate]);
+    // Always check session on mount
+    checkSession();
 
+    // Set up auth state change listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        navigate("/auth");
+      }
+    });
+
+    // Cleanup subscription
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
+
+  // Immediate redirect if not authenticated
   if (!isAuthenticated) {
+    navigate("/auth");
     return null;
   }
 
