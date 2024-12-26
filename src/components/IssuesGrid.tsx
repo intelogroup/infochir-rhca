@@ -8,7 +8,7 @@ import { AlertCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 export const IssuesGrid = () => {
-  const { isLoading, error, filteredIssues, setFilteredIssues, refreshArticles } = useArticles();
+  const { error, filteredIssues, setFilteredIssues, refreshArticles } = useArticles();
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleRefresh = async () => {
@@ -39,26 +39,6 @@ export const IssuesGrid = () => {
     );
   }
 
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <Skeleton className="h-12 w-full" /> {/* Search bar skeleton */}
-        <div className="space-y-4">
-          {[...Array(3)].map((_, i) => (
-            <div key={`skeleton-${i}`} className="space-y-2">
-              <Skeleton className="h-8 w-48" /> {/* Title skeleton */}
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {[...Array(3)].map((_, j) => (
-                  <Skeleton key={`card-skeleton-${i}-${j}`} className="h-32 w-full" />
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
   if (!Array.isArray(filteredIssues)) {
     console.error("filteredIssues must be an array");
     return (
@@ -72,7 +52,7 @@ export const IssuesGrid = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <IssuesSearch
         onSearch={setSearchTerm}
         filteredIssues={filteredIssues}

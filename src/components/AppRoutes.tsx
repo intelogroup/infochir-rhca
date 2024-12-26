@@ -16,13 +16,13 @@ export const AppRoutes = () => {
   const showNavbar = !hideNavbarPaths.includes(location.pathname);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-gray-50">
       {showNavbar && <Navbar />}
       <Routes>
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/" element={<PrivateRoute><Index /></PrivateRoute>} />
         <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
-        <Route path="/rhca" element={<PrivateRoute><RHCA /></PrivateRoute>} />
+        <Route path="/rhca/*" element={<PrivateRoute><RHCA /></PrivateRoute>} />
         <Route path="/igm" element={<PrivateRoute><IGM /></PrivateRoute>} />
         <Route path="/adc" element={<PrivateRoute><ADC /></PrivateRoute>} />
         <Route path="/index-medicus" element={<PrivateRoute><IndexMedicus /></PrivateRoute>} />
