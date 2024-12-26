@@ -15,7 +15,7 @@ interface UserMenuProps {
 
 export const UserMenu = ({ avatarUrl }: UserMenuProps) => {
   const defaultAvatarUrl = "/lovable-uploads/d2031e37-eafc-4c7c-b6b0-edc61f24c8fb.png";
-  const username = "Alouidor"; // Placeholder username
+  const username = "Alouidor"; // Static username since we're not using auth
   
   const handleAvatarUpdate = () => {
     console.log("Update avatar clicked");

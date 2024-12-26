@@ -1,16 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Card } from "@/components/ui/card";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { ProfileAvatar } from "@/components/profile/ProfileAvatar";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 
 const Profile = () => {
   const navigate = useNavigate();
-  const [session, setSession] = useState(null);
   const [formData, setFormData] = useState({
     fullName: "Dr. John Doe",
     email: "john.doe@example.com",
@@ -18,24 +16,6 @@ const Profile = () => {
     hospital: "Hôpital Universitaire",
     avatarUrl: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952"
   });
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const handleAvatarUpdate = (url: string) => {
-    setFormData(prev => ({ ...prev, avatarUrl: url }));
-  };
 
   return (
     <div className="min-h-screen bg-[#f8fafc]">
@@ -57,8 +37,7 @@ const Profile = () => {
             <div className="flex items-center gap-6">
               <ProfileAvatar 
                 avatarUrl={formData.avatarUrl}
-                session={session}
-                onAvatarUpdate={handleAvatarUpdate}
+                onAvatarUpdate={(url) => setFormData(prev => ({ ...prev, avatarUrl: url }))}
               />
               <div>
                 <h1 className="text-2xl font-semibold text-gray-900">

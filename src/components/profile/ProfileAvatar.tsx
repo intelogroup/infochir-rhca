@@ -2,16 +2,13 @@ import { useState } from "react";
 import { Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { Session } from "@supabase/supabase-js";
 
 interface ProfileAvatarProps {
   avatarUrl: string;
-  session: Session | null;
   onAvatarUpdate: (url: string) => void;
 }
 
-export const ProfileAvatar = ({ avatarUrl, session, onAvatarUpdate }: ProfileAvatarProps) => {
+export const ProfileAvatar = ({ avatarUrl, onAvatarUpdate }: ProfileAvatarProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
 
@@ -19,33 +16,11 @@ export const ProfileAvatar = ({ avatarUrl, session, onAvatarUpdate }: ProfileAva
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (!session) {
-      toast({
-        title: "Authentication required",
-        description: "Please log in to update your profile picture.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     try {
       setIsUploading(true);
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${session.user.id}-avatar.${fileExt}`;
-      
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(fileName, file, {
-          upsert: true
-        });
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(fileName);
-
-      onAvatarUpdate(publicUrl);
+      // Simulated upload - in a real app, you'd implement your own file upload logic here
+      const fakeUploadUrl = URL.createObjectURL(file);
+      onAvatarUpdate(fakeUploadUrl);
       
       toast({
         title: "Avatar updated",
