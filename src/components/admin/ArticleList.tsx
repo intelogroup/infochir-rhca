@@ -12,6 +12,7 @@ import { Edit, Trash } from "lucide-react";
 interface Article {
   id: string;
   title: string;
+  abstract: string;
   date: string;
   pdf_url: string | null;
 }

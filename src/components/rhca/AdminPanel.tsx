@@ -34,6 +34,7 @@ export const AdminPanel = () => {
   const [articles, setArticles] = useState<Article[]>(mockArticles);
   const [isLoading, setIsLoading] = useState(false);
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleSubmit = async (data: { title: string; abstract: string }) => {
     setIsLoading(true);
@@ -57,11 +58,17 @@ export const AdminPanel = () => {
         toast.success("Article added successfully");
       }
       setEditingArticle(null);
+      setIsDialogOpen(false);
     } catch (error) {
       toast.error("Error saving article");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleEdit = (article: Article) => {
+    setEditingArticle(article);
+    setIsDialogOpen(true);
   };
 
   const handleDelete = async (id: string) => {
@@ -77,7 +84,7 @@ export const AdminPanel = () => {
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">RHCA Admin Panel</h2>
-        <Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="h-4 w-4 mr-2" />
@@ -101,7 +108,7 @@ export const AdminPanel = () => {
 
       <ArticleList
         articles={articles}
-        onEdit={setEditingArticle}
+        onEdit={handleEdit}
         onDelete={handleDelete}
       />
     </div>
