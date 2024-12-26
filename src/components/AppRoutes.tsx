@@ -12,11 +12,11 @@ import AuthPage from "@/pages/Auth";
 
 export const AppRoutes = () => {
   const location = useLocation();
-  const hideNavbarPaths = ['/igm', '/rhca', '/index-medicus', '/adc', '/auth', '/admin'];
+  const hideNavbarPaths = ['/auth', '/admin'];
   const showNavbar = !hideNavbarPaths.includes(location.pathname);
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       {showNavbar && <Navbar />}
       <Routes>
         <Route path="/auth" element={<AuthPage />} />
@@ -27,6 +27,6 @@ export const AppRoutes = () => {
         <Route path="/adc" element={<PrivateRoute><ADC /></PrivateRoute>} />
         <Route path="/index-medicus" element={<PrivateRoute><IndexMedicus /></PrivateRoute>} />
       </Routes>
-    </>
+    </div>
   );
 };

@@ -2,12 +2,13 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { HeroSection } from "@/components/home/HeroSection";
 import { ProductsGrid } from "@/components/home/ProductsGrid";
+import { StatsSection } from "@/components/home/StatsSection";
+import { NewsletterSection } from "@/components/home/NewsletterSection";
+import { Footer } from "@/components/Footer";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { NewsletterSection } from "@/components/home/NewsletterSection";
-import { Footer } from "@/components/Footer";
 
 const Index = () => {
   const { isLoading, isAuthenticated } = useAuth();
@@ -60,14 +61,17 @@ const Index = () => {
 
   console.log("Rendering Index page content");
   return (
-    <main className="min-h-screen bg-[#f8fafc]">
-      <HeroSection />
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <ProductsGrid />
-      </div>
-      <NewsletterSection />
+    <div className="flex flex-col min-h-screen">
+      <main className="flex-grow">
+        <HeroSection />
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <StatsSection />
+          <ProductsGrid />
+        </div>
+        <NewsletterSection />
+      </main>
       <Footer />
-    </main>
+    </div>
   );
 };
 
