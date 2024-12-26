@@ -10,7 +10,7 @@ const stats = [
 
 export const StatsSection = () => {
   return (
-    <section className="relative -mt-10 mb-16">
+    <section className="relative mt-20 mb-16">
       <div className="max-w-[95vw] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between gap-8 scale-[0.6] origin-top">
           {stats.map((stat, index) => (
