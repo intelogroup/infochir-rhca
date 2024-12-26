@@ -1,5 +1,4 @@
-import { Footer } from "@/components/Footer";
-import { Navbar } from "@/components/Navbar";
+import { MainLayout } from "@/components/layouts/MainLayout";
 import { HeroSection } from "@/components/home/HeroSection";
 import { StatsSection } from "@/components/home/StatsSection";
 import { ProductsSection } from "@/components/home/ProductsSection";
@@ -9,18 +8,14 @@ import { SponsorsSection } from "@/components/home/SponsorsSection";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
-      <Navbar />
-      <main className="pt-16">
-        <HeroSection />
-        <StatsSection />
-        <ProductsSection />
-        <CarouselSection />
-        <NewsletterSection />
-        <SponsorsSection />
-      </main>
-      <Footer />
-    </div>
+    <MainLayout>
+      <HeroSection />
+      <StatsSection />
+      <ProductsSection />
+      <CarouselSection />
+      <NewsletterSection />
+      <SponsorsSection />
+    </MainLayout>
   );
 };
 

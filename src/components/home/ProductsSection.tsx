@@ -1,17 +1,8 @@
-import { BookOpen, Database, Newspaper } from "lucide-react";
 import { ProductCard } from "@/components/ProductCard";
 import { products } from "@/config/navigation";
-import { useNavigate } from "react-router-dom";
-
-const icons = {
-  BookOpen,
-  Database,
-  Newspaper,
-} as const;
+import { motion } from "framer-motion";
 
 export const ProductsSection = () => {
-  const navigate = useNavigate();
-
   return (
     <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#e8f5e9] to-white relative">
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
@@ -27,7 +18,7 @@ export const ProductsSection = () => {
         
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
           {products.map((product, index) => (
-            <div 
+            <motion.div 
               key={product.title} 
               className="animate-fade-up" 
               style={{ 
@@ -35,8 +26,8 @@ export const ProductsSection = () => {
                 animationFillMode: 'backwards'
               }}
             >
-              <ProductCard {...product} icon={icons[product.icon]} />
-            </div>
+              <ProductCard {...product} />
+            </motion.div>
           ))}
         </div>
       </div>
