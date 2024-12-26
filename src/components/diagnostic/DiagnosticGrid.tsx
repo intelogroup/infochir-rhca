@@ -1,7 +1,9 @@
 import { DiagnosticCard } from "./DiagnosticCard";
+import { DiagnosticTable } from "./DiagnosticTable";
 import { DiagnosticCase } from "./types";
 import { useState } from "react";
 import { DiagnosticSearch } from "./DiagnosticSearch";
+import { ViewToggle } from "./ViewToggle";
 
 const mockCases: DiagnosticCase[] = [
   {
@@ -11,7 +13,7 @@ const mockCases: DiagnosticCase[] = [
     specialty: "Introduction",
     date: "23/07/24",
     diagnosis: "Mise à jour disponible",
-    imageUrl: "https://images.unsplash.com/photo-1583912267550-d6c2ac3196c0?w=500&h=700&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=500&h=700&fit=crop",
     pdfUrl: "#"
   },
   {
@@ -21,7 +23,7 @@ const mockCases: DiagnosticCase[] = [
     specialty: "Dermatologie",
     date: "12/04/24",
     diagnosis: "Mise à jour disponible",
-    imageUrl: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=500&h=700&fit=crop",
+    imageUrl: "https://images.unsplash.com/photo-1530497610245-94d3c16cda28?w=500&h=700&fit=crop",
     pdfUrl: "#"
   },
   {
@@ -261,6 +263,7 @@ const specialties = [
 export const DiagnosticGrid = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSpecialty, setSelectedSpecialty] = useState("Toutes les spécialités");
+  const [view, setView] = useState<"grid" | "table">("grid");
 
   const filteredCases = mockCases.filter(item => {
     const matchesSearch = (
@@ -273,22 +276,29 @@ export const DiagnosticGrid = () => {
 
   return (
     <div className="space-y-6">
-      <DiagnosticSearch
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        selectedSpecialty={selectedSpecialty}
-        setSelectedSpecialty={setSelectedSpecialty}
-        specialties={specialties}
-      />
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCases.map((diagnosticCase) => (
-          <DiagnosticCard
-            key={diagnosticCase.id}
-            diagnosticCase={diagnosticCase}
-          />
-        ))}
+      <div className="flex justify-between items-center gap-4">
+        <DiagnosticSearch
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          selectedSpecialty={selectedSpecialty}
+          setSelectedSpecialty={setSelectedSpecialty}
+          specialties={specialties}
+        />
+        <ViewToggle view={view} setView={setView} />
       </div>
+
+      {view === "grid" ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredCases.map((diagnosticCase) => (
+            <DiagnosticCard
+              key={diagnosticCase.id}
+              diagnosticCase={diagnosticCase}
+            />
+          ))}
+        </div>
+      ) : (
+        <DiagnosticTable cases={filteredCases} />
+      )}
     </div>
   );
 };
