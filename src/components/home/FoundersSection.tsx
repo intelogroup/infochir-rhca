@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
-import { UserRound } from "lucide-react";
+import { UserRound, Star } from "lucide-react";
 
 interface Founder {
   name: string;
@@ -65,19 +65,23 @@ const founders: Founder[] = [
 
 export const FoundersSection = () => {
   return (
-    <section className="py-24 relative overflow-hidden bg-gradient-to-b from-white via-gray-50/50 to-white">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent" />
+    <section className="py-24 relative overflow-hidden bg-gradient-to-b from-[#f8fafc] via-white to-[#f8fafc]">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-[#1EAEDB]/10 via-transparent to-transparent" />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="text-center mb-16">
-          <motion.h2 
+          <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="text-4xl font-bold text-gray-900 mb-4"
+            className="flex items-center justify-center gap-2 mb-4"
           >
-            Nos Membres Fondateurs
-          </motion.h2>
+            <Star className="w-8 h-8 text-[#1EAEDB] animate-pulse" />
+            <h2 className="text-4xl font-bold text-[#1EAEDB] bg-clip-text">
+              Nos Membres Fondateurs
+            </h2>
+            <Star className="w-8 h-8 text-[#1EAEDB] animate-pulse" />
+          </motion.div>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -96,16 +100,18 @@ export const FoundersSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className={`group hover:shadow-xl transition-all duration-300 backdrop-blur-sm border-gray-200/50 ${
-                founder.isDeceased ? 'bg-gray-50/80' : 'bg-white/80 hover:bg-white'
+              <Card className={`group hover:shadow-2xl transition-all duration-300 backdrop-blur-sm border-0 ${
+                founder.isDeceased 
+                  ? 'bg-gradient-to-br from-gray-50/90 to-gray-100/90' 
+                  : 'bg-gradient-to-br from-white/90 to-gray-50/90 hover:bg-white'
               }`}>
                 <CardContent className="p-8">
                   <div className="flex flex-col items-center text-center">
-                    <div className={`w-32 h-32 rounded-full overflow-hidden mb-6 ring-4 ${
+                    <div className={`w-36 h-36 rounded-full overflow-hidden mb-6 ring-4 transform transition-all duration-300 ${
                       founder.isDeceased 
                         ? 'ring-gray-200 opacity-80' 
-                        : 'ring-primary/20 group-hover:ring-primary/30'
-                    } transition-all duration-300`}>
+                        : 'ring-[#1EAEDB]/20 group-hover:ring-[#1EAEDB]/30 group-hover:scale-105'
+                    }`}>
                       {founder.image ? (
                         <Avatar className="w-full h-full">
                           <AvatarImage
@@ -119,16 +125,16 @@ export const FoundersSection = () => {
                         </Avatar>
                       ) : (
                         <div className={`w-full h-full flex items-center justify-center ${
-                          founder.isDeceased ? 'bg-gray-200' : 'bg-primary/10'
+                          founder.isDeceased ? 'bg-gray-200' : 'bg-[#1EAEDB]/10'
                         }`}>
                           <UserRound className={`w-12 h-12 ${
-                            founder.isDeceased ? 'text-gray-400' : 'text-primary'
+                            founder.isDeceased ? 'text-gray-400' : 'text-[#1EAEDB]'
                           }`} />
                         </div>
                       )}
                     </div>
-                    <h3 className={`font-semibold text-lg mb-2 transition-colors duration-300 ${
-                      founder.isDeceased ? 'text-gray-500' : 'text-gray-900 group-hover:text-primary'
+                    <h3 className={`font-semibold text-xl mb-2 transition-colors duration-300 ${
+                      founder.isDeceased ? 'text-gray-500' : 'text-gray-900 group-hover:text-[#1EAEDB]'
                     }`}>
                       {founder.name}
                     </h3>
@@ -137,15 +143,15 @@ export const FoundersSection = () => {
                     }`}>
                       {founder.title}
                     </p>
-                    <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
+                    <span className={`inline-flex items-center rounded-full px-4 py-1.5 text-sm font-medium ${
                       founder.isDeceased 
                         ? 'bg-gray-100 text-gray-500' 
-                        : 'bg-primary/10 text-primary'
+                        : 'bg-[#1EAEDB]/10 text-[#1EAEDB]'
                     }`}>
                       {founder.role}
                     </span>
                     {founder.isDeceased && (
-                      <div className="mt-4 text-xs text-gray-500 italic">
+                      <div className="mt-4 text-sm text-gray-500 italic">
                         In memoriam
                       </div>
                     )}
