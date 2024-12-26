@@ -6,32 +6,38 @@ const stats = [
   { 
     icon: Users,
     title: "Utilisateurs actifs",
-    value: "2,000+"
+    value: "2,000+",
+    iconClassName: "text-secondary fill-secondary/20"
   },
   { 
     icon: Globe2,
     title: "Pays représentés",
-    value: "25+"
+    value: "25+",
+    iconClassName: "text-secondary fill-secondary/20"
   },
   { 
     icon: BookOpen,
     title: "Articles publiés",
-    value: "500+"
+    value: "500+",
+    iconClassName: "text-secondary fill-secondary/20"
   },
   { 
     icon: TrendingUp,
     title: "Citations",
-    value: "1,500+"
+    value: "1,500+",
+    iconClassName: "text-secondary fill-secondary/20"
   },
   { 
     icon: Award,
     title: "Prix reçus",
-    value: "12+"
+    value: "12+",
+    iconClassName: "text-secondary fill-secondary/20"
   },
   { 
     icon: Star,
     title: "Satisfaction",
-    value: "4.8/5"
+    value: "4.8/5",
+    iconClassName: "text-secondary fill-secondary/20"
   }
 ];
 
