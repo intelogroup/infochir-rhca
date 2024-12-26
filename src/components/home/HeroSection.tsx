@@ -71,7 +71,7 @@ export const HeroSection = () => {
       clearInterval(intervalRef.current);
     }
   }, [cycleCount]);
-  
+
   return (
     <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(80vh-5rem)] z-0">
       <AnimatePresence mode="wait">
@@ -110,7 +110,7 @@ export const HeroSection = () => {
             La plateforme de référence pour les professionnels de santé en Haïti
           </p>
           <div className="flex flex-wrap gap-4">
-            <Button size="lg" variant="secondary" className="group bg-green-800 hover:bg-green-900 text-white">
+            <Button size="lg" variant="secondary" className="group bg-[#4caf50] hover:bg-[#45a049] text-white">
               Soumettre votre article
               <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Button>
