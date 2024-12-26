@@ -9,6 +9,7 @@ import RHCA from "./pages/RHCA";
 import Donate from "./pages/Donate";
 import ADC from "./pages/ADC";
 import IGM from "./pages/IGM";
+import About from "./pages/About";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => {
                 <Route path="/index-medicus" element={<div>Index Medicus Page (Coming Soon)</div>} />
                 <Route path="/settings" element={<div>Settings Page (Coming Soon)</div>} />
                 <Route path="/donate" element={<Donate />} />
+                <Route path="/about" element={<About />} />
               </Routes>
             </div>
           </TooltipProvider>
