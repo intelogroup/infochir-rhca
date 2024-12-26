@@ -5,12 +5,13 @@ import { IssuesGrid } from "@/components/IssuesGrid";
 import { useState } from "react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { LayoutGrid, List } from "lucide-react";
+import { MainLayout } from "@/components/layouts/MainLayout";
 
 const IGM = () => {
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
+    <MainLayout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Link to="/" className="inline-block mb-8">
           <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary-light">
@@ -72,6 +73,18 @@ const IGM = () => {
                 Voir les directives
               </Button>
             </div>
+
+            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
+              <h2 className="text-2xl font-semibold text-primary mb-4">
+                Comité éditorial
+              </h2>
+              <p className="text-gray-600 mb-6">
+                Notre comité éditorial est composé d'experts reconnus dans leurs domaines respectifs. Ils assurent la qualité scientifique et la pertinence des articles publiés.
+              </p>
+              <Button variant="outline" className="w-full text-primary hover:text-primary-light">
+                Découvrir l'équipe
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -102,7 +115,7 @@ const IGM = () => {
           </div>
         </div>
       </div>
-    </div>
+    </MainLayout>
   );
 };
 
