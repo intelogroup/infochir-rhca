@@ -75,7 +75,7 @@ export const HeroSection = () => {
   return (
     <section 
       ref={sectionRef} 
-      className="relative pt-24 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(100vh-6rem)] mt-24"
+      className="relative pt-6 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(100vh-6rem)] mt-24"
     >
       <AnimatePresence mode="wait">
         <div
