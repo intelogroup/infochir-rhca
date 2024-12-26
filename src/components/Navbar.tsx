@@ -8,6 +8,16 @@ export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
+  const getHoverClass = (href: string) => {
+    if (href === '/rhca' || href === '/adc') {
+      return 'hover:bg-secondary hover:text-white';
+    }
+    if (href === '/igm' || href === '/index-medicus') {
+      return 'hover:bg-primary hover:text-white';
+    }
+    return 'hover:text-primary';
+  };
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 w-full border-b border-gray-200/50 bg-white/80 backdrop-blur-sm shadow-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -30,7 +40,7 @@ export const Navbar = () => {
                 <button
                   key={item.name}
                   onClick={() => navigate(item.href)}
-                  className="flex h-16 items-center font-medium text-gray-700 transition-colors duration-200 hover:text-primary"
+                  className={`flex h-16 items-center font-medium text-gray-700 transition-colors duration-200 px-3 py-1 rounded-md ${getHoverClass(item.href)}`}
                 >
                   {item.name}
                 </button>
@@ -64,7 +74,7 @@ export const Navbar = () => {
                   navigate(item.href);
                   setIsOpen(false);
                 }}
-                className="flex w-full items-center rounded-lg px-3 py-2 font-medium text-gray-700 transition-colors duration-200 hover:bg-gray-100/50"
+                className={`flex w-full items-center rounded-lg px-3 py-2 font-medium text-gray-700 transition-colors duration-200 ${getHoverClass(item.href)}`}
               >
                 {item.name}
               </button>
