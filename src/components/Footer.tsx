@@ -1,28 +1,7 @@
-import { Twitter, Facebook, Linkedin, Rss } from "lucide-react";
 import { Link } from "react-router-dom";
+import { FooterSection, quickLinks, resources, socialLinks } from "./layouts/FooterSection";
 
 export const Footer = () => {
-  const quickLinks = [
-    { name: "Soumettre un manuscrit", href: "#submit" },
-    { name: "Comité éditorial", href: "#editorial" },
-    { name: "Directives pour les auteurs", href: "#guidelines" },
-    { name: "Nous contacter", href: "#contact" },
-  ];
-
-  const resources = [
-    { name: "Banque d'images", href: "#images" },
-    { name: "Études de cas", href: "#cases" },
-    { name: "Outils de recherche", href: "#tools" },
-    { name: "Archives", href: "#archives" },
-  ];
-
-  const socialLinks = [
-    { name: "Twitter", icon: Twitter, href: "#twitter" },
-    { name: "Facebook", icon: Facebook, href: "#facebook" },
-    { name: "LinkedIn", icon: Linkedin, href: "#linkedin" },
-    { name: "Flux RSS", icon: Rss, href: "#rss" },
-  ];
-
   return (
     <footer className="bg-white border-t border-gray-200/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -44,39 +23,8 @@ export const Footer = () => {
             </p>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="font-semibold text-gray-900 mb-4">Liens rapides</h3>
-            <ul className="space-y-3">
-              {quickLinks.map((link) => (
-                <li key={link.name}>
-                  <Link
-                    to={link.href}
-                    className="text-gray-600 hover:text-primary text-sm transition-colors duration-200"
-                  >
-                    {link.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Resources */}
-          <div>
-            <h3 className="font-semibold text-gray-900 mb-4">Ressources</h3>
-            <ul className="space-y-3">
-              {resources.map((resource) => (
-                <li key={resource.name}>
-                  <Link
-                    to={resource.href}
-                    className="text-gray-600 hover:text-primary text-sm transition-colors duration-200"
-                  >
-                    {resource.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <FooterSection title="Liens rapides" links={quickLinks} />
+          <FooterSection title="Ressources" links={resources} />
 
           {/* Social Links */}
           <div>
