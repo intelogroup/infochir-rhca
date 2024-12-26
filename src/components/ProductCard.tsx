@@ -28,7 +28,7 @@ export const ProductCard = ({
   const getProductFeatures = (title: string) => {
     switch (title) {
       case "RHCA":
-        return ["Publication d'articles scientifiques", "Diffusion des connaissances", "Communauté médicale engagée"];
+        return ["Publication d'articles", "Diffusion des connaissances", "Communauté médicale"];
       case "IGM":
         return ["Actualités médicales", "Tendances cliniques", "Perspective unique sur la médecine"];
       case "Atlas ADC":
@@ -66,7 +66,7 @@ export const ProductCard = ({
           <CardTitle className="text-2xl font-bold text-gray-900 text-center group-hover:text-primary transition-colors">
             {title}
           </CardTitle>
-          <CardDescription className="text-gray-600 text-center leading-relaxed line-clamp-2">
+          <CardDescription className="text-gray-600 text-center leading-relaxed line-clamp-2 h-12">
             {description}
           </CardDescription>
         </CardHeader>
