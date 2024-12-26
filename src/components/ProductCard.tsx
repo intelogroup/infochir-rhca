@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Bell } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface ProductCardProps {
   title: string;
@@ -26,6 +27,16 @@ export const ProductCard = ({
   logo,
   features = []
 }: ProductCardProps) => {
+  const [isAnimating, setIsAnimating] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsAnimating(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const getProductFeatures = (title: string) => {
     switch (title) {
       case "RHCA":
@@ -67,8 +78,24 @@ export const ProductCard = ({
       <Card className="group h-full bg-white hover:shadow-xl transition-all duration-300 border border-gray-200 overflow-hidden">
         <CardHeader className="space-y-4 relative">
           <div className="absolute top-0 right-0 p-4">
-            <Badge variant="secondary" className="bg-primary/5 text-primary">
-              Nouveau
+            <Badge 
+              variant="secondary" 
+              className="bg-primary/5 text-primary flex items-center gap-2"
+            >
+              <span>Mise à jour disponible</span>
+              {isAnimating && (
+                <motion.div
+                  initial={{ scale: 1 }}
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{
+                    duration: 1,
+                    repeat: 2,
+                    repeatType: "reverse"
+                  }}
+                >
+                  <Bell className="w-4 h-4" />
+                </motion.div>
+              )}
             </Badge>
           </div>
           <div className="flex justify-center pt-6">
