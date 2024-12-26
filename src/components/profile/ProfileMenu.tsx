@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { LogOut, User } from "lucide-react";
+import { LogOut, User, Upload } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { AvatarUpload } from "./AvatarUpload";
 
 export const ProfileMenu = () => {
   const navigate = useNavigate();
@@ -69,6 +70,19 @@ export const ProfileMenu = () => {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <div className="w-full">
+            <AvatarUpload 
+              userId={user.id}
+              avatarUrl={user.user_metadata?.avatar_url}
+              fullName={user.user_metadata?.full_name}
+              onAvatarUpdate={(url) => {
+                // The URL will be updated through the auth state
+                toast.success("Avatar updated successfully");
+              }}
+            />
+          </div>
+        </DropdownMenuItem>
         <DropdownMenuItem
           className="text-red-600 cursor-pointer"
           onClick={handleSignOut}
