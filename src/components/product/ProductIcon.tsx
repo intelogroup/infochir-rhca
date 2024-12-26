@@ -12,14 +12,14 @@ export const ProductIcon = ({ icon: Icon, logo, title }: ProductIconProps) => {
       <img 
         src={logo} 
         alt={`${title} logo`} 
-        className="w-20 h-20 object-contain" 
+        className="w-26 h-26 object-contain" // Increased from w-20 h-20
       />
     );
   }
 
   return (
-    <div className="w-20 h-20 flex items-center justify-center rounded-full bg-primary/5">
-      <Icon className="text-primary h-10 w-10" />
+    <div className="w-26 h-26 flex items-center justify-center rounded-full bg-primary/5"> // Increased from w-20 h-20
+      <Icon className="text-primary h-13 w-13" /> // Increased from h-10 w-10
     </div>
   );
 };

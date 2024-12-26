@@ -6,7 +6,7 @@ export const FooterLogo = () => {
   return (
     <div className="space-y-6">
       <Link to="/" className="group flex items-center space-x-3">
-        <div className="relative h-10 w-10 overflow-hidden rounded-xl">
+        <div className="relative h-13 w-13 overflow-hidden rounded-xl"> // Increased from h-10 w-10
           <img 
             src="/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png"
             alt="Info Chir Logo"
