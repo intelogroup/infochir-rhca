@@ -12,7 +12,7 @@ export const ProductIcon = ({ icon: Icon, logo, title }: ProductIconProps) => {
       <img 
         src={logo} 
         alt={`${title} logo`} 
-        className="w-20 h-20 object-contain" 
+        className="w-20 h-20 object-contain"
       />
     );
   }
