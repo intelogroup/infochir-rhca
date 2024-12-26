@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen, User, Tag, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
-import { ArticleList } from "@/components/rhca/admin/ArticleList";
+import { RHCAArticlesGrid } from "@/components/rhca/RHCAArticlesGrid";
 
 const RHCA = () => {
   return (
@@ -51,7 +51,7 @@ const RHCA = () => {
           </div>
         </div>
 
-        <ArticleList />
+        <RHCAArticlesGrid />
       </div>
     </div>
   );
