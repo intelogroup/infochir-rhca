@@ -12,6 +12,16 @@ export const ProductsGrid = () => {
   const handleProductClick = async (href: string) => {
     try {
       setIsLoading(true);
+      // Check session before navigation
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) throw error;
+      
+      if (!session) {
+        toast.error("Session expirée. Veuillez vous reconnecter.");
+        navigate('/auth');
+        return;
+      }
+      
       navigate(href);
     } catch (error) {
       console.error("Navigation error:", error);
