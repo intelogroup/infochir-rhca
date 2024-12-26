@@ -27,13 +27,25 @@ export const ProductCard = ({
   features = []
 }: ProductCardProps) => {
   const [isAnimating, setIsAnimating] = useState(true);
+  const [showDot, setShowDot] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsAnimating(false);
-    }, 30000);
+    }, 300000); // 5 minutes
 
-    return () => clearTimeout(timer);
+    const dotInterval = setInterval(() => {
+      setShowDot(prev => !prev);
+    }, 1000);
+
+    setTimeout(() => {
+      clearInterval(dotInterval);
+    }, 300000); // 5 minutes
+
+    return () => {
+      clearTimeout(timer);
+      clearInterval(dotInterval);
+    };
   }, []);
 
   const getProductFeatures = (title: string) => {
@@ -67,6 +79,13 @@ export const ProductCard = ({
     }
   };
 
+  const getHoverColor = (title: string) => {
+    if (title === "Atlas ADC" || title === "RHCA") {
+      return "hover:bg-green-800";
+    }
+    return "hover:bg-primary";
+  };
+
   const CardComponent = () => (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -74,50 +93,25 @@ export const ProductCard = ({
       transition={{ duration: 0.5 }}
       className="h-full"
     >
-      <Card className="group h-full bg-white hover:shadow-xl transition-all duration-300 border border-gray-200/50 overflow-hidden">
+      <Card className="group h-full bg-[#f6ffff] hover:shadow-xl transition-all duration-300 border border-gray-200/50 overflow-hidden">
         <CardHeader className="space-y-4 relative">
           <div className="absolute top-0 right-0 p-4">
             <Badge 
               variant="secondary" 
               className="bg-white text-primary flex items-center gap-2"
             >
-              <motion.div
-                animate={{
-                  scale: [1, 1.2, 1],
-                  opacity: [1, 0, 1]
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  repeatType: "reverse"
-                }}
-                className="w-2 h-2 rounded-full bg-green-500"
-              />
-              <span>Mise à jour disponible</span>
-              {isAnimating && (
-                <motion.div
-                  initial={{ scale: 1 }}
-                  animate={{ 
-                    scale: [1, 1.4, 1],
-                    rotate: [0, 15, -15, 0],
-                  }}
-                  transition={{
-                    duration: 1,
-                    repeat: Infinity,
-                    repeatType: "reverse",
-                    ease: "easeInOut"
-                  }}
-                >
-                  <Bell 
-                    className="w-5 h-5" 
-                    fill="#F97316"
-                    color="#F97316"
-                    style={{
-                      filter: "drop-shadow(0 0 8px rgba(249, 115, 22, 0.5))"
-                    }} 
-                  />
-                </motion.div>
+              {showDot && (
+                <div className="w-2 h-2 rounded-full bg-green-500" />
               )}
+              <span>Mise à jour disponible</span>
+              <Bell 
+                className="w-5 h-5" 
+                fill="#F97316"
+                color="#F97316"
+                style={{
+                  filter: "drop-shadow(0 0 8px rgba(249, 115, 22, 0.5))"
+                }} 
+              />
             </Badge>
           </div>
           <div className="flex justify-center pt-6">
@@ -140,13 +134,13 @@ export const ProductCard = ({
           <CardTitle className="text-2xl font-bold text-gray-900 text-center group-hover:text-primary transition-colors">
             {title}
           </CardTitle>
-          <CardDescription className="text-gray-600 text-center leading-relaxed">
+          <CardDescription className="text-gray-600 text-center leading-relaxed line-clamp-2">
             {description}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            {getProductFeatures(title).map((feature, index) => (
+            {getProductFeatures(title).slice(0, 3).map((feature, index) => (
               <div key={index} className="flex items-center gap-2 text-gray-600">
                 <div className="w-1.5 h-1.5 rounded-full bg-primary/60" />
                 <span className="text-sm">{feature}</span>
@@ -157,7 +151,7 @@ export const ProductCard = ({
         <CardFooter className="pt-4">
           <Button 
             variant="ghost" 
-            className="w-full group/button hover:bg-primary hover:text-white transition-all duration-300"
+            className={`w-full group/button hover:text-white transition-all duration-300 ${getHoverColor(title)}`}
           >
             <span>Découvrir</span>
             <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover/button:translate-x-1" />
