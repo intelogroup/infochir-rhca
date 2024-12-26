@@ -10,7 +10,7 @@ export const MainLayout = ({ children, className = "" }: MainLayoutProps) => {
   return (
     <div className={`min-h-screen bg-[#f8fafc] ${className}`}>
       <Navbar />
-      <main className="pt-16">
+      <main>
         {children}
       </main>
       <Footer />
