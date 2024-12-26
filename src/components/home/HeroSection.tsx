@@ -10,9 +10,9 @@ const images = [
 ];
 
 const gradients = [
-  'from-primary to-secondary',
-  'from-primary/90 to-secondary/90 via-blue-500/80',
-  'from-secondary/90 to-primary/90 via-green-500/80'
+  'from-[#1A1F2C] to-[#403E43]',
+  'from-[#222222] to-[#555555] via-[#333333]',
+  'from-[#403E43] to-[#1A1F2C] via-[#222222]'
 ];
 
 export const HeroSection = () => {
@@ -86,9 +86,11 @@ export const HeroSection = () => {
           }}
           className="absolute inset-0"
         >
-          <div className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-60 transition-all duration-500 ease-in-out`} />
+          <div 
+            className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-80`}
+          />
           <motion.div 
-            className="absolute inset-0 transition-all duration-500 ease-in-out"
+            className="absolute inset-0"
             initial={{ scale: 1.1 }}
             animate={{ scale: 1 }}
             style={{ 
