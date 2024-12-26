@@ -1,4 +1,4 @@
-import { LucideIcon, ArrowRight } from "lucide-react";
+import { LucideIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -73,7 +73,6 @@ export const ProductCard = ({
             className={`w-full group/button hover:text-white transition-all duration-300 ${getHoverColor(title)}`}
           >
             <span>Découvrir</span>
-            <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </CardFooter>
       </Card>
