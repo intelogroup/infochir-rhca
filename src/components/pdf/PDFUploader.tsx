@@ -59,21 +59,18 @@ export const PDFUploader = () => {
           variant="outline" 
           disabled={isUploading}
           className="cursor-pointer"
-          asChild
         >
-          <span>
-            {isUploading ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Upload en cours...
-              </>
-            ) : (
-              <>
-                <Upload className="h-4 w-4 mr-2" />
-                Upload PDF
-              </>
-            )}
-          </span>
+          {isUploading ? (
+            <>
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              Upload en cours...
+            </>
+          ) : (
+            <>
+              <Upload className="h-4 w-4 mr-2" />
+              Upload PDF
+            </>
+          )}
         </Button>
       </label>
     </div>
