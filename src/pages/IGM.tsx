@@ -5,19 +5,8 @@ import { IssuesGrid } from "@/components/IssuesGrid";
 
 const IGM = () => {
   return (
-    <div className="min-h-screen bg-[#f8fafc] relative">
-      <div 
-        className="absolute inset-0 z-0"
-        style={{
-          backgroundImage: 'url("https://images.unsplash.com/photo-1585435557343-3b092031a831")',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          opacity: '0.2'
-        }}
-      />
-
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen bg-[#f8fafc]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <Link to="/" className="inline-block mb-8">
           <Button variant="ghost" className="gap-2">
             <ArrowLeft className="h-4 w-4" />
