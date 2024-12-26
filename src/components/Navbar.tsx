@@ -10,7 +10,17 @@ export const Navbar = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Check initial session
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
+    };
+    
+    checkSession();
+
+    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed in Navbar:", event, session?.user?.email);
       setIsAuthenticated(!!session);
       if (!session) {
         navigate("/auth");
@@ -78,7 +88,11 @@ export const Navbar = () => {
 
           {/* Right section */}
           <div className="flex items-center space-x-4">
-            {isAuthenticated && <ProfileMenu />}
+            {isAuthenticated && (
+              <div className="flex items-center">
+                <ProfileMenu />
+              </div>
+            )}
             
             {/* Mobile menu button */}
             <div className="md:hidden">
