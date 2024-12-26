@@ -22,7 +22,7 @@ export const ProductsGrid = () => {
 
   return (
     <section 
-      className="py-8 px-4 sm:px-6 lg:px-8"
+      className="py-16"
       role="region"
       aria-labelledby="products-title"
     >
