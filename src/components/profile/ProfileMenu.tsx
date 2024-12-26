@@ -40,7 +40,34 @@ export const ProfileMenu = () => {
   };
 
   if (!user) {
-    return null;
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+            <Avatar className="h-9 w-9">
+              <AvatarFallback className="bg-primary/10">
+                <User className="h-5 w-5 text-primary" />
+              </AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56" align="end">
+          <DropdownMenuLabel>
+            <div className="flex flex-col gap-1">
+              <p className="text-sm font-medium leading-none">Guest</p>
+            </div>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            className="text-red-600 cursor-pointer"
+            onClick={() => navigate('/auth')}
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Sign in
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
   }
 
   return (
@@ -77,7 +104,6 @@ export const ProfileMenu = () => {
               avatarUrl={user.user_metadata?.avatar_url}
               fullName={user.user_metadata?.full_name}
               onAvatarUpdate={(url) => {
-                // The URL will be updated through the auth state
                 toast.success("Avatar updated successfully");
               }}
             />
