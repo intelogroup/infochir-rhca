@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { ProfileMenu } from "./profile/ProfileMenu";
 import { Logo } from "./Navbar/Logo";
 import { NavItems } from "./Navbar/NavItems";
@@ -13,21 +12,15 @@ export const Navbar = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/auth');
-    }
-  }, [isAuthenticated, navigate]);
-
   return (
     <nav className="fixed w-full z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <Logo />
-          <NavItems />
+          {isAuthenticated && <NavItems />}
           
           <div className="flex items-center space-x-4">
-            {isAuthenticated && <ProfileMenu />}
+            <ProfileMenu />
             
             <div className="md:hidden">
               <button

@@ -19,12 +19,6 @@ export const ProfileMenu = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/auth');
-    }
-  }, [isAuthenticated, navigate]);
-
   const handleSignOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
@@ -38,9 +32,25 @@ export const ProfileMenu = () => {
     }
   };
 
-  if (!user) {
-    return null;
+  const handleSignIn = () => {
+    navigate('/auth');
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="flex items-center gap-2">
+        <Button 
+          variant="ghost" 
+          onClick={handleSignIn}
+          className="text-gray-700 hover:text-primary"
+        >
+          Sign in
+        </Button>
+      </div>
+    );
   }
+
+  if (!user) return null;
 
   return (
     <DropdownMenu>
