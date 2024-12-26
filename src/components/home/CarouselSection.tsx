@@ -5,53 +5,75 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Card } from "@/components/ui/card";
-import { Calendar, Newspaper, Users, GraduationCap, BookOpen } from "lucide-react";
+import { motion } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
 
 const highlights = [
   {
-    title: "Dernières Actualités",
-    description: "Découvrez les dernières actualités et mises à jour d'InfoChir",
-    icon: Newspaper,
+    title: "Formation en Chirurgie Laparoscopique",
+    description: "Atelier pratique de 3 jours sur les techniques avancées de chirurgie mini-invasive",
+    image: "https://images.unsplash.com/photo-1581595220892-b0739db3ba8c?q=80&w=1974&auto=format&fit=crop",
+    date: "15-17 Mars 2024",
+    type: "formation",
+    category: "Formation",
+  },
+  {
+    title: "Congrès International de Chirurgie",
+    description: "Rejoignez-nous pour le plus grand événement chirurgical de l'année avec des experts internationaux",
+    image: "https://images.unsplash.com/photo-1631815589968-fdb09a223b1e?q=80&w=1974&auto=format&fit=crop",
+    date: "5-7 Avril 2024",
+    type: "event",
+    category: "Événement",
+  },
+  {
+    title: "Nouvelle Technique de Transplantation",
+    description: "Une équipe de chercheurs développe une approche révolutionnaire pour la transplantation d'organes",
+    image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=1780&auto=format&fit=crop",
+    type: "article",
+    category: "Article Récent",
+    author: "Dr. Marie Laurent",
+  },
+  {
+    title: "Message du Président de l'ASHAC",
+    description: "Perspectives sur l'avenir de la chirurgie en Haïti et les défis à relever ensemble",
+    image: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=1964&auto=format&fit=crop",
+    type: "message",
+    category: "Message",
+    author: "Prof. Jean-Robert Pierre",
+  },
+  {
+    title: "Avancées en Chirurgie Robotique",
+    description: "Les dernières innovations en matière de chirurgie assistée par robot",
+    image: "https://images.unsplash.com/photo-1582719471384-894fbb16e074?q=80&w=1974&auto=format&fit=crop",
     type: "news",
-  },
-  {
-    title: "Message des Auteurs",
-    description: "Un message spécial de nos contributeurs dévoués",
-    icon: Users,
-    type: "authors",
-  },
-  {
-    title: "Articles Récents",
-    description: "Les derniers articles publiés sur notre plateforme",
-    icon: BookOpen,
-    type: "articles",
-  },
-  {
-    title: "Événements Scientifiques",
-    description: "Calendrier des prochains événements scientifiques",
-    icon: Calendar,
-    type: "events",
-  },
-  {
-    title: "Formations à Venir",
-    description: "Ateliers et formations professionnelles programmés",
-    icon: GraduationCap,
-    type: "workshops",
+    category: "Actualité",
+    date: "28 Février 2024",
   },
 ];
 
 export const CarouselSection = () => {
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50/50 to-white">
-      <div className="max-w-7xl mx-auto">
+    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50/50 to-white relative overflow-hidden">
+      <div className="absolute inset-0 bg-grid-gray-100/50 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))]" />
+      
+      <div className="max-w-7xl mx-auto relative">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-4xl font-bold bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent mb-4"
+          >
             À la Une
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Restez informé des dernières actualités et événements
-          </p>
+          </motion.h2>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-lg text-gray-600 max-w-2xl mx-auto"
+          >
+            Découvrez les dernières actualités, événements et formations
+          </motion.p>
         </div>
 
         <Carousel
@@ -59,35 +81,61 @@ export const CarouselSection = () => {
             align: "start",
             loop: true,
           }}
-          className="w-full max-w-5xl mx-auto"
+          className="w-full max-w-6xl mx-auto"
         >
           <CarouselContent>
             {highlights.map((item, index) => (
-              <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                <div className="p-2">
-                  <Card className="p-6 bg-white shadow-lg hover:shadow-xl transition-all duration-300 border-none relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3 h-full">
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="p-2 h-full"
+                >
+                  <div className="relative group h-full rounded-xl overflow-hidden bg-white shadow-lg hover:shadow-xl transition-all duration-300">
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                      <Badge className="absolute top-4 left-4 bg-white/90 text-primary hover:bg-white">
+                        {item.category}
+                      </Badge>
+                    </div>
                     
-                    <div className="relative z-10">
-                      <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                        <item.icon className="w-6 h-6 text-primary" />
-                      </div>
-                      
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-primary transition-colors duration-300">
+                    <div className="p-6">
+                      <h3 className="text-xl font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-primary transition-colors duration-300">
                         {item.title}
                       </h3>
                       
-                      <p className="text-gray-600">
+                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">
                         {item.description}
                       </p>
+                      
+                      <div className="flex items-center justify-between text-sm text-gray-500">
+                        {item.date && (
+                          <span className="flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary/60" />
+                            {item.date}
+                          </span>
+                        )}
+                        {item.author && (
+                          <span className="flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary/60" />
+                            {item.author}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </Card>
-                </div>
+                  </div>
+                </motion.div>
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="hidden md:flex" />
-          <CarouselNext className="hidden md:flex" />
+          <CarouselPrevious className="hidden md:flex -left-4 lg:-left-12" />
+          <CarouselNext className="hidden md:flex -right-4 lg:-right-12" />
         </Carousel>
       </div>
     </section>
