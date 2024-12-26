@@ -73,7 +73,7 @@ export const HeroSection = () => {
   }, [cycleCount]);
   
   return (
-    <section ref={sectionRef} className="pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(100vh-6rem)]">
+    <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(100vh-6rem)]">
       <AnimatePresence mode="wait">
         <div
           key={currentIndex}
@@ -101,7 +101,7 @@ export const HeroSection = () => {
         </div>
       </AnimatePresence>
       
-      <div className="relative max-w-7xl mx-auto text-left">
+      <div className="relative max-w-7xl mx-auto text-left pt-16 pb-16">
         <h1 className="text-5xl sm:text-6xl font-bold text-white mb-8 animate-fade-up tracking-tight">
           Votre espace scientifique en ligne
         </h1>
