@@ -1,10 +1,10 @@
-import { LucideIcon } from "lucide-react";
+import { LucideIcon, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Bell } from "lucide-react";
-import { useState, useEffect } from "react";
+import { ProductBadge } from "./product/ProductBadge";
+import { ProductIcon } from "./product/ProductIcon";
+import { ProductFeatures } from "./product/ProductFeatures";
 
 interface ProductCardProps {
   title: string;
@@ -19,56 +19,22 @@ interface ProductCardProps {
 export const ProductCard = ({ 
   title, 
   description, 
-  icon: Icon, 
+  icon, 
   href, 
   onClick,
   logo,
   features = []
 }: ProductCardProps) => {
-  const [showDot, setShowDot] = useState(true);
-
-  useEffect(() => {
-    const dotInterval = setInterval(() => {
-      setShowDot(prev => !prev);
-    }, 1000);
-
-    // Stop the animation after 5 minutes
-    const timer = setTimeout(() => {
-      clearInterval(dotInterval);
-    }, 300000);
-
-    return () => {
-      clearInterval(dotInterval);
-      clearTimeout(timer);
-    };
-  }, []);
-
   const getProductFeatures = (title: string) => {
     switch (title) {
       case "RHCA":
-        return [
-          "Publication d'articles scientifiques",
-          "Diffusion des connaissances",
-          "Communauté médicale engagée"
-        ];
+        return ["Publication d'articles scientifiques", "Diffusion des connaissances", "Communauté médicale engagée"];
       case "IGM":
-        return [
-          "Actualités médicales",
-          "Tendances cliniques",
-          "Perspective unique sur la médecine"
-        ];
+        return ["Actualités médicales", "Tendances cliniques", "Perspective unique sur la médecine"];
       case "Atlas ADC":
-        return [
-          "Documentation illustrée",
-          "Guide de diagnostic",
-          "Accessible en ligne 24/7"
-        ];
+        return ["Documentation illustrée", "Guide de diagnostic", "Accessible en ligne 24/7"];
       case "Index Medicus":
-        return [
-          "Repérer par auteur",
-          "Repérer par titre",
-          "Base de données scientifique"
-        ];
+        return ["Repérer par auteur", "Repérer par titre", "Base de données scientifique"];
       default:
         return features;
     }
@@ -86,33 +52,10 @@ export const ProductCard = ({
       <Card className="group h-full bg-[#f6ffff] hover:shadow-xl transition-all duration-300 border border-gray-200/50 overflow-hidden">
         <CardHeader className="space-y-4 relative">
           <div className="absolute top-0 right-0 p-4">
-            <Badge 
-              variant="secondary" 
-              className="bg-white text-primary flex items-center gap-2"
-            >
-              {showDot && (
-                <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-              )}
-              <span>Mise à jour disponible</span>
-              <Bell 
-                className="w-4 h-4" 
-                fill="#F97316"
-                color="#F97316"
-              />
-            </Badge>
+            <ProductBadge />
           </div>
           <div className="flex justify-center pt-6">
-            {logo ? (
-              <img 
-                src={logo} 
-                alt={`${title} logo`} 
-                className="w-20 h-20 object-contain" 
-              />
-            ) : (
-              <div className="w-20 h-20 flex items-center justify-center rounded-full bg-primary/5">
-                <Icon className="text-primary h-10 w-10" />
-              </div>
-            )}
+            <ProductIcon icon={icon} logo={logo} title={title} />
           </div>
           <CardTitle className="text-2xl font-bold text-gray-900 text-center group-hover:text-primary transition-colors">
             {title}
@@ -122,14 +65,7 @@ export const ProductCard = ({
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            {getProductFeatures(title).slice(0, 3).map((feature, index) => (
-              <div key={index} className="flex items-center gap-2 text-gray-600">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary/60" />
-                <span className="text-sm">{feature}</span>
-              </div>
-            ))}
-          </div>
+          <ProductFeatures features={getProductFeatures(title)} />
         </CardContent>
         <CardFooter className="pt-4">
           <Button 
@@ -145,19 +81,8 @@ export const ProductCard = ({
   );
 
   if (onClick) {
-    return (
-      <button 
-        onClick={onClick} 
-        className="w-full"
-      >
-        <CardComponent />
-      </button>
-    );
+    return <button onClick={onClick} className="w-full"><CardComponent /></button>;
   }
 
-  return (
-    <Link to={href || "#"} className="block w-full">
-      <CardComponent />
-    </Link>
-  );
+  return <Link to={href || "#"} className="block w-full"><CardComponent /></Link>;
 };
