@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
-import { IssuesGrid } from "@/components/IssuesGrid";
+import { IssuesGrid } from "@/components/issues/IssuesGrid";
 import { Footer } from "@/components/Footer";
 
 const RHCA = () => {
@@ -17,7 +17,7 @@ const RHCA = () => {
 
         <div className="text-center mb-12 animate-fade-up">
           <img 
-            src="/lovable-uploads/f65134f5-3929-4504-9567-104510b21f5d.png"
+            src="/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png"
             alt="RHCA Logo"
             className="h-24 w-24 mx-auto mb-6"
           />
