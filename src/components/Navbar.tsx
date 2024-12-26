@@ -1,48 +1,88 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { ProfileMenu } from "./profile/ProfileMenu";
-import { Logo } from "./Navbar/Logo";
-import { NavItems } from "./Navbar/NavItems";
-import { MobileMenu } from "./Navbar/MobileMenu";
-import { useAuth } from "@/contexts/AuthContext";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/auth');
-    }
-  }, [isAuthenticated, navigate]);
+  const navItems = [
+    { 
+      name: "RHCA", 
+      href: "#rhca"
+    },
+    { 
+      name: "Index Medicus", 
+      href: "#index-medicus"
+    },
+    { 
+      name: "Atlas ADC", 
+      href: "#atlas"
+    },
+    { 
+      name: "IGM", 
+      href: "#igm"
+    },
+  ];
 
   return (
-    <nav className="fixed w-full z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200/50">
+    <nav className="fixed w-full z-50 bg-white/80 backdrop-blur-sm border-b border-gray-200/50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <Logo />
-          <NavItems />
-          
-          <div className="flex items-center space-x-4">
-            {isAuthenticated && <ProfileMenu />}
-            
-            <div className="md:hidden">
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="text-gray-700 p-2 rounded-lg hover:bg-gray-100/50 transition-colors duration-200"
-                aria-label={isOpen ? "Close menu" : "Open menu"}
-              >
-                {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-              </button>
+          <div className="flex items-center space-x-2">
+            <a href="/" className="flex-shrink-0 flex items-center">
+              <img 
+                src="/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png"
+                alt="Info Chir Logo"
+                className="h-10 w-10 object-contain"
+              />
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-xl font-bold ml-2">
+                INFOCHIR
+              </span>
+            </a>
+          </div>
+
+          {/* Desktop menu */}
+          <div className="hidden md:flex items-center justify-center flex-1">
+            <div className="flex items-center space-x-8">
+              {navItems.map((item) => (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  className="text-gray-700 hover:text-primary transition-colors duration-200 h-16 flex items-center font-medium"
+                >
+                  {item.name}
+                </a>
+              ))}
             </div>
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden flex items-center">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="text-gray-700 p-2 rounded-lg hover:bg-gray-100/50 transition-colors duration-200"
+            >
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
           </div>
         </div>
       </div>
 
-      <MobileMenu isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      {/* Mobile menu */}
+      {isOpen && (
+        <div className="md:hidden absolute w-full bg-white/90 backdrop-blur-sm border-b border-gray-200/50">
+          <div className="px-4 pt-2 pb-3 space-y-2">
+            {navItems.map((item) => (
+              <a
+                key={item.name}
+                href={item.href}
+                className="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100/50 transition-colors duration-200 font-medium"
+              >
+                {item.name}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

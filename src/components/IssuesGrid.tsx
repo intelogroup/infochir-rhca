@@ -1,64 +1,110 @@
-import { useState } from "react";
-import { useArticles } from "@/hooks/use-articles";
-import { IssuesSearch } from "./issues/IssuesSearch";
-import { IssuesList } from "./issues/IssuesList";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { FileText } from "lucide-react";
+import { Link } from "react-router-dom";
+
+interface Issue {
+  id: string;
+  title: string;
+  date: string;
+  pdfUrl: string;
+}
+
+const issues: Issue[] = [
+  {
+    id: "1",
+    title: "Avancées en chirurgie laparoscopique",
+    date: "Décembre 2023",
+    pdfUrl: "/issues/dec-2023.pdf"
+  },
+  {
+    id: "2",
+    title: "Nouvelles techniques en anesthésie régionale",
+    date: "Octobre 2023",
+    pdfUrl: "/issues/oct-2023.pdf"
+  },
+  {
+    id: "3",
+    title: "Études de cas: Chirurgie traumatologique",
+    date: "Août 2023",
+    pdfUrl: "/issues/aug-2023.pdf"
+  },
+  {
+    id: "4",
+    title: "Innovation en chirurgie cardiaque",
+    date: "Juin 2023",
+    pdfUrl: "/issues/jun-2023.pdf"
+  },
+  {
+    id: "5",
+    title: "Anesthésie en pédiatrie",
+    date: "Avril 2023",
+    pdfUrl: "/issues/apr-2023.pdf"
+  },
+  {
+    id: "6",
+    title: "Chirurgie mini-invasive",
+    date: "Février 2023",
+    pdfUrl: "/issues/feb-2023.pdf"
+  },
+  {
+    id: "7",
+    title: "Progrès en neurochirurgie",
+    date: "Décembre 2022",
+    pdfUrl: "/issues/dec-2022.pdf"
+  },
+  {
+    id: "8",
+    title: "Techniques d'anesthésie moderne",
+    date: "Octobre 2022",
+    pdfUrl: "/issues/oct-2022.pdf"
+  },
+  {
+    id: "9",
+    title: "Chirurgie orthopédique avancée",
+    date: "Août 2022",
+    pdfUrl: "/issues/aug-2022.pdf"
+  },
+  {
+    id: "10",
+    title: "Gestion de la douleur post-opératoire",
+    date: "Juin 2022",
+    pdfUrl: "/issues/jun-2022.pdf"
+  }
+];
 
 export const IssuesGrid = () => {
-  const { error, filteredIssues, setFilteredIssues, refreshArticles } = useArticles();
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const handleRefresh = async () => {
-    try {
-      await refreshArticles();
-      toast.success("Articles rafraîchis avec succès");
-    } catch (error) {
-      console.error("Error refreshing articles:", error);
-      toast.error("Erreur lors du rafraîchissement des articles");
-    }
-  };
-
-  if (error) {
-    return (
-      <Alert variant="destructive" className="mb-4">
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription className="flex items-center justify-between">
-          <span>Une erreur est survenue lors du chargement des articles.</span>
-          <button 
-            onClick={handleRefresh}
-            className="text-primary hover:underline flex items-center gap-2"
-          >
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Réessayer
-          </button>
-        </AlertDescription>
-      </Alert>
-    );
-  }
-
-  if (!Array.isArray(filteredIssues)) {
-    console.error("filteredIssues must be an array");
-    return (
-      <Alert variant="destructive">
-        <AlertCircle className="h-4 w-4" />
-        <AlertDescription>
-          Une erreur est survenue lors du traitement des données.
-        </AlertDescription>
-      </Alert>
-    );
-  }
-
   return (
-    <div className="space-y-8">
-      <IssuesSearch
-        onSearch={setSearchTerm}
-        filteredIssues={filteredIssues}
-        setFilteredIssues={setFilteredIssues}
-      />
-      <IssuesList issues={filteredIssues} />
+    <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+      <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+        Derniers numéros
+      </h2>
+      <ScrollArea className="h-[600px] pr-4">
+        <div className="space-y-6">
+          {issues.map((issue) => (
+            <div
+              key={issue.id}
+              className="flex items-start space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <div className="flex-shrink-0">
+                <div className="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center">
+                  <FileText className="h-5 w-5 text-primary" />
+                </div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <Link 
+                  to={issue.pdfUrl}
+                  className="block text-sm font-medium text-gray-900 hover:text-primary transition-colors"
+                >
+                  {issue.title}
+                </Link>
+                <p className="text-sm text-gray-500 mt-1">
+                  {issue.date}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </ScrollArea>
     </div>
   );
 };
