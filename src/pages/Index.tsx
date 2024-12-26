@@ -26,7 +26,6 @@ const Index = () => {
         }
         
         if (!session) {
-          console.log("No session found, redirecting to auth");
           toast.error("Session expirée. Veuillez vous reconnecter.");
           navigate("/auth");
         }
