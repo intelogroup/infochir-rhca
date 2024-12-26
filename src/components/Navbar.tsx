@@ -1,34 +1,26 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { navItems } from "@/config/navigation";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
-  const navItems = [
-    { 
-      name: "RHCA", 
-      href: "/rhca"
-    }
-  ];
-
   return (
     <nav className="fixed w-full z-50 bg-white/80 backdrop-blur-sm border-b border-gray-200/50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex items-center space-x-2">
-            <Link to="/" className="flex-shrink-0 flex items-center">
-              <img 
-                src="/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png"
-                alt="Info Chir Logo"
-                className="h-10 w-10 object-contain"
-              />
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-xl font-bold ml-2">
-                INFOCHIR
-              </span>
-            </Link>
-          </div>
+          <Link to="/" className="flex items-center space-x-2">
+            <img 
+              src="/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png"
+              alt="Info Chir Logo"
+              className="h-10 w-10 object-contain"
+            />
+            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-xl font-bold">
+              INFOCHIR
+            </span>
+          </Link>
 
           {/* Desktop menu */}
           <div className="hidden md:flex items-center justify-center flex-1">
@@ -46,14 +38,12 @@ export const Navbar = () => {
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-700 p-2 rounded-lg hover:bg-gray-100/50 transition-colors duration-200"
-            >
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="md:hidden p-2 rounded-lg hover:bg-gray-100/50 transition-colors duration-200"
+          >
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
       </div>
 
