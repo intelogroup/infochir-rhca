@@ -4,9 +4,9 @@ import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const images = [
-  '/lovable-uploads/3686281a-0f1a-46e8-a03f-c56d49e3d791.png',
-  '/lovable-uploads/c77fedf7-c404-409a-9be9-fcce29fade51.png',
-  '/lovable-uploads/5196dc1b-4168-4231-bcea-509edcde49a5.png'
+  '/lovable-uploads/75589792-dc14-4d53-9aae-5796c76a3b39.png',
+  '/lovable-uploads/4e3c1f79-c9cc-4d01-8520-1af84d350a2a.png',
+  '/lovable-uploads/745435b6-9abc-4051-b168-cf77c96ed9a0.png'
 ];
 
 const gradients = [
@@ -93,8 +93,9 @@ export const HeroSection = () => {
               backgroundSize: 'contain',
               backgroundPosition: 'right bottom',
               backgroundRepeat: 'no-repeat',
-              opacity: 0.6,
-              right: '-20%' // Updated to move image further right
+              opacity: 0.9,
+              right: '10px', // Added 10px margin from right
+              paddingLeft: '5px' // Added 5px padding on the left
             }}
           />
         </div>
