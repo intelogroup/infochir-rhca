@@ -17,7 +17,7 @@ export const ProductsSection = () => {
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl font-bold text-primary mb-4">
             Nos Produits
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -34,12 +34,8 @@ export const ProductsSection = () => {
                 animationDelay: `${index * 100}ms`,
                 animationFillMode: 'backwards'
               }}
-              onClick={() => navigate(product.href)}
             >
-              <ProductCard 
-                {...product} 
-                icon={icons[product.icon]} 
-              />
+              <ProductCard {...product} icon={icons[product.icon]} />
             </div>
           ))}
         </div>

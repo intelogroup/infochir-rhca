@@ -1,6 +1,7 @@
 import { LucideIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ProductCardProps {
   title: string;
@@ -25,55 +26,55 @@ export const ProductCard = ({
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="relative z-10 h-full flex flex-col items-center justify-center p-6"
+      className="h-full"
     >
-      {logo ? (
-        <motion.img 
-          whileHover={{ scale: 1.05 }}
-          src={logo} 
-          alt={`${title} logo`} 
-          className="w-24 h-24 object-contain mb-6 transition-all duration-300" 
-        />
-      ) : (
-        <motion.div 
-          whileHover={{ scale: 1.05 }}
-          className="mb-6"
-        >
-          <Icon className="text-white h-12 w-12" />
-        </motion.div>
-      )}
-      
-      <h3 className="text-xl font-bold text-white mb-3 transition-colors duration-300">
-        {title}
-      </h3>
-      
-      <p className="text-gray-300 text-sm text-center leading-relaxed">
-        {description}
-      </p>
+      <Card className="group h-full bg-white hover:shadow-xl transition-all duration-300 border border-gray-200">
+        <CardHeader className="space-y-4">
+          <div className="flex justify-center">
+            {logo ? (
+              <motion.img 
+                whileHover={{ scale: 1.05 }}
+                src={logo} 
+                alt={`${title} logo`} 
+                className="w-20 h-20 object-contain transition-all duration-300" 
+              />
+            ) : (
+              <motion.div 
+                whileHover={{ scale: 1.05 }}
+                className="w-20 h-20 flex items-center justify-center rounded-full bg-primary/5"
+              >
+                <Icon className="text-primary h-10 w-10" />
+              </motion.div>
+            )}
+          </div>
+          <CardTitle className="text-xl font-bold text-gray-900 text-center group-hover:text-primary transition-colors">
+            {title}
+          </CardTitle>
+          <CardDescription className="text-gray-600 text-center leading-relaxed">
+            {description}
+          </CardDescription>
+        </CardHeader>
+      </Card>
     </motion.div>
   );
-
-  const cardClasses = "group relative flex flex-col items-center rounded-2xl bg-[#1A1F2C] px-6 py-8 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border border-gray-800 hover:border-gray-700 overflow-hidden w-full h-full hover:bg-[#222632]";
 
   if (onClick) {
     return (
       <motion.button 
         onClick={onClick} 
-        className={cardClasses}
+        className="w-full"
         whileHover={{ scale: 1.02 }}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         <CardContent />
       </motion.button>
     );
   }
 
   return (
-    <motion.div whileHover={{ scale: 1.02 }}>
-      <Link to={href || "#"} className={cardClasses}>
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+    <Link to={href || "#"} className="block w-full">
+      <motion.div whileHover={{ scale: 1.02 }}>
         <CardContent />
-      </Link>
-    </motion.div>
+      </motion.div>
+    </Link>
   );
 };
