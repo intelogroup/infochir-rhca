@@ -1,6 +1,5 @@
 import { LucideIcon } from "lucide-react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,25 +25,21 @@ export const ProductCard = ({
   logo,
   features = []
 }: ProductCardProps) => {
-  const [isAnimating, setIsAnimating] = useState(true);
   const [showDot, setShowDot] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsAnimating(false);
-    }, 300000); // 5 minutes
-
     const dotInterval = setInterval(() => {
       setShowDot(prev => !prev);
     }, 1000);
 
-    setTimeout(() => {
+    // Stop the animation after 5 minutes
+    const timer = setTimeout(() => {
       clearInterval(dotInterval);
-    }, 300000); // 5 minutes
+    }, 300000);
 
     return () => {
-      clearTimeout(timer);
       clearInterval(dotInterval);
+      clearTimeout(timer);
     };
   }, []);
 
@@ -87,12 +82,7 @@ export const ProductCard = ({
   };
 
   const CardComponent = () => (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="h-full"
-    >
+    <div className="h-full">
       <Card className="group h-full bg-[#f6ffff] hover:shadow-xl transition-all duration-300 border border-gray-200/50 overflow-hidden">
         <CardHeader className="space-y-4 relative">
           <div className="absolute top-0 right-0 p-4">
@@ -108,27 +98,20 @@ export const ProductCard = ({
                 className="w-5 h-5" 
                 fill="#F97316"
                 color="#F97316"
-                style={{
-                  filter: "drop-shadow(0 0 8px rgba(249, 115, 22, 0.5))"
-                }} 
               />
             </Badge>
           </div>
           <div className="flex justify-center pt-6">
             {logo ? (
-              <motion.img 
-                whileHover={{ scale: 1.05 }}
+              <img 
                 src={logo} 
                 alt={`${title} logo`} 
-                className="w-20 h-20 object-contain transition-all duration-300" 
+                className="w-20 h-20 object-contain" 
               />
             ) : (
-              <motion.div 
-                whileHover={{ scale: 1.05 }}
-                className="w-20 h-20 flex items-center justify-center rounded-full bg-primary/5"
-              >
+              <div className="w-20 h-20 flex items-center justify-center rounded-full bg-primary/5">
                 <Icon className="text-primary h-10 w-10" />
-              </motion.div>
+              </div>
             )}
           </div>
           <CardTitle className="text-2xl font-bold text-gray-900 text-center group-hover:text-primary transition-colors">
@@ -154,30 +137,27 @@ export const ProductCard = ({
             className={`w-full group/button hover:text-white transition-all duration-300 ${getHoverColor(title)}`}
           >
             <span>Découvrir</span>
-            <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover/button:translate-x-1" />
+            <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </CardFooter>
       </Card>
-    </motion.div>
+    </div>
   );
 
   if (onClick) {
     return (
-      <motion.button 
+      <button 
         onClick={onClick} 
         className="w-full"
-        whileHover={{ scale: 1.02 }}
       >
         <CardComponent />
-      </motion.button>
+      </button>
     );
   }
 
   return (
     <Link to={href || "#"} className="block w-full">
-      <motion.div whileHover={{ scale: 1.02 }}>
-        <CardComponent />
-      </motion.div>
+      <CardComponent />
     </Link>
   );
 };
