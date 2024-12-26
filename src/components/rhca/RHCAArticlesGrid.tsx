@@ -38,6 +38,14 @@ export const RHCAArticlesGrid = () => {
     );
   }
 
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   if (!Array.isArray(filteredIssues)) {
     console.error("filteredIssues must be an array");
     return (
@@ -51,13 +59,17 @@ export const RHCAArticlesGrid = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <IssuesSearch
-        onSearch={setSearchTerm}
-        filteredIssues={filteredIssues}
-        setFilteredIssues={setFilteredIssues}
-      />
-      <IssuesList issues={filteredIssues} />
+    <div className="space-y-8">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <IssuesSearch
+          onSearch={setSearchTerm}
+          filteredIssues={filteredIssues}
+          setFilteredIssues={setFilteredIssues}
+        />
+      </div>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <IssuesList issues={filteredIssues} />
+      </div>
     </div>
   );
 };
