@@ -5,13 +5,12 @@ import { ProductsGrid } from "@/components/home/ProductsGrid";
 import { StatsSection } from "@/components/home/StatsSection";
 import { NewsletterSection } from "@/components/home/NewsletterSection";
 import { Footer } from "@/components/Footer";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const Index = () => {
-  const { isLoading, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,26 +39,15 @@ const Index = () => {
       }
     };
 
-    console.log("Auth state:", { isLoading, isAuthenticated });
-    if (!isLoading && !isAuthenticated) {
+    if (!isAuthenticated) {
       checkSession();
     }
-  }, [isLoading, isAuthenticated, navigate]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
-  }
+  }, [isAuthenticated, navigate]);
 
   if (!isAuthenticated) {
-    console.log("Not authenticated, rendering null");
     return null;
   }
 
-  console.log("Rendering Index page content");
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-grow">

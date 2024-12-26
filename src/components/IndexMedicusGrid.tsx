@@ -2,7 +2,6 @@ import { SearchBar } from "./index-medicus/SearchBar";
 import { ArticlesTable } from "./index-medicus/ArticlesTable";
 import { ArticlesGrid } from "./index-medicus/ArticlesGrid";
 import { ViewModeToggle } from "./index-medicus/ViewModeToggle";
-import { LoadingState } from "./index-medicus/LoadingState";
 import { categories, sources } from "./index-medicus/constants";
 import { useIndexMedicusSearch } from "@/hooks/useIndexMedicusSearch";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -68,14 +67,10 @@ export const IndexMedicusGrid = () => {
 
       <ViewModeToggle viewMode={viewMode} setViewMode={setViewMode} />
 
-      {isLoading ? (
-        <LoadingState viewMode={viewMode} />
+      {viewMode === 'table' ? (
+        <ArticlesTable articles={filteredArticles} />
       ) : (
-        viewMode === 'table' ? (
-          <ArticlesTable articles={filteredArticles} />
-        ) : (
-          <ArticlesGrid articles={filteredArticles} isLoading={false} />
-        )
+        <ArticlesGrid articles={filteredArticles} isLoading={false} />
       )}
     </div>
   );
