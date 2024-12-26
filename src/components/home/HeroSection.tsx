@@ -71,7 +71,7 @@ export const HeroSection = () => {
       clearInterval(intervalRef.current);
     }
   }, [cycleCount]);
-
+  
   return (
     <section ref={sectionRef} className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
       <AnimatePresence mode="wait">
@@ -90,7 +90,7 @@ export const HeroSection = () => {
             transition={{ duration: 0.3 }}
             style={{ 
               backgroundImage: `url(${images[currentIndex]})`,
-              backgroundSize: '50% auto',
+              backgroundSize: 'contain',
               backgroundPosition: 'bottom right',
               backgroundRepeat: 'no-repeat',
               opacity: 0.6
