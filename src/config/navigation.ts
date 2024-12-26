@@ -1,4 +1,5 @@
 import { BookOpen, Database, Newspaper } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 export type NavItem = {
   name: string;
@@ -8,6 +9,21 @@ export type NavItem = {
   logo?: string;
   bgImage?: string;
 };
+
+export type Product = {
+  title: string;
+  description: string;
+  href: string;
+  icon: keyof typeof icons;
+  logo?: string;
+  bgImage?: string;
+};
+
+const icons = {
+  BookOpen,
+  Database,
+  Newspaper,
+} as const;
 
 export const navItems: NavItem[] = [
   { 
@@ -40,6 +56,15 @@ export const navItems: NavItem[] = [
     logo: "/lovable-uploads/f2409464-47cf-4348-ada0-e328e86be01b.png"
   }
 ];
+
+export const products: Product[] = navItems.map(item => ({
+  title: item.name,
+  description: item.description || "",
+  href: item.href,
+  icon: item.icon.name as keyof typeof icons,
+  logo: item.logo,
+  bgImage: item.bgImage
+}));
 
 export const userNavigation = [
   { name: "Profile", href: "/profile" },

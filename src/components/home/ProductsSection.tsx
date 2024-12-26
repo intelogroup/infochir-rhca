@@ -3,9 +3,14 @@ import { ProductCard } from "@/components/ProductCard";
 import { products } from "@/config/navigation";
 import { useNavigate } from "react-router-dom";
 
+const icons = {
+  BookOpen,
+  Database,
+  Newspaper,
+} as const;
+
 export const ProductsSection = () => {
   const navigate = useNavigate();
-  const icons = { BookOpen, Database, Newspaper };
 
   return (
     <section className="py-8 px-4 sm:px-6 lg:px-8">
@@ -24,7 +29,10 @@ export const ProductsSection = () => {
               style={{ animationDelay: '100ms' }}
               onClick={() => navigate(product.href)}
             >
-              <ProductCard {...product} icon={icons[product.icon as keyof typeof icons]} />
+              <ProductCard 
+                {...product} 
+                icon={icons[product.icon]} 
+              />
             </div>
           ))}
         </div>
