@@ -1,11 +1,95 @@
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
+const images = [
+  '/lovable-uploads/3686281a-0f1a-46e8-a03f-c56d49e3d791.png',
+  '/lovable-uploads/76bfab45-eb57-49c4-b4c8-5a8c9c268c0e.png',
+  '/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png'
+];
+
+const gradients = [
+  'from-primary to-secondary',
+  'from-primary/90 to-secondary/90 via-blue-500/80',
+  'from-secondary/90 to-primary/90 via-green-500/80'
+];
 
 export const HeroSection = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [cycleCount, setCycleCount] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
+  const sectionRef = useRef(null);
+  const intervalRef = useRef(null);
+
+  const startImageCycle = () => {
+    if (cycleCount >= 3) return;
+    
+    intervalRef.current = setInterval(() => {
+      setCurrentIndex((prev) => {
+        const nextIndex = (prev + 1) % images.length;
+        if (nextIndex === 0) {
+          setCycleCount(count => count + 1);
+        }
+        return nextIndex;
+      });
+    }, 3000);
+  };
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+        if (entry.isIntersecting) {
+          setCycleCount(0);
+          startImageCycle();
+        } else {
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+          }
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+    };
+  }, [isVisible]);
+
+  useEffect(() => {
+    if (cycleCount >= 3 && intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+  }, [cycleCount]);
+
   return (
-    <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary opacity-90" />
-      <div className="absolute inset-0 bg-[url('/lovable-uploads/3686281a-0f1a-46e8-a03f-c56d49e3d791.png')] bg-cover bg-center opacity-50" />
+    <section ref={sectionRef} className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentIndex}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1 }}
+          className="absolute inset-0"
+        >
+          <div className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-90 transition-opacity duration-1000`} />
+          <div 
+            className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
+            style={{ backgroundImage: `url(${images[currentIndex]})`, opacity: 0.5 }}
+          />
+        </motion.div>
+      </AnimatePresence>
       
       <div className="relative max-w-7xl mx-auto text-center">
         <h1 className="text-5xl sm:text-6xl font-bold text-white mb-8 animate-fade-up tracking-tight">
