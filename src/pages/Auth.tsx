@@ -6,6 +6,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -43,8 +44,6 @@ const AuthPage = () => {
         toast.success(`Welcome ${session.user.email}`);
         const returnTo = location.state?.from?.pathname || "/";
         navigate(returnTo);
-      } else if (event === 'SIGNED_OUT') {
-        toast.info("Signed out successfully");
       }
     });
 
@@ -55,15 +54,15 @@ const AuthPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="min-h-screen flex items-center justify-center bg-[#f8fafc]">
+        <LoadingSpinner size="lg" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen p-4">
+      <div className="min-h-screen flex items-center justify-center bg-[#f8fafc] p-4">
         <Alert variant="destructive" className="max-w-md">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
@@ -108,7 +107,7 @@ const AuthPage = () => {
               },
             }}
             providers={[]}
-            redirectTo={window.location.origin}
+            redirectTo={window.location.origin + location.pathname}
           />
         </div>
       </div>
