@@ -1,32 +1,77 @@
 import { useState, useEffect } from "react";
 import { SearchAndSort } from "./issues/SearchAndSort";
 import { YearGroup } from "./issues/YearGroup";
+import { IssuesTable } from "./issues/IssuesTable";
 import type { Issue } from "./issues/types";
 
 const mockIssues: Issue[] = [
   {
     id: "1",
-    title: "Sample Article 1",
+    title: "Nouvelles approches en chirurgie laparoscopique",
     volume: "Volume 1",
     issue: "Issue 1",
     date: new Date().toISOString(),
-    abstract: "This is a sample abstract for testing purposes",
+    abstract: "Une étude approfondie des techniques modernes en chirurgie mini-invasive",
     pdfUrl: "https://example.com/sample1.pdf",
     articleCount: 1,
   },
   {
     id: "2",
-    title: "Sample Article 2",
+    title: "L'anesthésie régionale dans la chirurgie orthopédique",
     volume: "Volume 1",
     issue: "Issue 2",
-    date: new Date(2023, 1, 1).toISOString(),
-    abstract: "Another sample abstract for testing",
+    date: new Date(2023, 11, 15).toISOString(),
+    abstract: "Analyse comparative des protocoles d'anesthésie en orthopédie",
     pdfUrl: "https://example.com/sample2.pdf",
+    articleCount: 1,
+  },
+  {
+    id: "3",
+    title: "Gestion de la douleur post-opératoire",
+    volume: "Volume 1",
+    issue: "Issue 3",
+    date: new Date(2023, 10, 1).toISOString(),
+    abstract: "Nouvelles stratégies pour le contrôle de la douleur après une intervention chirurgicale",
+    pdfUrl: "https://example.com/sample3.pdf",
+    articleCount: 1,
+  },
+  {
+    id: "4",
+    title: "Innovations en chirurgie cardiaque",
+    volume: "Volume 1",
+    issue: "Issue 4",
+    date: new Date(2023, 9, 15).toISOString(),
+    abstract: "Les dernières avancées en chirurgie cardiovasculaire",
+    pdfUrl: "https://example.com/sample4.pdf",
+    articleCount: 1,
+  },
+  {
+    id: "5",
+    title: "Techniques d'urgence en traumatologie",
+    volume: "Volume 2",
+    issue: "Issue 1",
+    date: new Date(2023, 8, 1).toISOString(),
+    abstract: "Protocoles actualisés pour la prise en charge des traumatismes",
+    pdfUrl: "https://example.com/sample5.pdf",
+    articleCount: 1,
+  },
+  {
+    id: "6",
+    title: "L'impact de l'IA en chirurgie",
+    volume: "Volume 2",
+    issue: "Issue 2",
+    date: new Date(2023, 7, 15).toISOString(),
+    abstract: "Applications pratiques de l'intelligence artificielle en chirurgie",
+    pdfUrl: "https://example.com/sample6.pdf",
     articleCount: 1,
   },
 ];
 
-export const IssuesGrid = () => {
+interface IssuesGridProps {
+  viewMode?: "grid" | "table";
+}
+
+export const IssuesGrid = ({ viewMode = "grid" }: IssuesGridProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("latest");
   const [filteredIssues, setFilteredIssues] = useState<Issue[]>(mockIssues);
@@ -96,15 +141,19 @@ export const IssuesGrid = () => {
         onSort={handleSort}
       />
 
-      <div className="space-y-4">
-        {sortedYears.map((year) => (
-          <YearGroup 
-            key={year}
-            year={year}
-            issues={issuesByYear[year]}
-          />
-        ))}
-      </div>
+      {viewMode === "grid" ? (
+        <div className="space-y-4">
+          {sortedYears.map((year) => (
+            <YearGroup 
+              key={year}
+              year={year}
+              issues={issuesByYear[year]}
+            />
+          ))}
+        </div>
+      ) : (
+        <IssuesTable issues={filteredIssues} />
+      )}
     </div>
   );
 };
