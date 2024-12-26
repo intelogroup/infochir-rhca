@@ -47,13 +47,19 @@ export const ProductCard = ({
     return "hover:bg-primary";
   };
 
+  const shouldShowBadge = (title: string) => {
+    return title !== "Index Medicus";
+  };
+
   const CardComponent = () => (
     <div className="h-full">
       <Card className="group h-full bg-[#f6ffff] hover:shadow-xl transition-all duration-300 border border-gray-200/50 overflow-hidden">
         <CardHeader className="space-y-4 relative">
-          <div className="absolute top-0 right-0 p-4">
-            <ProductBadge />
-          </div>
+          {shouldShowBadge(title) && (
+            <div className="absolute top-0 right-0 p-4">
+              <ProductBadge />
+            </div>
+          )}
           <div className="flex justify-center pt-6">
             <ProductIcon icon={icon} logo={logo} title={title} />
           </div>
