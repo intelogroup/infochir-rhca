@@ -10,9 +10,9 @@ const images = [
 ];
 
 const gradients = [
-  'from-[#1A1F2C] to-[#403E43]',
-  'from-[#222222] to-[#555555] via-[#333333]',
-  'from-[#403E43] to-[#1A1F2C] via-[#222222]'
+  'from-[#0EA5E9] to-[#1E40AF]',
+  'from-[#059669] to-[#065F46]',
+  'from-[#1E40AF] to-[#0EA5E9]'
 ];
 
 export const HeroSection = () => {
@@ -75,33 +75,28 @@ export const HeroSection = () => {
   return (
     <section ref={sectionRef} className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
       <AnimatePresence mode="wait">
-        <motion.div
+        <div
           key={currentIndex}
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ 
-            duration: 0.5,
-            ease: [0.4, 0, 0.2, 1]
-          }}
           className="absolute inset-0"
         >
           <div 
-            className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-80`}
+            className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-90`}
           />
           <motion.div 
             className="absolute inset-0"
-            initial={{ scale: 1.1 }}
-            animate={{ scale: 1 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
             style={{ 
               backgroundImage: `url(${images[currentIndex]})`,
               backgroundSize: '100% auto',
               backgroundPosition: 'center 35%',
               backgroundRepeat: 'no-repeat',
-              opacity: 0.8
+              opacity: 0.6
             }}
           />
-        </motion.div>
+        </div>
       </AnimatePresence>
       
       <div className="relative max-w-7xl mx-auto text-center">
