@@ -14,7 +14,7 @@ interface UserMenuProps {
 }
 
 export const UserMenu = ({ avatarUrl }: UserMenuProps) => {
-  const defaultAvatarUrl = "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952";
+  const defaultAvatarUrl = "/lovable-uploads/d2031e37-eafc-4c7c-b6b0-edc61f24c8fb.png";
   
   const handleAvatarUpdate = () => {
     console.log("Update avatar clicked");
