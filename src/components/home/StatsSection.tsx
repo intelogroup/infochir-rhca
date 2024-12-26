@@ -6,53 +6,46 @@ const stats = [
   { 
     icon: Users,
     title: "Utilisateurs actifs",
-    value: "2,000+",
-    iconClassName: "text-secondary fill-secondary"
+    value: "2,000+"
   },
   { 
     icon: Globe2,
     title: "Pays représentés",
-    value: "25+",
-    iconClassName: "text-secondary fill-secondary"
+    value: "25+"
   },
   { 
     icon: BookOpen,
     title: "Articles publiés",
-    value: "500+",
-    iconClassName: "text-secondary fill-secondary"
+    value: "500+"
   },
   { 
     icon: TrendingUp,
     title: "Citations",
-    value: "1,500+",
-    iconClassName: "text-secondary fill-secondary"
+    value: "1,500+"
   },
   { 
     icon: Award,
     title: "Prix reçus",
-    value: "12+",
-    iconClassName: "text-secondary fill-secondary"
+    value: "12+"
   },
   { 
     icon: Star,
     title: "Satisfaction",
-    value: "4.8/5",
-    iconClassName: "text-secondary fill-secondary"
+    value: "4.8/5"
   }
 ];
 
 export const StatsSection = () => {
   return (
-    <section className="relative my-8 bg-white">
-      <div className="max-w-[90vw] mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+    <section className="relative mt-12 mb-8">
+      <div className="max-w-[95vw] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {stats.map((stat, index) => (
             <motion.div
               key={stat.title}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-gradient-to-br from-white to-secondary/5 p-4 rounded-xl shadow-sm border border-secondary/10 hover:border-secondary/30 transition-all duration-300 hover:shadow-md"
             >
               <StatsCard {...stat} />
             </motion.div>
