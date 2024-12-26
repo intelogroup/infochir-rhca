@@ -77,21 +77,26 @@ export const HeroSection = () => {
       <AnimatePresence mode="wait">
         <motion.div
           key={currentIndex}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
+          initial={{ opacity: 0, scale: 1.1 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ 
+            duration: 0.5,
+            ease: [0.4, 0, 0.2, 1]
+          }}
           className="absolute inset-0"
         >
-          <div className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-80 transition-opacity duration-500 ease-in-out`} />
-          <div 
-            className="absolute inset-0 transition-opacity duration-500 ease-in-out"
+          <div className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-60 transition-all duration-500 ease-in-out`} />
+          <motion.div 
+            className="absolute inset-0 transition-all duration-500 ease-in-out"
+            initial={{ scale: 1.1 }}
+            animate={{ scale: 1 }}
             style={{ 
               backgroundImage: `url(${images[currentIndex]})`,
               backgroundSize: '100% auto',
               backgroundPosition: 'center 35%',
               backgroundRepeat: 'no-repeat',
-              opacity: 0.7
+              opacity: 0.8
             }}
           />
         </motion.div>
