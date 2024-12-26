@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { ProductCard } from "@/components/ProductCard";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { products } from "./constants";
+import { supabase } from "@/integrations/supabase/client";
 
 export const ProductsGrid = () => {
   const navigate = useNavigate();
