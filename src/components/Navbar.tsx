@@ -10,12 +10,12 @@ export const Navbar = () => {
 
   const getHoverClass = (href: string) => {
     if (href === '/rhca' || href === '/adc') {
-      return 'hover:bg-secondary hover:text-white';
+      return 'hover:bg-secondary/80 hover:backdrop-blur-sm hover:text-white';
     }
     if (href === '/igm' || href === '/index-medicus') {
-      return 'hover:bg-primary hover:text-white';
+      return 'hover:bg-primary/80 hover:backdrop-blur-sm hover:text-white';
     }
-    return 'hover:text-primary';
+    return 'hover:text-primary hover:bg-gray-100/80 hover:backdrop-blur-sm';
   };
 
   return (
@@ -40,7 +40,7 @@ export const Navbar = () => {
                 <button
                   key={item.name}
                   onClick={() => navigate(item.href)}
-                  className={`flex items-center font-medium text-gray-700 transition-colors duration-200 px-3 py-1.5 rounded-md ${getHoverClass(item.href)}`}
+                  className={`flex items-center font-medium text-gray-700 transition-all duration-200 px-3 py-1.5 rounded-md ${getHoverClass(item.href)}`}
                 >
                   {item.name}
                 </button>
@@ -74,7 +74,7 @@ export const Navbar = () => {
                   navigate(item.href);
                   setIsOpen(false);
                 }}
-                className={`flex w-full items-center rounded-lg px-3 py-2 font-medium text-gray-700 transition-colors duration-200 ${getHoverClass(item.href)}`}
+                className={`flex w-full items-center rounded-lg px-3 py-2 font-medium text-gray-700 transition-all duration-200 ${getHoverClass(item.href)}`}
               >
                 {item.name}
               </button>
