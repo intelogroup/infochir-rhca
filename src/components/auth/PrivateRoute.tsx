@@ -1,20 +1,11 @@
 import { Navigate, useLocation } from "react-router-dom";
-import { LoadingSpinner } from "../LoadingSpinner";
 import { useAuth } from "@/contexts/AuthContext";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 
 export const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, isLoading, error } = useAuth();
+  const { isAuthenticated, error } = useAuth();
   const location = useLocation();
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <LoadingSpinner className="h-8 w-8" />
-      </div>
-    );
-  }
 
   if (error) {
     return (

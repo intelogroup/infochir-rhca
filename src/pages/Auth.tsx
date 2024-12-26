@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
@@ -6,39 +6,31 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 const AuthPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     const checkSession = async () => {
       try {
-        console.log("Auth page: Checking session...");
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         if (sessionError) throw sessionError;
         
         if (session) {
-          console.log("Auth page: Session found, redirecting...");
           const returnTo = location.state?.from?.pathname || "/";
           navigate(returnTo, { replace: true });
         }
       } catch (err) {
         console.error("Auth page: Session check error:", err);
-        setError(err instanceof Error ? err : new Error("Failed to check authentication status"));
-      } finally {
-        setIsLoading(false);
+        const error = err instanceof Error ? err : new Error("Failed to check authentication status");
+        toast.error(error.message);
       }
     };
 
     checkSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth page: Auth state changed:", event, session?.user?.email);
-      
       if (event === 'SIGNED_IN' && session) {
         toast.success(`Welcome ${session.user.email}`);
         const returnTo = location.state?.from?.pathname || "/";
@@ -50,27 +42,6 @@ const AuthPage = () => {
       subscription.unsubscribe();
     };
   }, [navigate, location]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f8fafc]">
-        <LoadingSpinner className="h-8 w-8" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f8fafc] p-4">
-        <Alert variant="destructive" className="max-w-md">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            {error.message}
-          </AlertDescription>
-        </Alert>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center px-4">
