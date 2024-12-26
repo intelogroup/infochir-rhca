@@ -2,6 +2,18 @@ export const navItems = [
   { 
     name: "RHCA", 
     href: "/rhca"
+  },
+  {
+    name: "IGM",
+    href: "/igm"
+  },
+  {
+    name: "Atlas ADC",
+    href: "/adc"
+  },
+  {
+    name: "Index Medicus",
+    href: "/index-medicus"
   }
 ];
 
@@ -35,4 +47,10 @@ export const products = [
     href: "/igm",
     logo: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png"
   },
+] as const;
+
+export const userNavigation = [
+  { name: "Profile", href: "/profile" },
+  { name: "Settings", href: "/settings" },
+  { name: "Sign out", href: "#" }
 ] as const;

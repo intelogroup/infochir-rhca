@@ -2,39 +2,45 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { navItems } from "@/config/navigation";
+import { UserMenu } from "./UserMenu";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
   return (
-    <nav className="fixed w-full z-50 bg-white/80 backdrop-blur-sm border-b border-gray-200/50 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+    <nav className="fixed z-50 w-full border-b border-gray-200/50 bg-white/80 backdrop-blur-sm shadow-sm">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 justify-between">
           <Link to="/" className="flex items-center space-x-2">
-            <img 
+            <img
               src="/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png"
               alt="Info Chir Logo"
               className="h-10 w-10 object-contain"
             />
-            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-xl font-bold">
+            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-xl font-bold text-transparent">
               INFOCHIR
             </span>
           </Link>
 
           {/* Desktop menu */}
-          <div className="hidden md:flex items-center justify-center flex-1">
+          <div className="hidden md:flex md:flex-1 md:items-center md:justify-center">
             <div className="flex items-center space-x-8">
               {navItems.map((item) => (
                 <button
                   key={item.name}
                   onClick={() => navigate(item.href)}
-                  className="text-gray-700 hover:text-primary transition-colors duration-200 h-16 flex items-center font-medium"
+                  className="flex h-16 items-center font-medium text-gray-700 transition-colors duration-200 hover:text-primary"
                 >
                   {item.name}
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* User menu */}
+          <div className="hidden md:flex md:items-center md:space-x-4">
+            <UserMenu />
           </div>
 
           {/* Mobile menu button */}
@@ -49,8 +55,8 @@ export const Navbar = () => {
 
       {/* Mobile menu */}
       {isOpen && (
-        <div className="md:hidden absolute w-full bg-white/90 backdrop-blur-sm border-b border-gray-200/50">
-          <div className="px-4 pt-2 pb-3 space-y-2">
+        <div className="absolute w-full border-b border-gray-200/50 bg-white/90 backdrop-blur-sm md:hidden">
+          <div className="space-y-2 px-4 pb-3 pt-2">
             {navItems.map((item) => (
               <button
                 key={item.name}
@@ -58,11 +64,14 @@ export const Navbar = () => {
                   navigate(item.href);
                   setIsOpen(false);
                 }}
-                className="flex w-full items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100/50 transition-colors duration-200 font-medium"
+                className="flex w-full items-center rounded-lg px-3 py-2 font-medium text-gray-700 transition-colors duration-200 hover:bg-gray-100/50"
               >
                 {item.name}
               </button>
             ))}
+            <div className="py-2">
+              <UserMenu />
+            </div>
           </div>
         </div>
       )}
