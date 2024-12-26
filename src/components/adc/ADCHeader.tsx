@@ -6,7 +6,7 @@ export const ADCHeader = () => {
       <img 
         src="/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png"
         alt="Atlas ADC Logo"
-        className="h-32 w-32 mx-auto mb-6 object-contain" // Increased from h-24 w-24
+        className="h-24 w-24 mx-auto mb-6 object-contain"
       />
       <motion.h1 
         initial={{ opacity: 0, y: 20 }}
