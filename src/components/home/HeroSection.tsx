@@ -33,7 +33,7 @@ export const HeroSection = () => {
         }
         return nextIndex;
       });
-    }, 5000); // Changed from 3000 to 5000 milliseconds
+    }, 6000); // Changed from 5000 to 6000 milliseconds
   };
 
   useEffect(() => {
@@ -80,12 +80,12 @@ export const HeroSection = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1 }}
+          transition={{ duration: 0.5 }} // Changed from 1 to 0.5 seconds
           className="absolute inset-0"
         >
-          <div className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-90 transition-opacity duration-1000`} />
+          <div className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-90 transition-opacity duration-500`} /> {/* Changed duration from 1000 to 500 */}
           <div 
-            className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
+            className="absolute inset-0 bg-cover bg-center transition-opacity duration-500" // Changed duration from 1000 to 500
             style={{ backgroundImage: `url(${images[currentIndex]})`, opacity: 0.5 }}
           />
         </motion.div>
