@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { Settings } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,8 +12,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { AvatarUpload } from "./profile/AvatarUpload";
-import { NameEditor } from "./profile/NameEditor";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 interface Profile {
@@ -23,22 +22,19 @@ interface Profile {
 export const ProfileMenu = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
-
     const fetchProfile = async () => {
       try {
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        if (userError) throw userError;
+        const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
-          console.log("No user found, redirecting to auth");
+          console.log("No user found in ProfileMenu");
           navigate('/auth');
           return;
         }
 
+        console.log("Fetching profile for user:", user.id);
         const { data, error } = await supabase
           .from('profiles')
           .select('full_name, avatar_url')
@@ -47,23 +43,16 @@ export const ProfileMenu = () => {
 
         if (error) throw error;
         
-        if (mounted) {
-          setProfile(data);
-          setUserId(user.id);
-          setIsLoading(false);
-        }
+        setProfile(data);
+        setIsLoading(false);
       } catch (error) {
         console.error("Error fetching profile:", error);
         toast.error("Failed to load profile");
-        if (mounted) setIsLoading(false);
+        setIsLoading(false);
       }
     };
 
     fetchProfile();
-
-    return () => {
-      mounted = false;
-    };
   }, [navigate]);
 
   const handleSignOut = async () => {
@@ -87,32 +76,29 @@ export const ProfileMenu = () => {
     );
   }
 
-  if (!profile || !userId) return null;
+  if (!profile) return null;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={profile.avatar_url || undefined} alt={profile.full_name || "User avatar"} />
-            <AvatarFallback>{(profile.full_name?.[0] || "A").toUpperCase()}</AvatarFallback>
+            <AvatarImage 
+              src={profile.avatar_url || undefined} 
+              alt={profile.full_name || "User avatar"} 
+            />
+            <AvatarFallback>
+              {(profile.full_name?.[0] || "U").toUpperCase()}
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel>
-          <div className="flex flex-col gap-2">
-            <NameEditor
-              userId={userId}
-              initialName={profile.full_name || ""}
-              onNameUpdate={(name) => setProfile(prev => prev ? { ...prev, full_name: name } : null)}
-            />
-            <AvatarUpload
-              userId={userId}
-              avatarUrl={profile.avatar_url}
-              fullName={profile.full_name}
-              onAvatarUpdate={(url) => setProfile(prev => prev ? { ...prev, avatar_url: url } : null)}
-            />
+          <div className="flex items-center gap-2">
+            <span className="font-normal">
+              {profile.full_name || "Anonymous"}
+            </span>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
