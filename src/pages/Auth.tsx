@@ -16,15 +16,17 @@ const AuthPage = () => {
   useEffect(() => {
     const checkSession = async () => {
       try {
+        console.log("Auth page: Checking session...");
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         if (sessionError) throw sessionError;
         
         if (session) {
+          console.log("Auth page: Session found, redirecting...");
           const returnTo = location.state?.from?.pathname || "/";
           navigate(returnTo);
         }
       } catch (err) {
-        console.error("Session check error:", err);
+        console.error("Auth page: Session check error:", err);
         setError(err instanceof Error ? err : new Error("Failed to check authentication status"));
         toast.error("Error checking authentication status");
       } finally {
@@ -34,8 +36,8 @@ const AuthPage = () => {
 
     checkSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event, session?.user?.email);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth page: Auth state changed:", event, session?.user?.email);
       
       if (event === 'SIGNED_IN' && session) {
         toast.success(`Welcome ${session.user.email}`);

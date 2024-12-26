@@ -35,15 +35,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const checkAdminStatus = async (userId: string) => {
     try {
-      const { data } = await supabase
+      console.log("Checking admin status for user:", userId);
+      const { data, error: adminError } = await supabase
         .from("admin_users")
         .select("is_super_admin")
         .eq("user_id", userId)
         .maybeSingle();
       
+      if (adminError) {
+        console.error("Admin check error:", adminError);
+        return false;
+      }
+
+      console.log("Admin status result:", data);
       return !!data?.is_super_admin;
     } catch (err) {
-      console.log("Admin check error:", err);
+      console.error("Admin check error:", err);
       return false;
     }
   };
@@ -51,23 +58,33 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     let mounted = true;
 
-    const handleAuthChange = async (event: string, session: any) => {
-      if (!mounted) return;
-
+    const initializeAuth = async () => {
       try {
-        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-          if (session?.user) {
+        console.log("Initializing auth...");
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error("Session initialization error:", sessionError);
+          if (mounted) {
+            setError(sessionError);
+            setIsLoading(false);
+          }
+          return;
+        }
+
+        if (session?.user) {
+          console.log("Session found, user:", session.user.email);
+          if (mounted) {
             setUser(session.user);
             const adminStatus = await checkAdminStatus(session.user.id);
             setIsAdmin(adminStatus);
           }
-        } else if (event === 'SIGNED_OUT') {
-          setUser(null);
-          setIsAdmin(false);
         }
       } catch (err) {
-        console.error("Auth change error:", err);
-        setError(err instanceof Error ? err : new Error("Authentication error"));
+        console.error("Auth initialization error:", err);
+        if (mounted) {
+          setError(err instanceof Error ? err : new Error("Authentication initialization failed"));
+        }
       } finally {
         if (mounted) {
           setIsLoading(false);
@@ -75,36 +92,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     };
 
-    // Check initial session
-    supabase.auth.getSession().then(({ data: { session }, error: sessionError }) => {
-      if (sessionError) {
-        setError(sessionError);
-        setIsLoading(false);
-        return;
-      }
+    // Initialize auth state
+    initializeAuth();
 
-      if (session?.user) {
-        setUser(session.user);
-        checkAdminStatus(session.user.id)
-          .then(adminStatus => {
-            if (mounted) {
-              setIsAdmin(adminStatus);
-              setIsLoading(false);
-            }
-          })
-          .catch(err => {
-            console.error("Initial admin check error:", err);
-            if (mounted) {
-              setIsLoading(false);
-            }
-          });
-      } else {
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event, session?.user?.email);
+      
+      if (!mounted) return;
+
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        if (session?.user) {
+          setUser(session.user);
+          const adminStatus = await checkAdminStatus(session.user.id);
+          setIsAdmin(adminStatus);
+          setIsLoading(false);
+        }
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+        setIsAdmin(false);
         setIsLoading(false);
       }
     });
-
-    // Subscribe to auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthChange);
 
     return () => {
       mounted = false;
