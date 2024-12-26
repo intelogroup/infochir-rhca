@@ -23,7 +23,7 @@ export const UserMenu = () => {
             <img
               src="https://images.unsplash.com/photo-1581092795360-fd1ca04f0952"
               alt="Profile"
-              className="h-10 w-10 rounded-full object-cover"
+              className="h-10 w-10 rounded-full object-cover ring-2 ring-white"
             />
             <div className="absolute -right-1 -bottom-1">
               <ChevronDown className="h-4 w-4 text-gray-500" />
@@ -37,7 +37,7 @@ export const UserMenu = () => {
             <img
               src="https://images.unsplash.com/photo-1581092795360-fd1ca04f0952"
               alt="Profile"
-              className="h-16 w-16 rounded-full object-cover"
+              className="h-16 w-16 rounded-full object-cover ring-2 ring-white"
             />
             <Button
               variant="ghost"
