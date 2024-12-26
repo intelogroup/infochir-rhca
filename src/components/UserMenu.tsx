@@ -9,23 +9,29 @@ import { User, ChevronDown, Camera } from "lucide-react";
 import { userNavigation } from "@/config/navigation";
 import { Link } from "react-router-dom";
 
-export const UserMenu = () => {
+interface UserMenuProps {
+  avatarUrl?: string;
+}
+
+export const UserMenu = ({ avatarUrl }: UserMenuProps) => {
+  const defaultAvatarUrl = "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952";
+  
   const handleAvatarUpdate = () => {
-    // TODO: Implement avatar update functionality
     console.log("Update avatar clicked");
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-10 w-10 p-0">
-          <div className="relative w-10 h-10 rounded-full overflow-hidden ring-2 ring-primary/10">
-            <img
-              src="https://images.unsplash.com/photo-1581092795360-fd1ca04f0952"
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
-          </div>
+        <Button 
+          variant="ghost" 
+          className="relative h-10 w-10 rounded-full p-0 overflow-hidden"
+        >
+          <img
+            src={avatarUrl || defaultAvatarUrl}
+            alt="Profile"
+            className="h-full w-full object-cover"
+          />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56 bg-white">
@@ -33,9 +39,9 @@ export const UserMenu = () => {
           <div className="relative">
             <div className="w-16 h-16 rounded-full overflow-hidden ring-2 ring-primary/10">
               <img
-                src="https://images.unsplash.com/photo-1581092795360-fd1ca04f0952"
+                src={avatarUrl || defaultAvatarUrl}
                 alt="Profile"
-                className="w-full h-full object-cover"
+                className="h-full w-full object-cover"
               />
             </div>
             <Button

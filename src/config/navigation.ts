@@ -1,53 +1,45 @@
-export const navItems = [
+import { BookOpen, Database, Newspaper } from "lucide-react";
+
+export type NavItem = {
+  name: string;
+  href: string;
+  description?: string;
+  icon?: any;
+  logo?: string;
+  bgImage?: string;
+};
+
+export const navItems: NavItem[] = [
   { 
     name: "RHCA", 
-    href: "/rhca"
-  },
-  {
-    name: "IGM",
-    href: "/igm"
-  },
-  {
-    name: "Atlas ADC",
-    href: "/adc"
-  },
-  {
-    name: "Index Medicus",
-    href: "/index-medicus"
-  }
-];
-
-export const products = [
-  {
-    title: "RHCA",
-    description: "Revue Haïtienne de Chirurgie et d'Anesthésiologie - Publiez vos articles scientifiques.",
-    icon: "BookOpen",
     href: "/rhca",
+    icon: BookOpen,
+    description: "Revue Haïtienne de Chirurgie et d'Anesthésiologie",
     logo: "/lovable-uploads/f65134f5-3929-4504-9567-104510b21f5d.png",
     bgImage: "/lovable-uploads/3686281a-0f1a-46e8-a03f-c56d49e3d791.png"
   },
   {
-    title: "Index Medicus",
-    description: "Accédez à des références médicales organisées par auteur et thème.",
-    icon: "Database",
-    href: "/index-medicus",
-    logo: "/lovable-uploads/f2409464-47cf-4348-ada0-e328e86be01b.png"
+    name: "IGM",
+    href: "/igm",
+    icon: Newspaper,
+    description: "Informations Générales Médicales",
+    logo: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png"
   },
   {
-    title: "Atlas ADC",
-    description: "Explorez une base visuelle unique pour faciliter vos diagnostics.",
-    icon: "BookOpen",
+    name: "Atlas ADC",
     href: "/adc",
+    icon: BookOpen,
+    description: "Atlas de Diagnostic Chirurgical",
     logo: "/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png"
   },
   {
-    title: "IGM",
-    description: "Restez informé des dernières nouvelles et évolutions du domaine médical.",
-    icon: "Newspaper",
-    href: "/igm",
-    logo: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png"
-  },
-] as const;
+    name: "Index Medicus",
+    href: "/index-medicus",
+    icon: Database,
+    description: "Base de données médicales",
+    logo: "/lovable-uploads/f2409464-47cf-4348-ada0-e328e86be01b.png"
+  }
+];
 
 export const userNavigation = [
   { name: "Profile", href: "/profile" },

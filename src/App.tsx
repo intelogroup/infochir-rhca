@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { StrictMode } from "react";
 import Index from "./pages/Index";
 import RHCA from "./pages/RHCA";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -24,7 +25,7 @@ const App = () => {
                 <Route path="/igm" element={<div>IGM Page (Coming Soon)</div>} />
                 <Route path="/adc" element={<div>Atlas ADC Page (Coming Soon)</div>} />
                 <Route path="/index-medicus" element={<div>Index Medicus Page (Coming Soon)</div>} />
-                <Route path="/profile" element={<div>Profile Page (Coming Soon)</div>} />
+                <Route path="/profile" element={<Profile />} />
                 <Route path="/settings" element={<div>Settings Page (Coming Soon)</div>} />
               </Routes>
             </div>
