@@ -29,6 +29,8 @@ const resources: FooterLink[] = [
   { name: "Études de cas", href: "#cases" },
   { name: "Outils de recherche", href: "#tools" },
   { name: "Archives", href: "#archives" },
+  { name: "Job", href: "#jobs" },
+  { name: "Correspondance", href: "#correspondence" },
 ];
 
 const socialLinks: SocialLink[] = [
