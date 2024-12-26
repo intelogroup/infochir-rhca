@@ -35,12 +35,12 @@ export const Navbar = () => {
 
           {/* Desktop menu */}
           <div className="hidden md:flex md:flex-1 md:items-center md:justify-center">
-            <div className="flex items-center space-x-8">
+            <div className="flex items-center space-x-4">
               {navItems.map((item) => (
                 <button
                   key={item.name}
                   onClick={() => navigate(item.href)}
-                  className={`flex h-16 items-center font-medium text-gray-700 transition-colors duration-200 px-3 py-1 rounded-md ${getHoverClass(item.href)}`}
+                  className={`flex items-center font-medium text-gray-700 transition-colors duration-200 px-3 py-1.5 rounded-md ${getHoverClass(item.href)}`}
                 >
                   {item.name}
                 </button>
@@ -49,7 +49,7 @@ export const Navbar = () => {
           </div>
 
           {/* User menu */}
-          <div className="hidden md:flex md:items-center md:space-x-4">
+          <div className="hidden md:flex md:items-center">
             <UserMenu />
           </div>
 
