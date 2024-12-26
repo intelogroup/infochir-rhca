@@ -64,9 +64,3 @@ export const products: Product[] = navItems.map(item => ({
   logo: item.logo,
   bgImage: item.bgImage
 }));
-
-export const userNavigation = [
-  { name: "Profile", href: "/profile" },
-  { name: "Settings", href: "/settings" },
-  { name: "Sign out", href: "#" }
-] as const;

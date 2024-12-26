@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
-import { UserMenu } from "./UserMenu";
 import { NavLinks } from "./navigation/NavLinks";
 import { MobileMenu } from "./navigation/MobileMenu";
 
@@ -25,10 +24,6 @@ export const Navbar = () => {
 
           <div className="hidden md:flex md:flex-1 md:items-center md:justify-center">
             <NavLinks />
-          </div>
-
-          <div className="hidden md:flex md:items-center">
-            <UserMenu />
           </div>
 
           <button

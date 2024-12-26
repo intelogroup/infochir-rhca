@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { navItems } from "@/config/navigation";
-import { UserMenu } from "@/components/UserMenu";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -45,9 +44,6 @@ export const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             {item.name}
           </motion.button>
         ))}
-        <div className="py-2">
-          <UserMenu />
-        </div>
       </div>
     </motion.div>
   );
