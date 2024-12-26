@@ -1,115 +1,156 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Search, Download, Eye } from "lucide-react";
-
-interface Issue {
-  id: number;
-  title: string;
-  date: string;
-  volume: string;
-  abstract: string;
-  downloadUrl: string;
-}
-
-const mockIssues: Issue[] = [
-  {
-    id: 1,
-    title: "Innovations en Chirurgie Laparoscopique",
-    date: "2024",
-    volume: "Vol. 15, No. 1",
-    abstract: "Une étude approfondie des nouvelles techniques en chirurgie mini-invasive...",
-    downloadUrl: "#"
-  },
-  {
-    id: 2,
-    title: "Anesthésie en Chirurgie Pédiatrique",
-    date: "2023",
-    volume: "Vol. 14, No. 2",
-    abstract: "Analyse comparative des protocoles d'anesthésie chez les patients pédiatriques...",
-    downloadUrl: "#"
-  },
-  {
-    id: 3,
-    title: "Gestion de la Douleur Post-Opératoire",
-    date: "2023",
-    volume: "Vol. 14, No. 1",
-    abstract: "Évaluation des stratégies modernes de gestion de la douleur après une intervention chirurgicale...",
-    downloadUrl: "#"
-  },
-  {
-    id: 4,
-    title: "Chirurgie Traumatologique d'Urgence",
-    date: "2022",
-    volume: "Vol. 13, No. 2",
-    abstract: "Protocoles et techniques pour la prise en charge des traumatismes aigus...",
-    downloadUrl: "#"
-  }
-];
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { SearchAndSort } from "./issues/SearchAndSort";
+import { YearGroup } from "./issues/YearGroup";
+import type { Issue } from "./issues/types";
 
 export const IssuesGrid = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredIssues, setFilteredIssues] = useState(mockIssues);
+  const [sortBy, setSortBy] = useState("latest");
+  const [filteredIssues, setFilteredIssues] = useState<Issue[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchArticles();
+  }, []);
+
+  const fetchArticles = async () => {
+    try {
+      // First, list all files in the articles bucket
+      const { data: storageFiles, error: storageError } = await supabase
+        .storage
+        .from('articles')
+        .list();
+
+      if (storageError) {
+        console.error('Error fetching storage files:', storageError);
+        toast.error("Erreur lors du chargement des fichiers");
+        return;
+      }
+
+      const { data: articles, error } = await supabase
+        .from('articles')
+        .select(`
+          *,
+          category:categories(name),
+          article_authors(
+            author:authors(name)
+          ),
+          article_tags(
+            tag:tags(name)
+          )
+        `)
+        .order('date', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching articles:', error);
+        toast.error("Erreur lors du chargement des articles");
+        return;
+      }
+
+      // Transform the articles into the Issue format
+      const transformedArticles = articles.map(article => {
+        // Find matching PDF file from storage
+        const pdfFile = storageFiles?.find(file => 
+          file.name.toLowerCase().includes(article.title.toLowerCase().replace(/\s+/g, '-'))
+        );
+
+        return {
+          id: article.id,
+          title: article.title,
+          volume: article.category?.name ? `Volume ${article.category.name}` : undefined,
+          issue: `Issue ${new Date(article.date).getMonth() + 1}`,
+          date: new Date(article.date).toISOString(),
+          abstract: article.abstract,
+          pdfUrl: pdfFile ? `${supabase.storage.from('articles').getPublicUrl(pdfFile.name).data.publicUrl}` : article.pdf_url,
+          articleCount: 1,
+          authors: article.article_authors?.map((aa: any) => aa.author.name) || [],
+          tags: article.article_tags?.map((at: any) => at.tag.name) || []
+        };
+      });
+
+      console.log('Transformed articles:', transformedArticles);
+      setFilteredIssues(transformedArticles);
+    } catch (error) {
+      console.error('Error fetching articles:', error);
+      toast.error("Erreur lors du chargement des articles");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
-    const filtered = mockIssues.filter(issue =>
+    const filtered = filteredIssues.filter(issue =>
       issue.title.toLowerCase().includes(value.toLowerCase()) ||
       issue.abstract.toLowerCase().includes(value.toLowerCase())
     );
-    setFilteredIssues(filtered);
+    sortIssues(filtered, sortBy);
   };
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4 mb-8">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <Input
-            type="text"
-            placeholder="Rechercher des articles..."
-            value={searchTerm}
-            onChange={(e) => handleSearch(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <Button variant="outline">
-          Filtres
-        </Button>
-      </div>
+  const sortIssues = (issues: Issue[], sortType: string) => {
+    let sorted = [...issues];
+    switch (sortType) {
+      case "latest":
+        sorted.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        break;
+      case "year":
+        sorted.sort((a, b) => 
+          new Date(b.date).getFullYear() - new Date(a.date).getFullYear()
+        );
+        break;
+      case "month":
+        sorted.sort((a, b) => 
+          new Date(b.date).getMonth() - new Date(a.date).getMonth()
+        );
+        break;
+      default:
+        break;
+    }
+    setFilteredIssues(sorted);
+  };
 
-      <div className="grid gap-6">
-        {filteredIssues.map((issue) => (
-          <Card key={issue.id} className="group hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle className="text-xl mb-2 text-primary group-hover:text-primary-light transition-colors">
-                    {issue.title}
-                  </CardTitle>
-                  <p className="text-sm text-gray-500">
-                    {issue.volume} • {issue.date}
-                  </p>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600 mb-6">
-                {issue.abstract}
-              </p>
-              <div className="flex gap-4">
-                <Button variant="outline" className="gap-2">
-                  <Eye className="h-4 w-4" />
-                  Lire
-                </Button>
-                <Button className="gap-2">
-                  <Download className="h-4 w-4" />
-                  Télécharger PDF
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+  const handleSort = (value: string) => {
+    setSortBy(value);
+    sortIssues(filteredIssues, value);
+  };
+
+  // Group issues by year
+  const issuesByYear = filteredIssues.reduce((acc, issue) => {
+    const year = new Date(issue.date).getFullYear();
+    if (!acc[year]) {
+      acc[year] = [];
+    }
+    acc[year].push(issue);
+    return acc;
+  }, {} as Record<number, Issue[]>);
+
+  // Sort years in descending order
+  const sortedYears = Object.keys(issuesByYear)
+    .map(Number)
+    .sort((a, b) => b - a);
+
+  if (isLoading) {
+    return <div className="p-4">Chargement des articles...</div>;
+  }
+
+  return (
+    <div className="space-y-4 px-4">
+      <SearchAndSort
+        searchTerm={searchTerm}
+        sortBy={sortBy}
+        onSearch={handleSearch}
+        onSort={handleSort}
+      />
+
+      <div className="space-y-4">
+        {sortedYears.map((year) => (
+          <YearGroup 
+            key={year}
+            year={year}
+            issues={issuesByYear[year]}
+          />
         ))}
       </div>
     </div>

@@ -2,9 +2,19 @@ import { useState } from "react";
 import { DateRange } from "react-day-picker";
 import { addDays } from "date-fns";
 import { SearchBar } from "./index-medicus/SearchBar";
-import { ArticleCard } from "./index-medicus/ArticleCard";
 import { categories, sources, mockArticles } from "./index-medicus/constants";
 import type { Article } from "./index-medicus/types";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { FileText, Download } from "lucide-react";
 
 export const IndexMedicusGrid = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -54,10 +64,52 @@ export const IndexMedicusGrid = () => {
         sources={sources}
       />
 
-      <div className="grid gap-6">
-        {filteredArticles.map((article) => (
-          <ArticleCard key={article.id} article={article} />
-        ))}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[400px]">Titre</TableHead>
+              <TableHead>Auteurs</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Catégorie</TableHead>
+              <TableHead>Source</TableHead>
+              <TableHead>Tags</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredArticles.map((article) => (
+              <TableRow key={article.id}>
+                <TableCell className="font-medium">{article.title}</TableCell>
+                <TableCell>{article.authors.join(", ")}</TableCell>
+                <TableCell>{new Date(article.date).toLocaleDateString()}</TableCell>
+                <TableCell>{article.category}</TableCell>
+                <TableCell>{article.source}</TableCell>
+                <TableCell>
+                  <div className="flex flex-wrap gap-1">
+                    {article.tags.map((tag) => (
+                      <Badge key={tag} variant="secondary" className="text-xs">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end gap-2">
+                    <Button variant="outline" size="sm">
+                      <FileText className="h-4 w-4 mr-1" />
+                      Lire
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      <Download className="h-4 w-4 mr-1" />
+                      PDF
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

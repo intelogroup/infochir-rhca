@@ -24,7 +24,7 @@ export const ProductCard = ({
     <>
       {bgImage && (
         <div 
-          className="absolute inset-0 opacity-0 group-hover:opacity-[0.03] transition-opacity duration-300"
+          className="absolute inset-0 opacity-50 group-hover:opacity-[0.5] transition-opacity duration-300"
           style={{
             backgroundImage: `url(${bgImage})`,
             backgroundSize: 'cover',

@@ -1,10 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { ProfileMenu } from "./ProfileMenu";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsAuthenticated(!!session);
+      if (!session) {
+        navigate("/auth");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   const navItems = [
     { 
@@ -16,7 +30,7 @@ export const Navbar = () => {
       href: "/index-medicus"
     },
     { 
-      name: "Atlas ADC", 
+      name: "Atlas", 
       href: "/adc"
     },
     { 
@@ -56,6 +70,13 @@ export const Navbar = () => {
               ))}
             </div>
           </div>
+
+          {/* Profile Menu */}
+          {isAuthenticated && (
+            <div className="flex items-center">
+              <ProfileMenu />
+            </div>
+          )}
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center">

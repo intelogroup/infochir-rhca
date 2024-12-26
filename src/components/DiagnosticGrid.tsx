@@ -1,15 +1,7 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-
-interface DiagnosticCase {
-  id: string;
-  title: string;
-  description: string;
-  imageUrl: string;
-  specialty: string;
-  diagnosis: string;
-  date: string;
-}
+import { useState, useMemo } from "react";
+import { DiagnosticSearch } from "./diagnostic/DiagnosticSearch";
+import { DiagnosticCard } from "./diagnostic/DiagnosticCard";
+import { DiagnosticCase, YearGroup } from "./diagnostic/types";
 
 const diagnosticCases: DiagnosticCase[] = [
   {
@@ -249,34 +241,100 @@ const diagnosticCases: DiagnosticCase[] = [
 ];
 
 export const DiagnosticGrid = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedSpecialty, setSelectedSpecialty] = useState("");
+
+  const specialties = useMemo(() => {
+    return Array.from(new Set(diagnosticCases.map((c) => c.specialty))).sort();
+  }, []);
+
+  const filteredAndGroupedCases = useMemo(() => {
+    let filtered = diagnosticCases;
+
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (c) =>
+          c.title.toLowerCase().includes(searchLower) ||
+          c.description.toLowerCase().includes(searchLower) ||
+          c.diagnosis.toLowerCase().includes(searchLower)
+      );
+    }
+
+    if (selectedSpecialty) {
+      filtered = filtered.filter((c) => c.specialty === selectedSpecialty);
+    }
+
+    const groupedByYear = filtered.reduce((acc: YearGroup[], curr) => {
+      const date = new Date(curr.date);
+      const year = date.getFullYear();
+      const month = date.getMonth();
+
+      let yearGroup = acc.find((g) => g.year === year);
+      if (!yearGroup) {
+        yearGroup = { year, months: [] };
+        acc.push(yearGroup);
+      }
+
+      let monthGroup = yearGroup.months.find((m) => m.month === month);
+      if (!monthGroup) {
+        monthGroup = { month, cases: [] };
+        yearGroup.months.push(monthGroup);
+      }
+
+      monthGroup.cases.push(curr);
+      return acc;
+    }, []);
+
+    // Sort years descending
+    groupedByYear.sort((a, b) => b.year - a.year);
+    // Sort months descending within each year
+    groupedByYear.forEach((yearGroup) => {
+      yearGroup.months.sort((a, b) => b.month - a.month);
+    });
+
+    return groupedByYear;
+  }, [searchTerm, selectedSpecialty]);
+
+  const monthNames = [
+    "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+    "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+  ];
+
   return (
-    <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {diagnosticCases.map((diagnosticCase) => (
-        <Card key={diagnosticCase.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-          <div className="aspect-[4/3] relative overflow-hidden">
-            <img
-              src={diagnosticCase.imageUrl}
-              alt={diagnosticCase.title}
-              className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
-            />
-          </div>
-          <CardHeader className="p-4">
-            <div className="flex justify-between items-start gap-2">
-              <CardTitle className="text-sm font-medium line-clamp-2">{diagnosticCase.title}</CardTitle>
-              <Badge variant="outline" className="text-xs whitespace-nowrap">
-                {diagnosticCase.specialty}
-              </Badge>
+    <div className="max-w-7xl mx-auto scale-[0.85] origin-top">
+      <DiagnosticSearch
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        selectedSpecialty={selectedSpecialty}
+        setSelectedSpecialty={setSelectedSpecialty}
+        specialties={specialties}
+      />
+
+      <div className="space-y-8">
+        {filteredAndGroupedCases.map((yearGroup) => (
+          <div key={yearGroup.year}>
+            <h2 className="text-2xl font-bold mb-4">{yearGroup.year}</h2>
+            <div className="space-y-6">
+              {yearGroup.months.map((monthGroup) => (
+                <div key={monthGroup.month}>
+                  <h3 className="text-lg font-semibold mb-3 text-gray-600">
+                    {monthNames[monthGroup.month]}
+                  </h3>
+                  <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-3">
+                    {monthGroup.cases.map((diagnosticCase) => (
+                      <DiagnosticCard
+                        key={diagnosticCase.id}
+                        diagnosticCase={diagnosticCase}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
-            <CardDescription className="text-xs">{diagnosticCase.date}</CardDescription>
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <p className="text-xs text-gray-600 mb-2 line-clamp-2">{diagnosticCase.description}</p>
-            <p className="text-xs font-semibold">
-              Diagnostic: <span className="text-primary">{diagnosticCase.diagnosis}</span>
-            </p>
-          </CardContent>
-        </Card>
-      ))}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
