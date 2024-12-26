@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { DiagnosticGrid } from "@/components/diagnostic/DiagnosticGrid";
-import { Footer } from "@/components/Footer";
 
 const ADC = () => {
   return (
@@ -72,7 +71,6 @@ const ADC = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
