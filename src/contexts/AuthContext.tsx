@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import type { AuthError, User, AuthChangeEvent } from "@supabase/supabase-js";
+import type { User } from "@supabase/supabase-js";
+import { toast } from "sonner";
 
 interface AuthContextType {
   user: User | null;
@@ -32,56 +33,81 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
+  const checkAdminStatus = async (userId: string) => {
+    try {
+      const { data } = await supabase
+        .from("admin_users")
+        .select("is_super_admin")
+        .eq("user_id", userId)
+        .maybeSingle();
+      
+      return !!data?.is_super_admin;
+    } catch (err) {
+      console.log("Admin check error:", err);
+      return false;
+    }
+  };
+
   useEffect(() => {
-    const checkAdminStatus = async (userId: string) => {
-      try {
-        const { data, error } = await supabase
-          .from("admin_users")
-          .select("is_super_admin")
-          .eq("user_id", userId)
-          .single();
+    let mounted = true;
 
-        if (error) throw error;
-        setIsAdmin(!!data?.is_super_admin);
-      } catch (err) {
-        console.error("Error checking admin status:", err);
-        setError(err instanceof Error ? err : new Error("Failed to check admin status"));
-      }
-    };
+    const handleAuthChange = async (event: string, session: any) => {
+      if (!mounted) return;
 
-    const handleAuthChange = async (event: AuthChangeEvent, session: any) => {
-      setIsLoading(true);
       try {
-        if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "TOKEN_REFRESHED") {
-          const currentUser = session?.user ?? null;
-          setUser(currentUser);
-          if (currentUser) {
-            await checkAdminStatus(currentUser.id);
-          } else {
-            setIsAdmin(false);
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          if (session?.user) {
+            setUser(session.user);
+            const adminStatus = await checkAdminStatus(session.user.id);
+            setIsAdmin(adminStatus);
           }
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null);
+          setIsAdmin(false);
         }
       } catch (err) {
         console.error("Auth change error:", err);
         setError(err instanceof Error ? err : new Error("Authentication error"));
       } finally {
-        setIsLoading(false);
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     };
 
-    // Initial session check
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        checkAdminStatus(session.user.id);
+    // Check initial session
+    supabase.auth.getSession().then(({ data: { session }, error: sessionError }) => {
+      if (sessionError) {
+        setError(sessionError);
+        setIsLoading(false);
+        return;
       }
-      setIsLoading(false);
+
+      if (session?.user) {
+        setUser(session.user);
+        checkAdminStatus(session.user.id)
+          .then(adminStatus => {
+            if (mounted) {
+              setIsAdmin(adminStatus);
+              setIsLoading(false);
+            }
+          })
+          .catch(err => {
+            console.error("Initial admin check error:", err);
+            if (mounted) {
+              setIsLoading(false);
+            }
+          });
+      } else {
+        setIsLoading(false);
+      }
     });
 
-    // Listen for auth changes
+    // Subscribe to auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthChange);
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, []);
