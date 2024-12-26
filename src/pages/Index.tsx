@@ -6,6 +6,8 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { NewsletterSection } from "@/components/home/NewsletterSection";
+import { Footer } from "@/components/Footer";
 
 const Index = () => {
   const { isLoading, isAuthenticated } = useAuth();
@@ -63,6 +65,8 @@ const Index = () => {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ProductsGrid />
       </div>
+      <NewsletterSection />
+      <Footer />
     </main>
   );
 };
