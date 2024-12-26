@@ -70,7 +70,7 @@ export const IndexMedicusGrid = () => {
       {viewMode === 'table' ? (
         <ArticlesTable articles={filteredArticles} />
       ) : (
-        <ArticlesGrid articles={filteredArticles} isLoading={false} />
+        <ArticlesGrid articles={filteredArticles} isLoading={isLoading} />
       )}
     </div>
   );
