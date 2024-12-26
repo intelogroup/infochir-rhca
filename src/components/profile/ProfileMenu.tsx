@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { LogOut, User } from "lucide-react";
@@ -13,44 +13,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-
-interface Profile {
-  full_name: string | null;
-  avatar_url: string | null;
-}
+import { useAuth } from "@/contexts/AuthContext";
 
 export const ProfileMenu = () => {
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        console.log("Current user:", user?.email);
-        
-        if (!user) {
-          console.log("No user found");
-          navigate('/auth');
-          return;
-        }
-
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('full_name, avatar_url')
-          .eq('id', user.id)
-          .single();
-
-        if (error) throw error;
-        console.log("Profile data:", data);
-        setProfile(data);
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-      }
-    };
-
-    fetchProfile();
-  }, [navigate]);
+    if (!isAuthenticated) {
+      navigate('/auth');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSignOut = async () => {
     try {
@@ -65,14 +38,18 @@ export const ProfileMenu = () => {
     }
   };
 
+  if (!user) {
+    return null;
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-9 w-9 rounded-full">
           <Avatar className="h-9 w-9">
             <AvatarImage 
-              src={profile?.avatar_url || undefined} 
-              alt={profile?.full_name || "User avatar"} 
+              src={user.user_metadata?.avatar_url} 
+              alt={user.user_metadata?.full_name || user.email || "User avatar"} 
             />
             <AvatarFallback className="bg-primary/10">
               <User className="h-5 w-5 text-primary" />
@@ -83,8 +60,11 @@ export const ProfileMenu = () => {
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel>
           <div className="flex flex-col gap-1">
-            <p className="text-sm font-medium">
-              {profile?.full_name || "Anonymous"}
+            <p className="text-sm font-medium leading-none">
+              {user.user_metadata?.full_name || "Anonymous"}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {user.email}
             </p>
           </div>
         </DropdownMenuLabel>
