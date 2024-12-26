@@ -42,23 +42,23 @@ const stats = [
 
 export const StatsSection = () => {
   return (
-    <section className="relative mt-20 mb-16">
+    <section className="relative mt-12 mb-8">
       <div className="max-w-[95vw] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 scale-[0.6] origin-top">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {stats.map((stat, index) => (
             <Card 
               key={stat.label} 
-              className="p-6 bg-white shadow-lg hover:shadow-xl transition-shadow animate-fade-up rounded-3xl w-[500px]" 
+              className="p-4 bg-white shadow hover:shadow-md transition-shadow animate-fade-up rounded-xl" 
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className="flex items-center gap-6">
-                <div className="w-12 h-12 rounded-lg bg-secondary flex items-center justify-center">
-                  <stat.icon className="w-6 h-6 text-white" />
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center">
+                  <stat.icon className="w-4 h-4 text-white" />
                 </div>
-                <div className="flex-1">
-                  <div className="font-bold text-3xl">{stat.value}</div>
-                  <div className="text-gray-600">{stat.label}</div>
-                  <div className="text-sm text-primary mt-2">{stat.detail}</div>
+                <div className="text-center">
+                  <div className="font-bold text-xl">{stat.value}</div>
+                  <div className="text-sm text-gray-600">{stat.label}</div>
+                  <div className="text-xs text-primary mt-1">{stat.detail}</div>
                 </div>
               </div>
             </Card>
