@@ -15,7 +15,7 @@ export const Navbar = () => {
             <img
               src="/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png"
               alt="Info Chir Logo"
-              className="h-15 w-15 object-contain"
+              className="h-13 w-13 object-contain"
             />
             <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-xl font-bold text-transparent">
               INFOCHIR/RHCA
