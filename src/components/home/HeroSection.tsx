@@ -83,7 +83,7 @@ export const HeroSection = () => {
             className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-90`}
           />
           <motion.div 
-            className="absolute bottom-0 right-0 w-1/2 h-full"
+            className="absolute bottom-0 right-0 w-1/2 h-4/5 md:h-3/4 lg:h-2/3"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -102,23 +102,25 @@ export const HeroSection = () => {
       </AnimatePresence>
       
       <div className="relative max-w-7xl mx-auto text-left pt-16 pb-16">
-        <h1 className="text-5xl sm:text-6xl font-bold text-white mb-8 animate-fade-up tracking-tight">
-          Votre espace scientifique en ligne
-        </h1>
-        <p className="text-xl text-white/90 max-w-2xl mb-10 animate-fade-up leading-relaxed">
-          La plateforme de référence pour les professionnels de santé en Haïti
-        </p>
-        <div className="flex flex-wrap gap-4">
-          <Button size="lg" variant="secondary" className="group bg-green-800 hover:bg-green-900 text-white">
-            Soumettre votre article
-            <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-          </Button>
-          <Button 
-            size="lg" 
-            className="bg-transparent hover:bg-white/10 text-white border-white border"
-          >
-            En savoir plus
-          </Button>
+        <div className="max-w-xl lg:max-w-2xl">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-8 animate-fade-up tracking-tight leading-tight">
+            Votre espace scientifique en ligne
+          </h1>
+          <p className="text-lg sm:text-xl text-white/90 mb-10 animate-fade-up leading-relaxed">
+            La plateforme de référence pour les professionnels de santé en Haïti
+          </p>
+          <div className="flex flex-wrap gap-4">
+            <Button size="lg" variant="secondary" className="group bg-green-800 hover:bg-green-900 text-white">
+              Soumettre votre article
+              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            </Button>
+            <Button 
+              size="lg" 
+              className="bg-transparent hover:bg-white/10 text-white border-white border"
+            >
+              En savoir plus
+            </Button>
+          </div>
         </div>
       </div>
     </section>
