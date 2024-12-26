@@ -91,9 +91,11 @@ export const HeroSection = () => {
             style={{ 
               backgroundImage: `url(${images[currentIndex]})`,
               backgroundSize: 'contain',
-              backgroundPosition: 'bottom right',
+              backgroundPosition: 'right bottom',
               backgroundRepeat: 'no-repeat',
-              opacity: 0.6
+              opacity: 0.6,
+              right: 0,
+              marginRight: '-5%' // This pushes the image further right
             }}
           />
         </div>
