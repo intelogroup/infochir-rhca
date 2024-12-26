@@ -20,13 +20,14 @@ export const IndexMedicusGrid = () => {
     date,
     setDate,
     filteredArticles,
+    isLoading,
     error,
     handleSearch,
   } = useIndexMedicusSearch();
 
   if (!Array.isArray(categories) || !Array.isArray(sources)) {
     return (
-      <Alert variant="destructive" className="max-w-2xl mx-auto">
+      <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
           Une erreur de configuration est survenue. Veuillez réessayer plus tard.
@@ -37,7 +38,7 @@ export const IndexMedicusGrid = () => {
 
   if (error) {
     return (
-      <Alert variant="destructive" className="max-w-2xl mx-auto">
+      <Alert variant="destructive">
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
           {error instanceof Error 
@@ -49,32 +50,28 @@ export const IndexMedicusGrid = () => {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <SearchBar
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
-          selectedSource={selectedSource}
-          setSelectedSource={setSelectedSource}
-          date={date}
-          setDate={setDate}
-          onSearch={handleSearch}
-          categories={categories}
-          sources={sources}
-        />
-      </div>
+    <div className="space-y-6">
+      <SearchBar
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
+        selectedSource={selectedSource}
+        setSelectedSource={setSelectedSource}
+        date={date}
+        setDate={setDate}
+        onSearch={handleSearch}
+        categories={categories}
+        sources={sources}
+      />
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <ViewModeToggle viewMode={viewMode} setViewMode={setViewMode} className="mb-6" />
+      <ViewModeToggle viewMode={viewMode} setViewMode={setViewMode} />
 
-        {viewMode === 'table' ? (
-          <ArticlesTable articles={filteredArticles} />
-        ) : (
-          <ArticlesGrid articles={filteredArticles} isLoading={false} />
-        )}
-      </div>
+      {viewMode === 'table' ? (
+        <ArticlesTable articles={filteredArticles} />
+      ) : (
+        <ArticlesGrid articles={filteredArticles} isLoading={false} />
+      )}
     </div>
   );
 };
