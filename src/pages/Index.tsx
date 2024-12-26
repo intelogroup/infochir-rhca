@@ -8,11 +8,11 @@ import { useState } from "react";
 import { BookOpen, Database, Newspaper } from "lucide-react";
 import { HeroSection } from "@/components/home/HeroSection";
 import { StatsSection } from "@/components/home/StatsSection";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const [email, setEmail] = useState("");
-  const [showAtlasDialog, setShowAtlasDialog] = useState(false);
+  const navigate = useNavigate();
 
   const products = [
     {
@@ -27,14 +27,14 @@ const Index = () => {
       title: "Index Medicus",
       description: "Accédez à des références médicales organisées par auteur et thème.",
       icon: Database,
-      href: "#index-medicus",
+      href: "/index-medicus",
       logo: "/lovable-uploads/f2409464-47cf-4348-ada0-e328e86be01b.png"
     },
     {
       title: "Atlas ADC",
       description: "Explorez une base visuelle unique pour faciliter vos diagnostics.",
       icon: BookOpen,
-      onClick: () => setShowAtlasDialog(true),
+      href: "/adc",
       logo: "/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png"
     },
     {
@@ -72,8 +72,13 @@ const Index = () => {
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {products.map((product, index) => (
-              <div key={product.title} className="animate-fade-up" style={{ animationDelay: `${index * 100}ms` }}>
+            {products.map((product) => (
+              <div 
+                key={product.title} 
+                className="animate-fade-up cursor-pointer" 
+                style={{ animationDelay: '100ms' }}
+                onClick={() => navigate(product.href)}
+              >
                 <ProductCard {...product} />
               </div>
             ))}
@@ -82,10 +87,10 @@ const Index = () => {
       </section>
 
       {/* Newsletter Section */}
-      <section className="py-16 bg-gradient-to-br from-primary to-primary-light text-white">
+      <section className="py-16 bg-gradient-to-br from-primary to-primary-light">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <Newspaper className="w-12 h-12 mx-auto mb-6 opacity-80" />
-          <h2 className="text-3xl font-bold mb-4">Restez informé</h2>
+          <Newspaper className="w-12 h-12 mx-auto mb-6 text-white/80" />
+          <h2 className="text-3xl font-bold mb-4 text-white">Restez informé</h2>
           <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
             Abonnez-vous à notre newsletter pour recevoir les dernières publications et actualités
           </p>
@@ -97,31 +102,12 @@ const Index = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <Button type="submit" variant="secondary" className="whitespace-nowrap">
+            <Button variant="secondary" type="submit" className="whitespace-nowrap">
               S'abonner
             </Button>
           </form>
         </div>
       </section>
-
-      {/* Atlas Dialog */}
-      <Dialog open={showAtlasDialog} onOpenChange={setShowAtlasDialog}>
-        <DialogContent className="sm:max-w-[800px]">
-          <DialogHeader>
-            <DialogTitle>Atlas ADC</DialogTitle>
-          </DialogHeader>
-          <div className="mt-4">
-            <img 
-              src="/lovable-uploads/c2887190-a8a5-4f96-9268-79835f4cd5b6.png"
-              alt="Atlas ADC Preview"
-              className="w-full rounded-lg shadow-lg"
-            />
-            <p className="mt-4 text-gray-600">
-              Explorez notre base visuelle complète pour faciliter vos diagnostics et améliorer votre pratique médicale.
-            </p>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       <Footer />
     </div>
