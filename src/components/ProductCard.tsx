@@ -1,7 +1,7 @@
 import { LucideIcon } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
-interface ProductCardProps {
+export interface ProductCardProps {
   title: string;
   description: string;
   icon: LucideIcon;

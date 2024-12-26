@@ -1,15 +1,5 @@
 import { ReactNode } from 'react';
-import { LucideIcon } from 'lucide-react';
 import { Article, ArticleWithRelations } from './article';
-
-export interface ProductCardProps {
-  title: string;
-  description: string;
-  icon: LucideIcon;
-  href?: string;
-  onClick?: () => void;
-  logo?: string;
-}
 
 export interface ErrorBoundaryProps {
   children: ReactNode;
