@@ -13,7 +13,7 @@ export const ProductsSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white relative">
+    <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#D3E4FD] to-white relative">
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-12">
