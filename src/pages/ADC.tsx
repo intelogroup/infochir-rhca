@@ -10,20 +10,22 @@ import { ADCSubmission } from "@/components/adc/ADCSubmission";
 const ADC = () => {
   return (
     <div className="min-h-screen bg-[#f8fafc]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <Link to="/" className="inline-block mb-8">
-          <Button variant="ghost" size="sm" className="gap-2 text-secondary hover:text-secondary-light">
-            <ArrowLeft className="h-4 w-4" />
-            Retour
-          </Button>
-        </Link>
+      <Link to="/" className="fixed top-6 left-6 z-50">
+        <Button variant="ghost" size="sm" className="gap-2 text-secondary hover:text-secondary-light">
+          <ArrowLeft className="h-4 w-4" />
+          Retour
+        </Button>
+      </Link>
 
-        <ADCHeader />
+      <ADCHeader />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <DiagnosticGrid />
-        <ADCMission />
-        <ADCSubmission />
-        <Footer />
       </div>
+      
+      <ADCMission />
+      <ADCSubmission />
+      <Footer />
     </div>
   );
 };
