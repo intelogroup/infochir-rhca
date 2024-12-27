@@ -9,6 +9,69 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      article_submissions: {
+        Row: {
+          abstract: string
+          authors: string
+          corresponding_author_address: string
+          corresponding_author_email: string
+          corresponding_author_name: string
+          corresponding_author_phone: string
+          created_at: string
+          ethics_approval: boolean
+          id: number
+          institution: string
+          keywords: string
+          no_conflict: boolean
+          original_work: boolean
+          pdf_url: string | null
+          publication_type: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          abstract: string
+          authors: string
+          corresponding_author_address: string
+          corresponding_author_email: string
+          corresponding_author_name: string
+          corresponding_author_phone: string
+          created_at?: string
+          ethics_approval?: boolean
+          id?: number
+          institution: string
+          keywords: string
+          no_conflict?: boolean
+          original_work?: boolean
+          pdf_url?: string | null
+          publication_type: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          abstract?: string
+          authors?: string
+          corresponding_author_address?: string
+          corresponding_author_email?: string
+          corresponding_author_name?: string
+          corresponding_author_phone?: string
+          created_at?: string
+          ethics_approval?: boolean
+          id?: number
+          institution?: string
+          keywords?: string
+          no_conflict?: boolean
+          original_work?: boolean
+          pdf_url?: string | null
+          publication_type?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       members: {
         Row: {
           avatar_url: string | null

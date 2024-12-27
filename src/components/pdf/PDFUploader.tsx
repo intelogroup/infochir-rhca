@@ -27,7 +27,7 @@ export const PDFUploader = () => {
     try {
       const fileName = `${Date.now()}_${file.name}`;
       const { data, error } = await supabase.storage
-        .from('articles')
+        .from('article_submissions')
         .upload(fileName, file, {
           cacheControl: '3600',
           upsert: false
@@ -35,8 +35,16 @@ export const PDFUploader = () => {
 
       if (error) throw error;
 
+      // Get the public URL for the uploaded file
+      const { data: { publicUrl } } = supabase.storage
+        .from('article_submissions')
+        .getPublicUrl(fileName);
+
       toast.success("PDF uploadé avec succès");
-      console.log('Upload successful:', data);
+      console.log('Upload successful:', publicUrl);
+      
+      // You can emit an event or use a callback to pass the URL back to the parent component
+      // For now, we'll just log it
     } catch (error) {
       console.error('Upload error:', error);
       toast.error("Erreur lors de l'upload du PDF");

@@ -7,6 +7,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save, Send } from "lucide-react";
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 import { SubmissionHeader } from "@/components/submission/SubmissionHeader";
 import { PublicationTypeField } from "@/components/submission/PublicationTypeField";
@@ -22,6 +25,12 @@ const formSchema = z.object({
   title: z.string().min(1, "Le titre est requis").max(200, "Le titre ne doit pas dépasser 200 caractères"),
   authors: z.string().min(1, "Les auteurs sont requis"),
   institution: z.string().min(1, "L'institution est requise"),
+  keywords: z.string()
+    .min(1, "Les mots clés sont requis")
+    .refine(
+      (val) => val.split(",").length >= 3 && val.split(",").length <= 5,
+      "Veuillez fournir entre 3 et 5 mots clés"
+    ),
   correspondingAuthor: z.object({
     name: z.string().min(1, "Le nom est requis"),
     email: z.string().email("Email invalide"),
@@ -31,18 +40,15 @@ const formSchema = z.object({
   abstract: z.string()
     .min(50, "Le résumé doit contenir au moins 50 mots")
     .max(250, "Le résumé ne doit pas dépasser 250 mots"),
-  keywords: z.string()
-    .min(1, "Les mots clés sont requis")
-    .refine(
-      (val) => val.split(",").length >= 3 && val.split(",").length <= 5,
-      "Veuillez fournir entre 3 et 5 mots clés"
-    ),
   ethicsApproval: z.boolean(),
   noConflict: z.boolean(),
   originalWork: z.boolean(),
 });
 
 const Submission = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,10 +60,43 @@ const Submission = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      console.log(values);
+      setIsSubmitting(true);
+      
+      const { data, error } = await supabase
+        .from('article_submissions')
+        .insert({
+          publication_type: values.publicationType,
+          title: values.title,
+          authors: values.authors,
+          institution: values.institution,
+          keywords: values.keywords,
+          abstract: values.abstract,
+          corresponding_author_name: values.correspondingAuthor.name,
+          corresponding_author_email: values.correspondingAuthor.email,
+          corresponding_author_phone: values.correspondingAuthor.phone,
+          corresponding_author_address: values.correspondingAuthor.address,
+          ethics_approval: values.ethicsApproval,
+          no_conflict: values.noConflict,
+          original_work: values.originalWork,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
       toast.success("Votre soumission a été envoyée avec succès!");
+      
+      // Redirect based on publication type
+      if (values.publicationType === 'RHCA') {
+        navigate('/rhca');
+      } else {
+        navigate('/igm');
+      }
     } catch (error) {
+      console.error('Submission error:', error);
       toast.error("Une erreur est survenue lors de l'envoi de votre soumission");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -90,6 +129,7 @@ const Submission = () => {
                     type="button" 
                     variant="outline"
                     className="gap-2"
+                    disabled={isSubmitting}
                   >
                     <Save className="h-4 w-4" />
                     Sauvegarder comme brouillon
@@ -97,9 +137,10 @@ const Submission = () => {
                   <Button 
                     type="submit"
                     className="gap-2"
+                    disabled={isSubmitting}
                   >
                     <Send className="h-4 w-4" />
-                    Soumettre l'article
+                    {isSubmitting ? "Envoi en cours..." : "Soumettre l'article"}
                   </Button>
                 </div>
               </form>
