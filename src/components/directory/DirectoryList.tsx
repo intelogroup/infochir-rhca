@@ -92,7 +92,7 @@ export const DirectoryList = () => {
                   <SortIcon field="id" />
                 </div>
               </TableHead>
-              <TableHead className="w-[100px]">Photo</TableHead>
+              <TableHead className="w-[120px]">Photo</TableHead>
               <TableHead 
                 className="cursor-pointer"
                 onClick={() => toggleSort('name')}
@@ -124,8 +124,8 @@ export const DirectoryList = () => {
                 <TableRow key={member.id} className="hover:bg-gray-50">
                   <TableCell className="font-medium">{member.id}</TableCell>
                   <TableCell className="py-4">
-                    <div className="relative w-20 h-20">
-                      <Avatar className="w-full h-full border-2 border-gray-200">
+                    <div className="flex items-center justify-center">
+                      <Avatar className="w-24 h-24 rounded-full border-4 border-gray-200 hover:border-[#1EAEDB]/50 transition-all duration-300">
                         <AvatarImage
                           src={member.avatar_url || ''}
                           alt={member.name}
@@ -137,9 +137,9 @@ export const DirectoryList = () => {
                         />
                         <AvatarFallback className="bg-[#1EAEDB]/10">
                           {!member.avatar_url ? (
-                            <UserRound className="h-8 w-8 text-[#1EAEDB]" />
+                            <UserRound className="h-12 w-12 text-[#1EAEDB]" />
                           ) : (
-                            <ImageOff className="h-8 w-8 text-[#1EAEDB]" />
+                            <ImageOff className="h-12 w-12 text-[#1EAEDB]" />
                           )}
                         </AvatarFallback>
                       </Avatar>
