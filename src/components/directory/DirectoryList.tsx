@@ -1,11 +1,12 @@
 import { Table, TableBody } from "@/components/ui/table";
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { SearchBar } from "./SearchBar";
 import { TableHeader } from "./TableHeader";
 import { MemberRow } from "./MemberRow";
+import { ArrowUpDown } from "lucide-react";
 
 interface Member {
   id: number;
@@ -15,7 +16,7 @@ interface Member {
   avatar_url?: string;
 }
 
-type SortField = 'id' | 'name';
+type SortField = 'id' | 'name' | 'email';
 type SortDirection = 'asc' | 'desc';
 
 export const DirectoryList = () => {
@@ -24,7 +25,7 @@ export const DirectoryList = () => {
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
   const { data: members = [], isLoading } = useQuery({
-    queryKey: ['members'],
+    queryKey: ['members', sortField, sortDirection],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('members')
@@ -59,8 +60,8 @@ export const DirectoryList = () => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.5, delay: 0.2 }}
-      className="space-y-6"
+      transition={{ duration: 0.5 }}
+      className="space-y-4"
     >
       <SearchBar value={searchTerm} onChange={setSearchTerm} />
 
@@ -73,27 +74,29 @@ export const DirectoryList = () => {
               onSort={toggleSort}
             />
             <TableBody>
-              {isLoading ? (
-                <tr>
-                  <td colSpan={5} className="text-center py-8">
-                    <div className="flex items-center justify-center space-x-2">
-                      <div className="w-4 h-4 bg-primary/20 rounded-full animate-bounce" />
-                      <div className="w-4 h-4 bg-primary/40 rounded-full animate-bounce [animation-delay:-.3s]" />
-                      <div className="w-4 h-4 bg-primary/60 rounded-full animate-bounce [animation-delay:-.5s]" />
-                    </div>
-                  </td>
-                </tr>
-              ) : filteredMembers.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="text-center py-8">
-                    <p className="text-gray-500">Aucun membre trouvé</p>
-                  </td>
-                </tr>
-              ) : (
-                filteredMembers.map((member) => (
-                  <MemberRow key={member.id} member={member} />
-                ))
-              )}
+              <AnimatePresence>
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={5} className="text-center py-6">
+                      <div className="flex items-center justify-center space-x-2">
+                        <div className="w-3 h-3 bg-primary/20 rounded-full animate-bounce" />
+                        <div className="w-3 h-3 bg-primary/40 rounded-full animate-bounce [animation-delay:-.3s]" />
+                        <div className="w-3 h-3 bg-primary/60 rounded-full animate-bounce [animation-delay:-.5s]" />
+                      </div>
+                    </td>
+                  </tr>
+                ) : filteredMembers.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="text-center py-6">
+                      <p className="text-gray-500">Aucun membre trouvé</p>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredMembers.map((member) => (
+                    <MemberRow key={member.id} member={member} />
+                  ))
+                )}
+              </AnimatePresence>
             </TableBody>
           </Table>
         </div>

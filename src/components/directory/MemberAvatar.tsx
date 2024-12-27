@@ -16,14 +16,14 @@ export const MemberAvatar = ({ avatarUrl, name }: MemberAvatarProps) => {
 
   return (
     <div className="flex items-center justify-center">
-      <Avatar className="h-24 w-24 ring-4 ring-[#1EAEDB]/20 hover:ring-[#1EAEDB]/30 transition-all duration-300">
+      <Avatar className="h-10 w-10 ring-2 ring-primary/10 hover:ring-primary/20 transition-all duration-300">
         <AvatarImage
           src={getPublicUrl(avatarUrl)}
           alt={name}
           className="object-cover"
         />
-        <AvatarFallback className="bg-[#1EAEDB]/10">
-          <UserRound className="h-12 w-12 text-[#1EAEDB]" />
+        <AvatarFallback className="bg-primary/5">
+          <UserRound className="h-5 w-5 text-primary/70" />
         </AvatarFallback>
       </Avatar>
     </div>
