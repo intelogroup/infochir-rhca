@@ -53,38 +53,44 @@ export const ProductCard = ({
 
   const CardComponent = () => (
     <div className="h-full perspective-1000">
-      <Card className="group h-full bg-gradient-to-br from-white/90 to-gray-50/80 hover:shadow-2xl transition-all duration-500 border border-gray-200/30 overflow-hidden backdrop-blur-sm transform-gpu hover:scale-[1.02] relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-        <CardHeader className="space-y-4 relative">
-          {shouldShowBadge(title) && (
-            <div className="absolute top-0 right-0 p-4">
-              <ProductBadge />
+      <Card className="group h-full relative overflow-hidden border-0 transition-all duration-500 transform-gpu hover:scale-[1.02]">
+        {/* Gradient background overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1A1F2C]/80 to-[#243949]/70 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        
+        {/* Glass effect background */}
+        <div className="absolute inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-[2px] group-hover:backdrop-blur-[4px] transition-all duration-500" />
+        
+        <div className="relative z-10">
+          <CardHeader className="space-y-4">
+            {shouldShowBadge(title) && (
+              <div className="absolute top-0 right-0 p-4">
+                <ProductBadge />
+              </div>
+            )}
+            <div className="flex justify-center pt-6 transform-gpu group-hover:scale-105 transition-transform duration-500">
+              <ProductIcon icon={icon} logo={logo} title={title} />
             </div>
-          )}
-          <div className="flex justify-center pt-6 transform-gpu group-hover:scale-105 transition-transform duration-500">
-            <ProductIcon icon={icon} logo={logo} title={title} />
-          </div>
-          <CardTitle className="text-2xl font-bold text-primary/90 text-center group-hover:text-primary transition-colors">
-            {title}
-          </CardTitle>
-          <CardDescription className="text-gray-600 text-center leading-relaxed line-clamp-2 h-12 group-hover:text-gray-700 transition-colors">
-            {description}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <ProductFeatures features={getProductFeatures(title)} />
-        </CardContent>
-        <CardFooter className="pt-4">
-          <Button 
-            variant="ghost" 
-            className={`w-full group/button relative overflow-hidden ${getHoverColor(title)}`}
-          >
-            <span className="relative z-10 text-primary group-hover/button:text-white transition-colors duration-300">
-              Découvrir
-            </span>
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/80 to-primary transform translate-x-full group-hover/button:translate-x-0 transition-transform duration-500" />
-          </Button>
-        </CardFooter>
+            <CardTitle className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#0EA5E9] to-[#8B5CF6] text-center">
+              {title}
+            </CardTitle>
+            <CardDescription className="text-gray-600 dark:text-gray-300 text-center leading-relaxed line-clamp-2 h-12">
+              {description}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <ProductFeatures features={getProductFeatures(title)} />
+          </CardContent>
+          <CardFooter className="pt-4">
+            <Button 
+              variant="ghost" 
+              className={`w-full group/button relative overflow-hidden bg-gradient-to-r from-[#0EA5E9] to-[#8B5CF6] text-white opacity-90 hover:opacity-100 ${getHoverColor(title)}`}
+            >
+              <span className="relative z-10 group-hover/button:scale-105 transition-transform duration-300">
+                Découvrir
+              </span>
+            </Button>
+          </CardFooter>
+        </div>
       </Card>
     </div>
   );
