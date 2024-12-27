@@ -1,6 +1,5 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Mail, Phone, Search, UserRound, ArrowUp, ArrowDown } from "lucide-react";
 import { motion } from "framer-motion";
@@ -92,7 +91,7 @@ export const DirectoryList = () => {
                   <SortIcon field="id" />
                 </div>
               </TableHead>
-              <TableHead className="w-[50px]">Photo</TableHead>
+              <TableHead className="w-[80px]">Photo</TableHead>
               <TableHead 
                 className="cursor-pointer"
                 onClick={() => toggleSort('name')}
@@ -123,21 +122,27 @@ export const DirectoryList = () => {
               filteredMembers.map((member) => (
                 <TableRow key={member.id} className="hover:bg-gray-50">
                   <TableCell className="font-medium">{member.id}</TableCell>
-                  <TableCell>
+                  <TableCell className="py-4">
                     {member.avatar_url ? (
-                      <img 
-                        src={member.avatar_url} 
-                        alt={member.name}
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
+                      <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200">
+                        <img 
+                          src={member.avatar_url} 
+                          alt={member.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yMCA3aC0zVjRjMC0xLjEtLjktMi0yLTJINGMtMS4xIDAtMiAuOS0yIDJ2MTBjMCAxLjEuOSAyIDIgMmgzdjNjMCAxLjEuOSAyIDIgMmgxMGMxLjEgMCAyLS45IDItMlY5YzAtMS4xLS45LTItMi0yeiIvPjwvc3ZnPg==';
+                          }}
+                        />
+                      </div>
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-[#1EAEDB]/10 flex items-center justify-center">
-                        <UserRound className="h-4 w-4 text-[#1EAEDB]" />
+                      <div className="w-16 h-16 rounded-full bg-[#1EAEDB]/10 flex items-center justify-center border-2 border-gray-200">
+                        <UserRound className="h-8 w-8 text-[#1EAEDB]" />
                       </div>
                     )}
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2">
+                    <div className="font-medium text-gray-900">
                       {member.name}
                     </div>
                   </TableCell>
