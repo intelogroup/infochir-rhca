@@ -35,15 +35,38 @@ export const FileUploadArea = ({
       const item = items[i];
       if (item.kind === 'file') {
         const file = item.getAsFile();
-        if (file) files.push(file);
+        if (file) {
+          // Check if the file type matches the accepted types
+          const isAcceptedType = type === 'image' 
+            ? file.type.startsWith('image/')
+            : acceptedFileTypes.split(',').some(type => 
+                file.name.toLowerCase().endsWith(type.replace('.', '').toLowerCase())
+              );
+
+          if (isAcceptedType) {
+            files.push(file);
+          } else {
+            toast.error(`Le type de fichier ${file.type} n'est pas accepté`);
+          }
+        }
       }
     }
 
     if (files.length > 0) {
+      if (currentFileCount + files.length > maxFiles) {
+        toast.error(`Vous ne pouvez pas télécharger plus de ${maxFiles} fichiers`);
+        return;
+      }
       onFileSelect(files);
-      toast.success("Fichier(s) collé(s) avec succès");
+      toast.success(`${files.length} fichier(s) collé(s) avec succès`);
     }
-  }, [onFileSelect]);
+  }, [onFileSelect, maxFiles, currentFileCount, type, acceptedFileTypes]);
+
+  const getInputCapture = (): "environment" | "user" | undefined => {
+    if (!isMobile) return undefined;
+    if (type === 'image') return "environment";
+    return undefined;
+  };
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (currentFileCount + acceptedFiles.length > maxFiles) {
@@ -63,7 +86,10 @@ export const FileUploadArea = ({
     maxFiles: maxFiles - currentFileCount,
     onDragEnter: () => setIsDragActive(true),
     onDragLeave: () => setIsDragActive(false),
-    onDropAccepted: () => setIsDragActive(false),
+    onDropAccepted: () => {
+      setIsDragActive(false);
+      toast.success("Fichiers acceptés");
+    },
     onDropRejected: () => {
       setIsDragActive(false);
       toast.error("Type de fichier non accepté");
@@ -75,12 +101,6 @@ export const FileUploadArea = ({
     document.addEventListener('paste', handlePaste);
     return () => document.removeEventListener('paste', handlePaste);
   });
-
-  const getInputCapture = (): "environment" | "user" | undefined => {
-    if (!isMobile) return undefined;
-    if (type === 'image') return "environment";
-    return undefined;
-  };
 
   return (
     <div
@@ -109,7 +129,9 @@ export const FileUploadArea = ({
             {isDragActive 
               ? "Déposez les fichiers ici" 
               : isMobile 
-                ? "Appuyez pour prendre une photo ou choisir un fichier" 
+                ? type === 'image'
+                  ? "Appuyez pour prendre une photo ou choisir une image"
+                  : "Appuyez pour choisir un fichier"
                 : "Cliquez ou déposez vos fichiers ici"}
           </p>
           {currentFileCount >= maxFiles && (
