@@ -76,7 +76,7 @@ export const FileUploadArea = ({
     return () => document.removeEventListener('paste', handlePaste);
   });
 
-  const getInputCapture = () => {
+  const getInputCapture = (): "environment" | "user" | undefined => {
     if (!isMobile) return undefined;
     if (type === 'image') return "environment";
     return undefined;
