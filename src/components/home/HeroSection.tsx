@@ -110,7 +110,7 @@ export const HeroSection = () => {
             La plateforme de référence pour les professionnels de santé en Haïti
           </p>
           <div className="flex flex-wrap gap-4">
-            <Button size="lg" variant="secondary" className="group bg-[#122db0] hover:bg-[#122db0]/90 text-white">
+            <Button size="lg" variant="secondary" className="group bg-white hover:bg-white/90 text-[#122db0] font-medium">
               Soumettre votre article
               <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Button>

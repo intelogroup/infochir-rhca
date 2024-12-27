@@ -10,6 +10,7 @@ import { highlights } from "./carousel/carouselData";
 import { CarouselCard } from "./carousel/CarouselCard";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export const CarouselSection = () => {
   const [api, setApi] = useState<any>();
@@ -65,8 +66,12 @@ export const CarouselSection = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="hidden md:flex -left-12 lg:-left-16 h-12 w-12 border-2 border-primary/20 bg-white/80 hover:bg-white" />
-            <CarouselNext className="hidden md:flex -right-12 lg:-right-16 h-12 w-12 border-2 border-primary/20 bg-white/80 hover:bg-white" />
+            <CarouselPrevious className="hidden md:flex -left-12 lg:-left-16 h-12 w-12 border-2 border-primary/20 bg-white/80 hover:bg-white">
+              <ChevronLeft className="h-6 w-6 text-primary" />
+            </CarouselPrevious>
+            <CarouselNext className="hidden md:flex -right-12 lg:-right-16 h-12 w-12 border-2 border-primary/20 bg-white/80 hover:bg-white">
+              <ChevronRight className="h-6 w-6 text-primary" />
+            </CarouselNext>
           </Carousel>
 
           <div className="flex justify-center gap-2 mt-4 md:hidden">
