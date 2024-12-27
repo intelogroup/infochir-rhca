@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IssuesGrid } from "@/components/IssuesGrid";
 import { AdminPanel } from "@/components/rhca/AdminPanel";
 import { useState, useEffect } from "react";
@@ -10,6 +10,7 @@ import { LayoutGrid, List } from "lucide-react";
 const RHCA = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
+  const navigate = useNavigate();
 
   useEffect(() => {
     setIsAdmin(false);
@@ -78,7 +79,11 @@ const RHCA = () => {
               <p className="text-gray-600 mb-6">
                 Consultez nos directives détaillées pour la préparation et la soumission de votre manuscrit. Nous fournissons des modèles et des conseils pour assurer une présentation optimale de vos travaux.
               </p>
-              <Button variant="outline" className="w-full text-secondary hover:text-secondary-light">
+              <Button 
+                variant="outline" 
+                className="w-full text-secondary hover:text-secondary-light"
+                onClick={() => navigate('/rhca/directives')}
+              >
                 Voir les directives
               </Button>
             </div>
