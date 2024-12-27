@@ -7,33 +7,39 @@ import { motion } from "framer-motion";
 
 export const NewsletterSection = () => {
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) {
-      toast.error("Veuillez entrer une adresse email");
+    if (!email || !name) {
+      toast.error("Veuillez remplir tous les champs obligatoires");
       return;
     }
     toast.success("Merci de votre inscription à notre newsletter!");
     setEmail("");
+    setName("");
+    setPhone("");
   };
 
   return (
     <section className="relative py-24 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary to-primary-light opacity-90" />
+      {/* Gradient background with pattern overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-primary-light opacity-95" />
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
       
       <motion.div 
-        className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative"
+        className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <div className="mb-8 inline-flex h-16 w-16 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm">
-          <Mail className="h-8 w-8 text-white" />
+        {/* Icon with glass effect */}
+        <div className="mb-8 inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 shadow-lg">
+          <Mail className="h-10 w-10 text-white" />
         </div>
         
-        <h2 className="text-4xl font-bold mb-4 text-white">
+        <h2 className="text-4xl font-bold mb-4 text-white bg-clip-text">
           Restez Informé
         </h2>
         
@@ -41,21 +47,69 @@ export const NewsletterSection = () => {
           Abonnez-vous à notre newsletter pour recevoir les dernières publications et actualités
         </p>
         
-        <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-          <Input
-            type="email"
-            placeholder="Votre adresse email"
-            className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white/20"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <Button 
-            variant="secondary" 
-            type="submit" 
-            className="whitespace-nowrap hover:bg-white hover:text-primary transition-colors duration-300"
+        <form onSubmit={handleSubscribe} className="space-y-4 max-w-xl mx-auto backdrop-blur-sm bg-white/5 p-8 rounded-2xl border border-white/10 shadow-xl">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label htmlFor="name" className="text-white/90 text-sm font-medium">
+                Nom*
+              </label>
+              <Input
+                id="name"
+                type="text"
+                placeholder="Votre nom"
+                className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white/20"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="phone" className="text-white/90 text-sm font-medium">
+                Téléphone
+              </label>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="Votre numéro"
+                className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white/20"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <label htmlFor="email" className="text-white/90 text-sm font-medium">
+              Email*
+            </label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="Votre adresse email"
+              className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white/20"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="pt-4"
           >
-            S'abonner
-          </Button>
+            <Button 
+              variant="secondary" 
+              type="submit" 
+              className="w-full bg-white text-primary hover:bg-white/90 transition-all duration-300 py-6 text-lg font-medium shadow-lg"
+            >
+              S'abonner à la Newsletter
+            </Button>
+          </motion.div>
+          
+          <p className="text-white/60 text-sm text-center mt-4">
+            * Champs obligatoires
+          </p>
         </form>
       </motion.div>
     </section>
