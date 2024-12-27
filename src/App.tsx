@@ -11,6 +11,7 @@ import ADC from "./pages/ADC";
 import IGM from "./pages/IGM";
 import About from "./pages/About";
 import Annuaire from "./pages/Annuaire";
+import Directives from "./pages/rhca/Directives";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => {
                 <Route path="/donate" element={<Donate />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/annuaire" element={<Annuaire />} />
+                <Route path="/rhca/directives" element={<Directives />} />
               </Routes>
             </div>
           </TooltipProvider>
