@@ -62,6 +62,12 @@ export const DirectoryList = () => {
       <ArrowDown className="h-4 w-4 ml-1" />;
   };
 
+  const getPublicUrl = (avatarUrl?: string) => {
+    if (!avatarUrl) return undefined;
+    if (avatarUrl.startsWith('http')) return avatarUrl;
+    return `${supabase.storage.from('annuaire_profile_pics').getPublicUrl(avatarUrl).data.publicUrl}`;
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -127,7 +133,7 @@ export const DirectoryList = () => {
                     <div className="flex items-center justify-center">
                       <Avatar className="h-24 w-24 ring-4 ring-[#1EAEDB]/20 hover:ring-[#1EAEDB]/30 transition-all duration-300">
                         <AvatarImage
-                          src={member.avatar_url}
+                          src={getPublicUrl(member.avatar_url)}
                           alt={member.name}
                           className="object-cover"
                         />
