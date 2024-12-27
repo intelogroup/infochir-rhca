@@ -12,6 +12,7 @@ export type Database = {
       article_submissions: {
         Row: {
           abstract: string
+          article_files_urls: string[] | null
           authors: string
           corresponding_author_address: string
           corresponding_author_email: string
@@ -20,6 +21,7 @@ export type Database = {
           created_at: string
           ethics_approval: boolean
           id: number
+          image_annexes_urls: string[] | null
           institution: string
           keywords: string
           no_conflict: boolean
@@ -32,6 +34,7 @@ export type Database = {
         }
         Insert: {
           abstract: string
+          article_files_urls?: string[] | null
           authors: string
           corresponding_author_address: string
           corresponding_author_email: string
@@ -40,6 +43,7 @@ export type Database = {
           created_at?: string
           ethics_approval?: boolean
           id?: number
+          image_annexes_urls?: string[] | null
           institution: string
           keywords: string
           no_conflict?: boolean
@@ -52,6 +56,7 @@ export type Database = {
         }
         Update: {
           abstract?: string
+          article_files_urls?: string[] | null
           authors?: string
           corresponding_author_address?: string
           corresponding_author_email?: string
@@ -60,6 +65,7 @@ export type Database = {
           created_at?: string
           ethics_approval?: boolean
           id?: number
+          image_annexes_urls?: string[] | null
           institution?: string
           keywords?: string
           no_conflict?: boolean
