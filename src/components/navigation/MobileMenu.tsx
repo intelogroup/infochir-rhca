@@ -36,6 +36,17 @@ export const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             </span>
           </motion.button>
         ))}
+        <motion.button
+          onClick={() => {
+            navigate('/donate');
+            onClose();
+          }}
+          className="flex w-full items-center rounded-lg px-4 py-3 font-medium bg-gradient-to-r from-secondary to-secondary-light text-white hover:opacity-90 transition-all duration-200"
+          whileHover={{ x: 5 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <span className="text-lg">Faire un don</span>
+        </motion.button>
       </div>
     </motion.div>
   );

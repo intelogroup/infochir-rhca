@@ -18,6 +18,14 @@ export const NavLinks = () => {
           <span className="text-sm font-medium">{item.name}</span>
         </motion.button>
       ))}
+      <motion.button
+        onClick={() => navigate('/donate')}
+        className="flex h-10 px-6 items-center justify-center rounded-full bg-gradient-to-r from-secondary to-secondary-light text-white hover:opacity-90 transition-all duration-300 ml-4"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <span className="text-sm font-medium whitespace-nowrap">Faire un don</span>
+      </motion.button>
     </div>
   );
 };
