@@ -42,9 +42,9 @@ export const ProductCard = ({
 
   const getHoverColor = (title: string) => {
     if (title === "Atlas ADC" || title === "RHCA") {
-      return "hover:bg-green-800";
+      return "hover:bg-green-800/90";
     }
-    return "hover:bg-primary";
+    return "hover:bg-primary/90";
   };
 
   const shouldShowBadge = (title: string) => {
@@ -52,21 +52,22 @@ export const ProductCard = ({
   };
 
   const CardComponent = () => (
-    <div className="h-full">
-      <Card className="group h-full bg-[#f6ffff] hover:shadow-xl transition-all duration-300 border border-gray-200/50 overflow-hidden">
+    <div className="h-full perspective-1000">
+      <Card className="group h-full bg-gradient-to-br from-white/90 to-gray-50/80 hover:shadow-2xl transition-all duration-500 border border-gray-200/30 overflow-hidden backdrop-blur-sm transform-gpu hover:scale-[1.02] relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         <CardHeader className="space-y-4 relative">
           {shouldShowBadge(title) && (
             <div className="absolute top-0 right-0 p-4">
               <ProductBadge />
             </div>
           )}
-          <div className="flex justify-center pt-6">
+          <div className="flex justify-center pt-6 transform-gpu group-hover:scale-105 transition-transform duration-500">
             <ProductIcon icon={icon} logo={logo} title={title} />
           </div>
-          <CardTitle className="text-2xl font-bold text-gray-900 text-center group-hover:text-primary transition-colors">
+          <CardTitle className="text-2xl font-bold text-primary/90 text-center group-hover:text-primary transition-colors">
             {title}
           </CardTitle>
-          <CardDescription className="text-gray-600 text-center leading-relaxed line-clamp-2 h-12">
+          <CardDescription className="text-gray-600 text-center leading-relaxed line-clamp-2 h-12 group-hover:text-gray-700 transition-colors">
             {description}
           </CardDescription>
         </CardHeader>
@@ -76,9 +77,12 @@ export const ProductCard = ({
         <CardFooter className="pt-4">
           <Button 
             variant="ghost" 
-            className={`w-full group/button hover:text-white transition-all duration-300 ${getHoverColor(title)}`}
+            className={`w-full group/button relative overflow-hidden ${getHoverColor(title)}`}
           >
-            <span>Découvrir</span>
+            <span className="relative z-10 text-primary group-hover/button:text-white transition-colors duration-300">
+              Découvrir
+            </span>
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/80 to-primary transform translate-x-full group-hover/button:translate-x-0 transition-transform duration-500" />
           </Button>
         </CardFooter>
       </Card>
