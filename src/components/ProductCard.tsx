@@ -42,9 +42,9 @@ export const ProductCard = ({
 
   const getHoverColor = (title: string) => {
     if (title === "Atlas ADC" || title === "RHCA") {
-      return "hover:bg-green-800/90";
+      return "hover:bg-[#41b06e]/90";
     }
-    return "hover:bg-primary/90";
+    return "hover:bg-[#1E40AF]/90";
   };
 
   const shouldShowBadge = (title: string) => {
@@ -55,7 +55,7 @@ export const ProductCard = ({
     <div className="h-full perspective-1000">
       <Card className="group h-full relative overflow-hidden border-0 transition-all duration-500 transform-gpu hover:scale-[1.02]">
         {/* Gradient background overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#1A1F2C]/80 to-[#243949]/70 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF]/80 via-[#41b06e]/70 to-[#41b06e]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         
         {/* Glass effect background */}
         <div className="absolute inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-[2px] group-hover:backdrop-blur-[4px] transition-all duration-500" />
@@ -70,7 +70,7 @@ export const ProductCard = ({
             <div className="flex justify-center pt-6 transform-gpu group-hover:scale-105 transition-transform duration-500">
               <ProductIcon icon={icon} logo={logo} title={title} />
             </div>
-            <CardTitle className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#0EA5E9] to-[#8B5CF6] text-center">
+            <CardTitle className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#1E40AF] via-[#41b06e] to-[#41b06e] text-center">
               {title}
             </CardTitle>
             <CardDescription className="text-gray-600 dark:text-gray-300 text-center leading-relaxed line-clamp-2 h-12">
@@ -83,7 +83,7 @@ export const ProductCard = ({
           <CardFooter className="pt-4">
             <Button 
               variant="ghost" 
-              className={`w-full group/button relative overflow-hidden bg-gradient-to-r from-[#0EA5E9] to-[#8B5CF6] text-white opacity-90 hover:opacity-100 ${getHoverColor(title)}`}
+              className={`w-full group/button relative overflow-hidden bg-gradient-to-r from-[#1E40AF] via-[#41b06e] to-[#41b06e] text-white opacity-90 hover:opacity-100 ${getHoverColor(title)}`}
             >
               <span className="relative z-10 group-hover/button:scale-105 transition-transform duration-300">
                 Découvrir
