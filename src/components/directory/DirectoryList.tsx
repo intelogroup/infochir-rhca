@@ -64,33 +64,39 @@ export const DirectoryList = () => {
     >
       <SearchBar value={searchTerm} onChange={setSearchTerm} />
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <Table>
-          <TableHeader 
-            sortField={sortField}
-            sortDirection={sortDirection}
-            onSort={toggleSort}
-          />
-          <TableBody>
-            {isLoading ? (
-              <tr>
-                <td colSpan={5} className="text-center py-8">
-                  Chargement des membres...
-                </td>
-              </tr>
-            ) : filteredMembers.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="text-center py-8">
-                  Aucun membre trouvé
-                </td>
-              </tr>
-            ) : (
-              filteredMembers.map((member) => (
-                <MemberRow key={member.id} member={member} />
-              ))
-            )}
-          </TableBody>
-        </Table>
+      <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader 
+              sortField={sortField}
+              sortDirection={sortDirection}
+              onSort={toggleSort}
+            />
+            <TableBody>
+              {isLoading ? (
+                <tr>
+                  <td colSpan={5} className="text-center py-8">
+                    <div className="flex items-center justify-center space-x-2">
+                      <div className="w-4 h-4 bg-primary/20 rounded-full animate-bounce" />
+                      <div className="w-4 h-4 bg-primary/40 rounded-full animate-bounce [animation-delay:-.3s]" />
+                      <div className="w-4 h-4 bg-primary/60 rounded-full animate-bounce [animation-delay:-.5s]" />
+                    </div>
+                  </td>
+                </tr>
+              ) : filteredMembers.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="text-center py-8">
+                    <p className="text-gray-500">Aucun membre trouvé</p>
+                  </td>
+                </tr>
+              ) : (
+                filteredMembers.map((member) => (
+                  <MemberRow key={member.id} member={member} />
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </motion.div>
   );

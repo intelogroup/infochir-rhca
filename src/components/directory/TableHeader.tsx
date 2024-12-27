@@ -1,48 +1,38 @@
-import { TableHead, TableHeader as ShadcnTableHeader, TableRow } from "@/components/ui/table";
-import { ArrowUp, ArrowDown } from "lucide-react";
-
-type SortField = 'id' | 'name';
-type SortDirection = 'asc' | 'desc';
+import { TableHead, TableHeader as TableHeaderBase, TableRow } from "@/components/ui/table";
+import { ArrowUpDown } from "lucide-react";
 
 interface TableHeaderProps {
-  sortField: SortField;
-  sortDirection: SortDirection;
-  onSort: (field: SortField) => void;
+  sortField: 'id' | 'name';
+  sortDirection: 'asc' | 'desc';
+  onSort: (field: 'id' | 'name') => void;
 }
 
 export const TableHeader = ({ sortField, sortDirection, onSort }: TableHeaderProps) => {
-  const SortIcon = ({ field }: { field: SortField }) => {
-    if (sortField !== field) return null;
-    return sortDirection === 'asc' ? 
-      <ArrowUp className="h-4 w-4 ml-1" /> : 
-      <ArrowDown className="h-4 w-4 ml-1" />;
-  };
-
   return (
-    <ShadcnTableHeader>
-      <TableRow>
+    <TableHeaderBase>
+      <TableRow className="border-b border-gray-200">
         <TableHead 
-          className="w-[50px] cursor-pointer"
           onClick={() => onSort('id')}
+          className="w-20 cursor-pointer hover:text-primary transition-colors"
         >
-          <div className="flex items-center">
-            No.
-            <SortIcon field="id" />
+          <div className="flex items-center space-x-1">
+            <span>ID</span>
+            <ArrowUpDown className="h-4 w-4" />
           </div>
         </TableHead>
-        <TableHead className="w-[120px]">Photo</TableHead>
+        <TableHead className="w-24">Photo</TableHead>
         <TableHead 
-          className="cursor-pointer"
           onClick={() => onSort('name')}
+          className="cursor-pointer hover:text-primary transition-colors"
         >
-          <div className="flex items-center">
-            Nom
-            <SortIcon field="name" />
+          <div className="flex items-center space-x-1">
+            <span>Nom</span>
+            <ArrowUpDown className="h-4 w-4" />
           </div>
         </TableHead>
-        <TableHead className="w-[200px]">Téléphone</TableHead>
-        <TableHead className="w-[300px]">Email</TableHead>
+        <TableHead className="hidden sm:table-cell">Téléphone</TableHead>
+        <TableHead className="hidden md:table-cell">Email</TableHead>
       </TableRow>
-    </ShadcnTableHeader>
+    </TableHeaderBase>
   );
 };
