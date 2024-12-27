@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { FileText, Share2, Eye, Calendar } from "lucide-react";
 import { toast } from "sonner";
 import type { DiagnosticCase } from "./types";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import { fr } from "date-fns/locale";
 
 interface DiagnosticTableProps {
@@ -13,6 +13,20 @@ export const DiagnosticTable = ({ cases }: DiagnosticTableProps) => {
   const handleShare = (id: string) => {
     navigator.clipboard.writeText(window.location.href + '#' + id);
     toast.success("Lien copié dans le presse-papier");
+  };
+
+  const formatDate = (dateStr: string) => {
+    // Handle "À venir" case
+    if (dateStr === "À venir") return dateStr;
+    
+    try {
+      // Parse the date string from DD/MM/YY format
+      const parsedDate = parse(dateStr, 'dd/MM/yy', new Date());
+      return format(parsedDate, 'dd MMM yyyy', { locale: fr });
+    } catch (error) {
+      console.error("Error parsing date:", dateStr, error);
+      return dateStr; // Return original string if parsing fails
+    }
   };
 
   return (
@@ -33,7 +47,7 @@ export const DiagnosticTable = ({ cases }: DiagnosticTableProps) => {
               <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
                 <span className="inline-flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
-                  {format(new Date(item.date), 'dd MMM yyyy', { locale: fr })}
+                  {formatDate(item.date)}
                 </span>
                 <span className="text-gray-300">•</span>
                 <span className="px-2 py-1 rounded-full bg-secondary/10 text-secondary text-xs">
