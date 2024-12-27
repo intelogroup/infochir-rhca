@@ -94,5 +94,50 @@ export const highlights: Highlight[] = [
     type: "article",
     category: "Article RHCA",
     author: "Prof. Marc Dupont"
+  },
+  {
+    title: "Webinaire: Nouvelles Technologies en Chirurgie",
+    description: "Découvrez les dernières avancées technologiques en chirurgie avec nos experts internationaux",
+    image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?w=500&h=700&fit=crop",
+    type: "webinar",
+    category: "Webinaire",
+    date: "10 Avril 2024",
+    time: "14:00 - 16:00 UTC"
+  },
+  {
+    title: "Formation en ligne: Programmation des soins post-opératoires",
+    description: "Session interactive sur les meilleures pratiques en soins post-opératoires",
+    image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=500&h=700&fit=crop",
+    type: "formation",
+    category: "Formation",
+    date: "15 Avril 2024",
+    time: "13:00 - 15:00 UTC"
+  },
+  {
+    title: "IGM: Impact du COVID-19 sur la chirurgie en Haïti",
+    description: "Analyse approfondie des adaptations chirurgicales pendant la pandémie",
+    image: "https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?w=500&h=700&fit=crop",
+    type: "article",
+    category: "Article IGM",
+    author: "Dr. Marie Laurent",
+    date: "12 Avril 2024"
+  },
+  {
+    title: "Conférence Virtuelle: Chirurgie Mini-invasive",
+    description: "Symposium international sur les techniques chirurgicales mini-invasives",
+    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=500&h=700&fit=crop",
+    type: "event",
+    category: "Événement",
+    date: "20 Avril 2024",
+    time: "15:00 - 18:00 UTC"
+  },
+  {
+    title: "IGM: Innovations en Anesthésie Régionale",
+    description: "Les dernières techniques et équipements en anesthésie régionale",
+    image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=500&h=700&fit=crop",
+    type: "article",
+    category: "Article IGM",
+    author: "Dr. Jean Dupont",
+    date: "18 Avril 2024"
   }
 ];
