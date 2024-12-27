@@ -26,7 +26,7 @@ export const NavLinks = () => {
         whileTap={{ scale: 0.95 }}
       >
         <span className="text-sm font-medium whitespace-nowrap">Faire un don</span>
-        <Heart className="h-4 w-4 text-[#122db0] fill-[#122db0]" />
+        <Heart className="h-4 w-4 text-white fill-white" />
       </motion.button>
     </div>
   );
