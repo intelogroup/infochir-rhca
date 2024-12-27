@@ -1,8 +1,10 @@
 import { useCallback, useState } from "react";
-import { Upload, Loader2, Image as ImageIcon, FileText } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { UploadIcon } from "./upload/UploadIcon";
+import { UploadInstructions } from "./upload/UploadInstructions";
+import { UploadingState } from "./upload/UploadingState";
 
 interface FileUploadAreaProps {
   acceptedFileTypes: string;
@@ -36,7 +38,6 @@ export const FileUploadArea = ({
       if (item.kind === 'file') {
         const file = item.getAsFile();
         if (file) {
-          // Check if the file type matches the accepted types
           const isAcceptedType = type === 'image' 
             ? file.type.startsWith('image/')
             : acceptedFileTypes.split(',').some(type => 
@@ -61,12 +62,6 @@ export const FileUploadArea = ({
       toast.success(`${files.length} fichier(s) collé(s) avec succès`);
     }
   }, [onFileSelect, maxFiles, currentFileCount, type, acceptedFileTypes]);
-
-  const getInputCapture = (): "environment" | "user" | undefined => {
-    if (!isMobile) return undefined;
-    if (type === 'image') return "environment";
-    return undefined;
-  };
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (currentFileCount + acceptedFiles.length > maxFiles) {
@@ -112,41 +107,19 @@ export const FileUploadArea = ({
         ${isUploading ? 'bg-gray-50 cursor-not-allowed' : ''}
       `}
     >
-      <input {...getInputProps()} capture={getInputCapture()} />
+      <input {...getInputProps()} capture={isMobile && type === 'image' ? "environment" : undefined} />
       {isUploading ? (
-        <div className="space-y-4">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto text-secondary" />
-          <p className="text-sm text-gray-500">Upload en cours...</p>
-        </div>
+        <UploadingState />
       ) : (
         <div className="space-y-2">
-          {type === 'image' ? (
-            <ImageIcon className="h-8 w-8 mx-auto text-gray-400" />
-          ) : (
-            <FileText className="h-8 w-8 mx-auto text-gray-400" />
-          )}
-          <p className="text-sm font-medium">
-            {isDragActive 
-              ? "Déposez les fichiers ici" 
-              : isMobile 
-                ? type === 'image'
-                  ? "Appuyez pour prendre une photo ou choisir une image"
-                  : "Appuyez pour choisir un fichier"
-                : "Cliquez ou déposez vos fichiers ici"}
-          </p>
-          {currentFileCount >= maxFiles && (
-            <p className="text-xs text-red-500">
-              Nombre maximum de fichiers atteint
-            </p>
-          )}
-          {helperText && (
-            <p className="text-xs text-gray-500">{helperText}</p>
-          )}
-          <p className="text-xs text-gray-400">
-            {type === 'image' 
-              ? "Vous pouvez aussi coller une image depuis le presse-papier" 
-              : "Vous pouvez aussi coller un fichier depuis le presse-papier"}
-          </p>
+          <UploadIcon type={type} />
+          <UploadInstructions
+            isDragActive={isDragActive}
+            type={type}
+            currentFileCount={currentFileCount}
+            maxFiles={maxFiles}
+            helperText={helperText}
+          />
         </div>
       )}
     </div>

@@ -1,16 +1,14 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { ArticleForm } from "@/components/admin/ArticleForm";
 import { ArticleList } from "@/components/admin/ArticleList";
+import { AdminHeader } from "./admin/AdminHeader";
 
 interface Article {
   id: string;
@@ -82,29 +80,21 @@ export const AdminPanel = () => {
 
   return (
     <div className="space-y-8">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">RHCA Admin Panel</h2>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Article
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                {editingArticle ? "Edit Article" : "Add New Article"}
-              </DialogTitle>
-            </DialogHeader>
-            <ArticleForm
-              initialData={editingArticle || undefined}
-              onSubmit={handleSubmit}
-              isLoading={isLoading}
-            />
-          </DialogContent>
-        </Dialog>
-      </div>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <AdminHeader />
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {editingArticle ? "Edit Article" : "Add New Article"}
+            </DialogTitle>
+          </DialogHeader>
+          <ArticleForm
+            initialData={editingArticle || undefined}
+            onSubmit={handleSubmit}
+            isLoading={isLoading}
+          />
+        </DialogContent>
+      </Dialog>
 
       <ArticleList
         articles={articles}
