@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
-import { UserRound, Star, Mail, Phone } from "lucide-react";
+import { UserRound, Star } from "lucide-react";
 
 interface Founder {
   name: string;
@@ -65,8 +65,8 @@ const founders: Founder[] = [
 
 export const FoundersSection = () => {
   return (
-    <section className="py-24 relative overflow-hidden bg-gradient-to-b from-[#0c417b]/5 via-white to-[#0c417b]/5">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-[#0c417b]/20 via-transparent to-transparent" />
+    <section className="py-24 relative overflow-hidden bg-gradient-to-b from-[#D3E4FD] via-white to-[#D3E4FD]">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-[#0EA5E9]/10 via-transparent to-transparent" />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="text-center mb-16">
@@ -76,11 +76,11 @@ export const FoundersSection = () => {
             transition={{ duration: 0.6 }}
             className="flex items-center justify-center gap-2 mb-4"
           >
-            <Star className="w-8 h-8 text-[#0c417b] animate-pulse" />
-            <h2 className="text-4xl font-bold text-[#0c417b]">
+            <Star className="w-8 h-8 text-[#0EA5E9] animate-pulse" />
+            <h2 className="text-4xl font-bold bg-gradient-to-r from-[#0EA5E9] to-[#8B5CF6] bg-clip-text text-transparent">
               Nos Membres Fondateurs
             </h2>
-            <Star className="w-8 h-8 text-[#0c417b] animate-pulse" />
+            <Star className="w-8 h-8 text-[#0EA5E9] animate-pulse" />
           </motion.div>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
@@ -104,18 +104,18 @@ export const FoundersSection = () => {
               <Card className={`relative group overflow-hidden backdrop-blur-sm border-0 ${
                 founder.isDeceased 
                   ? 'bg-gradient-to-br from-gray-50/90 to-gray-100/90' 
-                  : 'bg-gradient-to-br from-white/90 to-gray-50/90 hover:shadow-[0_0_30px_rgba(12,65,123,0.1)] transition-all duration-500'
+                  : 'bg-gradient-to-br from-white/90 to-gray-50/90 hover:shadow-[0_0_30px_rgba(14,165,233,0.2)] transition-all duration-500'
               }`}>
                 <CardContent className="p-8">
                   <div className="flex flex-col items-center text-center">
                     <div className={`relative w-32 h-32 mb-6 ${
                       founder.isDeceased ? 'grayscale' : ''
                     }`}>
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#0c417b]/20 to-transparent rounded-full animate-pulse" />
+                      <div className="absolute inset-0 bg-gradient-to-br from-[#0EA5E9]/30 to-[#8B5CF6]/30 rounded-full animate-pulse" />
                       <div className={`relative w-full h-full rounded-full overflow-hidden ring-4 transform transition-all duration-500 ${
                         founder.isDeceased 
                           ? 'ring-gray-200' 
-                          : 'ring-[#0c417b]/20 group-hover:ring-[#0c417b]/30 group-hover:scale-105'
+                          : 'ring-[#0EA5E9]/30 group-hover:ring-[#0EA5E9]/50 group-hover:scale-105'
                       }`}>
                         {founder.image ? (
                           <Avatar className="w-full h-full">
@@ -130,17 +130,17 @@ export const FoundersSection = () => {
                           </Avatar>
                         ) : (
                           <div className={`w-full h-full flex items-center justify-center ${
-                            founder.isDeceased ? 'bg-gray-200' : 'bg-[#0c417b]/10'
+                            founder.isDeceased ? 'bg-gray-200' : 'bg-[#0EA5E9]/10'
                           }`}>
                             <UserRound className={`w-12 h-12 ${
-                              founder.isDeceased ? 'text-gray-400' : 'text-[#0c417b]'
+                              founder.isDeceased ? 'text-gray-400' : 'text-[#0EA5E9]'
                             }`} />
                           </div>
                         )}
                       </div>
                     </div>
                     <h3 className={`font-semibold text-xl mb-2 transition-colors duration-300 ${
-                      founder.isDeceased ? 'text-gray-500' : 'text-gray-900 group-hover:text-[#0c417b]'
+                      founder.isDeceased ? 'text-gray-500' : 'text-gray-900 group-hover:text-[#0EA5E9]'
                     }`}>
                       {founder.name}
                     </h3>
@@ -152,7 +152,7 @@ export const FoundersSection = () => {
                     <span className={`inline-flex items-center rounded-full px-4 py-1.5 text-sm font-medium ${
                       founder.isDeceased 
                         ? 'bg-gray-100 text-gray-500' 
-                        : 'bg-[#0c417b]/10 text-[#0c417b] group-hover:bg-[#0c417b]/20 transition-colors duration-300'
+                        : 'bg-gradient-to-r from-[#0EA5E9]/10 to-[#8B5CF6]/10 text-[#0EA5E9] group-hover:from-[#0EA5E9]/20 group-hover:to-[#8B5CF6]/20 transition-colors duration-300'
                     }`}>
                       {founder.role}
                     </span>
