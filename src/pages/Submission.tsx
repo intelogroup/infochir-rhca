@@ -17,6 +17,7 @@ import { ArticleDetailsFields } from "@/components/submission/ArticleDetailsFiel
 import { CorrespondingAuthorFields } from "@/components/submission/CorrespondingAuthorFields";
 import { AbstractField } from "@/components/submission/AbstractField";
 import { DeclarationsFields } from "@/components/submission/DeclarationsFields";
+import { MultiFileUploader } from "@/components/pdf/MultiFileUploader";
 
 const formSchema = z.object({
   publicationType: z.enum(["RHCA", "IGM"], {
@@ -47,6 +48,8 @@ const formSchema = z.object({
 
 const Submission = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [articleFiles, setArticleFiles] = useState<string[]>([]);
+  const [imageAnnexes, setImageAnnexes] = useState<string[]>([]);
   const navigate = useNavigate();
   
   const form = useForm<z.infer<typeof formSchema>>({
@@ -59,6 +62,11 @@ const Submission = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (articleFiles.length === 0) {
+      toast.error("Veuillez uploader au moins un fichier d'article");
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       
@@ -78,6 +86,8 @@ const Submission = () => {
           ethics_approval: values.ethicsApproval,
           no_conflict: values.noConflict,
           original_work: values.originalWork,
+          article_files_urls: articleFiles,
+          image_annexes_urls: imageAnnexes,
         })
         .select()
         .single();
@@ -121,6 +131,31 @@ const Submission = () => {
                   <ArticleDetailsFields form={form} />
                   <CorrespondingAuthorFields form={form} />
                   <AbstractField form={form} />
+                  
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">Fichiers de l'article</h3>
+                    <MultiFileUploader
+                      bucket="article_files"
+                      acceptedFileTypes=".doc,.docx,.pdf"
+                      maxFileSize={10}
+                      maxFiles={3}
+                      onUploadComplete={setArticleFiles}
+                      helperText="Formats acceptés: DOC, DOCX, PDF. Taille max: 10MB"
+                    />
+                  </div>
+
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">Images et annexes</h3>
+                    <MultiFileUploader
+                      bucket="article_annexes"
+                      acceptedFileTypes="image/*"
+                      maxFileSize={5}
+                      maxFiles={5}
+                      onUploadComplete={setImageAnnexes}
+                      helperText="Formats acceptés: PNG, JPEG, GIF. Taille max: 5MB"
+                    />
+                  </div>
+
                   <DeclarationsFields form={form} />
                 </div>
 
