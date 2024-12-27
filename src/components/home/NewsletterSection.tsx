@@ -4,22 +4,50 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 
 export const NewsletterSection = () => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !name) {
       toast.error("Veuillez remplir tous les champs obligatoires");
       return;
     }
-    toast.success("Merci de votre inscription à notre newsletter!");
-    setEmail("");
-    setName("");
-    setPhone("");
+
+    setIsSubmitting(true);
+
+    try {
+      const { error } = await supabase
+        .from('newsletter_subscriptions')
+        .insert([
+          { name, email, phone }
+        ]);
+
+      if (error) {
+        if (error.code === '23505') {
+          toast.error("Cette adresse email est déjà inscrite à notre newsletter");
+        } else {
+          toast.error("Une erreur est survenue lors de l'inscription");
+          console.error("Newsletter subscription error:", error);
+        }
+        return;
+      }
+
+      toast.success("Merci de votre inscription à notre newsletter!");
+      setEmail("");
+      setName("");
+      setPhone("");
+    } catch (error) {
+      console.error("Newsletter submission error:", error);
+      toast.error("Une erreur est survenue lors de l'inscription");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -61,6 +89,7 @@ export const NewsletterSection = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
+                disabled={isSubmitting}
               />
             </div>
             <div className="space-y-2">
@@ -74,6 +103,7 @@ export const NewsletterSection = () => {
                 className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white/20"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
+                disabled={isSubmitting}
               />
             </div>
           </div>
@@ -90,6 +120,7 @@ export const NewsletterSection = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={isSubmitting}
             />
           </div>
 
@@ -102,8 +133,9 @@ export const NewsletterSection = () => {
               variant="secondary" 
               type="submit" 
               className="w-full bg-white text-primary hover:bg-white/90 transition-all duration-300 py-6 text-lg font-medium shadow-lg"
+              disabled={isSubmitting}
             >
-              S'abonner à la Newsletter
+              {isSubmitting ? "Inscription en cours..." : "S'abonner à la Newsletter"}
             </Button>
           </motion.div>
           
