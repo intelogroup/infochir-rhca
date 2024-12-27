@@ -11,6 +11,7 @@ interface MultiFileUploaderProps {
   maxFiles?: number;
   onUploadComplete: (urls: string[]) => void;
   helperText?: string;
+  type?: 'document' | 'image';
 }
 
 export const MultiFileUploader = ({
@@ -19,7 +20,8 @@ export const MultiFileUploader = ({
   maxFileSize = 10,
   maxFiles = 5,
   onUploadComplete,
-  helperText
+  helperText,
+  type = 'document'
 }: MultiFileUploaderProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
@@ -124,11 +126,13 @@ export const MultiFileUploader = ({
         helperText={helperText}
         maxFiles={maxFiles}
         currentFileCount={uploadedFiles.length}
+        type={type}
       />
       <FileList
         files={uploadedFiles}
         onRemove={removeFile}
         isUploading={isUploading}
+        type={type}
       />
     </div>
   );
