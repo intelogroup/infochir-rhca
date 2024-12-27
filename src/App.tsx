@@ -12,6 +12,7 @@ import IGM from "./pages/IGM";
 import About from "./pages/About";
 import Annuaire from "./pages/Annuaire";
 import Directives from "./pages/rhca/Directives";
+import Submission from "./pages/Submission";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => {
                 <Route path="/about" element={<About />} />
                 <Route path="/annuaire" element={<Annuaire />} />
                 <Route path="/rhca/directives" element={<Directives />} />
+                <Route path="/submission" element={<Submission />} />
               </Routes>
             </div>
           </TooltipProvider>

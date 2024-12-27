@@ -2,6 +2,7 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const images = [
   '/lovable-uploads/75589792-dc14-4d53-9aae-5796c76a3b39.png',
@@ -21,6 +22,7 @@ export const HeroSection = () => {
   const [isVisible, setIsVisible] = useState(true);
   const sectionRef = useRef(null);
   const intervalRef = useRef(null);
+  const navigate = useNavigate();
 
   const startImageCycle = () => {
     if (cycleCount >= 3) return;
@@ -110,13 +112,19 @@ export const HeroSection = () => {
             La plateforme de référence pour les professionnels de santé en Haïti
           </p>
           <div className="flex flex-wrap gap-4">
-            <Button size="lg" variant="secondary" className="group bg-white hover:bg-white/90 text-[#122db0] font-medium">
+            <Button 
+              size="lg" 
+              variant="secondary" 
+              className="group bg-white hover:bg-white/90 text-[#122db0] font-medium"
+              onClick={() => navigate('/submission')}
+            >
               Soumettre votre article
               <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Button>
             <Button 
               size="lg" 
               className="bg-transparent hover:bg-white/10 text-white border-white border"
+              onClick={() => navigate('/about')}
             >
               En savoir plus
             </Button>
