@@ -1,6 +1,6 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useState } from "react";
 import { Mail, Phone, Search, UserRound, ArrowUp, ArrowDown } from "lucide-react";
 import { motion } from "framer-motion";
@@ -92,7 +92,7 @@ export const DirectoryList = () => {
                   <SortIcon field="id" />
                 </div>
               </TableHead>
-              <TableHead className="w-[50px]">Photo</TableHead>
+              <TableHead className="w-[120px]">Photo</TableHead>
               <TableHead 
                 className="cursor-pointer"
                 onClick={() => toggleSort('name')}
@@ -124,17 +124,18 @@ export const DirectoryList = () => {
                 <TableRow key={member.id} className="hover:bg-gray-50">
                   <TableCell className="font-medium">{member.id}</TableCell>
                   <TableCell>
-                    {member.avatar_url ? (
-                      <img 
-                        src={member.avatar_url} 
-                        alt={member.name}
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-[#1EAEDB]/10 flex items-center justify-center">
-                        <UserRound className="h-4 w-4 text-[#1EAEDB]" />
-                      </div>
-                    )}
+                    <div className="flex items-center justify-center">
+                      <Avatar className="h-24 w-24 ring-4 ring-[#1EAEDB]/20 hover:ring-[#1EAEDB]/30 transition-all duration-300">
+                        <AvatarImage
+                          src={member.avatar_url}
+                          alt={member.name}
+                          className="object-cover"
+                        />
+                        <AvatarFallback className="bg-[#1EAEDB]/10">
+                          <UserRound className="h-12 w-12 text-[#1EAEDB]" />
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
