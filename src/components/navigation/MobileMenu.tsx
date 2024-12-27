@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { navItems } from "@/config/navigation";
+import { Heart } from "lucide-react";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -41,11 +42,12 @@ export const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             navigate('/donate');
             onClose();
           }}
-          className="flex w-full items-center rounded-lg px-4 py-3 font-medium bg-gradient-to-r from-secondary to-secondary-light text-white hover:opacity-90 transition-all duration-200"
+          className="flex w-full items-center justify-between rounded-lg px-4 py-3 font-medium bg-gradient-to-r from-secondary to-secondary-light text-white hover:opacity-90 transition-all duration-200"
           whileHover={{ x: 5 }}
           whileTap={{ scale: 0.95 }}
         >
           <span className="text-lg">Faire un don</span>
+          <Heart className="h-5 w-5 text-[#1EAEDB] fill-[#1EAEDB]" />
         </motion.button>
       </div>
     </motion.div>

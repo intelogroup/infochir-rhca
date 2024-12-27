@@ -65,8 +65,8 @@ export const CarouselSection = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="md:hidden flex -left-2 lg:-left-12 h-8 w-8" />
-            <CarouselNext className="md:hidden flex -right-2 lg:-right-12 h-8 w-8" />
+            <CarouselPrevious className="hidden md:flex -left-12 lg:-left-16 h-12 w-12 border-2 border-primary/20 bg-white/80 hover:bg-white" />
+            <CarouselNext className="hidden md:flex -right-12 lg:-right-16 h-12 w-12 border-2 border-primary/20 bg-white/80 hover:bg-white" />
           </Carousel>
 
           <div className="flex justify-center gap-2 mt-4 md:hidden">

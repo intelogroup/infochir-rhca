@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { navItems } from "@/config/navigation";
+import { Heart } from "lucide-react";
 
 export const NavLinks = () => {
   const navigate = useNavigate();
@@ -20,11 +21,12 @@ export const NavLinks = () => {
       ))}
       <motion.button
         onClick={() => navigate('/donate')}
-        className="flex h-10 px-6 items-center justify-center rounded-full bg-gradient-to-r from-secondary to-secondary-light text-white hover:opacity-90 transition-all duration-300 ml-4"
+        className="flex h-10 px-6 items-center justify-center rounded-full bg-gradient-to-r from-secondary to-secondary-light text-white hover:opacity-90 transition-all duration-300 ml-4 space-x-2"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
         <span className="text-sm font-medium whitespace-nowrap">Faire un don</span>
+        <Heart className="h-4 w-4 text-[#1EAEDB] fill-[#1EAEDB]" />
       </motion.button>
     </div>
   );
