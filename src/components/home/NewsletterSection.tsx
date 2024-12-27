@@ -26,7 +26,7 @@ export const NewsletterSection = () => {
         .from('newsletter_subscriptions')
         .insert([
           { name, email, phone }
-        ]);
+        ] as any); // Using type assertion here as a temporary fix
 
       if (error) {
         if (error.code === '23505') {

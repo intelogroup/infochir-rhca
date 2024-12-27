@@ -39,6 +39,33 @@ export type Database = {
         }
         Relationships: []
       }
+      newsletter_subscriptions: {
+        Row: {
+          email: string
+          id: number
+          is_active: boolean
+          name: string
+          phone: string | null
+          subscribed_at: string
+        }
+        Insert: {
+          email: string
+          id?: never
+          is_active?: boolean
+          name: string
+          phone?: string | null
+          subscribed_at?: string
+        }
+        Update: {
+          email?: string
+          id?: never
+          is_active?: boolean
+          name?: string
+          phone?: string | null
+          subscribed_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
