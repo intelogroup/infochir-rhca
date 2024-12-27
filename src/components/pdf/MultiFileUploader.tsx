@@ -35,14 +35,21 @@ export const MultiFileUploader = ({
 
     setIsUploading(true);
     const uploadedUrls: string[] = [];
+    const failedUploads: string[] = [];
 
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
 
         // Validate file type
-        if (!file.type.match(acceptedFileTypes)) {
-          toast.error(`Le type de fichier ${file.type} n'est pas accepté`);
+        const fileType = file.type || '';
+        const fileExtension = file.name.split('.').pop()?.toLowerCase() || '';
+        const isAcceptedType = acceptedFileTypes.includes(fileType) || 
+                              acceptedFileTypes.includes(`.${fileExtension}`) ||
+                              (acceptedFileTypes === "image/*" && file.type.startsWith("image/"));
+
+        if (!isAcceptedType) {
+          failedUploads.push(file.name);
           continue;
         }
 
@@ -52,7 +59,7 @@ export const MultiFileUploader = ({
           continue;
         }
 
-        const fileName = `${Date.now()}_${file.name}`;
+        const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
         const { data, error } = await supabase.storage
           .from(bucket)
           .upload(fileName, file, {
@@ -60,7 +67,11 @@ export const MultiFileUploader = ({
             upsert: false
           });
 
-        if (error) throw error;
+        if (error) {
+          console.error('Upload error:', error);
+          failedUploads.push(file.name);
+          continue;
+        }
 
         const { data: { publicUrl } } = supabase.storage
           .from(bucket)
@@ -69,20 +80,45 @@ export const MultiFileUploader = ({
         uploadedUrls.push(publicUrl);
       }
 
-      setUploadedFiles(prev => [...prev, ...uploadedUrls]);
-      onUploadComplete(uploadedUrls);
-      toast.success("Fichiers uploadés avec succès");
+      if (failedUploads.length > 0) {
+        toast.error(`Échec de l'upload pour: ${failedUploads.join(', ')}`);
+      }
+
+      if (uploadedUrls.length > 0) {
+        setUploadedFiles(prev => [...prev, ...uploadedUrls]);
+        onUploadComplete([...uploadedFiles, ...uploadedUrls]);
+        toast.success(`${uploadedUrls.length} fichier(s) uploadé(s) avec succès`);
+      }
     } catch (error) {
       console.error('Upload error:', error);
       toast.error("Erreur lors de l'upload des fichiers");
     } finally {
       setIsUploading(false);
+      // Reset the input value to allow uploading the same file again
+      const input = document.getElementById(`file-upload-${bucket}`) as HTMLInputElement;
+      if (input) input.value = '';
     }
   };
 
-  const removeFile = (urlToRemove: string) => {
-    setUploadedFiles(prev => prev.filter(url => url !== urlToRemove));
-    onUploadComplete(uploadedFiles.filter(url => url !== urlToRemove));
+  const removeFile = async (urlToRemove: string) => {
+    try {
+      // Extract the file name from the URL
+      const fileName = urlToRemove.split('/').pop();
+      if (!fileName) return;
+
+      const { error } = await supabase.storage
+        .from(bucket)
+        .remove([fileName]);
+
+      if (error) throw error;
+
+      setUploadedFiles(prev => prev.filter(url => url !== urlToRemove));
+      onUploadComplete(uploadedFiles.filter(url => url !== urlToRemove));
+      toast.success("Fichier supprimé avec succès");
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast.error("Erreur lors de la suppression du fichier");
+    }
   };
 
   return (
