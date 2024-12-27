@@ -1,11 +1,11 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Table, TableBody } from "@/components/ui/table";
 import { useState } from "react";
-import { Mail, Phone, Search, UserRound, ArrowUp, ArrowDown } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { SearchBar } from "./SearchBar";
+import { TableHeader } from "./TableHeader";
+import { MemberRow } from "./MemberRow";
 
 interface Member {
   id: number;
@@ -55,19 +55,6 @@ export const DirectoryList = () => {
     member.phone?.includes(searchTerm)
   );
 
-  const SortIcon = ({ field }: { field: SortField }) => {
-    if (sortField !== field) return null;
-    return sortDirection === 'asc' ? 
-      <ArrowUp className="h-4 w-4 ml-1" /> : 
-      <ArrowDown className="h-4 w-4 ml-1" />;
-  };
-
-  const getPublicUrl = (avatarUrl?: string) => {
-    if (!avatarUrl) return undefined;
-    if (avatarUrl.startsWith('http')) return avatarUrl;
-    return `${supabase.storage.from('annuaire_profile_pics').getPublicUrl(avatarUrl).data.publicUrl}`;
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -75,98 +62,31 @@ export const DirectoryList = () => {
       transition={{ duration: 0.5, delay: 0.2 }}
       className="space-y-6"
     >
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-        <Input
-          placeholder="Rechercher un membre..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10 bg-white"
-        />
-      </div>
+      <SearchBar value={searchTerm} onChange={setSearchTerm} />
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead 
-                className="w-[50px] cursor-pointer"
-                onClick={() => toggleSort('id')}
-              >
-                <div className="flex items-center">
-                  No.
-                  <SortIcon field="id" />
-                </div>
-              </TableHead>
-              <TableHead className="w-[120px]">Photo</TableHead>
-              <TableHead 
-                className="cursor-pointer"
-                onClick={() => toggleSort('name')}
-              >
-                <div className="flex items-center">
-                  Nom
-                  <SortIcon field="name" />
-                </div>
-              </TableHead>
-              <TableHead className="w-[200px]">Téléphone</TableHead>
-              <TableHead className="w-[300px]">Email</TableHead>
-            </TableRow>
-          </TableHeader>
+          <TableHeader 
+            sortField={sortField}
+            sortDirection={sortDirection}
+            onSort={toggleSort}
+          />
           <TableBody>
             {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center py-8">
+              <tr>
+                <td colSpan={5} className="text-center py-8">
                   Chargement des membres...
-                </TableCell>
-              </TableRow>
+                </td>
+              </tr>
             ) : filteredMembers.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center py-8">
+              <tr>
+                <td colSpan={5} className="text-center py-8">
                   Aucun membre trouvé
-                </TableCell>
-              </TableRow>
+                </td>
+              </tr>
             ) : (
               filteredMembers.map((member) => (
-                <TableRow key={member.id} className="hover:bg-gray-50">
-                  <TableCell className="font-medium">{member.id}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center justify-center">
-                      <Avatar className="h-24 w-24 ring-4 ring-[#1EAEDB]/20 hover:ring-[#1EAEDB]/30 transition-all duration-300">
-                        <AvatarImage
-                          src={getPublicUrl(member.avatar_url)}
-                          alt={member.name}
-                          className="object-cover"
-                        />
-                        <AvatarFallback className="bg-[#1EAEDB]/10">
-                          <UserRound className="h-12 w-12 text-[#1EAEDB]" />
-                        </AvatarFallback>
-                      </Avatar>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      {member.name}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    {member.phone && (
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <Phone className="h-4 w-4" />
-                        {member.phone}
-                      </div>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {member.email && (
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <Mail className="h-4 w-4" />
-                        <a href={`mailto:${member.email}`} className="hover:text-[#1EAEDB]">
-                          {member.email}
-                        </a>
-                      </div>
-                    )}
-                  </TableCell>
-                </TableRow>
+                <MemberRow key={member.id} member={member} />
               ))
             )}
           </TableBody>
