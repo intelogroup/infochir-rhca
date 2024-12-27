@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { MultiFileUploader } from "@/components/pdf/MultiFileUploader";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { PublicationTypeSelector } from "./article-form/PublicationTypeSelector";
+import { ArticleDetails } from "./article-form/ArticleDetails";
+import { FileUploaders } from "./article-form/FileUploaders";
 
 interface ArticleFormProps {
   initialData?: {
@@ -45,102 +44,23 @@ export const ArticleForm = ({ initialData, onSubmit, isLoading }: ArticleFormPro
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8 max-w-4xl mx-auto">
-      <div className="flex justify-center gap-8 mb-8">
-        <motion.button
-          type="button"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setPublicationType("RHCA")}
-          className={`relative p-4 rounded-lg border-2 transition-colors ${
-            publicationType === "RHCA" 
-              ? "border-primary bg-primary/5" 
-              : "border-gray-200 hover:border-primary/50"
-          }`}
-        >
-          <img 
-            src="/lovable-uploads/f65134f5-3929-4504-9567-104510b21f5d.png"
-            alt="RHCA Logo"
-            className="h-20 w-20 object-contain"
-          />
-        </motion.button>
-
-        <motion.button
-          type="button"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setPublicationType("IGM")}
-          className={`relative p-4 rounded-lg border-2 transition-colors ${
-            publicationType === "IGM" 
-              ? "border-primary bg-primary/5" 
-              : "border-gray-200 hover:border-primary/50"
-          }`}
-        >
-          <img 
-            src="/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png"
-            alt="IGM Logo"
-            className="h-20 w-20 object-contain"
-          />
-        </motion.button>
-      </div>
+      <PublicationTypeSelector 
+        publicationType={publicationType}
+        setPublicationType={setPublicationType}
+      />
 
       <div className="space-y-6 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium mb-1 text-gray-700">
-            Titre
-          </label>
-          <Input
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full"
-            placeholder="Entrez le titre de votre article"
-            required
-          />
-        </div>
+        <ArticleDetails
+          title={title}
+          setTitle={setTitle}
+          abstract={abstract}
+          setAbstract={setAbstract}
+        />
 
-        <div>
-          <label htmlFor="abstract" className="block text-sm font-medium mb-1 text-gray-700">
-            Résumé
-          </label>
-          <Textarea
-            id="abstract"
-            value={abstract}
-            onChange={(e) => setAbstract(e.target.value)}
-            className="w-full min-h-[150px]"
-            placeholder="Entrez le résumé de votre article"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2 text-gray-700">
-            Fichiers de l'article (Word, PDF)
-          </label>
-          <MultiFileUploader
-            bucket="article_files"
-            acceptedFileTypes=".doc,.docx,.pdf"
-            maxFileSize={50}
-            maxFiles={5}
-            onUploadComplete={setArticleFilesUrls}
-            helperText="Formats acceptés: .doc, .docx, .pdf (max 50MB par fichier)"
-            type="document"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2 text-gray-700">
-            Images et annexes
-          </label>
-          <MultiFileUploader
-            bucket="article_annexes"
-            acceptedFileTypes="image/*"
-            maxFileSize={50}
-            maxFiles={10}
-            onUploadComplete={setImageAnnexesUrls}
-            helperText="Formats acceptés: PNG, JPEG, GIF (max 50MB par image)"
-            type="image"
-          />
-        </div>
+        <FileUploaders
+          setArticleFilesUrls={setArticleFilesUrls}
+          setImageAnnexesUrls={setImageAnnexesUrls}
+        />
       </div>
 
       <div className="flex justify-end">
