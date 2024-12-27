@@ -1,10 +1,11 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { Mail, Phone, Search, UserRound, ArrowUp, ArrowDown } from "lucide-react";
+import { Mail, Phone, Search, UserRound, ArrowUp, ArrowDown, ImageOff } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface Member {
   id: number;
@@ -91,7 +92,7 @@ export const DirectoryList = () => {
                   <SortIcon field="id" />
                 </div>
               </TableHead>
-              <TableHead className="w-[80px]">Photo</TableHead>
+              <TableHead className="w-[100px]">Photo</TableHead>
               <TableHead 
                 className="cursor-pointer"
                 onClick={() => toggleSort('name')}
@@ -123,23 +124,26 @@ export const DirectoryList = () => {
                 <TableRow key={member.id} className="hover:bg-gray-50">
                   <TableCell className="font-medium">{member.id}</TableCell>
                   <TableCell className="py-4">
-                    {member.avatar_url ? (
-                      <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-200">
-                        <img 
-                          src={member.avatar_url} 
+                    <div className="relative w-20 h-20">
+                      <Avatar className="w-full h-full border-2 border-gray-200">
+                        <AvatarImage
+                          src={member.avatar_url || ''}
                           alt={member.name}
-                          className="w-full h-full object-cover"
+                          className="object-cover"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
-                            target.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0yMCA3aC0zVjRjMC0xLjEtLjktMi0yLTJINGMtMS4xIDAtMiAuOS0yIDJ2MTBjMCAxLjEuOSAyIDIgMmgzdjNjMCAxLjEuOSAyIDIgMmgxMGMxLjEgMCAyLS45IDItMlY5YzAtMS4xLS45LTItMi0yeiIvPjwvc3ZnPg==';
+                            target.style.display = 'none';
                           }}
                         />
-                      </div>
-                    ) : (
-                      <div className="w-16 h-16 rounded-full bg-[#1EAEDB]/10 flex items-center justify-center border-2 border-gray-200">
-                        <UserRound className="h-8 w-8 text-[#1EAEDB]" />
-                      </div>
-                    )}
+                        <AvatarFallback className="bg-[#1EAEDB]/10">
+                          {!member.avatar_url ? (
+                            <UserRound className="h-8 w-8 text-[#1EAEDB]" />
+                          ) : (
+                            <ImageOff className="h-8 w-8 text-[#1EAEDB]" />
+                          )}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
                   </TableCell>
                   <TableCell>
                     <div className="font-medium text-gray-900">
