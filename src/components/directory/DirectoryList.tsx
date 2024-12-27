@@ -1,7 +1,8 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { Mail, Phone, Search, UserRound } from "lucide-react";
+import { Mail, Phone, Search, UserRound, ArrowUp, ArrowDown } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,10 +12,16 @@ interface Member {
   name: string;
   phone?: string;
   email?: string;
+  avatar_url?: string;
 }
+
+type SortField = 'id' | 'name';
+type SortDirection = 'asc' | 'desc';
 
 export const DirectoryList = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortField, setSortField] = useState<SortField>('id');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
   const { data: members = [], isLoading } = useQuery({
     queryKey: ['members'],
@@ -22,7 +29,7 @@ export const DirectoryList = () => {
       const { data, error } = await supabase
         .from('members')
         .select('*')
-        .order('name');
+        .order(sortField, { ascending: sortDirection === 'asc' });
       
       if (error) {
         console.error('Error fetching members:', error);
@@ -33,11 +40,27 @@ export const DirectoryList = () => {
     }
   });
 
+  const toggleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
   const filteredMembers = members.filter(member => 
     member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     member.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     member.phone?.includes(searchTerm)
   );
+
+  const SortIcon = ({ field }: { field: SortField }) => {
+    if (sortField !== field) return null;
+    return sortDirection === 'asc' ? 
+      <ArrowUp className="h-4 w-4 ml-1" /> : 
+      <ArrowDown className="h-4 w-4 ml-1" />;
+  };
 
   return (
     <motion.div
@@ -60,8 +83,25 @@ export const DirectoryList = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[50px]">No.</TableHead>
-              <TableHead>Nom</TableHead>
+              <TableHead 
+                className="w-[50px] cursor-pointer"
+                onClick={() => toggleSort('id')}
+              >
+                <div className="flex items-center">
+                  No.
+                  <SortIcon field="id" />
+                </div>
+              </TableHead>
+              <TableHead className="w-[50px]">Photo</TableHead>
+              <TableHead 
+                className="cursor-pointer"
+                onClick={() => toggleSort('name')}
+              >
+                <div className="flex items-center">
+                  Nom
+                  <SortIcon field="name" />
+                </div>
+              </TableHead>
               <TableHead className="w-[200px]">Téléphone</TableHead>
               <TableHead className="w-[300px]">Email</TableHead>
             </TableRow>
@@ -69,13 +109,13 @@ export const DirectoryList = () => {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-8">
+                <TableCell colSpan={5} className="text-center py-8">
                   Chargement des membres...
                 </TableCell>
               </TableRow>
             ) : filteredMembers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-8">
+                <TableCell colSpan={5} className="text-center py-8">
                   Aucun membre trouvé
                 </TableCell>
               </TableRow>
@@ -84,8 +124,20 @@ export const DirectoryList = () => {
                 <TableRow key={member.id} className="hover:bg-gray-50">
                   <TableCell className="font-medium">{member.id}</TableCell>
                   <TableCell>
+                    {member.avatar_url ? (
+                      <img 
+                        src={member.avatar_url} 
+                        alt={member.name}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-[#1EAEDB]/10 flex items-center justify-center">
+                        <UserRound className="h-4 w-4 text-[#1EAEDB]" />
+                      </div>
+                    )}
+                  </TableCell>
+                  <TableCell>
                     <div className="flex items-center gap-2">
-                      <UserRound className="h-5 w-5 text-[#1EAEDB]" />
                       {member.name}
                     </div>
                   </TableCell>
