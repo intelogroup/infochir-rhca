@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import { NavLinks } from "./navigation/NavLinks";
 import { MobileMenu } from "./navigation/MobileMenu";
+import { Input } from "./ui/input";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,7 +24,15 @@ export const Navbar = () => {
               </span>
             </Link>
 
-            <div className="hidden md:flex md:items-center md:justify-center">
+            <div className="hidden md:flex md:items-center md:justify-center space-x-8">
+              <div className="relative w-64">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  type="text"
+                  placeholder="Rechercher..."
+                  className="pl-10 h-9 bg-white/50 border-gray-200/50 focus:border-primary/50 focus:ring-primary/50"
+                />
+              </div>
               <NavLinks />
             </div>
 
