@@ -6,7 +6,7 @@ import { FileList } from "./FileList";
 
 interface MultiFileUploaderProps {
   bucket: string;
-  acceptedFileTypes: string;
+  acceptedFileTypes: Record<string, string[]>;
   maxFileSize?: number;
   maxFiles?: number;
   onUploadComplete: (urls: string[]) => void;
@@ -41,19 +41,6 @@ export const MultiFileUploader = ({
         // Validate file size
         if (file.size > maxFileSize * 1024 * 1024) {
           toast.error(`Le fichier ${file.name} ne doit pas dépasser ${maxFileSize}MB`);
-          continue;
-        }
-
-        // Validate file type
-        const fileType = file.type || '';
-        const fileExtension = file.name.split('.').pop()?.toLowerCase() || '';
-        const isAcceptedType = acceptedFileTypes.includes(fileType) || 
-                              acceptedFileTypes.includes(`.${fileExtension}`) ||
-                              (acceptedFileTypes === "image/*" && file.type.startsWith("image/"));
-
-        if (!isAcceptedType) {
-          toast.error(`Le type de fichier ${fileExtension} n'est pas accepté`);
-          failedUploads.push(file.name);
           continue;
         }
 

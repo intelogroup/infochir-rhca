@@ -17,7 +17,11 @@ export const FileUploaders = ({
         </label>
         <MultiFileUploader
           bucket="article_files"
-          acceptedFileTypes=".doc,.docx,.pdf"
+          acceptedFileTypes={{
+            'application/pdf': ['.pdf'],
+            'application/msword': ['.doc'],
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
+          }}
           maxFileSize={50}
           maxFiles={5}
           onUploadComplete={setArticleFilesUrls}
@@ -32,7 +36,9 @@ export const FileUploaders = ({
         </label>
         <MultiFileUploader
           bucket="article_annexes"
-          acceptedFileTypes="image/*"
+          acceptedFileTypes={{
+            'image/*': ['.png', '.jpg', '.jpeg', '.gif']
+          }}
           maxFileSize={50}
           maxFiles={10}
           onUploadComplete={setImageAnnexesUrls}

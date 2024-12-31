@@ -7,7 +7,7 @@ import { UploadInstructions } from "./upload/UploadInstructions";
 import { UploadingState } from "./upload/UploadingState";
 
 interface FileUploadAreaProps {
-  acceptedFileTypes: string;
+  acceptedFileTypes: Record<string, string[]>;
   isUploading: boolean;
   onFileSelect: (files: File[]) => void;
   helperText?: string;
@@ -37,19 +37,7 @@ export const FileUploadArea = ({
       const item = items[i];
       if (item.kind === 'file') {
         const file = item.getAsFile();
-        if (file) {
-          const isAcceptedType = type === 'image' 
-            ? file.type.startsWith('image/')
-            : acceptedFileTypes.split(',').some(type => 
-                file.name.toLowerCase().endsWith(type.replace('.', '').toLowerCase())
-              );
-
-          if (isAcceptedType) {
-            files.push(file);
-          } else {
-            toast.error(`Le type de fichier ${file.type} n'est pas accepté`);
-          }
-        }
+        if (file) files.push(file);
       }
     }
 
@@ -61,22 +49,11 @@ export const FileUploadArea = ({
       onFileSelect(files);
       toast.success(`${files.length} fichier(s) collé(s) avec succès`);
     }
-  }, [onFileSelect, maxFiles, currentFileCount, type, acceptedFileTypes]);
-
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (currentFileCount + acceptedFiles.length > maxFiles) {
-      toast.error(`Vous ne pouvez pas télécharger plus de ${maxFiles} fichiers`);
-      return;
-    }
-    onFileSelect(acceptedFiles);
   }, [onFileSelect, maxFiles, currentFileCount]);
 
   const { getRootProps, getInputProps } = useDropzone({
-    onDrop,
-    accept: acceptedFileTypes.split(',').reduce((acc, curr) => ({
-      ...acc,
-      [curr]: []
-    }), {}),
+    onDrop: onFileSelect,
+    accept: acceptedFileTypes,
     disabled: isUploading || currentFileCount >= maxFiles,
     maxFiles: maxFiles - currentFileCount,
     onDragEnter: () => setIsDragActive(true),
