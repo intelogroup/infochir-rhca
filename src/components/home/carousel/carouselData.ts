@@ -39,5 +39,35 @@ export const highlights: Highlight[] = [
     image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&auto=format",
     views: 1500,
     citations: 58
+  },
+  {
+    title: "Congrès International de Chirurgie 2024",
+    description: "Rejoignez-nous pour le plus grand événement chirurgical de l'année",
+    category: "Événement",
+    date: "20 Mar 2024",
+    author: "Comité Organisateur",
+    image: "https://images.unsplash.com/photo-1576670392954-858d5d9b5563?w=800&auto=format",
+    views: 850,
+    citations: 0
+  },
+  {
+    title: "Nouvelles directives en chirurgie orthopédique",
+    description: "Mise à jour des protocoles et recommandations pour 2024",
+    category: "Directives",
+    date: "8 Feb 2024",
+    author: "Dr. Lambert",
+    image: "https://images.unsplash.com/photo-1579684453423-f84349ef60b0?w=800&auto=format",
+    views: 1100,
+    citations: 25
+  },
+  {
+    title: "Formation: Techniques avancées en laparoscopie",
+    description: "Programme intensif de formation pour chirurgiens expérimentés",
+    category: "Formation",
+    date: "5 Apr 2024",
+    author: "Dr. Moreau",
+    image: "https://images.unsplash.com/photo-1551076805-e1869033e561?w=800&auto=format",
+    views: 720,
+    citations: 0
   }
 ];
