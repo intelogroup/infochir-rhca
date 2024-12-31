@@ -136,7 +136,11 @@ const Submission = () => {
                     <h3 className="text-lg font-semibold">Fichiers de l'article</h3>
                     <MultiFileUploader
                       bucket="article_files"
-                      acceptedFileTypes=".doc,.docx,.pdf"
+                      acceptedFileTypes={{
+                        'application/pdf': ['.pdf'],
+                        'application/msword': ['.doc'],
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
+                      }}
                       maxFileSize={10}
                       maxFiles={3}
                       onUploadComplete={setArticleFiles}
@@ -148,7 +152,9 @@ const Submission = () => {
                     <h3 className="text-lg font-semibold">Images et annexes</h3>
                     <MultiFileUploader
                       bucket="article_annexes"
-                      acceptedFileTypes="image/*"
+                      acceptedFileTypes={{
+                        'image/*': ['.png', '.jpg', '.jpeg', '.gif']
+                      }}
                       maxFileSize={5}
                       maxFiles={5}
                       onUploadComplete={setImageAnnexes}
