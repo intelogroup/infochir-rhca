@@ -9,12 +9,16 @@ interface StatsCardProps {
 
 export const StatsCard = ({ icon: Icon, title, value, iconClassName }: StatsCardProps) => {
   return (
-    <div className="flex flex-col items-center text-center space-y-2">
-      <div className="p-2 rounded-lg bg-secondary/10">
-        <Icon className={`h-5 w-5 ${iconClassName}`} />
+    <div className="flex flex-col items-center text-center space-y-4">
+      <div className="p-3 rounded-xl bg-secondary/10 backdrop-blur-sm transform transition-transform group-hover:scale-110">
+        <Icon className={`h-6 w-6 ${iconClassName}`} />
       </div>
-      <p className="text-2xl font-bold text-gray-900">{value}</p>
-      <p className="text-sm text-gray-600 font-medium">{title}</p>
+      <div className="space-y-2">
+        <p className="text-3xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+          {value}
+        </p>
+        <p className="text-sm font-medium text-gray-600">{title}</p>
+      </div>
     </div>
   );
 };

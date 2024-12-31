@@ -21,34 +21,36 @@ export const StatCard = ({ icon, title, value, details, iconClassName, index }: 
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       onClick={() => setIsExpanded(!isExpanded)}
-      className="cursor-pointer"
+      className="cursor-pointer group"
     >
       <AnimatePresence>
         <motion.div
           layout
-          className={`bg-gradient-to-br from-white to-secondary/5 p-4 rounded-xl shadow-sm border border-secondary/10 hover:border-secondary/30 transition-all duration-300 hover:shadow-md ${
-            isExpanded ? "md:col-span-2" : ""
-          }`}
+          className={`relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 
+            ${isExpanded ? 'scale-105 z-10' : 'hover:scale-102'}`}
         >
-          <StatsCard
-            icon={icon}
-            title={title}
-            value={value}
-            iconClassName={iconClassName}
-          />
-          <AnimatePresence>
-            {isExpanded && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-                className="mt-4 text-sm text-gray-600 overflow-hidden"
-              >
-                {details}
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <div className="absolute inset-0 bg-gradient-to-br from-[#F8FAFC] to-white opacity-50" />
+          <div className="relative p-6">
+            <StatsCard
+              icon={icon}
+              title={title}
+              value={value}
+              iconClassName={iconClassName}
+            />
+            <AnimatePresence>
+              {isExpanded && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="mt-4 text-sm text-gray-600 leading-relaxed border-t border-gray-100 pt-4"
+                >
+                  {details}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </motion.div>
       </AnimatePresence>
     </motion.div>
