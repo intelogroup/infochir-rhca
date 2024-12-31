@@ -24,14 +24,14 @@ export const MobileMenu = ({ isOpen, onClose, searchQuery, onSearch }: MobileMen
       className="fixed top-20 left-0 right-0 w-full bg-white/95 backdrop-blur-sm shadow-lg border-b border-gray-200/50 md:hidden z-[100]"
     >
       <div className="space-y-4 p-6">
-        <div className="relative w-full mb-4">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+        <div className="relative flex items-center bg-gray-50/80 rounded-lg p-2">
+          <Search className="h-4 w-4 text-gray-400 ml-2" />
           <Input
             type="text"
             value={searchQuery}
             onChange={(e) => onSearch(e.target.value)}
             placeholder="Rechercher..."
-            className="pl-10 h-9 w-full bg-white/50 border-gray-200/50 focus:border-primary/50 focus:ring-primary/50"
+            className="border-0 bg-transparent focus:ring-0 pl-2"
           />
         </div>
         {navItems.map((item) => (
@@ -60,7 +60,7 @@ export const MobileMenu = ({ isOpen, onClose, searchQuery, onSearch }: MobileMen
           whileTap={{ scale: 0.95 }}
         >
           <span className="text-lg">Faire un don</span>
-          <Heart className="h-5 w-5 text-[#1EAEDB] fill-[#1EAEDB]" />
+          <Heart className="h-5 w-5 text-white fill-white" />
         </motion.button>
       </div>
     </motion.div>

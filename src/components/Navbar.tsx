@@ -4,10 +4,13 @@ import { Link } from "react-router-dom";
 import { NavLinks } from "./navigation/NavLinks";
 import { MobileMenu } from "./navigation/MobileMenu";
 import { Input } from "./ui/input";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const handleSearch = (value: string) => {
     setSearchQuery(value);
@@ -31,15 +34,38 @@ export const Navbar = () => {
             </Link>
 
             <div className="hidden md:flex md:items-center md:justify-center space-x-8">
-              <div className="relative w-48 lg:w-64 transition-all duration-300">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <Input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  placeholder="Rechercher..."
-                  className="pl-10 h-9 bg-white/50 border-gray-200/50 focus:border-primary/50 focus:ring-primary/50 focus:w-72 transition-all duration-300"
-                />
+              <div className="relative flex items-center">
+                <motion.button
+                  onClick={() => setIsSearchOpen(!isSearchOpen)}
+                  className={cn(
+                    "p-2 rounded-full hover:bg-gray-100/80 transition-colors duration-200",
+                    isSearchOpen && "bg-gray-100/80"
+                  )}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Search className="h-5 w-5 text-gray-500" />
+                </motion.button>
+                <AnimatePresence>
+                  {isSearchOpen && (
+                    <motion.div
+                      initial={{ width: 0, opacity: 0 }}
+                      animate={{ width: "auto", opacity: 1 }}
+                      exit={{ width: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="ml-2 overflow-hidden"
+                    >
+                      <Input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => handleSearch(e.target.value)}
+                        placeholder="Rechercher..."
+                        className="w-[200px] h-9 bg-white/50 border-gray-200/50 focus:border-primary/50 focus:ring-primary/50"
+                        autoFocus
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
               <NavLinks />
             </div>
