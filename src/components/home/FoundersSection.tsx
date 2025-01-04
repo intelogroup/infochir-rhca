@@ -44,12 +44,6 @@ const founders: Founder[] = [
     isDeceased: true
   },
   {
-    name: "Jean-Robert ANTOINE",
-    title: "Chirurgien Général",
-    role: "REDACTEUR",
-    image: "/lovable-uploads/d890385a-ebf3-41f3-8334-4c533cd15ca4.png"
-  },
-  {
     name: "Jean-Marie EUSTACHE",
     title: "Chirurgien Général",
     role: "TRESORIER",
