@@ -7,6 +7,8 @@ export interface Highlight {
   image?: string;
   views?: number;
   citations?: number;
+  keyPoints?: string[];
+  conclusion?: string;
 }
 
 export const highlights: Highlight[] = [
