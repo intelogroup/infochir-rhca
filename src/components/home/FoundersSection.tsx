@@ -1,7 +1,8 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
-import { UserRound, Star } from "lucide-react";
+import { UserRound, Star, Award, Stethoscope, GraduationCap, Heart, MapPin } from "lucide-react";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 
 interface Founder {
   name: string;
@@ -9,6 +10,10 @@ interface Founder {
   role: string;
   image?: string;
   isDeceased?: boolean;
+  bio?: string;
+  specialties?: string[];
+  location?: string;
+  achievements?: string[];
 }
 
 const founders: Founder[] = [
@@ -16,13 +21,21 @@ const founders: Founder[] = [
     name: "Louis-Franck TELEMAQUE",
     title: "Chirurgien Général",
     role: "COORDONNATEUR",
-    image: "/lovable-uploads/0878c37c-8897-4656-af02-a094357c9f8f.png"
+    image: "/lovable-uploads/0878c37c-8897-4656-af02-a094357c9f8f.png",
+    bio: "Pionnier de la chirurgie moderne en Haïti, Dr. TELEMAQUE a consacré sa carrière à l'amélioration des pratiques chirurgicales et à la formation de la nouvelle génération de chirurgiens.",
+    specialties: ["Chirurgie Générale", "Chirurgie Mini-invasive"],
+    location: "Port-au-Prince, Haïti",
+    achievements: ["Prix d'Excellence en Chirurgie 2015", "Membre de l'Académie de Chirurgie"]
   },
   {
     name: "Eunice DERIVOIS",
     title: "Chirurgien Général",
     role: "COORDONNATEUR ADJOINT",
-    image: "/lovable-uploads/ade0626d-e1c8-4c08-913e-d755f1426bfd.png"
+    image: "/lovable-uploads/ade0626d-e1c8-4c08-913e-d755f1426bfd.png",
+    bio: "Spécialiste reconnue en chirurgie générale, Dr. DERIVOIS combine expertise clinique et engagement dans la recherche médicale.",
+    specialties: ["Chirurgie Générale", "Recherche Clinique"],
+    location: "Port-au-Prince, Haïti",
+    achievements: ["Publication de nombreux articles scientifiques", "Leadership en chirurgie"]
   },
   {
     name: "Sosthène PIERRE",
@@ -60,7 +73,6 @@ const founders: Founder[] = [
 export const FoundersSection = () => {
   return (
     <section className="py-24 relative overflow-hidden">
-      {/* Updated gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] opacity-5" />
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
       
@@ -97,69 +109,119 @@ export const FoundersSection = () => {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
             >
-              <Card className={`relative group overflow-hidden backdrop-blur-sm border-0 ${
-                founder.isDeceased 
-                  ? 'bg-gradient-to-br from-gray-50/90 to-gray-100/90' 
-                  : 'bg-gradient-to-br from-white/90 to-gray-50/90 hover:shadow-[0_0_30px_rgba(30,64,175,0.2)] transition-all duration-500'
-              }`}>
-                <CardContent className="p-8">
-                  <div className="flex flex-col items-center text-center">
-                    <div className={`relative w-32 h-32 mb-6 ${
-                      founder.isDeceased ? 'grayscale' : ''
-                    }`}>
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF]/30 to-[#41b06e]/30 rounded-full animate-pulse" />
-                      <div className={`relative w-full h-full rounded-full overflow-hidden ring-4 transform transition-all duration-500 ${
-                        founder.isDeceased 
-                          ? 'ring-gray-200' 
-                          : 'ring-[#1A1F2C] group-hover:ring-[#1A1F2C]/80 group-hover:scale-105'
-                      }`}>
-                        {founder.image ? (
-                          <Avatar className="w-full h-full">
-                            <AvatarImage
-                              src={founder.image}
-                              alt={founder.name}
-                              className="object-cover w-full h-full"
-                            />
-                            <AvatarFallback>
-                              <UserRound className="w-12 h-12 text-gray-400" />
-                            </AvatarFallback>
-                          </Avatar>
-                        ) : (
-                          <div className={`w-full h-full flex items-center justify-center ${
-                            founder.isDeceased ? 'bg-gray-200' : 'bg-[#1E40AF]/10'
+              <HoverCard>
+                <HoverCardTrigger>
+                  <Card className={`relative group overflow-hidden backdrop-blur-sm border-0 ${
+                    founder.isDeceased 
+                      ? 'bg-gradient-to-br from-gray-50/90 to-gray-100/90' 
+                      : 'bg-gradient-to-br from-white/90 to-gray-50/90 hover:shadow-[0_0_30px_rgba(30,64,175,0.2)] transition-all duration-500'
+                  }`}>
+                    <CardContent className="p-8">
+                      <div className="flex flex-col items-center text-center">
+                        <motion.div 
+                          className={`relative w-32 h-32 mb-6 ${
+                            founder.isDeceased ? 'grayscale' : ''
+                          }`}
+                          whileHover={{ scale: 1.05 }}
+                          transition={{ type: "spring", stiffness: 300 }}
+                        >
+                          <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF]/30 to-[#41b06e]/30 rounded-full animate-pulse" />
+                          <div className={`relative w-full h-full rounded-full overflow-hidden ring-4 transform transition-all duration-500 ${
+                            founder.isDeceased 
+                              ? 'ring-gray-200' 
+                              : 'ring-[#1E40AF] group-hover:ring-[#1E40AF]/80'
                           }`}>
-                            <UserRound className={`w-12 h-12 ${
-                              founder.isDeceased ? 'text-gray-400' : 'text-[#1E40AF]'
-                            }`} />
+                            {founder.image ? (
+                              <Avatar className="w-full h-full">
+                                <AvatarImage
+                                  src={founder.image}
+                                  alt={founder.name}
+                                  className="object-cover w-full h-full"
+                                />
+                                <AvatarFallback>
+                                  <UserRound className="w-12 h-12 text-gray-400" />
+                                </AvatarFallback>
+                              </Avatar>
+                            ) : (
+                              <div className={`w-full h-full flex items-center justify-center ${
+                                founder.isDeceased ? 'bg-gray-200' : 'bg-[#1E40AF]/10'
+                              }`}>
+                                <UserRound className={`w-12 h-12 ${
+                                  founder.isDeceased ? 'text-gray-400' : 'text-[#1E40AF]'
+                                }`} />
+                              </div>
+                            )}
+                          </div>
+                        </motion.div>
+                        <motion.h3 
+                          className={`font-semibold text-xl mb-2 transition-colors duration-300 ${
+                            founder.isDeceased ? 'text-gray-500' : 'text-gray-900 group-hover:text-[#1E40AF]'
+                          }`}
+                          whileHover={{ scale: 1.02 }}
+                        >
+                          {founder.name}
+                        </motion.h3>
+                        <p className={`text-sm mb-3 ${
+                          founder.isDeceased ? 'text-gray-400' : 'text-gray-600'
+                        }`}>
+                          {founder.title}
+                        </p>
+                        <motion.span 
+                          className={`inline-flex items-center rounded-full px-4 py-1.5 text-sm font-medium ${
+                            founder.isDeceased 
+                              ? 'bg-gray-100 text-gray-500' 
+                              : 'bg-gradient-to-r from-[#1E40AF]/10 to-[#41b06e]/10 text-[#1E40AF] group-hover:from-[#1E40AF]/20 group-hover:to-[#41b06e]/20 transition-colors duration-300'
+                          }`}
+                          whileHover={{ scale: 1.05 }}
+                        >
+                          {founder.role}
+                        </motion.span>
+                        {founder.isDeceased && (
+                          <div className="mt-4 text-sm text-gray-500 italic">
+                            In memoriam
                           </div>
                         )}
                       </div>
+                    </CardContent>
+                  </Card>
+                </HoverCardTrigger>
+                <HoverCardContent className="w-80 p-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <Heart className="w-5 h-5 text-[#1E40AF]" />
+                      <p className="text-sm text-gray-600">{founder.bio}</p>
                     </div>
-                    <h3 className={`font-semibold text-xl mb-2 transition-colors duration-300 ${
-                      founder.isDeceased ? 'text-gray-500' : 'text-gray-900 group-hover:text-[#1E40AF]'
-                    }`}>
-                      {founder.name}
-                    </h3>
-                    <p className={`text-sm mb-3 ${
-                      founder.isDeceased ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {founder.title}
-                    </p>
-                    <span className={`inline-flex items-center rounded-full px-4 py-1.5 text-sm font-medium ${
-                      founder.isDeceased 
-                        ? 'bg-gray-100 text-gray-500' 
-                        : 'bg-gradient-to-r from-[#1E40AF]/10 to-[#41b06e]/10 text-[#1E40AF] group-hover:from-[#1E40AF]/20 group-hover:to-[#41b06e]/20 transition-colors duration-300'
-                    }`}>
-                      {founder.role}
-                    </span>
-                    {founder.isDeceased && (
-                      <div className="mt-4 text-sm text-gray-500 italic">
-                        In memoriam
+                    {founder.specialties && (
+                      <div className="flex items-center gap-2">
+                        <Stethoscope className="w-5 h-5 text-[#1E40AF]" />
+                        <div className="flex flex-wrap gap-2">
+                          {founder.specialties.map((specialty) => (
+                            <span key={specialty} className="text-xs bg-[#1E40AF]/10 text-[#1E40AF] px-2 py-1 rounded-full">
+                              {specialty}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {founder.location && (
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-5 h-5 text-[#1E40AF]" />
+                        <span className="text-sm text-gray-600">{founder.location}</span>
+                      </div>
+                    )}
+                    {founder.achievements && (
+                      <div className="flex items-start gap-2">
+                        <Award className="w-5 h-5 text-[#1E40AF] mt-1" />
+                        <ul className="text-sm text-gray-600 list-disc list-inside">
+                          {founder.achievements.map((achievement) => (
+                            <li key={achievement}>{achievement}</li>
+                          ))}
+                        </ul>
                       </div>
                     )}
                   </div>
-                </CardContent>
-              </Card>
+                </HoverCardContent>
+              </HoverCard>
             </motion.div>
           ))}
         </div>
