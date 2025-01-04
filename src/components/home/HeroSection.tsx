@@ -75,10 +75,7 @@ export const HeroSection = () => {
   }, [cycleCount]);
 
   return (
-    <section 
-      ref={sectionRef} 
-      className="relative px-4 sm:px-6 lg:px-8 overflow-hidden h-[calc(100vh-4rem)] md:h-[calc(100vh-5rem)] mt-16 md:mt-20 z-0"
-    >
+    <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(80vh-5rem)] z-0">
       <AnimatePresence mode="wait">
         <div
           key={currentIndex}
