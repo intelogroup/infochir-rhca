@@ -1,21 +1,12 @@
 import { useState } from "react";
-import { Menu, X, Search } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { NavLinks } from "./navigation/NavLinks";
 import { MobileMenu } from "./navigation/MobileMenu";
-import { Input } from "./ui/input";
 import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-
-  const handleSearch = (value: string) => {
-    setSearchQuery(value);
-    // You can implement search logic here
-  };
 
   return (
     <div className="relative z-50">
@@ -37,46 +28,6 @@ export const Navbar = () => {
             </Link>
 
             <div className="hidden md:flex md:items-center md:justify-center space-x-4 lg:space-x-8">
-              <motion.div 
-                className="relative flex items-center"
-                initial={false}
-                animate={isSearchOpen ? "open" : "closed"}
-              >
-                <motion.button
-                  onClick={() => setIsSearchOpen(!isSearchOpen)}
-                  className={cn(
-                    "p-2 rounded-full hover:bg-gray-100/80 transition-colors duration-200",
-                    isSearchOpen && "bg-gray-100/80"
-                  )}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Search className="h-5 w-5 text-gray-500" />
-                </motion.button>
-                <AnimatePresence>
-                  {isSearchOpen && (
-                    <motion.div
-                      initial={{ width: 0, opacity: 0 }}
-                      animate={{ width: "auto", opacity: 1 }}
-                      exit={{ width: 0, opacity: 0 }}
-                      transition={{ 
-                        duration: 0.2,
-                        ease: "easeInOut"
-                      }}
-                      className="ml-2 overflow-hidden"
-                    >
-                      <Input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => handleSearch(e.target.value)}
-                        placeholder="Rechercher..."
-                        className="w-[200px] lg:w-[250px] h-9 bg-white/50 border-gray-200/50 focus:border-primary/50 focus:ring-primary/50"
-                        autoFocus
-                      />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
               <NavLinks />
             </div>
 
@@ -118,8 +69,6 @@ export const Navbar = () => {
           <MobileMenu 
             isOpen={isOpen} 
             onClose={() => setIsOpen(false)} 
-            searchQuery={searchQuery}
-            onSearch={handleSearch}
           />
         </AnimatePresence>
       </nav>

@@ -1,17 +1,14 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { navItems } from "@/config/navigation";
-import { Heart, Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Heart } from "lucide-react";
 
 interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
-  searchQuery: string;
-  onSearch: (value: string) => void;
 }
 
-export const MobileMenu = ({ isOpen, onClose, searchQuery, onSearch }: MobileMenuProps) => {
+export const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
   const navigate = useNavigate();
 
   if (!isOpen) return null;
@@ -25,21 +22,6 @@ export const MobileMenu = ({ isOpen, onClose, searchQuery, onSearch }: MobileMen
       className="fixed top-16 md:top-20 left-0 right-0 w-full bg-white/95 backdrop-blur-sm shadow-lg border-b border-gray-200/50 md:hidden z-[100] overflow-hidden"
     >
       <div className="space-y-4 p-6">
-        <motion.div 
-          initial={{ x: -20, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 0.1 }}
-          className="relative flex items-center bg-gray-50/80 rounded-lg p-2"
-        >
-          <Search className="h-4 w-4 text-gray-400 ml-2" />
-          <Input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => onSearch(e.target.value)}
-            placeholder="Rechercher..."
-            className="border-0 bg-transparent focus:ring-0 pl-2"
-          />
-        </motion.div>
         {navItems.map((item, index) => (
           <motion.button
             key={item.name}
