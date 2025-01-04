@@ -2,6 +2,7 @@ import { MainLayout } from "@/components/layouts/MainLayout";
 import { IndexMedicusHeader } from "@/components/index-medicus/IndexMedicusHeader";
 import { SearchBar } from "@/components/index-medicus/SearchBar";
 import { ArticleCard } from "@/components/index-medicus/ArticleCard";
+import { ViewToggle } from "@/components/index-medicus/ViewToggle";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
 import { categories, sources, mockArticles } from "@/components/index-medicus/constants";
@@ -12,6 +13,7 @@ const IndexMedicus = () => {
   const [selectedSource, setSelectedSource] = useState("Toutes les sources");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [date, setDate] = useState<DateRange | undefined>();
+  const [view, setView] = useState("atlas");
 
   // Get unique tags from all articles
   const availableTags = Array.from(
@@ -83,6 +85,10 @@ const IndexMedicus = () => {
             sources={sources}
             availableTags={availableTags}
           />
+        </div>
+
+        <div className="mt-8 flex justify-center">
+          <ViewToggle view={view} setView={setView} />
         </div>
 
         <div className="mt-8 space-y-6">
