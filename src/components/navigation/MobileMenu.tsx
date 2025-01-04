@@ -15,6 +15,9 @@ export const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
 
   return (
     <motion.div
+      id="mobile-menu"
+      role="menu"
+      aria-label="Mobile navigation menu"
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: 0 }}
@@ -29,12 +32,14 @@ export const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
               navigate(item.href);
               onClose();
             }}
-            className="flex w-full items-center rounded-lg px-4 py-3 font-medium transition-all duration-200 hover:bg-gray-50/80"
+            className="flex w-full items-center rounded-lg px-4 py-3 font-medium transition-all duration-200 hover:bg-gray-50/80 focus:outline-none focus:ring-2 focus:ring-primary/50"
             initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.1 + index * 0.05 }}
             whileHover={{ x: 5 }}
             whileTap={{ scale: 0.95 }}
+            role="menuitem"
+            aria-label={item.name}
           >
             <span className="bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] bg-clip-text text-transparent text-lg">
               {item.name}
@@ -46,15 +51,17 @@ export const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             navigate('/donate');
             onClose();
           }}
-          className="flex w-full items-center justify-between rounded-lg px-4 py-3 font-medium bg-gradient-to-r from-secondary to-secondary-light text-white hover:opacity-90 transition-all duration-200"
+          className="flex w-full items-center justify-between rounded-lg px-4 py-3 font-medium bg-gradient-to-r from-secondary to-secondary-light text-white hover:opacity-90 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-secondary/50"
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.1 + (navItems.length + 1) * 0.05 }}
           whileHover={{ x: 5 }}
           whileTap={{ scale: 0.95 }}
+          role="menuitem"
+          aria-label="Faire un don"
         >
           <span className="text-lg">Faire un don</span>
-          <Heart className="h-5 w-5 text-white fill-white" />
+          <Heart className="h-5 w-5 text-white fill-white" aria-hidden="true" />
         </motion.button>
       </div>
     </motion.div>
