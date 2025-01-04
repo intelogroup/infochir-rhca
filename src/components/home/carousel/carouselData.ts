@@ -23,7 +23,7 @@ export const highlights: Highlight[] = [
     category: "Chirurgie",
     date: "15 Feb 2024",
     author: "Dr. Martin",
-    image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&auto=format",
+    image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&auto=format&fit=crop&q=80",
     views: 1250,
     citations: 45
   },
@@ -33,7 +33,7 @@ export const highlights: Highlight[] = [
     category: "Événement",
     date: "20 Mar 2024",
     author: "Comité Organisateur",
-    image: "https://images.unsplash.com/photo-1576670392954-858d5d9b5563?w=800&auto=format",
+    image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&auto=format&fit=crop&q=80",
     location: "Centre de Conférences Médical, Paris",
     duration: "2 jours",
     maxParticipants: 150
@@ -44,7 +44,7 @@ export const highlights: Highlight[] = [
     category: "Formation",
     date: "5 Apr 2024",
     author: "Dr. Moreau",
-    image: "https://images.unsplash.com/photo-1551076805-e1869033e561?w=800&auto=format",
+    image: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=800&auto=format&fit=crop&q=80",
     prerequisites: ["3 ans d'expérience en chirurgie", "Pratique régulière de la laparoscopie"],
     objectives: [
       "Maîtriser les techniques avancées",
@@ -59,7 +59,7 @@ export const highlights: Highlight[] = [
     category: "Anesthésie",
     date: "12 Feb 2024",
     author: "Dr. Dubois",
-    image: "https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=800&auto=format",
+    image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=800&auto=format&fit=crop&q=80",
     views: 980,
     citations: 32
   },
@@ -69,7 +69,7 @@ export const highlights: Highlight[] = [
     category: "Innovation",
     date: "10 Feb 2024",
     author: "Dr. Bernard",
-    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&auto=format",
+    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&auto=format&fit=crop&q=80",
     views: 1500,
     citations: 58
   },
@@ -79,18 +79,8 @@ export const highlights: Highlight[] = [
     category: "Directives",
     date: "8 Feb 2024",
     author: "Dr. Lambert",
-    image: "https://images.unsplash.com/photo-1579684453423-f84349ef60b0?w=800&auto=format",
+    image: "https://images.unsplash.com/photo-1483058712412-4245e9b90334?w=800&auto=format&fit=crop&q=80",
     views: 1100,
     citations: 25
-  },
-  {
-    title: "Formation: Techniques avancées en laparoscopie",
-    description: "Programme intensif de formation pour chirurgiens expérimentés",
-    category: "Formation",
-    date: "5 Apr 2024",
-    author: "Dr. Moreau",
-    image: "https://images.unsplash.com/photo-1551076805-e1869033e561?w=800&auto=format",
-    views: 720,
-    citations: 0
   }
 ];
