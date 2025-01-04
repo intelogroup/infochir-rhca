@@ -8,4 +8,5 @@ export interface Founder {
   specialties?: string[];
   location?: string;
   achievements?: string[];
+  responsibilities?: string[];
 }
