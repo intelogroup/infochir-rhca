@@ -47,7 +47,7 @@ const founders: Founder[] = [
     name: "Jean-Marie EUSTACHE",
     title: "Chirurgien Général",
     role: "TRESORIER",
-    image: "/lovable-uploads/f7c22c2b-257f-48c9-94d2-9c75ddb26f01.png"
+    image: "/lovable-uploads/038bd7aa-3ffa-482a-bf3b-202d278f40bd.png"
   },
   {
     name: "Denise FABIEN",

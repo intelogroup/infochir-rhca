@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import type { Highlight } from "./carouselData";
 import { useState } from "react";
 import { Eye, Quote, X, Calendar, MapPin, Users, Clock } from "lucide-react";
@@ -199,7 +199,7 @@ export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
           <div className="relative">
             <Button
               variant="ghost"
-              size="icon"
+              size="default"
               className="absolute right-0 top-0 z-10"
               onClick={() => setIsOpen(false)}
             >
