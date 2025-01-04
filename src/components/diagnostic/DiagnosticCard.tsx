@@ -4,40 +4,12 @@ import { Button } from "@/components/ui/button";
 import { FileText, Share2, Download } from "lucide-react";
 import { DiagnosticCase } from "./types";
 import { toast } from "sonner";
-import { useState, useEffect } from "react";
 
 interface DiagnosticCardProps {
   diagnosticCase: DiagnosticCase;
 }
 
 export const DiagnosticCard = ({ diagnosticCase }: DiagnosticCardProps) => {
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const [isInView, setIsInView] = useState(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsInView(true);
-          observer.disconnect();
-        }
-      },
-      {
-        rootMargin: "50px",
-      }
-    );
-
-    if (observer) {
-      observer.observe(document.getElementById(`card-${diagnosticCase.id}`) as Element);
-    }
-
-    return () => {
-      if (observer) {
-        observer.disconnect();
-      }
-    };
-  }, [diagnosticCase.id]);
-
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href + '#' + diagnosticCase.id);
     toast.success("Lien copié dans le presse-papier");
@@ -48,23 +20,13 @@ export const DiagnosticCard = ({ diagnosticCase }: DiagnosticCardProps) => {
   };
 
   return (
-    <Card 
-      id={`card-${diagnosticCase.id}`}
-      className="group overflow-hidden hover:shadow-lg transition-all duration-300 rounded-xl border border-gray-200/50 hover:border-primary/20"
-    >
-      <div className="aspect-[4/3] relative overflow-hidden bg-gray-100">
-        {!imageLoaded && <div className="absolute inset-0 bg-gray-100 animate-pulse" />}
-        {isInView && (
-          <img
-            src={diagnosticCase.imageUrl}
-            alt={diagnosticCase.title}
-            className={`object-cover w-full h-full transition-all duration-500 ${
-              imageLoaded ? 'opacity-100 group-hover:scale-110' : 'opacity-0'
-            }`}
-            onLoad={() => setImageLoaded(true)}
-            loading="lazy"
-          />
-        )}
+    <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 rounded-xl border border-gray-200/50 hover:border-primary/20">
+      <div className="aspect-[4/3] relative overflow-hidden">
+        <img
+          src={diagnosticCase.imageUrl}
+          alt={diagnosticCase.title}
+          className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
       <CardHeader className="p-4">
