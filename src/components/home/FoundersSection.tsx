@@ -111,7 +111,7 @@ export const FoundersSection = () => {
                       <div className={`relative w-full h-full rounded-full overflow-hidden ring-4 transform transition-all duration-500 ${
                         founder.isDeceased 
                           ? 'ring-gray-200' 
-                          : 'ring-[#1E40AF]/30 group-hover:ring-[#41b06e]/50 group-hover:scale-105'
+                          : 'ring-[#1A1F2C] group-hover:ring-[#1A1F2C]/80 group-hover:scale-105'
                       }`}>
                         {founder.image ? (
                           <Avatar className="w-full h-full">
