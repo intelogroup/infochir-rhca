@@ -78,6 +78,57 @@ export type Database = {
         }
         Relationships: []
       }
+      articles: {
+        Row: {
+          abstract: string
+          authors: string[]
+          category: string
+          citations: number | null
+          created_at: string | null
+          id: string
+          image_url: string | null
+          pdf_url: string | null
+          publication_date: string | null
+          source: string
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+          views: number | null
+        }
+        Insert: {
+          abstract: string
+          authors?: string[]
+          category: string
+          citations?: number | null
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          pdf_url?: string | null
+          publication_date?: string | null
+          source: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+          views?: number | null
+        }
+        Update: {
+          abstract?: string
+          authors?: string[]
+          category?: string
+          citations?: number | null
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          pdf_url?: string | null
+          publication_date?: string | null
+          source?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+          views?: number | null
+        }
+        Relationships: []
+      }
       members: {
         Row: {
           avatar_url: string | null
