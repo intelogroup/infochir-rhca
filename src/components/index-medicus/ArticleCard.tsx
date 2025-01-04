@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, User, Eye, Quote, Download, Share2 } from "lucide-react";
+import { Calendar, User, Eye, Quote, Download, Share2, Copy } from "lucide-react";
 import { Article } from "./types";
 import { toast } from "sonner";
 
@@ -11,12 +11,30 @@ interface ArticleCardProps {
 
 export const ArticleCard = ({ article }: ArticleCardProps) => {
   const handleDownload = () => {
-    toast.success("Le téléchargement va commencer...");
+    if (article.pdfUrl) {
+      // Create a temporary anchor element
+      const link = document.createElement('a');
+      link.href = article.pdfUrl;
+      link.setAttribute('download', `${article.title}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success("Le téléchargement va commencer...");
+    } else {
+      toast.error("Le PDF n'est pas disponible pour cet article");
+    }
   };
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href + '#' + article.id);
     toast.success("Lien copié dans le presse-papier");
+  };
+
+  const generateCitation = () => {
+    // Generate citation in APA format
+    const citation = `${article.authors.join(", ")} (${new Date(article.date).getFullYear()}). ${article.title}. ${article.source}, ${article.category}. DOI: ${article.id}`;
+    navigator.clipboard.writeText(citation);
+    toast.success("Citation copiée dans le presse-papier");
   };
 
   return (
@@ -47,7 +65,7 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
                   {article.authors.join(", ")}
                   <span className="mx-2">•</span>
                   <Calendar className="h-4 w-4" />
-                  {article.date}
+                  {new Date(article.date).toLocaleDateString()}
                   {article.views && (
                     <>
                       <span className="mx-2">•</span>
@@ -94,6 +112,15 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
               >
                 <Download className="h-4 w-4" />
                 Télécharger PDF
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="gap-2"
+                onClick={generateCitation}
+              >
+                <Copy className="h-4 w-4" />
+                Copier la citation
               </Button>
               <Button 
                 variant="outline" 

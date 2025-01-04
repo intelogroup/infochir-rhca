@@ -10,4 +10,16 @@ export interface Article {
   imageUrl?: string;
   views?: number;
   citations?: number;
+  pdfUrl?: string;
+}
+
+export interface SearchFilters {
+  searchTerm: string;
+  category: string;
+  source: string;
+  tags: string[];
+  dateRange?: {
+    from: Date;
+    to: Date;
+  };
 }
