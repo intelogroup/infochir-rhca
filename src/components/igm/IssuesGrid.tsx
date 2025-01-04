@@ -2,6 +2,7 @@ import { useState } from "react";
 import { SearchAndSort } from "@/components/issues/SearchAndSort";
 import { IssueCard } from "@/components/issues/IssueCard";
 import { IssuesTable } from "@/components/issues/IssuesTable";
+import { YearGroup } from "@/components/issues/YearGroup";
 import type { Issue } from "@/components/issues/types";
 
 const mockIssues: Issue[] = [
@@ -112,16 +113,44 @@ export const IssuesGrid = ({ viewMode = "grid" }: { viewMode?: "grid" | "table" 
     issue.abstract.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const sortedIssues = [...filteredIssues].sort((a, b) => {
-    switch (sortBy) {
+  const sortIssues = (issues: Issue[], sortType: string) => {
+    let sorted = [...issues];
+    switch (sortType) {
       case "latest":
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
-      case "oldest":
-        return new Date(a.date).getTime() - new Date(b.date).getTime();
+        sorted.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        break;
+      case "year":
+        sorted.sort((a, b) => 
+          new Date(b.date).getFullYear() - new Date(a.date).getFullYear()
+        );
+        break;
+      case "month":
+        sorted.sort((a, b) => 
+          new Date(b.date).getMonth() - new Date(a.date).getMonth()
+        );
+        break;
       default:
-        return 0;
+        break;
     }
-  });
+    return sorted;
+  };
+
+  const sortedIssues = sortIssues(filteredIssues, sortBy);
+
+  // Group issues by year when in grid view
+  const issuesByYear = sortedIssues.reduce((acc, issue) => {
+    const year = new Date(issue.date).getFullYear();
+    if (!acc[year]) {
+      acc[year] = [];
+    }
+    acc[year].push(issue);
+    return acc;
+  }, {} as Record<number, Issue[]>);
+
+  // Sort years in descending order
+  const sortedYears = Object.keys(issuesByYear)
+    .map(Number)
+    .sort((a, b) => b - a);
 
   return (
     <div className="space-y-6">
@@ -133,11 +162,12 @@ export const IssuesGrid = ({ viewMode = "grid" }: { viewMode?: "grid" | "table" 
       />
       
       {viewMode === "grid" ? (
-        <div className="grid grid-cols-1 gap-6">
-          {sortedIssues.map((issue) => (
-            <IssueCard
-              key={issue.id}
-              {...issue}
+        <div className="space-y-6">
+          {sortedYears.map((year) => (
+            <YearGroup
+              key={year}
+              year={year}
+              issues={issuesByYear[year]}
             />
           ))}
         </div>
