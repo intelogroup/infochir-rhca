@@ -40,7 +40,7 @@ const founders: Founder[] = [
     name: "Geissly KERNISAN",
     title: "Chirurgien Général",
     role: "REDACTEUR",
-    image: "/lovable-uploads/dafd5fac-6e72-4389-b877-558f4b73d12c.png",
+    image: "/lovable-uploads/1b04ef39-161c-40a8-9706-eecbac750611.png",
     isDeceased: true
   },
   {
