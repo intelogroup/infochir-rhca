@@ -1,3 +1,8 @@
+export interface ExtendedContent {
+  keyPoints: string[];
+  conclusion?: string;
+}
+
 export interface Highlight {
   title: string;
   description: string;
@@ -7,6 +12,7 @@ export interface Highlight {
   image?: string;
   views?: number;
   citations?: number;
+  extendedContent?: ExtendedContent;
 }
 
 export const highlights: Highlight[] = [
@@ -18,7 +24,16 @@ export const highlights: Highlight[] = [
     author: "Dr. Martin",
     image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&auto=format",
     views: 1250,
-    citations: 45
+    citations: 45,
+    extendedContent: {
+      keyPoints: [
+        "Réduction significative du temps de récupération post-opératoire",
+        "Diminution des complications post-chirurgicales de 35%",
+        "Nouvelle technique applicable dans 80% des cas standards",
+        "Validation sur une cohorte de 500 patients"
+      ],
+      conclusion: "Cette approche révolutionnaire ouvre la voie à une nouvelle ère de la chirurgie mini-invasive, promettant des résultats optimaux avec une récupération accélérée."
+    }
   },
   {
     title: "Avancées en anesthésie régionale",
@@ -28,7 +43,16 @@ export const highlights: Highlight[] = [
     author: "Dr. Dubois",
     image: "https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=800&auto=format",
     views: 980,
-    citations: 32
+    citations: 32,
+    extendedContent: {
+      keyPoints: [
+        "Nouvelle technique d'imagerie pour le guidage des injections",
+        "Amélioration de la précision de 45%",
+        "Réduction du temps de procédure de 30%",
+        "Satisfaction patient augmentée de 25%"
+      ],
+      conclusion: "L'intégration de ces nouvelles technologies permet une précision accrue et une meilleure expérience patient."
+    }
   },
   {
     title: "Impact des nouvelles technologies en médecine",
@@ -38,7 +62,16 @@ export const highlights: Highlight[] = [
     author: "Dr. Bernard",
     image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&auto=format",
     views: 1500,
-    citations: 58
+    citations: 58,
+    extendedContent: {
+      keyPoints: [
+        "Amélioration du diagnostic précoce de 40%",
+        "Réduction des erreurs médicales de 25%",
+        "Optimisation du temps de consultation",
+        "Personnalisation accrue des traitements"
+      ],
+      conclusion: "L'IA s'impose comme un outil indispensable pour améliorer la qualité des soins et l'efficacité des praticiens."
+    }
   },
   {
     title: "Congrès International de Chirurgie 2024",
