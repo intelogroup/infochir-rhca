@@ -13,6 +13,7 @@ import About from "./pages/About";
 import Annuaire from "./pages/Annuaire";
 import Directives from "./pages/rhca/Directives";
 import Submission from "./pages/Submission";
+import IndexMedicus from "./pages/IndexMedicus";
 
 const queryClient = new QueryClient();
 
@@ -30,7 +31,7 @@ const App = () => {
                 <Route path="/rhca" element={<RHCA />} />
                 <Route path="/igm" element={<IGM />} />
                 <Route path="/adc" element={<ADC />} />
-                <Route path="/index-medicus" element={<div>Index Medicus Page (Coming Soon)</div>} />
+                <Route path="/index-medicus" element={<IndexMedicus />} />
                 <Route path="/settings" element={<div>Settings Page (Coming Soon)</div>} />
                 <Route path="/donate" element={<Donate />} />
                 <Route path="/about" element={<About />} />
