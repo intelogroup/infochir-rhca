@@ -13,7 +13,7 @@ const IGM = () => {
   return (
     <MainLayout>
       <div className="min-h-screen bg-[#F1F0FB]">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        <div className="container max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
           <Link to="/" className="inline-block mb-8">
             <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary-light">
               <ArrowLeft className="h-4 w-4" />
@@ -47,7 +47,9 @@ const IGM = () => {
                   </ToggleGroupItem>
                 </ToggleGroup>
               </div>
-              <IssuesGrid viewMode={viewMode} />
+              <div className="w-full overflow-x-hidden">
+                <IssuesGrid viewMode={viewMode} />
+              </div>
             </div>
             
             <div className="space-y-6">
