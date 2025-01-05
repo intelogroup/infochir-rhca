@@ -20,5 +20,7 @@ export interface RhcaVolume {
   description?: string;
   coverImage?: string;
   articleCount: number;
+  downloadCount?: number;
+  shareCount?: number;
   articles: RhcaArticle[];
 }

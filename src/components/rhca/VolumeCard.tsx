@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, FileText } from "lucide-react";
+import { ChevronRight, FileText, Download, Share2 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useState } from "react";
@@ -24,7 +24,7 @@ export const VolumeCard = ({ volume }: VolumeCardProps) => {
           <div className="flex justify-between items-start">
             <div>
               <CardTitle className="text-2xl font-bold text-primary mb-2">
-                Volume {volume.volume}
+                {volume.volume}
               </CardTitle>
               <p className="text-sm text-gray-500">
                 {format(new Date(volume.date), 'MMMM yyyy', { locale: fr })}
@@ -49,6 +49,14 @@ export const VolumeCard = ({ volume }: VolumeCardProps) => {
             <div className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
               {volume.articleCount} articles
+            </div>
+            <div className="flex items-center gap-2">
+              <Download className="h-4 w-4" />
+              {volume.downloadCount || 0}
+            </div>
+            <div className="flex items-center gap-2">
+              <Share2 className="h-4 w-4" />
+              {volume.shareCount || 0}
             </div>
           </div>
         </CardContent>
