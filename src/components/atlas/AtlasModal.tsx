@@ -25,12 +25,14 @@ export const AtlasModal = ({ chapter, open, onOpenChange }: AtlasModalProps) => 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl h-[80vh] p-0">
         <div className="relative h-[200px] w-full">
-          {chapter.coverImage && (
+          {chapter.coverImage ? (
             <img
               src={chapter.coverImage}
               alt={chapter.title}
               className="w-full h-full object-cover"
             />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-r from-primary/20 to-secondary/20" />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-background/20" />
           <DialogHeader className="absolute bottom-4 left-6 right-6">
@@ -91,7 +93,7 @@ export const AtlasModal = ({ chapter, open, onOpenChange }: AtlasModalProps) => 
               <Button
                 variant="outline"
                 size="lg"
-                className="flex-1"
+                className="flex-1 hover:bg-primary hover:text-white transition-colors"
                 onClick={handleShare}
               >
                 <Share2 className="h-5 w-5 mr-2" />
@@ -100,7 +102,7 @@ export const AtlasModal = ({ chapter, open, onOpenChange }: AtlasModalProps) => 
               <Button
                 variant="outline"
                 size="lg"
-                className="flex-1"
+                className="flex-1 hover:bg-primary hover:text-white transition-colors"
                 onClick={handleDownload}
               >
                 <Download className="h-5 w-5 mr-2" />
