@@ -1,14 +1,14 @@
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Calendar, User, Eye, Share2, Download } from "lucide-react";
+import { Calendar, User } from "lucide-react";
 import { AtlasModalProps } from "./types";
-import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { AtlasModalHeader } from "./modal/AtlasModalHeader";
+import { AtlasModalStats } from "./modal/AtlasModalStats";
+import { AtlasModalActions } from "./modal/AtlasModalActions";
 
 export const AtlasModal = ({ chapter, open, onOpenChange }: AtlasModalProps) => {
   const handleShare = () => {
@@ -24,23 +24,7 @@ export const AtlasModal = ({ chapter, open, onOpenChange }: AtlasModalProps) => 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl h-[80vh] p-0">
-        <div className="relative h-[200px] w-full">
-          {chapter.coverImage ? (
-            <img
-              src={chapter.coverImage}
-              alt={chapter.title}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-r from-primary/20 to-secondary/20" />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-background/20" />
-          <DialogHeader className="absolute bottom-4 left-6 right-6">
-            <DialogTitle className="text-3xl font-bold text-white">
-              {chapter.title}
-            </DialogTitle>
-          </DialogHeader>
-        </div>
+        <AtlasModalHeader title={chapter.title} coverImage={chapter.coverImage} />
 
         <ScrollArea className="h-[calc(80vh-200px)] px-6">
           <div className="space-y-6 py-6">
@@ -65,50 +49,8 @@ export const AtlasModal = ({ chapter, open, onOpenChange }: AtlasModalProps) => 
               </p>
             )}
 
-            <div className="grid grid-cols-3 gap-4">
-              <div className="flex flex-col items-center p-6 bg-gray-50 dark:bg-gray-900 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                <Eye className="h-8 w-8 text-primary mb-2" />
-                <span className="text-3xl font-bold text-primary">
-                  {chapter.stats?.views || 0}
-                </span>
-                <span className="text-sm text-gray-500">Vues</span>
-              </div>
-              <div className="flex flex-col items-center p-6 bg-gray-50 dark:bg-gray-900 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                <Share2 className="h-8 w-8 text-primary mb-2" />
-                <span className="text-3xl font-bold text-primary">
-                  {chapter.stats?.shares || 0}
-                </span>
-                <span className="text-sm text-gray-500">Partages</span>
-              </div>
-              <div className="flex flex-col items-center p-6 bg-gray-50 dark:bg-gray-900 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                <Download className="h-8 w-8 text-primary mb-2" />
-                <span className="text-3xl font-bold text-primary">
-                  {chapter.stats?.downloads || 0}
-                </span>
-                <span className="text-sm text-gray-500">Téléchargements</span>
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <Button
-                variant="outline"
-                size="lg"
-                className="flex-1 hover:bg-primary hover:text-white transition-colors"
-                onClick={handleShare}
-              >
-                <Share2 className="h-5 w-5 mr-2" />
-                Partager
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="flex-1 hover:bg-primary hover:text-white transition-colors"
-                onClick={handleDownload}
-              >
-                <Download className="h-5 w-5 mr-2" />
-                Télécharger le PDF
-              </Button>
-            </div>
+            <AtlasModalStats stats={chapter.stats} />
+            <AtlasModalActions onShare={handleShare} onDownload={handleDownload} />
           </div>
         </ScrollArea>
       </DialogContent>
