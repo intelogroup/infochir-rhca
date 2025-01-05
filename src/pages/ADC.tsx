@@ -1,7 +1,7 @@
 import { MainLayout } from "@/components/layouts/MainLayout";
-import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { AtlasTableOfContents } from "@/components/atlas/AtlasTableOfContents";
+import { AtlasCard } from "@/components/atlas/AtlasCard";
+import { atlasContent } from "@/components/atlas/data/atlasContent";
 
 const ADC = () => {
   return (
@@ -14,47 +14,14 @@ const ADC = () => {
           </p>
         </section>
 
-        <section className="max-w-2xl mx-auto">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-            <Input
-              type="text"
-              placeholder="Rechercher un cas clinique..."
-              className="pl-10 w-full"
-            />
-          </div>
+        <section className="flex justify-between items-center">
+          <AtlasTableOfContents />
         </section>
 
         <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <div className="p-6 bg-white rounded-lg shadow-md space-y-4">
-            <h3 className="text-xl font-semibold">Cas Cliniques</h3>
-            <p className="text-gray-600">
-              Accédez à une collection de cas cliniques documentés avec images et descriptions détaillées.
-            </p>
-            <Button variant="outline" className="w-full">
-              Explorer
-            </Button>
-          </div>
-          
-          <div className="p-6 bg-white rounded-lg shadow-md space-y-4">
-            <h3 className="text-xl font-semibold">Diagnostics</h3>
-            <p className="text-gray-600">
-              Consultez notre base de données de diagnostics chirurgicaux avec leurs caractéristiques.
-            </p>
-            <Button variant="outline" className="w-full">
-              Consulter
-            </Button>
-          </div>
-
-          <div className="p-6 bg-white rounded-lg shadow-md space-y-4">
-            <h3 className="text-xl font-semibold">Contributions</h3>
-            <p className="text-gray-600">
-              Partagez vos propres cas cliniques et contribuez à enrichir notre base de connaissances.
-            </p>
-            <Button variant="outline" className="w-full">
-              Contribuer
-            </Button>
-          </div>
+          {atlasContent.map((chapter) => (
+            <AtlasCard key={chapter.id} chapter={chapter} />
+          ))}
         </section>
       </div>
     </MainLayout>
