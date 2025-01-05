@@ -1,5 +1,5 @@
-import { Issue } from "./types";
-import { IssueCard } from "./IssueCard";
+import { IssueCard } from "@/components/igm/IssueCard";
+import type { Issue } from "@/components/igm/types";
 
 interface YearGroupProps {
   year: number;
@@ -8,23 +8,11 @@ interface YearGroupProps {
 
 export const YearGroup = ({ year, issues }: YearGroupProps) => {
   return (
-    <div className="space-y-2">
-      <h2 className="text-lg font-bold text-primary">{year}</h2>
-      <div className="grid gap-2">
+    <div>
+      <h2 className="text-2xl font-bold text-primary mb-4">{year}</h2>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {issues.map((issue) => (
-          <IssueCard 
-            key={issue.id}
-            id={issue.id}
-            title={issue.title}
-            volume={issue.volume}
-            issue={issue.issue}
-            date={issue.date}
-            abstract={issue.abstract}
-            description={issue.description}
-            articleCount={issue.articleCount}
-            pdfUrl={issue.pdfUrl}
-            coverImage={issue.coverImage}
-          />
+          <IssueCard key={issue.id} issue={issue} />
         ))}
       </div>
     </div>

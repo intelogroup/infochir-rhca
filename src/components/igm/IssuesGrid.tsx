@@ -1,36 +1,65 @@
 import { useState, useMemo } from "react";
 import { SearchAndSort } from "@/components/issues/SearchAndSort";
-import { IssueCard } from "@/components/issues/IssueCard";
-import { IssuesTable } from "@/components/issues/IssuesTable";
 import { YearGroup } from "@/components/issues/YearGroup";
+import { IssuesTable } from "@/components/issues/IssuesTable";
 import { toast } from "@/hooks/use-toast";
-import type { Issue } from "@/components/issues/types";
+import type { Issue } from "./types";
 
 const mockIssues: Issue[] = [
   {
     id: "1",
-    title: "IGM",
-    volume: "Volume 3",
-    issue: "No 41",
-    date: new Date(2024, 8, 1).toISOString(), // September 2024
-    abstract: "Édition spéciale sur les avancées en médecine tropicale. Édité par Dr. Jean Alouidor",
-    description: "Dr. Jean Alouidor",
-    pdfUrl: "#",
+    title: "Info CHIR",
+    volume: "Volume 7",
+    issue: "No 32",
+    date: new Date(2020, 8, 15).toISOString(),
+    abstract: "Numéro spécial sur les avancées en chirurgie mini-invasive",
+    description: "Édité par Dr. Jean Alouidor",
+    pdfUrl: "https://example.com/sample1.pdf",
     coverImage: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=500&h=700&fit=crop",
-    articleCount: 12,
+    articleCount: 8,
+    downloads: 125,
+    shares: 45,
+    articles: [
+      {
+        id: "1-1",
+        title: "Les nouvelles techniques en chirurgie mini-invasive",
+        authors: ["Dr. Marie Laurent", "Dr. Pierre Dubois"],
+        pageNumber: 1,
+        abstract: "Une revue des dernières avancées en chirurgie mini-invasive",
+        tags: ["Chirurgie mini-invasive", "Innovation", "Techniques chirurgicales"]
+      },
+      {
+        id: "1-2",
+        title: "Impact de la chirurgie mini-invasive sur la récupération post-opératoire",
+        authors: ["Dr. Jean Martin", "Dr. Sophie Richard"],
+        pageNumber: 15,
+        tags: ["Récupération post-opératoire", "Étude clinique"]
+      }
+    ]
   },
   {
     id: "2",
-    title: "IGM",
-    volume: "Volume 3",
-    issue: "No 40",
-    date: new Date(2024, 5, 1).toISOString(), // June 2024
-    abstract: "Focus sur les maladies infectieuses émergentes. Édité par Dr. Jean Alouidor",
-    description: "Dr. Jean Alouidor",
-    pdfUrl: "#",
+    title: "Info CHIR",
+    volume: "Volume 7",
+    issue: "No 31",
+    date: new Date(2020, 5, 15).toISOString(),
+    abstract: "Focus sur l'anesthésie en chirurgie pédiatrique",
+    description: "Édité par Dr. Jean Alouidor",
+    pdfUrl: "https://example.com/sample2.pdf",
     coverImage: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=500&h=700&fit=crop",
-    articleCount: 8,
-  },
+    articleCount: 6,
+    downloads: 98,
+    shares: 32,
+    articles: [
+      {
+        id: "2-1",
+        title: "Spécificités de l'anesthésie pédiatrique",
+        authors: ["Dr. Anne Dupont", "Dr. Marc Bernard"],
+        pageNumber: 1,
+        tags: ["Anesthésie", "Pédiatrie"]
+      }
+    ]
+  }
   {
     id: "3",
     title: "IGM",
@@ -105,11 +134,14 @@ const mockIssues: Issue[] = [
   },
 ];
 
-export const IssuesGrid = ({ viewMode = "grid" }: { viewMode?: "grid" | "table" }) => {
+interface IssuesGridProps {
+  viewMode?: "grid" | "table";
+}
+
+export const IssuesGrid = ({ viewMode = "grid" }: IssuesGridProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("latest");
 
-  // Enhanced search with memoization
   const filteredIssues = useMemo(() => {
     const filtered = mockIssues.filter((issue) => {
       const searchLower = searchTerm.toLowerCase();
@@ -133,7 +165,6 @@ export const IssuesGrid = ({ viewMode = "grid" }: { viewMode?: "grid" | "table" 
     return filtered;
   }, [searchTerm]);
 
-  // Enhanced sorting logic
   const sortIssues = (issues: Issue[], sortType: string) => {
     let sorted = [...issues];
     switch (sortType) {
@@ -150,9 +181,14 @@ export const IssuesGrid = ({ viewMode = "grid" }: { viewMode?: "grid" | "table" 
           new Date(b.date).getMonth() - new Date(a.date).getMonth()
         );
         break;
-      case "articles":
+      case "downloads":
         sorted.sort((a, b) => 
-          (b.articleCount || 0) - (a.articleCount || 0)
+          (b.downloads || 0) - (a.downloads || 0)
+        );
+        break;
+      case "shares":
+        sorted.sort((a, b) => 
+          (b.shares || 0) - (a.shares || 0)
         );
         break;
       default:
@@ -163,7 +199,6 @@ export const IssuesGrid = ({ viewMode = "grid" }: { viewMode?: "grid" | "table" 
 
   const sortedIssues = sortIssues(filteredIssues, sortBy);
 
-  // Group issues by year when in grid view
   const issuesByYear = sortedIssues.reduce((acc, issue) => {
     const year = new Date(issue.date).getFullYear();
     if (!acc[year]) {
@@ -173,7 +208,6 @@ export const IssuesGrid = ({ viewMode = "grid" }: { viewMode?: "grid" | "table" 
     return acc;
   }, {} as Record<number, Issue[]>);
 
-  // Sort years in descending order
   const sortedYears = Object.keys(issuesByYear)
     .map(Number)
     .sort((a, b) => b - a);
@@ -189,7 +223,8 @@ export const IssuesGrid = ({ viewMode = "grid" }: { viewMode?: "grid" | "table" 
           { value: "latest", label: "Plus récents" },
           { value: "year", label: "Année" },
           { value: "month", label: "Mois" },
-          { value: "articles", label: "Nombre d'articles" },
+          { value: "downloads", label: "Téléchargements" },
+          { value: "shares", label: "Partages" },
         ]}
       />
       
