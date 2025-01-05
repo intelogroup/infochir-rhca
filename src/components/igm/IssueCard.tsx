@@ -35,28 +35,28 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
   return (
     <>
       <Card 
-        className="hover:shadow-lg transition-shadow cursor-pointer group bg-white"
+        className="hover:shadow-lg transition-shadow cursor-pointer group bg-white h-full"
         onClick={() => setIsModalOpen(true)}
       >
-        <div className="flex flex-col sm:flex-row">
-          <div className="w-full sm:w-32 h-48 sm:h-44 flex-shrink-0 overflow-hidden">
+        <div className="flex flex-col sm:flex-row h-full">
+          <div className="w-full sm:w-32 h-48 sm:h-auto flex-shrink-0 relative">
             {issue.coverImage ? (
               <img 
                 src={issue.coverImage}
                 alt={`Couverture ${issue.title}`}
-                className="w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-105"
+                className="w-full h-full object-cover absolute inset-0"
               />
             ) : (
-              <div className="w-full h-full bg-muted flex items-center justify-center">
+              <div className="w-full h-full bg-muted flex items-center justify-center absolute inset-0">
                 <span className="text-muted-foreground">No cover</span>
               </div>
             )}
           </div>
           
-          <div className="flex-1 p-4 sm:p-6">
-            <div className="space-y-4">
+          <div className="flex-1 p-4 sm:p-6 flex flex-col min-w-0">
+            <div className="space-y-4 flex-1">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
                   {issue.title}
                 </h3>
                 <p className="text-sm text-gray-600">
@@ -69,45 +69,45 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
                 </div>
               </div>
 
-              <p className="text-gray-600 line-clamp-2">
+              <p className="text-gray-600 line-clamp-2 break-words">
                 {issue.abstract}
               </p>
 
-              <div className="flex items-center gap-4 text-sm text-gray-500">
+              <div className="flex items-center gap-4 text-sm text-gray-500 flex-wrap">
                 <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4" />
-                  {issue.articleCount} articles
+                  <FileText className="h-4 w-4 flex-shrink-0" />
+                  <span className="truncate">{issue.articleCount} articles</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Download className="h-4 w-4" />
-                  {issue.downloads || 0}
+                  <Download className="h-4 w-4 flex-shrink-0" />
+                  <span className="truncate">{issue.downloads || 0}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Share2 className="h-4 w-4" />
-                  {issue.shares || 0}
+                  <Share2 className="h-4 w-4 flex-shrink-0" />
+                  <span className="truncate">{issue.shares || 0}</span>
                 </div>
               </div>
+            </div>
 
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2 bg-ocean text-white hover:bg-ocean-hover"
-                  onClick={handleShare}
-                >
-                  <Share2 className="h-4 w-4" />
-                  Partager
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2 bg-ocean text-white hover:bg-ocean-hover"
-                  onClick={handleDownload}
-                >
-                  <Download className="h-4 w-4" />
-                  PDF
-                </Button>
-              </div>
+            <div className="flex gap-2 mt-4 flex-wrap">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2 bg-ocean text-white hover:bg-ocean-hover flex-1 min-w-[120px]"
+                onClick={handleShare}
+              >
+                <Share2 className="h-4 w-4" />
+                Partager
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2 bg-ocean text-white hover:bg-ocean-hover flex-1 min-w-[120px]"
+                onClick={handleDownload}
+              >
+                <Download className="h-4 w-4" />
+                PDF
+              </Button>
             </div>
           </div>
         </div>

@@ -47,45 +47,45 @@ export const IssueCard = ({
   };
 
   return (
-    <Card className="group hover:shadow-md transition-shadow">
-      <div className="flex gap-4 p-4">
-        <div className="w-32 h-44 bg-muted rounded-lg overflow-hidden flex-shrink-0">
+    <Card className="group hover:shadow-md transition-shadow h-full">
+      <div className="flex gap-4 p-4 h-full">
+        <div className="w-32 h-44 bg-muted rounded-lg overflow-hidden flex-shrink-0 relative">
           {coverImage ? (
             <img 
               src={coverImage} 
               alt={`Couverture ${title} ${volume} ${issue}`}
-              className="w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-105"
+              className="w-full h-full object-cover absolute inset-0"
             />
           ) : (
-            <div className="w-full h-full bg-secondary/5 flex items-center justify-center">
+            <div className="w-full h-full bg-secondary/5 flex items-center justify-center absolute inset-0">
               <span className="text-secondary/20 text-xl font-bold">PDF</span>
             </div>
           )}
         </div>
-        <div className="flex-1">
-          <CardHeader className="p-0">
+        <div className="flex-1 min-w-0 flex flex-col">
+          <CardHeader className="p-0 flex-1">
             <div className="flex justify-between items-start gap-4">
-              <div>
-                <CardTitle className="text-xl font-bold text-secondary">
+              <div className="min-w-0 flex-1">
+                <CardTitle className="text-xl font-bold text-secondary truncate">
                   {title}
                 </CardTitle>
-                <div className="text-lg font-medium text-secondary/80">
+                <div className="text-lg font-medium text-secondary/80 truncate">
                   {volume} • {issue}
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
-                  <Calendar className="h-4 w-4" />
-                  <span>
+                <div className="flex items-center gap-2 text-sm text-gray-500 mt-1 flex-wrap">
+                  <Calendar className="h-4 w-4 flex-shrink-0" />
+                  <span className="truncate">
                     {format(new Date(date), 'dd MMMM yyyy', { locale: fr })}
                   </span>
                   {articleCount && (
                     <>
                       <span className="text-secondary">•</span>
-                      <span>{articleCount} articles</span>
+                      <span className="truncate">{articleCount} articles</span>
                     </>
                   )}
                 </div>
                 {description && (
-                  <p className="text-sm text-gray-600 mt-2">
+                  <p className="text-sm text-gray-600 mt-2 line-clamp-1">
                     Édité par: {description}
                   </p>
                 )}
@@ -93,7 +93,7 @@ export const IssueCard = ({
                   {abstract}
                 </p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-shrink-0">
                 <Button 
                   variant="outline" 
                   size="sm" 
