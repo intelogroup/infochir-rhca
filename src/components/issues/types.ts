@@ -1,4 +1,4 @@
-export type SortOption = "latest" | "year" | "downloads" | "shares" | "views" | "citations";
+export type SortOption = "latest" | "year" | "downloads" | "shares";
 
 export type SortOptionType = {
   value: SortOption;
