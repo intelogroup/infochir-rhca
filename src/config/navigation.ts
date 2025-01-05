@@ -41,7 +41,7 @@ export const navItems: NavItem[] = [
     logo: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png"
   },
   {
-    name: "Atlas",
+    name: "Atlas ADC",
     href: "/adc",
     icon: BookOpen,
     description: "Explorez une base visuelle unique de diagnostics chirurgicaux pour faciliter vos pratiques cliniques",
@@ -55,7 +55,7 @@ export const navItems: NavItem[] = [
     logo: "/lovable-uploads/f2409464-47cf-4348-ada0-e328e86be01b.png"
   },
   {
-    name: "A propos",
+    name: "À propos",
     href: "/about",
     icon: BookOpen,
     description: "En savoir plus sur INFOCHIR/RHCA"
