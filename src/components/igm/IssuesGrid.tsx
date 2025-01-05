@@ -4,23 +4,32 @@ import { YearGroup } from "@/components/issues/YearGroup";
 import { IssuesTable } from "@/components/issues/IssuesTable";
 import { sortIssues, groupIssuesByYear, getSortedYears } from "./utils/issueSorting";
 import { filterIssues } from "./utils/issueFiltering";
-import type { Issue } from "./types";  // Using the IGM Issue type
+import type { Issue } from "./types";
 
 const mockIssues: Issue[] = [
   {
     id: "1",
-    title: "IGM Volume 3 - No 39",
-    volume: "Volume 3",
-    issue: "No 39",
-    date: new Date(2024, 2, 1).toISOString(),
-    abstract: "Numéro sur la santé publique en Haïti. Édité par Dr. Jean Alouidor",
-    description: "Dr. Jean Alouidor",
-    pdfUrl: "#",
-    coverImage: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=500&h=700&fit=crop",
-    articleCount: 10,
-    downloads: 145,
-    shares: 67,
-    articles: []
+    title: "IGM Volume 7 - No 32",
+    volume: "Volume 7",
+    issue: "No 32",
+    date: new Date(2020, 8, 15).toISOString(),
+    abstract: "Numéro spécial sur les avancées en chirurgie mini-invasive",
+    description: "Édité par Dr. Jean Alouidor",
+    pdfUrl: "https://example.com/sample1.pdf",
+    coverImage: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=500&h=700&fit=crop",
+    articleCount: 8,
+    downloads: 125,
+    shares: 45,
+    articles: [
+      {
+        id: "1-1",
+        title: "Les nouvelles techniques en chirurgie mini-invasive",
+        authors: ["Dr. Marie Laurent", "Dr. Pierre Dubois"],
+        pageNumber: 1,
+        abstract: "Une revue des dernières avancées en chirurgie mini-invasive",
+        tags: ["Chirurgie mini-invasive", "Innovation"]
+      }
+    ]
   },
   {
     id: "2",

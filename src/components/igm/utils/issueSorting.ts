@@ -1,28 +1,20 @@
 import type { Issue } from "../types";
 
-export const sortIssues = (issues: Issue[], sortType: string) => {
-  let sorted = [...issues];
-  switch (sortType) {
+export const sortIssues = (issues: Issue[], sortBy: string) => {
+  const sorted = [...issues];
+  
+  switch (sortBy) {
     case "latest":
-      sorted.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-      break;
+      return sorted.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     case "year":
-      sorted.sort((a, b) => {
-        const yearA = new Date(a.date).getFullYear();
-        const yearB = new Date(b.date).getFullYear();
-        return yearB - yearA;
-      });
-      break;
+      return sorted.sort((a, b) => new Date(b.date).getFullYear() - new Date(a.date).getFullYear());
     case "downloads":
-      sorted.sort((a, b) => (b.downloads || 0) - (a.downloads || 0));
-      break;
+      return sorted.sort((a, b) => (b.downloads || 0) - (a.downloads || 0));
     case "shares":
-      sorted.sort((a, b) => (b.shares || 0) - (a.shares || 0));
-      break;
+      return sorted.sort((a, b) => (b.shares || 0) - (a.shares || 0));
     default:
-      break;
+      return sorted;
   }
-  return sorted;
 };
 
 export const groupIssuesByYear = (issues: Issue[]) => {
