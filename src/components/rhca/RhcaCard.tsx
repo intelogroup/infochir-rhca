@@ -31,14 +31,14 @@ export const RhcaCard = ({ article, onCardClick }: RhcaCardProps) => {
 
   return (
     <Card 
-      className="hover:shadow-lg transition-shadow cursor-pointer" 
+      className="hover:shadow-lg transition-shadow cursor-pointer group h-full"
       onClick={onCardClick}
       role="article"
       aria-labelledby={`article-title-${article.id}`}
     >
-      <CardHeader>
-        <div className="flex justify-between items-start gap-4">
-          <div>
+      <CardHeader className="p-6">
+        <div className="flex justify-between items-start gap-4 flex-wrap md:flex-nowrap">
+          <div className="w-full md:flex-1">
             <CardTitle 
               id={`article-title-${article.id}`}
               className="text-lg font-semibold text-gray-900 mb-2"
@@ -47,12 +47,12 @@ export const RhcaCard = ({ article, onCardClick }: RhcaCardProps) => {
             </CardTitle>
             <p 
               className="text-sm text-gray-600"
-              aria-label="Auteurs"
+              aria-label={`Auteurs: ${article.authors.join(", ")}`}
             >
               {article.authors.join(", ")}
             </p>
             <div 
-              className="flex items-center gap-4 mt-2"
+              className="flex flex-wrap items-center gap-4 mt-2"
               aria-label="Informations de publication"
             >
               <span className="text-sm text-gray-500">
@@ -63,7 +63,7 @@ export const RhcaCard = ({ article, onCardClick }: RhcaCardProps) => {
               </span>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full md:w-auto justify-end">
             <Button
               variant="outline"
               size="sm"
@@ -72,7 +72,7 @@ export const RhcaCard = ({ article, onCardClick }: RhcaCardProps) => {
               aria-label="Partager l'article"
             >
               <Share2 className="h-4 w-4" aria-hidden="true" />
-              Partager
+              <span>Partager</span>
             </Button>
             <Button
               variant="outline"
@@ -82,14 +82,14 @@ export const RhcaCard = ({ article, onCardClick }: RhcaCardProps) => {
               aria-label={article.pdfUrl ? "Télécharger le PDF" : "PDF non disponible"}
             >
               <Download className="h-4 w-4" aria-hidden="true" />
-              PDF
+              <span>PDF</span>
             </Button>
           </div>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-6 pb-6">
         <p 
-          className="text-gray-600 mb-4"
+          className="text-gray-600 mb-4 line-clamp-3"
           aria-label="Résumé de l'article"
         >
           {article.abstract}

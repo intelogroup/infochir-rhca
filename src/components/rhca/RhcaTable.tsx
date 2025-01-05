@@ -30,12 +30,12 @@ export const RhcaTable = ({ articles }: { articles: RhcaArticle[] }) => {
       {articles.map((article) => (
         <div 
           key={article.id}
-          className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+          className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
           role="article"
           aria-labelledby={`article-title-${article.id}`}
         >
-          <div className="flex justify-between items-start gap-4">
-            <div>
+          <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+            <div className="flex-1">
               <h3 
                 id={`article-title-${article.id}`}
                 className="text-lg font-semibold text-gray-900 mb-2"
@@ -44,13 +44,13 @@ export const RhcaTable = ({ articles }: { articles: RhcaArticle[] }) => {
               </h3>
               <p 
                 className="text-sm text-gray-600 mb-4"
-                aria-label="Auteurs"
+                aria-label={`Auteurs: ${article.authors.join(", ")}`}
               >
                 {article.authors.join(", ")}
               </p>
               <div className="flex flex-col gap-2">
                 <div 
-                  className="flex items-center gap-4"
+                  className="flex flex-wrap items-center gap-4"
                   aria-label="Informations de publication"
                 >
                   <span className="text-sm text-gray-500">
@@ -87,26 +87,26 @@ export const RhcaTable = ({ articles }: { articles: RhcaArticle[] }) => {
                 )}
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 w-full md:w-auto justify-end">
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-2"
+                className="gap-2 flex-1 md:flex-none"
                 onClick={() => handleShare(article.id)}
                 aria-label="Partager l'article"
               >
                 <Share2 className="h-4 w-4" aria-hidden="true" />
-                Partager
+                <span>Partager</span>
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-2"
+                className="gap-2 flex-1 md:flex-none"
                 onClick={() => handleDownload(article.pdfUrl)}
                 aria-label={article.pdfUrl ? "Télécharger le PDF" : "PDF non disponible"}
               >
                 <Download className="h-4 w-4" aria-hidden="true" />
-                PDF
+                <span>PDF</span>
               </Button>
             </div>
           </div>

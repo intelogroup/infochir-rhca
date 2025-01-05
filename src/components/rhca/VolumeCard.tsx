@@ -17,18 +17,22 @@ export const VolumeCard = ({ volume }: VolumeCardProps) => {
   return (
     <>
       <Card 
-        className="hover:shadow-lg transition-shadow cursor-pointer group overflow-hidden h-full"
+        className="hover:shadow-lg transition-shadow cursor-pointer group h-full"
         onClick={() => setIsModalOpen(true)}
         role="article"
         aria-labelledby={`volume-title-${volume.id}`}
       >
-        <div className="flex gap-6 p-6 h-full">
-          <div className="w-32 h-44 bg-muted rounded-lg overflow-hidden flex-shrink-0">
+        <div className="flex gap-4 p-4 md:p-6 h-full flex-col md:flex-row">
+          <div 
+            className="w-full md:w-32 h-44 bg-muted rounded-lg overflow-hidden flex-shrink-0"
+            aria-label={volume.coverImage ? `Couverture du volume ${volume.volume}` : "Image de couverture non disponible"}
+          >
             {volume.coverImage ? (
               <img 
                 src={volume.coverImage} 
-                alt={`Couverture ${volume.volume}`}
+                alt=""
                 className="w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-105"
+                aria-hidden="true"
               />
             ) : (
               <div className="w-full h-full bg-secondary/5 flex items-center justify-center">
@@ -38,7 +42,7 @@ export const VolumeCard = ({ volume }: VolumeCardProps) => {
           </div>
           <div className="flex-1 flex flex-col">
             <CardHeader className="p-0 flex-1">
-              <div className="flex justify-between items-start">
+              <div className="flex justify-between items-start gap-4">
                 <div>
                   <CardTitle 
                     id={`volume-title-${volume.id}`}
@@ -48,7 +52,7 @@ export const VolumeCard = ({ volume }: VolumeCardProps) => {
                   </CardTitle>
                   <p 
                     className="text-sm text-gray-500"
-                    aria-label="Date de publication"
+                    aria-label={`Date de publication: ${format(new Date(volume.date), 'MMMM yyyy', { locale: fr })}`}
                   >
                     {format(new Date(volume.date), 'MMMM yyyy', { locale: fr })}
                   </p>
@@ -64,7 +68,7 @@ export const VolumeCard = ({ volume }: VolumeCardProps) => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="group-hover:translate-x-1 transition-transform"
+                  className="group-hover:translate-x-1 transition-transform hidden md:flex"
                   aria-label="Voir les détails"
                 >
                   <ChevronRight className="h-5 w-5" aria-hidden="true" />
@@ -73,7 +77,7 @@ export const VolumeCard = ({ volume }: VolumeCardProps) => {
             </CardHeader>
             <CardContent className="p-0 mt-4">
               <div 
-                className="flex items-center gap-4 text-sm text-gray-500"
+                className="flex flex-wrap items-center gap-4 text-sm text-gray-500"
                 aria-label="Statistiques du volume"
               >
                 <div className="flex items-center gap-2">
