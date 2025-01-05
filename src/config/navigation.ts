@@ -1,4 +1,4 @@
-import { BookOpen, Database, Newspaper, FileText, Users, Heart } from "lucide-react";
+import { BookOpen, Database, Newspaper } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export type NavItem = {
@@ -23,9 +23,6 @@ const icons = {
   BookOpen,
   Database,
   Newspaper,
-  FileText,
-  Users,
-  Heart,
 } as const;
 
 export const navItems: NavItem[] = [
@@ -56,18 +53,6 @@ export const navItems: NavItem[] = [
     icon: Database,
     description: "Accédez à une vaste base de données de références médicales organisées par auteur et thème",
     logo: "/lovable-uploads/f2409464-47cf-4348-ada0-e328e86be01b.png"
-  },
-  {
-    name: "Soumettre",
-    href: "/submission",
-    icon: FileText,
-    description: "Soumettez vos articles pour publication"
-  },
-  {
-    name: "Annuaire",
-    href: "/annuaire",
-    icon: Users,
-    description: "Consultez l'annuaire des membres"
   },
   {
     name: "À propos",
