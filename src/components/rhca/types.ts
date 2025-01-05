@@ -13,6 +13,11 @@ export interface RhcaArticle {
   pdfUrl?: string;
 }
 
+export interface SortOption {
+  label: string;
+  value: string;
+}
+
 export interface RhcaVolume {
   id: string;
   volume: string;

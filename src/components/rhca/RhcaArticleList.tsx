@@ -1,108 +1,65 @@
-import { useState, useMemo } from "react";
-import { SearchAndSort } from "@/components/issues/SearchAndSort";
-import { RhcaCard } from "./RhcaCard";
-import { RhcaTable } from "./RhcaTable";
-import { toast } from "@/hooks/use-toast";
-import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
-import type { RhcaVolume } from "./types";
-import type { SortOption, SortOptionType } from "@/components/issues/types";
-
-const RHCA_SORT_OPTIONS: readonly SortOptionType[] = [
-  { value: "latest", label: "Plus récents" },
-  { value: "downloads", label: "Téléchargements" },
-  { value: "views", label: "Plus vus" },
-  { value: "citations", label: "Plus cités" },
-] as const;
+import { useState } from "react";
+import { RhcaArticle, SortOption } from "./types";
+import { SearchAndSort } from "../issues/SearchAndSort";
+import { sortOptions } from "./constants";
 
 interface RhcaArticleListProps {
-  volume: RhcaVolume;
-  viewMode?: "grid" | "table";
+  articles: RhcaArticle[];
+  onArticleClick?: (article: RhcaArticle) => void;
 }
 
-const RhcaArticleListContent = ({ volume, viewMode = "grid" }: RhcaArticleListProps) => {
+export const RhcaArticleList = ({ articles, onArticleClick }: RhcaArticleListProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState<SortOption>("latest");
+  const [sortBy, setSortBy] = useState<SortOption>(sortOptions[0]);
 
-  const filteredArticles = useMemo(() => {
-    const filtered = volume.articles.filter((article) => {
-      const searchLower = searchTerm.toLowerCase();
-      return (
-        article.title.toLowerCase().includes(searchLower) ||
-        article.abstract.toLowerCase().includes(searchLower) ||
-        article.authors.some(author => 
-          author.toLowerCase().includes(searchLower)
-        ) ||
-        (article.tags && article.tags.some(tag => 
-          tag.toLowerCase().includes(searchLower)
-        ))
-      );
-    });
+  const filteredArticles = articles.filter((article) =>
+    article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    article.abstract.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    article.authors.some(author => 
+      author.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
 
-    if (filtered.length === 0 && searchTerm !== "") {
-      toast({
-        title: "Aucun résultat",
-        description: "Essayez de modifier vos critères de recherche",
-        variant: "destructive",
-      });
-    }
-
-    return filtered;
-  }, [searchTerm, volume.articles]);
-
-  const sortArticles = (articles: typeof volume.articles, sortType: SortOption) => {
-    let sorted = [...articles];
-    switch (sortType) {
-      case "latest":
-        sorted.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-        break;
+  const sortedArticles = [...filteredArticles].sort((a, b) => {
+    switch (sortBy.value) {
+      case "date":
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
       case "views":
-        sorted.sort((a, b) => (b.views || 0) - (a.views || 0));
-        break;
+        return (b.views || 0) - (a.views || 0);
       case "citations":
-        sorted.sort((a, b) => (b.citations || 0) - (a.citations || 0));
-        break;
+        return (b.citations || 0) - (a.citations || 0);
       case "downloads":
-        sorted.sort((a, b) => (b.downloads || 0) - (a.downloads || 0));
-        break;
+        return (b.downloads || 0) - (a.downloads || 0);
       default:
-        break;
+        return 0;
     }
-    return sorted;
-  };
-
-  const sortedArticles = sortArticles(filteredArticles, sortBy);
+  });
 
   return (
     <div className="space-y-6">
       <SearchAndSort
         searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
         sortBy={sortBy}
-        onSearch={setSearchTerm}
-        onSort={setSortBy}
-        sortOptions={RHCA_SORT_OPTIONS}
+        onSortChange={setSortBy}
+        sortOptions={sortOptions}
       />
       
-      {viewMode === "grid" ? (
-        <div className="grid gap-6">
-          {sortedArticles.map((article) => (
-            <ErrorBoundary key={article.id}>
-              <RhcaCard article={article} />
-            </ErrorBoundary>
-          ))}
-        </div>
-      ) : (
-        <ErrorBoundary>
-          <RhcaTable articles={sortedArticles} />
-        </ErrorBoundary>
-      )}
+      <div className="space-y-4">
+        {sortedArticles.map((article) => (
+          <div
+            key={article.id}
+            className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() => onArticleClick?.(article)}
+          >
+            <h3 className="text-lg font-semibold mb-2">{article.title}</h3>
+            <p className="text-sm text-gray-600 mb-2">{article.authors.join(", ")}</p>
+            <p className="text-sm text-gray-500">
+              Page {article.pageNumber} • Volume {article.volume}
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
-  );
-};
-
-export const RhcaArticleList = (props: RhcaArticleListProps) => {
-  return (
-    <ErrorBoundary>
-      <RhcaArticleListContent {...props} />
-    </ErrorBoundary>
   );
 };
