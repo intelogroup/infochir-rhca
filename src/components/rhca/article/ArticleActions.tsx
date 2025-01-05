@@ -27,11 +27,11 @@ export const ArticleActions = ({ id, pdfUrl, onCardClick }: ArticleActionsProps)
   };
 
   return (
-    <div className="flex gap-2 w-full md:w-auto justify-end px-6 pb-6">
+    <div className="flex gap-2">
       <Button
         variant="outline"
         size="sm"
-        className="gap-2 hover:bg-primary/5"
+        className="gap-2 bg-ocean text-white hover:bg-ocean-hover"
         onClick={handleShare}
         aria-label="Partager l'article"
       >
@@ -41,7 +41,7 @@ export const ArticleActions = ({ id, pdfUrl, onCardClick }: ArticleActionsProps)
       <Button
         variant="outline"
         size="sm"
-        className="gap-2 hover:bg-primary/5"
+        className="gap-2 bg-ocean text-white hover:bg-ocean-hover"
         onClick={handleDownload}
         aria-label={pdfUrl ? "Télécharger le PDF" : "PDF non disponible"}
       >

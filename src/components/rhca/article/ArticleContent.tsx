@@ -1,4 +1,3 @@
-import { CardContent } from "@/components/ui/card";
 import type { RhcaArticle } from "../types";
 
 interface ArticleContentProps {
@@ -7,12 +6,12 @@ interface ArticleContentProps {
 
 export const ArticleContent = ({ article }: ArticleContentProps) => {
   return (
-    <CardContent className="px-6 pb-6">
+    <div className="flex-1">
       <p className="text-gray-600 mb-4 line-clamp-3">
         {article.abstract}
       </p>
       {article.tags && article.tags.length > 0 && (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 mb-4">
           {article.tags.map((tag) => (
             <span
               key={tag}
@@ -23,6 +22,6 @@ export const ArticleContent = ({ article }: ArticleContentProps) => {
           ))}
         </div>
       )}
-    </CardContent>
+    </div>
   );
 };
