@@ -2,19 +2,22 @@ import { useState, useEffect } from "react";
 import { SearchAndSort } from "./issues/SearchAndSort";
 import { YearGroup } from "./issues/YearGroup";
 import { IssuesTable } from "./issues/IssuesTable";
-import type { Issue } from "./issues/types";
+import type { Issue } from "./igm/types";  // Updated to use IGM types
 
 const mockIssues: Issue[] = [
   {
     id: "1",
-    title: "Info CHIR",
+    title: "IGM Volume 7 - No 32",
     volume: "Volume 7",
     issue: "No 32",
     date: new Date(2020, 8, 15).toISOString(),
     abstract: "Numéro spécial sur les avancées en chirurgie mini-invasive",
+    description: "Édité par Dr. Jean Alouidor",
     pdfUrl: "https://example.com/sample1.pdf",
-    coverImage: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=500&h=700&fit=crop",
+    coverImage: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=500&h=700&fit=crop",
     articleCount: 8,
+    downloads: 125,
+    shares: 45,
     articles: [
       {
         id: "1-1",
@@ -28,14 +31,17 @@ const mockIssues: Issue[] = [
   },
   {
     id: "2",
-    title: "Info CHIR",
+    title: "IGM Volume 7 - No 31",
     volume: "Volume 7",
     issue: "No 31",
     date: new Date(2020, 5, 15).toISOString(),
     abstract: "Focus sur l'anesthésie en chirurgie pédiatrique",
+    description: "Édité par Dr. Jean Alouidor",
     pdfUrl: "https://example.com/sample2.pdf",
-    coverImage: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=500&h=700&fit=crop",
+    coverImage: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=500&h=700&fit=crop",
     articleCount: 6,
+    downloads: 98,
+    shares: 32,
     articles: [
       {
         id: "2-1",
@@ -48,14 +54,17 @@ const mockIssues: Issue[] = [
   },
   {
     id: "3",
-    title: "Info CHIR",
+    title: "IGM Volume 7 - No 30",
     volume: "Volume 7",
     issue: "No 30",
     date: new Date(2020, 2, 1).toISOString(),
     abstract: "Les dernières innovations en chirurgie orthopédique",
+    description: "Édité par Dr. Jean Alouidor",
     pdfUrl: "https://example.com/sample3.pdf",
-    coverImage: "https://images.unsplash.com/photo-1583912267550-d6c2ac3196c0?w=500&h=700&fit=crop",
+    coverImage: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500&h=700&fit=crop",
     articleCount: 7,
+    downloads: 156,
+    shares: 67,
     articles: [
       {
         id: "3-1",
@@ -68,14 +77,17 @@ const mockIssues: Issue[] = [
   },
   {
     id: "4",
-    title: "Info CHIR",
+    title: "IGM Volume 6 - No 29",
     volume: "Volume 6",
     issue: "No 29",
     date: new Date(2019, 11, 15).toISOString(),
     abstract: "Progrès en chirurgie cardiovasculaire",
+    description: "Édité par Dr. Jean Alouidor",
     pdfUrl: "https://example.com/sample4.pdf",
-    coverImage: "https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=500&h=700&fit=crop",
+    coverImage: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=500&h=700&fit=crop",
     articleCount: 9,
+    downloads: 178,
+    shares: 89,
     articles: [
       {
         id: "4-1",
@@ -86,6 +98,29 @@ const mockIssues: Issue[] = [
       }
     ]
   },
+  {
+    id: "5",
+    title: "IGM Volume 6 - No 28",
+    volume: "Volume 6",
+    issue: "No 28",
+    date: new Date(2019, 8, 15).toISOString(),
+    abstract: "Actualités en médecine interne",
+    description: "Édité par Dr. Jean Alouidor",
+    pdfUrl: "https://example.com/sample5.pdf",
+    coverImage: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=500&h=700&fit=crop",
+    articleCount: 7,
+    downloads: 134,
+    shares: 56,
+    articles: [
+      {
+        id: "5-1",
+        title: "Nouvelles approches en médecine interne",
+        authors: ["Dr. Marie Dubois"],
+        pageNumber: 1,
+        tags: ["Médecine interne", "Innovation"]
+      }
+    ]
+  }
 ];
 
 interface IssuesGridProps {

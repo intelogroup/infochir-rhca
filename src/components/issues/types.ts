@@ -8,7 +8,7 @@ export interface Issue {
   description?: string;
   pdfUrl?: string;
   coverImage?: string;
-  articleCount?: number;
+  articleCount: number;  // Made required to match IGM type
   views?: number;
   downloads?: number;
   shares?: number;
