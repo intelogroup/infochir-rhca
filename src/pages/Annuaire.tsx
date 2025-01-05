@@ -2,7 +2,6 @@ import { MainLayout } from "@/components/layouts/MainLayout";
 import { DirectoryList } from "@/components/directory/DirectoryList";
 import { motion } from "framer-motion";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
-import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 
 const Annuaire = () => {
   useScrollToTop();
@@ -28,9 +27,7 @@ const Annuaire = () => {
               Liste des membres d'InfoChir/RHCA, comprenant les professionnels dévoués qui contribuent à l'avancement de la chirurgie et de l'anesthésiologie en Haïti.
             </p>
           </motion.div>
-          <ErrorBoundary>
-            <DirectoryList />
-          </ErrorBoundary>
+          <DirectoryList />
         </div>
       </div>
     </MainLayout>
