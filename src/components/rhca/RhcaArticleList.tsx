@@ -5,7 +5,7 @@ import { RhcaTable } from "./RhcaTable";
 import { toast } from "@/hooks/use-toast";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 import type { RhcaVolume } from "./types";
-import { RHCA_SORT_OPTIONS, RHCASortOption } from "./constants/sortOptions";
+import { RHCA_SORT_OPTIONS, type RHCASortOption } from "@/types/sort";
 
 interface RhcaArticleListProps {
   volume: RhcaVolume;
@@ -64,11 +64,11 @@ const RhcaArticleListContent = ({ volume, viewMode = "grid" }: RhcaArticleListPr
 
   return (
     <div className="space-y-6">
-      <SearchAndSort
+      <SearchAndSort<RHCASortOption>
         searchTerm={searchTerm}
         sortBy={sortBy}
         onSearch={setSearchTerm}
-        onSort={(value) => setSortBy(value as RHCASortOption)}
+        onSort={setSortBy}
         sortOptions={RHCA_SORT_OPTIONS}
       />
       

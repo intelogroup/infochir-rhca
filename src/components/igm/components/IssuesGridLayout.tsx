@@ -2,7 +2,7 @@ import { SearchAndSort } from "@/components/issues/SearchAndSort";
 import { IssuesGridContent } from "./IssuesGridContent";
 import { useIssuesState } from "../hooks/useIssuesState";
 import { mockIssues } from "../data/mockIssues";
-import { SORT_OPTIONS, type SortOption } from "../constants/sortOptions";
+import { IGM_SORT_OPTIONS, type IGMSortOption } from "@/types/sort";
 import { useState } from "react";
 
 interface IssuesGridLayoutProps {
@@ -11,7 +11,7 @@ interface IssuesGridLayoutProps {
 
 export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState<SortOption>("latest");
+  const [sortBy, setSortBy] = useState<IGMSortOption>("latest");
   const [isLoading, setIsLoading] = useState(true);
 
   const {
@@ -25,12 +25,12 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
 
   return (
     <div className="space-y-6">
-      <SearchAndSort
+      <SearchAndSort<IGMSortOption>
         searchTerm={searchTerm}
         sortBy={sortBy}
         onSearch={setSearchTerm}
         onSort={setSortBy}
-        sortOptions={SORT_OPTIONS}
+        sortOptions={IGM_SORT_OPTIONS}
         disabled={isLoading}
       />
       
