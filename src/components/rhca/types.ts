@@ -5,12 +5,12 @@ export interface RhcaArticle {
   abstract: string;
   date: string;
   pageNumber: number;
-  pdfUrl?: string;
+  tags?: string[];
   views?: number;
   citations?: number;
   downloads?: number;
-  tags?: string[];
   volume: string;
+  pdfUrl?: string;
 }
 
 export interface RhcaVolume {

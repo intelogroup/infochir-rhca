@@ -41,42 +41,45 @@ const mockVolumes: RhcaVolume[] = [
         downloads: 30,
         volume: "47"
       },
-  {
-    id: "3",
-    title: "Corps étranger bronchique chez l'enfant, à propos d'un cas",
-    authors: ["Patrick Marc JEAN-GILLES"],
-    abstract: "Présentation d'un cas de corps étranger bronchique chez l'enfant et sa prise en charge",
-    date: new Date(2024, 6, 1).toISOString(),
-    pageNumber: 14,
-    tags: ["pédiatrie", "pneumologie", "cas clinique"],
-    views: 95,
-    citations: 2,
-    downloads: 40
-  },
-  {
-    id: "4",
-    title: "Glycation et les maladies",
-    authors: ["Reynald ALTEMA"],
-    abstract: "Étude approfondie sur le processus de glycation et son impact sur diverses pathologies",
-    date: new Date(2024, 6, 1).toISOString(),
-    pageNumber: 16,
-    tags: ["biochimie", "pathologie"],
-    views: 150,
-    citations: 8,
-    downloads: 65
-  },
-  {
-    id: "5",
-    title: "Instabilité sociopolitique et prise en charge de la drépanocytose chez les enfants en Haïti",
-    authors: ["Ronald ÉVEILLARD", "et al"],
-    abstract: "Analyse de l'impact de l'instabilité sociopolitique sur la prise en charge des enfants drépanocytaires en Haïti",
-    date: new Date(2024, 6, 1).toISOString(),
-    pageNumber: 20,
-    tags: ["pédiatrie", "santé publique", "drépanocytose"],
-    views: 200,
-    citations: 12,
-    downloads: 88
-  }
+      {
+        id: "3",
+        title: "Corps étranger bronchique chez l'enfant, à propos d'un cas",
+        authors: ["Patrick Marc JEAN-GILLES"],
+        abstract: "Présentation d'un cas de corps étranger bronchique chez l'enfant et sa prise en charge",
+        date: new Date(2024, 6, 1).toISOString(),
+        pageNumber: 14,
+        tags: ["pédiatrie", "pneumologie", "cas clinique"],
+        views: 95,
+        citations: 2,
+        downloads: 40,
+        volume: "47"
+      },
+      {
+        id: "4",
+        title: "Glycation et les maladies",
+        authors: ["Reynald ALTEMA"],
+        abstract: "Étude approfondie sur le processus de glycation et son impact sur diverses pathologies",
+        date: new Date(2024, 6, 1).toISOString(),
+        pageNumber: 16,
+        tags: ["biochimie", "pathologie"],
+        views: 150,
+        citations: 8,
+        downloads: 65,
+        volume: "47"
+      },
+      {
+        id: "5",
+        title: "Instabilité sociopolitique et prise en charge de la drépanocytose chez les enfants en Haïti",
+        authors: ["Ronald ÉVEILLARD", "et al"],
+        abstract: "Analyse de l'impact de l'instabilité sociopolitique sur la prise en charge des enfants drépanocytaires en Haïti",
+        date: new Date(2024, 6, 1).toISOString(),
+        pageNumber: 20,
+        tags: ["pédiatrie", "santé publique", "drépanocytose"],
+        views: 200,
+        citations: 12,
+        downloads: 88,
+        volume: "47"
+      }
     ]
   },
   {

@@ -28,7 +28,7 @@ export const VolumeCard = ({ volume, onClick }: VolumeCardProps) => {
           </div>
           <Button
             variant="ghost"
-            size="icon"
+            size="sm"
             className="group-hover:translate-x-1 transition-transform"
           >
             <ChevronRight className="h-5 w-5" />
