@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useState } from "react";
 import { IssueModal } from "./IssueModal";
+import { toast } from "sonner";
 import type { Issue } from "./types";
 
 interface IssueCardProps {
@@ -13,6 +14,23 @@ interface IssueCardProps {
 
 export const IssueCard = ({ issue }: IssueCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const shareUrl = `${window.location.origin}/igm/issues/${issue.id}`;
+    navigator.clipboard.writeText(shareUrl);
+    toast.success("Lien copié dans le presse-papier");
+  };
+
+  const handleDownload = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!issue.pdfUrl) {
+      toast.error("Le PDF n'est pas encore disponible");
+      return;
+    }
+    window.open(issue.pdfUrl, '_blank');
+    toast.success("Ouverture du PDF...");
+  };
 
   return (
     <>
@@ -68,6 +86,27 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
                   <Share2 className="h-4 w-4" />
                   {issue.shares || 0}
                 </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={handleShare}
+                >
+                  <Share2 className="h-4 w-4" />
+                  Partager
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={handleDownload}
+                >
+                  <Download className="h-4 w-4" />
+                  PDF
+                </Button>
               </div>
             </div>
           </div>

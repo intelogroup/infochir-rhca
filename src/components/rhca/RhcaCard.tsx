@@ -8,16 +8,19 @@ import type { RhcaArticle } from "./types";
 
 interface RhcaCardProps {
   article: RhcaArticle;
+  onCardClick?: () => void;
 }
 
-export const RhcaCard = ({ article }: RhcaCardProps) => {
-  const handleShare = () => {
+export const RhcaCard = ({ article, onCardClick }: RhcaCardProps) => {
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation();
     const shareUrl = `${window.location.origin}/rhca/articles/${article.id}`;
     navigator.clipboard.writeText(shareUrl);
     toast.success("Lien copié dans le presse-papier");
   };
 
-  const handleDownload = () => {
+  const handleDownload = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!article.pdfUrl) {
       toast.error("Le PDF n'est pas encore disponible");
       return;
@@ -27,7 +30,10 @@ export const RhcaCard = ({ article }: RhcaCardProps) => {
   };
 
   return (
-    <Card className="hover:shadow-lg transition-shadow">
+    <Card 
+      className="hover:shadow-lg transition-shadow cursor-pointer" 
+      onClick={onCardClick}
+    >
       <CardHeader>
         <div className="flex justify-between items-start gap-4">
           <div>
