@@ -5,9 +5,19 @@ export interface Issue {
   issue: string;
   date: string;
   abstract: string;
-  description?: string;  // Added this field and made it optional with ?
+  description?: string;
   pdfUrl?: string;
   coverImage?: string;
   articleCount?: number;
-  views?: number;  // Added this field as optional since it's used in IssuesTable
+  views?: number;
+  downloads?: number;
+  shares?: number;
+  articles: {
+    id: string;
+    title: string;
+    authors: string[];
+    pageNumber: number;
+    abstract?: string;
+    tags?: string[];
+  }[];
 }

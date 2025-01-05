@@ -10,33 +10,61 @@ const mockIssues: Issue[] = [
     title: "Info CHIR",
     volume: "Volume 7",
     issue: "No 32",
-    date: new Date(2020, 8, 15).toISOString(), // September 2020
+    date: new Date(2020, 8, 15).toISOString(),
     abstract: "Numéro spécial sur les avancées en chirurgie mini-invasive",
     pdfUrl: "https://example.com/sample1.pdf",
     coverImage: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=500&h=700&fit=crop",
     articleCount: 8,
+    articles: [
+      {
+        id: "1-1",
+        title: "Les nouvelles techniques en chirurgie mini-invasive",
+        authors: ["Dr. Marie Laurent", "Dr. Pierre Dubois"],
+        pageNumber: 1,
+        abstract: "Une revue des dernières avancées en chirurgie mini-invasive",
+        tags: ["Chirurgie mini-invasive", "Innovation"]
+      }
+    ]
   },
   {
     id: "2",
     title: "Info CHIR",
     volume: "Volume 7",
     issue: "No 31",
-    date: new Date(2020, 5, 15).toISOString(), // June 2020
+    date: new Date(2020, 5, 15).toISOString(),
     abstract: "Focus sur l'anesthésie en chirurgie pédiatrique",
     pdfUrl: "https://example.com/sample2.pdf",
     coverImage: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=500&h=700&fit=crop",
     articleCount: 6,
+    articles: [
+      {
+        id: "2-1",
+        title: "Spécificités de l'anesthésie pédiatrique",
+        authors: ["Dr. Anne Dupont"],
+        pageNumber: 1,
+        tags: ["Anesthésie", "Pédiatrie"]
+      }
+    ]
   },
   {
     id: "3",
     title: "Info CHIR",
     volume: "Volume 7",
     issue: "No 30",
-    date: new Date(2020, 2, 1).toISOString(), // March 2020
+    date: new Date(2020, 2, 1).toISOString(),
     abstract: "Les dernières innovations en chirurgie orthopédique",
     pdfUrl: "https://example.com/sample3.pdf",
     coverImage: "https://images.unsplash.com/photo-1583912267550-d6c2ac3196c0?w=500&h=700&fit=crop",
     articleCount: 7,
+    articles: [
+      {
+        id: "3-1",
+        title: "Innovations en chirurgie orthopédique",
+        authors: ["Dr. Jean Martin"],
+        pageNumber: 1,
+        tags: ["Orthopédie", "Innovation"]
+      }
+    ]
   },
   {
     id: "4",
@@ -48,6 +76,15 @@ const mockIssues: Issue[] = [
     pdfUrl: "https://example.com/sample4.pdf",
     coverImage: "https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=500&h=700&fit=crop",
     articleCount: 9,
+    articles: [
+      {
+        id: "4-1",
+        title: "Avancées en chirurgie cardiovasculaire",
+        authors: ["Dr. Sophie Richard"],
+        pageNumber: 1,
+        tags: ["Cardiovasculaire", "Innovation"]
+      }
+    ]
   },
 ];
 
