@@ -82,11 +82,14 @@ const IGM = () => {
                 Comité éditorial
               </h2>
               <p className="text-gray-600 mb-6">
-                Notre comité éditorial est composé d'experts reconnus dans leurs domaines respectifs. Ils assurent la qualité scientifique et la pertinence des articles publiés.
+                Notre comité éditorial est composé d'experts reconnus dans leurs domaines respectifs. 
+                Ils assurent la qualité scientifique et la pertinence des articles publiés.
               </p>
-              <Button variant="outline" className="w-full text-primary hover:text-primary-light">
-                Découvrir l'équipe
-              </Button>
+              <Link to="/igm/editorial-committee">
+                <Button variant="outline" className="w-full text-primary hover:text-primary-light">
+                  Découvrir l'équipe
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
