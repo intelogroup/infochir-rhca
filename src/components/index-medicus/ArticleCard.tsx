@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, User, Eye, Quote, Download, Share2, Copy } from "lucide-react";
 import { Article } from "./types";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,15 +17,38 @@ interface ArticleCardProps {
 }
 
 export const ArticleCard = ({ article }: ArticleCardProps) => {
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (article.pdfUrl) {
-      const link = document.createElement('a');
-      link.href = article.pdfUrl;
-      link.setAttribute('download', `${article.title}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      toast.success("Le téléchargement va commencer...");
+      try {
+        // Get the signed URL for the file
+        const { data: { signedUrl }, error: signedUrlError } = await supabase
+          .storage
+          .from('article_pdfs')
+          .createSignedUrl(article.pdfUrl, 60); // URL expires in 60 seconds
+
+        if (signedUrlError) throw signedUrlError;
+
+        // Create a temporary link and trigger download
+        const link = document.createElement('a');
+        link.href = signedUrl;
+        link.setAttribute('download', `${article.title}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // Update download count
+        const { error: updateError } = await supabase
+          .from('articles')
+          .update({ downloads: (article.downloads || 0) + 1 })
+          .eq('id', article.id);
+
+        if (updateError) throw updateError;
+
+        toast.success("Le téléchargement va commencer...");
+      } catch (error) {
+        console.error('Download error:', error);
+        toast.error("Une erreur est survenue lors du téléchargement");
+      }
     } else {
       toast.error("Le PDF n'est pas disponible pour cet article");
     }
@@ -177,4 +201,5 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
         </div>
       </div>
     </Card>
-  </>;
+  );
+};

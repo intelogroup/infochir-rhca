@@ -85,6 +85,7 @@ export type Database = {
           category: string
           citations: number | null
           created_at: string | null
+          downloads: number | null
           id: string
           image_url: string | null
           pdf_url: string | null
@@ -101,6 +102,7 @@ export type Database = {
           category: string
           citations?: number | null
           created_at?: string | null
+          downloads?: number | null
           id?: string
           image_url?: string | null
           pdf_url?: string | null
@@ -117,6 +119,7 @@ export type Database = {
           category?: string
           citations?: number | null
           created_at?: string | null
+          downloads?: number | null
           id?: string
           image_url?: string | null
           pdf_url?: string | null
