@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { SearchAndSort } from "@/components/issues/SearchAndSort";
 import { IssueCard } from "@/components/issues/IssueCard";
 import { IssuesTable } from "@/components/issues/IssuesTable";
 import { YearGroup } from "@/components/issues/YearGroup";
+import { toast } from "@/hooks/use-toast";
 import type { Issue } from "@/components/issues/types";
 
 const mockIssues: Issue[] = [
@@ -108,11 +109,31 @@ export const IssuesGrid = ({ viewMode = "grid" }: { viewMode?: "grid" | "table" 
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("latest");
 
-  const filteredIssues = mockIssues.filter((issue) =>
-    issue.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    issue.abstract.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Enhanced search with memoization
+  const filteredIssues = useMemo(() => {
+    const filtered = mockIssues.filter((issue) => {
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        issue.title.toLowerCase().includes(searchLower) ||
+        issue.abstract.toLowerCase().includes(searchLower) ||
+        issue.description?.toLowerCase().includes(searchLower) ||
+        issue.volume.toLowerCase().includes(searchLower) ||
+        issue.issue.toLowerCase().includes(searchLower)
+      );
+    });
 
+    if (filtered.length === 0 && searchTerm !== "") {
+      toast({
+        title: "Aucun résultat",
+        description: "Essayez de modifier vos critères de recherche",
+        variant: "destructive",
+      });
+    }
+
+    return filtered;
+  }, [searchTerm]);
+
+  // Enhanced sorting logic
   const sortIssues = (issues: Issue[], sortType: string) => {
     let sorted = [...issues];
     switch (sortType) {
@@ -127,6 +148,11 @@ export const IssuesGrid = ({ viewMode = "grid" }: { viewMode?: "grid" | "table" 
       case "month":
         sorted.sort((a, b) => 
           new Date(b.date).getMonth() - new Date(a.date).getMonth()
+        );
+        break;
+      case "articles":
+        sorted.sort((a, b) => 
+          (b.articleCount || 0) - (a.articleCount || 0)
         );
         break;
       default:
@@ -159,6 +185,12 @@ export const IssuesGrid = ({ viewMode = "grid" }: { viewMode?: "grid" | "table" 
         sortBy={sortBy}
         onSearch={setSearchTerm}
         onSort={setSortBy}
+        sortOptions={[
+          { value: "latest", label: "Plus récents" },
+          { value: "year", label: "Année" },
+          { value: "month", label: "Mois" },
+          { value: "articles", label: "Nombre d'articles" },
+        ]}
       />
       
       {viewMode === "grid" ? (
