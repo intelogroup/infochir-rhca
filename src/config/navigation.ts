@@ -1,4 +1,4 @@
-import { BookOpen, Database, Newspaper } from "lucide-react";
+import { BookOpen, Database, Newspaper, Info } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export type NavItem = {
@@ -23,6 +23,7 @@ const icons = {
   BookOpen,
   Database,
   Newspaper,
+  Info,
 } as const;
 
 export const navItems: NavItem[] = [
@@ -57,7 +58,7 @@ export const navItems: NavItem[] = [
   {
     name: "À propos",
     href: "/about",
-    icon: BookOpen,
+    icon: Info,
     description: "En savoir plus sur INFOCHIR/RHCA"
   }
 ];
