@@ -9,6 +9,7 @@ export interface RhcaArticle {
   views?: number;
   downloads?: number;
   shares?: number;
+  citations?: number;
   pageNumber: number;
   volume: string | number;
   date: string;
