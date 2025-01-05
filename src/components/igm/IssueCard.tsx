@@ -37,6 +37,8 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
       <Card 
         className="group hover:shadow-lg transition-shadow cursor-pointer bg-white h-full"
         onClick={() => setIsModalOpen(true)}
+        role="article"
+        aria-labelledby={`issue-title-${issue.id}`}
       >
         <div className="flex flex-col sm:flex-row h-full">
           <div className="w-full sm:w-28 lg:w-32 h-36 sm:h-40 lg:h-44 flex-shrink-0 relative overflow-hidden">
@@ -56,34 +58,49 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
           <div className="flex-1 p-3 sm:p-4 lg:p-6 flex flex-col min-w-0">
             <div className="space-y-2 sm:space-y-3 lg:space-y-4 flex-1">
               <div>
-                <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 line-clamp-2">
+                <h3 
+                  id={`issue-title-${issue.id}`}
+                  className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 line-clamp-2"
+                >
                   {issue.title}
                 </h3>
-                <p className="text-sm lg:text-base text-gray-600 truncate">
+                <p 
+                  className="text-sm lg:text-base text-gray-600 truncate"
+                  aria-label="Numéro de volume et d'édition"
+                >
                   {issue.volume} - {issue.issue}
                 </p>
-                <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500 mt-1 flex-wrap">
+                <div 
+                  className="flex items-center gap-2 text-xs sm:text-sm text-gray-500 mt-1 flex-wrap"
+                  aria-label="Informations de publication"
+                >
                   <span className="truncate">
                     {format(new Date(issue.date), 'MMMM yyyy', { locale: fr })}
                   </span>
                 </div>
               </div>
 
-              <p className="text-xs sm:text-sm lg:text-base text-gray-600 line-clamp-2 break-words">
+              <p 
+                className="text-xs sm:text-sm lg:text-base text-gray-600 line-clamp-2 break-words"
+                aria-label="Résumé de l'édition"
+              >
                 {issue.abstract}
               </p>
 
-              <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-gray-500 flex-wrap">
+              <div 
+                className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-gray-500 flex-wrap"
+                aria-label="Statistiques de l'édition"
+              >
                 <div className="flex items-center gap-1 sm:gap-2">
-                  <FileText className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                  <FileText className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" aria-hidden="true" />
                   <span className="truncate">{issue.articleCount} articles</span>
                 </div>
                 <div className="flex items-center gap-1 sm:gap-2">
-                  <Download className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                  <Download className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" aria-hidden="true" />
                   <span className="truncate">{issue.downloads || 0}</span>
                 </div>
                 <div className="flex items-center gap-1 sm:gap-2">
-                  <Share2 className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                  <Share2 className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" aria-hidden="true" />
                   <span className="truncate">{issue.shares || 0}</span>
                 </div>
               </div>
@@ -95,8 +112,9 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
                 size="sm"
                 className="gap-1 sm:gap-2 bg-ocean text-white hover:bg-ocean-hover flex-1 text-xs sm:text-sm h-8 sm:h-9"
                 onClick={handleShare}
+                aria-label="Partager l'édition"
               >
-                <Share2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                <Share2 className="h-3 w-3 sm:h-4 sm:w-4" aria-hidden="true" />
                 Partager
               </Button>
               <Button
@@ -104,8 +122,9 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
                 size="sm"
                 className="gap-1 sm:gap-2 bg-ocean text-white hover:bg-ocean-hover flex-1 text-xs sm:text-sm h-8 sm:h-9"
                 onClick={handleDownload}
+                aria-label={issue.pdfUrl ? "Télécharger le PDF" : "PDF non disponible"}
               >
-                <Download className="h-3 w-3 sm:h-4 sm:w-4" />
+                <Download className="h-3 w-3 sm:h-4 sm:w-4" aria-hidden="true" />
                 PDF
               </Button>
             </div>
