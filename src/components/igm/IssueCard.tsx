@@ -38,8 +38,8 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
         className="hover:shadow-lg transition-shadow cursor-pointer group bg-white"
         onClick={() => setIsModalOpen(true)}
       >
-        <div className="flex">
-          <div className="w-32 h-44 flex-shrink-0 overflow-hidden">
+        <div className="flex flex-col sm:flex-row">
+          <div className="w-full sm:w-32 h-48 sm:h-44 flex-shrink-0 overflow-hidden">
             {issue.coverImage ? (
               <img 
                 src={issue.coverImage}
@@ -53,7 +53,7 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
             )}
           </div>
           
-          <div className="flex-1 p-6">
+          <div className="flex-1 p-4 sm:p-6">
             <div className="space-y-4">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -92,7 +92,7 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="gap-2 bg-[#0EA5E9] text-white hover:bg-[#0C8BC7]"
+                  className="gap-2 bg-ocean text-white hover:bg-ocean-hover"
                   onClick={handleShare}
                 >
                   <Share2 className="h-4 w-4" />
@@ -101,7 +101,7 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="gap-2 bg-[#0EA5E9] text-white hover:bg-[#0C8BC7]"
+                  className="gap-2 bg-ocean text-white hover:bg-ocean-hover"
                   onClick={handleDownload}
                 >
                   <Download className="h-4 w-4" />
