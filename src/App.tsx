@@ -18,9 +18,11 @@ function App() {
         <Route path="/rhca" element={<RHCA />} />
         <Route path="/igm" element={<IGM />} />
         <Route path="/igm/editorial-committee" element={<EditorialCommittee />} />
-        <Route path={["/adc", "/atlas"]} element={<ADC />} />
+        <Route path="/adc" element={<ADC />} />
+        <Route path="/atlas" element={<ADC />} />
         <Route path="/index-medicus" element={<IndexMedicus />} />
-        <Route path={["/about", "/about-us"]} element={<About />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/about-us" element={<About />} />
         <Route path="/submission" element={<Submission />} />
         <Route path="/annuaire" element={<Annuaire />} />
         <Route path="/donate" element={<Donate />} />
