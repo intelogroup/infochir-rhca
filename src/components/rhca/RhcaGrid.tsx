@@ -1,9 +1,6 @@
 import { useState, useMemo } from "react";
 import { SearchAndSort } from "@/components/issues/SearchAndSort";
 import { VolumeCard } from "./VolumeCard";
-import { RhcaArticleList } from "./RhcaArticleList";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import type { RhcaVolume } from "./types";
 
@@ -126,7 +123,6 @@ interface RhcaGridProps {
 export const RhcaGrid = ({ viewMode = "grid" }: RhcaGridProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("latest");
-  const [selectedVolume, setSelectedVolume] = useState<RhcaVolume | null>(null);
 
   const filteredVolumes = useMemo(() => {
     return mockVolumes.filter((volume) => {
@@ -160,22 +156,6 @@ export const RhcaGrid = ({ viewMode = "grid" }: RhcaGridProps) => {
 
   const sortedVolumes = sortVolumes(filteredVolumes, sortBy);
 
-  if (selectedVolume) {
-    return (
-      <div className="space-y-6">
-        <Button
-          variant="ghost"
-          onClick={() => setSelectedVolume(null)}
-          className="mb-4"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Retour aux volumes
-        </Button>
-        <RhcaArticleList volume={selectedVolume} viewMode={viewMode} />
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       <SearchAndSort
@@ -193,7 +173,6 @@ export const RhcaGrid = ({ viewMode = "grid" }: RhcaGridProps) => {
           <VolumeCard
             key={volume.id}
             volume={volume}
-            onClick={setSelectedVolume}
           />
         ))}
       </div>
