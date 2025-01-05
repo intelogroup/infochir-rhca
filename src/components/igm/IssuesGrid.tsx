@@ -15,7 +15,7 @@ const mockIssues: Issue[] = [
     abstract: "Numéro spécial sur les avancées en chirurgie mini-invasive",
     description: "Édité par Dr. Jean Alouidor",
     pdfUrl: "https://example.com/sample1.pdf",
-    coverImage: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=500&h=700&fit=crop",
+    coverImage: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=500&h=700&fit=crop",
     articleCount: 8,
     downloads: 125,
     shares: 45,
@@ -46,7 +46,7 @@ const mockIssues: Issue[] = [
     abstract: "Focus sur l'anesthésie en chirurgie pédiatrique",
     description: "Édité par Dr. Jean Alouidor",
     pdfUrl: "https://example.com/sample2.pdf",
-    coverImage: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=500&h=700&fit=crop",
+    coverImage: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500&h=700&fit=crop",
     articleCount: 6,
     downloads: 98,
     shares: 32,
@@ -69,8 +69,10 @@ const mockIssues: Issue[] = [
     abstract: "Numéro sur la santé publique en Haïti. Édité par Dr. Jean Alouidor",
     description: "Dr. Jean Alouidor",
     pdfUrl: "#",
-    coverImage: "https://images.unsplash.com/photo-1583912267550-d6c2ac3196c0?w=500&h=700&fit=crop",
+    coverImage: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=500&h=700&fit=crop",
     articleCount: 10,
+    downloads: 145,
+    shares: 67,
     articles: []
   },
   {
@@ -82,8 +84,10 @@ const mockIssues: Issue[] = [
     abstract: "Recherches sur la médecine préventive. Édité par Dr. Jean Alouidor",
     description: "Dr. Jean Alouidor",
     pdfUrl: "#",
-    coverImage: "https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=500&h=700&fit=crop",
+    coverImage: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=500&h=700&fit=crop",
     articleCount: 9,
+    downloads: 178,
+    shares: 89,
     articles: []
   },
   {
@@ -95,47 +99,10 @@ const mockIssues: Issue[] = [
     abstract: "Innovations en cardiologie. Édité par Dr. Jean Alouidor",
     description: "Dr. Jean Alouidor",
     pdfUrl: "#",
-    coverImage: "https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?w=500&h=700&fit=crop",
+    coverImage: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=500&h=700&fit=crop",
     articleCount: 11,
-    articles: []
-  },
-  {
-    id: "6",
-    title: "IGM",
-    volume: "Volume 2",
-    issue: "No 36",
-    date: new Date(2023, 5, 1).toISOString(),
-    abstract: "Actualités en pédiatrie. Édité par Dr. Jean Alouidor",
-    description: "Dr. Jean Alouidor",
-    pdfUrl: "#",
-    coverImage: "https://images.unsplash.com/photo-1581093588401-fbb62a02f120?w=500&h=700&fit=crop",
-    articleCount: 7,
-    articles: []
-  },
-  {
-    id: "7",
-    title: "IGM",
-    volume: "Volume 1",
-    issue: "No 35",
-    date: new Date(2022, 11, 1).toISOString(),
-    abstract: "Progrès en neurologie. Édité par Dr. Jean Alouidor",
-    description: "Dr. Jean Alouidor",
-    pdfUrl: "#",
-    coverImage: "https://images.unsplash.com/photo-1581093588401-fbb62a02f120?w=500&h=700&fit=crop",
-    articleCount: 10,
-    articles: []
-  },
-  {
-    id: "8",
-    title: "IGM",
-    volume: "Volume 1",
-    issue: "No 34",
-    date: new Date(2022, 8, 1).toISOString(),
-    abstract: "Études sur la médecine tropicale. Édité par Dr. Jean Alouidor",
-    description: "Dr. Jean Alouidor",
-    pdfUrl: "#",
-    coverImage: "https://images.unsplash.com/photo-1581093588401-fbb62a02f120?w=500&h=700&fit=crop",
-    articleCount: 8,
+    downloads: 134,
+    shares: 56,
     articles: []
   }
 ];
@@ -178,24 +145,17 @@ export const IssuesGrid = ({ viewMode = "grid" }: IssuesGridProps) => {
         sorted.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
         break;
       case "year":
-        sorted.sort((a, b) => 
-          new Date(b.date).getFullYear() - new Date(a.date).getFullYear()
-        );
-        break;
-      case "month":
-        sorted.sort((a, b) => 
-          new Date(b.date).getMonth() - new Date(a.date).getMonth()
-        );
+        sorted.sort((a, b) => {
+          const yearA = new Date(a.date).getFullYear();
+          const yearB = new Date(b.date).getFullYear();
+          return yearB - yearA;
+        });
         break;
       case "downloads":
-        sorted.sort((a, b) => 
-          (b.downloads || 0) - (a.downloads || 0)
-        );
+        sorted.sort((a, b) => (b.downloads || 0) - (a.downloads || 0));
         break;
       case "shares":
-        sorted.sort((a, b) => 
-          (b.shares || 0) - (a.shares || 0)
-        );
+        sorted.sort((a, b) => (b.shares || 0) - (a.shares || 0));
         break;
       default:
         break;
@@ -228,7 +188,6 @@ export const IssuesGrid = ({ viewMode = "grid" }: IssuesGridProps) => {
         sortOptions={[
           { value: "latest", label: "Plus récents" },
           { value: "year", label: "Année" },
-          { value: "month", label: "Mois" },
           { value: "downloads", label: "Téléchargements" },
           { value: "shares", label: "Partages" },
         ]}

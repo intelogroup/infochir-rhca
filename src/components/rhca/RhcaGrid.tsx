@@ -9,6 +9,7 @@ const mockVolumes: RhcaVolume[] = [
     volume: "INFOCHIR/RHCA Volume 7 Numéro 47",
     date: new Date(2024, 0, 1).toISOString(),
     description: "Volume 47 de la revue INFOCHIR-RHCA",
+    coverImage: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=500&h=700&fit=crop",
     articleCount: 8,
     downloadCount: 325,
     shareCount: 156,
@@ -124,12 +125,13 @@ const mockVolumes: RhcaVolume[] = [
     volume: "INFOCHIR/RHCA Volume 7 Numéro 46",
     date: new Date(2023, 9, 1).toISOString(),
     description: "Volume 46 de la revue INFOCHIR-RHCA",
+    coverImage: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500&h=700&fit=crop",
     articleCount: 6,
     downloadCount: 280,
     shareCount: 120,
     articles: [
       {
-        id: "6",
+        id: "1",
         title: "Prise en charge des traumatismes crâniens en Haïti",
         authors: ["Marie DURAND", "Jean PIERRE"],
         abstract: "Étude sur les protocoles de prise en charge des traumatismes crâniens dans les hôpitaux haïtiens",
@@ -142,7 +144,7 @@ const mockVolumes: RhcaVolume[] = [
         volume: "46"
       },
       {
-        id: "7",
+        id: "2",
         title: "Innovations en chirurgie laparoscopique",
         authors: ["Paul MARTIN"],
         abstract: "Revue des dernières avancées en chirurgie mini-invasive",
@@ -155,6 +157,39 @@ const mockVolumes: RhcaVolume[] = [
         volume: "46"
       }
     ]
+  },
+  {
+    id: "3",
+    volume: "INFOCHIR/RHCA Volume 7 Numéro 45",
+    date: new Date(2023, 6, 1).toISOString(),
+    description: "Volume 45 de la revue INFOCHIR-RHCA",
+    coverImage: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=500&h=700&fit=crop",
+    articleCount: 7,
+    downloadCount: 245,
+    shareCount: 98,
+    articles: []
+  },
+  {
+    id: "4",
+    volume: "INFOCHIR/RHCA Volume 7 Numéro 44",
+    date: new Date(2023, 3, 1).toISOString(),
+    description: "Volume 44 de la revue INFOCHIR-RHCA",
+    coverImage: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=500&h=700&fit=crop",
+    articleCount: 9,
+    downloadCount: 312,
+    shareCount: 134,
+    articles: []
+  },
+  {
+    id: "5",
+    volume: "INFOCHIR/RHCA Volume 6 Numéro 43",
+    date: new Date(2022, 11, 1).toISOString(),
+    description: "Volume 43 de la revue INFOCHIR-RHCA",
+    coverImage: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=500&h=700&fit=crop",
+    articleCount: 8,
+    downloadCount: 289,
+    shareCount: 112,
+    articles: []
   }
 ];
 
@@ -174,8 +209,8 @@ export const RhcaGrid = ({ viewMode = "grid" }: RhcaGridProps) => {
         volume.description?.toLowerCase().includes(searchLower) ||
         volume.articles.some(
           article =>
-            article.title.toLowerCase().includes(searchLower) ||
-            article.abstract.toLowerCase().includes(searchLower) ||
+            article.title?.toLowerCase().includes(searchLower) ||
+            article.abstract?.toLowerCase().includes(searchLower) ||
             article.authors.some(author => 
               author.toLowerCase().includes(searchLower)
             )
@@ -189,6 +224,19 @@ export const RhcaGrid = ({ viewMode = "grid" }: RhcaGridProps) => {
     switch (sortType) {
       case "latest":
         sorted.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        break;
+      case "year":
+        sorted.sort((a, b) => {
+          const yearA = new Date(a.date).getFullYear();
+          const yearB = new Date(b.date).getFullYear();
+          return yearB - yearA;
+        });
+        break;
+      case "downloads":
+        sorted.sort((a, b) => (b.downloadCount || 0) - (a.downloadCount || 0));
+        break;
+      case "shares":
+        sorted.sort((a, b) => (b.shareCount || 0) - (a.shareCount || 0));
         break;
       default:
         break;
@@ -207,6 +255,9 @@ export const RhcaGrid = ({ viewMode = "grid" }: RhcaGridProps) => {
         onSort={setSortBy}
         sortOptions={[
           { value: "latest", label: "Plus récents" },
+          { value: "year", label: "Année" },
+          { value: "downloads", label: "Téléchargements" },
+          { value: "shares", label: "Partages" },
         ]}
       />
       
