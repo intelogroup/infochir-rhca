@@ -6,7 +6,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { SearchBar } from "./SearchBar";
 import { TableHeader } from "./TableHeader";
 import { MemberRow } from "./MemberRow";
-import { ArrowUpDown } from "lucide-react";
 
 interface Member {
   id: number;
@@ -61,12 +60,12 @@ export const DirectoryList = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="space-y-4"
+      className="w-full max-w-full space-y-4"
     >
       <SearchBar value={searchTerm} onChange={setSearchTerm} />
 
-      <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto">
+      <div className="w-full bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+        <div className="w-full overflow-x-auto">
           <Table>
             <TableHeader 
               sortField={sortField}

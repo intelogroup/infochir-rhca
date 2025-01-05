@@ -3,6 +3,9 @@ import { DirectoryList } from "@/components/directory/DirectoryList";
 import { motion } from "framer-motion";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 const Annuaire = () => {
   useScrollToTop();
@@ -14,7 +17,7 @@ const Annuaire = () => {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_70%,transparent_100%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_70%,transparent_100%)]" />
         
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -29,7 +32,9 @@ const Annuaire = () => {
             </p>
           </motion.div>
           <ErrorBoundary>
-            <DirectoryList />
+            <QueryClientProvider client={queryClient}>
+              <DirectoryList />
+            </QueryClientProvider>
           </ErrorBoundary>
         </div>
       </div>
