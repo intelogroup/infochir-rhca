@@ -24,7 +24,7 @@ export const IssuesGridContent = ({
         {[1, 2, 3].map((i) => (
           <div key={i} className="space-y-4">
             <Skeleton className="h-8 w-24" />
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-6">
               {[1, 2, 3].map((j) => (
                 <Skeleton key={j} className="h-[200px] w-full rounded-xl" />
               ))}

@@ -35,8 +35,8 @@ const IGM = () => {
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-            <div className="lg:col-span-2">
+          <div className="grid lg:grid-cols-[1fr,400px] gap-4 sm:gap-6 lg:gap-8">
+            <div>
               <div className="flex justify-end mb-4 sm:mb-6">
                 <ToggleGroup type="single" value={viewMode} onValueChange={(value) => value && setViewMode(value as "grid" | "table")}>
                   <ToggleGroupItem value="grid" size="sm" className="px-2 sm:px-3">
@@ -52,7 +52,7 @@ const IGM = () => {
               </div>
             </div>
             
-            <div className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 gap-4 sm:gap-6 content-start">
               <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
                 <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-primary mb-3 sm:mb-4 flex items-center gap-2">
                   <BookOpen className="h-4 w-4 sm:h-5 sm:w-5" />
