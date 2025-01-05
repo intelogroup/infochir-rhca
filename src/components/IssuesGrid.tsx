@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { SearchAndSort } from "./issues/SearchAndSort";
 import { YearGroup } from "./issues/YearGroup";
 import { IssuesTable } from "./issues/IssuesTable";
-import type { Issue } from "./igm/types";  // Updated to use IGM types
+import type { Issue } from "./igm/types";
+import { IGM_SORT_OPTIONS, type IGMSortOption } from "@/types/sort";
 
 const mockIssues: Issue[] = [
   {
@@ -129,7 +130,7 @@ interface IssuesGridProps {
 
 export const IssuesGrid = ({ viewMode = "grid" }: IssuesGridProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("latest");
+  const [sortBy, setSortBy] = useState<IGMSortOption["value"]>("latest");
   const [filteredIssues, setFilteredIssues] = useState<Issue[]>(mockIssues);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -142,7 +143,7 @@ export const IssuesGrid = ({ viewMode = "grid" }: IssuesGridProps) => {
     sortIssues(filtered, sortBy);
   };
 
-  const sortIssues = (issues: Issue[], sortType: string) => {
+  const sortIssues = (issues: Issue[], sortType: IGMSortOption["value"]) => {
     let sorted = [...issues];
     switch (sortType) {
       case "latest":
@@ -153,10 +154,11 @@ export const IssuesGrid = ({ viewMode = "grid" }: IssuesGridProps) => {
           new Date(b.date).getFullYear() - new Date(a.date).getFullYear()
         );
         break;
-      case "month":
-        sorted.sort((a, b) => 
-          new Date(b.date).getMonth() - new Date(a.date).getMonth()
-        );
+      case "downloads":
+        sorted.sort((a, b) => (b.downloads || 0) - (a.downloads || 0));
+        break;
+      case "shares":
+        sorted.sort((a, b) => (b.shares || 0) - (a.shares || 0));
         break;
       default:
         break;
@@ -164,7 +166,7 @@ export const IssuesGrid = ({ viewMode = "grid" }: IssuesGridProps) => {
     setFilteredIssues(sorted);
   };
 
-  const handleSort = (value: string) => {
+  const handleSort = (value: IGMSortOption["value"]) => {
     setSortBy(value);
     sortIssues(filteredIssues, value);
   };
@@ -190,11 +192,12 @@ export const IssuesGrid = ({ viewMode = "grid" }: IssuesGridProps) => {
 
   return (
     <div className="space-y-4 px-4">
-      <SearchAndSort
+      <SearchAndSort<IGMSortOption>
         searchTerm={searchTerm}
         sortBy={sortBy}
         onSearch={handleSearch}
         onSort={handleSort}
+        sortOptions={IGM_SORT_OPTIONS}
       />
 
       {viewMode === "grid" ? (

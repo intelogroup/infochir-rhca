@@ -8,16 +8,16 @@ import {
 } from "@/components/ui/select";
 import type { BaseSortOption } from "@/types/sort";
 
-interface SearchAndSortProps<T extends string> {
+interface SearchAndSortProps<T extends BaseSortOption> {
   searchTerm: string;
-  sortBy: T;
+  sortBy: T["value"];
   onSearch: (value: string) => void;
-  onSort: (value: T) => void;
-  sortOptions: readonly BaseSortOption[];
+  onSort: (value: T["value"]) => void;
+  sortOptions: readonly T[];
   disabled?: boolean;
 }
 
-export function SearchAndSort<T extends string>({
+export function SearchAndSort<T extends BaseSortOption>({
   searchTerm,
   sortBy,
   onSearch,
@@ -38,7 +38,7 @@ export function SearchAndSort<T extends string>({
       </div>
       <Select 
         value={sortBy} 
-        onValueChange={(value) => onSort(value as T)}
+        onValueChange={onSort}
         disabled={disabled}
       >
         <SelectTrigger className="w-full sm:w-[200px]">
