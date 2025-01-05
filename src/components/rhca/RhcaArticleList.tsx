@@ -3,16 +3,25 @@ import { SearchAndSort } from "@/components/issues/SearchAndSort";
 import { RhcaCard } from "./RhcaCard";
 import { RhcaTable } from "./RhcaTable";
 import { toast } from "@/hooks/use-toast";
+import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 import type { RhcaVolume } from "./types";
+
+const RHCA_SORT_OPTIONS = [
+  { value: "latest", label: "Plus récents" },
+  { value: "views", label: "Plus vus" },
+  { value: "citations", label: "Plus cités" },
+] as const;
+
+type RhcaSortOption = (typeof RHCA_SORT_OPTIONS)[number]["value"];
 
 interface RhcaArticleListProps {
   volume: RhcaVolume;
   viewMode?: "grid" | "table";
 }
 
-export const RhcaArticleList = ({ volume, viewMode = "grid" }: RhcaArticleListProps) => {
+const RhcaArticleListContent = ({ volume, viewMode = "grid" }: RhcaArticleListProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("latest");
+  const [sortBy, setSortBy] = useState<RhcaSortOption>("latest");
 
   const filteredArticles = useMemo(() => {
     const filtered = volume.articles.filter((article) => {
@@ -40,7 +49,7 @@ export const RhcaArticleList = ({ volume, viewMode = "grid" }: RhcaArticleListPr
     return filtered;
   }, [searchTerm, volume.articles]);
 
-  const sortArticles = (articles: typeof volume.articles, sortType: string) => {
+  const sortArticles = (articles: typeof volume.articles, sortType: RhcaSortOption) => {
     let sorted = [...articles];
     switch (sortType) {
       case "latest":
@@ -67,25 +76,30 @@ export const RhcaArticleList = ({ volume, viewMode = "grid" }: RhcaArticleListPr
         sortBy={sortBy}
         onSearch={setSearchTerm}
         onSort={setSortBy}
-        sortOptions={[
-          { value: "latest", label: "Plus récents" },
-          { value: "views", label: "Plus vus" },
-          { value: "citations", label: "Plus cités" },
-        ]}
+        sortOptions={RHCA_SORT_OPTIONS}
       />
       
       {viewMode === "grid" ? (
         <div className="grid gap-6">
           {sortedArticles.map((article) => (
-            <RhcaCard
-              key={article.id}
-              article={article}
-            />
+            <ErrorBoundary key={article.id}>
+              <RhcaCard article={article} />
+            </ErrorBoundary>
           ))}
         </div>
       ) : (
-        <RhcaTable articles={sortedArticles} />
+        <ErrorBoundary>
+          <RhcaTable articles={sortedArticles} />
+        </ErrorBoundary>
       )}
     </div>
+  );
+};
+
+export const RhcaArticleList = (props: RhcaArticleListProps) => {
+  return (
+    <ErrorBoundary>
+      <RhcaArticleListContent {...props} />
+    </ErrorBoundary>
   );
 };

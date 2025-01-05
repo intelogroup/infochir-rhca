@@ -5,6 +5,7 @@ import { filterVolumes, sortVolumes, groupVolumesByYear } from "./utils/volumeFi
 import { mockVolumes } from "./data/mockVolumes";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 import type { RhcaVolume } from "./types";
+import { SORT_OPTIONS, type SortOption } from "../igm/constants/sortOptions";
 
 interface RhcaGridProps {
   viewMode?: "grid" | "table";
@@ -12,7 +13,7 @@ interface RhcaGridProps {
 
 const RhcaGridContent = ({ viewMode = "grid" }: RhcaGridProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("latest");
+  const [sortBy, setSortBy] = useState<SortOption>("latest");
 
   const filteredVolumes = useMemo(() => {
     return filterVolumes(mockVolumes, searchTerm);
@@ -33,12 +34,7 @@ const RhcaGridContent = ({ viewMode = "grid" }: RhcaGridProps) => {
         sortBy={sortBy}
         onSearch={setSearchTerm}
         onSort={setSortBy}
-        sortOptions={[
-          { value: "latest", label: "Plus récents" },
-          { value: "year", label: "Année" },
-          { value: "downloads", label: "Téléchargements" },
-          { value: "shares", label: "Partages" },
-        ]}
+        sortOptions={SORT_OPTIONS}
       />
       
       <div className="space-y-12">

@@ -1,6 +1,7 @@
 import { YearGroupList } from "./YearGroupList";
 import { IssuesTable } from "@/components/issues/IssuesTable";
 import { LoadingState } from "./LoadingState";
+import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 import type { Issue } from "../types";
 
 interface IssuesGridContentProps {
@@ -24,12 +25,18 @@ export const IssuesGridContent = ({
 
   if (viewMode === "grid") {
     return (
-      <YearGroupList
-        issuesByYear={issuesByYear}
-        sortedYears={sortedYears}
-      />
+      <ErrorBoundary>
+        <YearGroupList
+          issuesByYear={issuesByYear}
+          sortedYears={sortedYears}
+        />
+      </ErrorBoundary>
     );
   }
 
-  return <IssuesTable issues={sortedIssues} />;
+  return (
+    <ErrorBoundary>
+      <IssuesTable issues={sortedIssues} />
+    </ErrorBoundary>
+  );
 };
