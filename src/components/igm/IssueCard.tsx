@@ -39,15 +39,15 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
         onClick={() => setIsModalOpen(true)}
       >
         <div className="flex flex-col sm:flex-row h-full">
-          <div className="w-full sm:w-32 h-48 sm:h-auto flex-shrink-0 relative">
+          <div className="w-full sm:w-32 h-44 flex-shrink-0 relative overflow-hidden">
             {issue.coverImage ? (
               <img 
                 src={issue.coverImage}
                 alt={`Couverture ${issue.title}`}
-                className="w-full h-full object-cover absolute inset-0"
+                className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full bg-muted flex items-center justify-center absolute inset-0">
+              <div className="w-full h-full bg-muted flex items-center justify-center">
                 <span className="text-muted-foreground">No cover</span>
               </div>
             )}
@@ -56,14 +56,14 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
           <div className="flex-1 p-4 sm:p-6 flex flex-col min-w-0">
             <div className="space-y-4 flex-1">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">
                   {issue.title}
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 truncate">
                   {issue.volume} - {issue.issue}
                 </p>
-                <div className="flex items-center gap-4 mt-2">
-                  <span className="text-sm text-gray-500">
+                <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                  <span className="truncate">
                     {format(new Date(issue.date), 'MMMM yyyy', { locale: fr })}
                   </span>
                 </div>
@@ -89,11 +89,11 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
               </div>
             </div>
 
-            <div className="flex gap-2 mt-4 flex-wrap">
+            <div className="flex gap-2 mt-4">
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-2 bg-ocean text-white hover:bg-ocean-hover flex-1 min-w-[120px]"
+                className="gap-2 bg-ocean text-white hover:bg-ocean-hover flex-1"
                 onClick={handleShare}
               >
                 <Share2 className="h-4 w-4" />
@@ -102,7 +102,7 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-2 bg-ocean text-white hover:bg-ocean-hover flex-1 min-w-[120px]"
+                className="gap-2 bg-ocean text-white hover:bg-ocean-hover flex-1"
                 onClick={handleDownload}
               >
                 <Download className="h-4 w-4" />

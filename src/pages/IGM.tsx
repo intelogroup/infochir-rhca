@@ -36,8 +36,8 @@ const IGM = () => {
           </div>
 
           <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
-            <div className="lg:col-span-2 space-y-6">
-              <div className="flex justify-end">
+            <div className="lg:col-span-2">
+              <div className="flex justify-end mb-6">
                 <ToggleGroup type="single" value={viewMode} onValueChange={(value) => value && setViewMode(value as "grid" | "table")}>
                   <ToggleGroupItem value="grid" size="sm" className="px-3">
                     <LayoutGrid className="h-4 w-4" />
@@ -47,7 +47,7 @@ const IGM = () => {
                   </ToggleGroupItem>
                 </ToggleGroup>
               </div>
-              <div className="w-full overflow-x-hidden">
+              <div className="bg-white rounded-lg p-6 shadow-sm">
                 <IssuesGrid viewMode={viewMode} />
               </div>
             </div>
@@ -59,7 +59,7 @@ const IGM = () => {
                   Soumission d'articles
                 </h2>
                 <p className="text-gray-600 mb-6">
-                  Nous accueillons les articles originaux, les revues systématiques, les cas cliniques et les lettres à l'éditeur. Notre processus de révision par les pairs garantit la qualité et la pertinence de chaque publication.
+                  Nous accueillons les articles originaux, les revues systématiques, les cas cliniques et les lettres à l'éditeur.
                 </p>
                 <Button className="w-full bg-ocean hover:bg-ocean-hover text-white">
                   Soumettre un manuscrit
@@ -72,7 +72,7 @@ const IGM = () => {
                   Instructions aux auteurs
                 </h2>
                 <p className="text-gray-600 mb-6">
-                  Consultez nos directives détaillées pour la préparation et la soumission de votre manuscrit. Nous fournissons des modèles et des conseils pour assurer une présentation optimale de vos travaux.
+                  Consultez nos directives détaillées pour la préparation et la soumission de votre manuscrit.
                 </p>
                 <Button variant="outline" className="w-full text-ocean hover:bg-ocean hover:text-white border-ocean">
                   Voir les directives
@@ -85,8 +85,7 @@ const IGM = () => {
                   Comité éditorial
                 </h2>
                 <p className="text-gray-600 mb-6">
-                  Notre comité éditorial est composé d'experts reconnus dans leurs domaines respectifs. 
-                  Ils assurent la qualité scientifique et la pertinence des articles publiés.
+                  Notre comité éditorial est composé d'experts reconnus dans leurs domaines respectifs.
                 </p>
                 <Link to="/igm/editorial-committee" className="block">
                   <Button variant="outline" className="w-full text-ocean hover:bg-ocean hover:text-white border-ocean">
