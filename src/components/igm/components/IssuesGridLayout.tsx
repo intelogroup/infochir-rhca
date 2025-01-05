@@ -1,9 +1,9 @@
+import { useState } from "react";
 import { SearchAndSort } from "@/components/issues/SearchAndSort";
 import { IssuesGridContent } from "./IssuesGridContent";
 import { useIssuesState } from "../hooks/useIssuesState";
+import type { SortOption } from "../constants/sortOptions";
 import { mockIssues } from "../data/mockIssues";
-import { IGM_SORT_OPTIONS, type IGMSortOption, type IGMSortOptionValue } from "@/types/sort";
-import { useState } from "react";
 
 interface IssuesGridLayoutProps {
   viewMode?: "grid" | "table";
@@ -11,27 +11,21 @@ interface IssuesGridLayoutProps {
 
 export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState<IGMSortOptionValue>("latest");
-  const [isLoading, setIsLoading] = useState(true);
+  const [sortBy, setSortBy] = useState<SortOption>("latest");
 
-  const {
-    sortedIssues,
-    issuesByYear,
-    sortedYears,
-  } = useIssuesState(mockIssues, searchTerm, sortBy);
-
-  // Simulate loading for demo purposes
-  setTimeout(() => setIsLoading(false), 1000);
+  const { sortedIssues, issuesByYear, sortedYears } = useIssuesState(
+    mockIssues,
+    searchTerm,
+    sortBy
+  );
 
   return (
     <div className="space-y-6">
-      <SearchAndSort<IGMSortOption>
+      <SearchAndSort
         searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
         sortBy={sortBy}
-        onSearch={setSearchTerm}
-        onSort={setSortBy}
-        sortOptions={IGM_SORT_OPTIONS}
-        disabled={isLoading}
+        onSortChange={setSortBy}
       />
       
       <IssuesGridContent
@@ -39,7 +33,6 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
         sortedIssues={sortedIssues}
         issuesByYear={issuesByYear}
         sortedYears={sortedYears}
-        isLoading={isLoading}
       />
     </div>
   );
