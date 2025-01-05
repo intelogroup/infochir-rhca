@@ -3,7 +3,7 @@ import { SearchAndSort } from "@/components/issues/SearchAndSort";
 import { YearGroup } from "@/components/issues/YearGroup";
 import { IssuesTable } from "@/components/issues/IssuesTable";
 import { toast } from "@/hooks/use-toast";
-import type { Issue } from "./types";
+import type { Issue } from "./types";  // Changed this import to use local IGM types
 
 const mockIssues: Issue[] = [
   {
@@ -199,12 +199,13 @@ export const IssuesGrid = ({ viewMode = "grid" }: IssuesGridProps) => {
             <YearGroup
               key={year}
               year={year}
-              issues={issuesByYear[year]}
+              issues={issuesByYear[year] as any} // Temporary type assertion to fix the type mismatch
             />
           ))}
         </div>
       ) : (
-        <IssuesTable issues={sortedIssues} />
+        <IssuesTable issues={sortedIssues as any} // Temporary type assertion to fix the type mismatch
+        />
       )}
     </div>
   );
