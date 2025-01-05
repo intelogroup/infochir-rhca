@@ -1,11 +1,14 @@
 import { MainLayout } from "@/components/layouts/MainLayout";
+import { RHCAHero } from "@/components/rhca/RHCAHero";
+import { RHCAFeatures } from "@/components/rhca/RHCAFeatures";
+import { RHCASubmission } from "@/components/rhca/RHCASubmission";
 
 const RHCA = () => {
   return (
     <MainLayout>
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-primary">RHCA</h1>
-      </div>
+      <RHCAHero />
+      <RHCAFeatures />
+      <RHCASubmission />
     </MainLayout>
   );
 };
