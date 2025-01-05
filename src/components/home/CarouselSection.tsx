@@ -17,18 +17,12 @@ export const CarouselSection = () => {
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
-    if (!api) {
-      return;
-    }
-
-    api.on("select", () => {
-      setCurrent(api.selectedScrollSnap());
-    });
+    if (!api) return;
+    api.on("select", () => setCurrent(api.selectedScrollSnap()));
   }, [api]);
 
   return (
     <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Updated gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] opacity-5" />
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
       
@@ -52,42 +46,37 @@ export const CarouselSection = () => {
           </motion.p>
         </div>
 
-        <div className="relative">
-          <Carousel
-            opts={{
-              align: "start",
-              loop: true,
-            }}
-            setApi={setApi}
-            className="w-full max-w-6xl mx-auto"
-          >
-            <CarouselContent>
-              {highlights.map((highlight, index) => (
-                <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3 h-full">
-                  <CarouselCard highlight={highlight} index={index} />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="hidden md:flex -left-12 lg:-left-16 h-12 w-12 border-2 border-primary/20 bg-white/80 hover:bg-white">
-              <ChevronLeft className="h-6 w-6 text-primary" />
-            </CarouselPrevious>
-            <CarouselNext className="hidden md:flex -right-12 lg:-right-16 h-12 w-12 border-2 border-primary/20 bg-white/80 hover:bg-white">
-              <ChevronRight className="h-6 w-6 text-primary" />
-            </CarouselNext>
-          </Carousel>
-
-          <div className="flex justify-center gap-2 mt-4 md:hidden">
-            {highlights.map((_, index) => (
-              <button
-                key={index}
-                className={cn(
-                  "h-2 w-2 rounded-full transition-all duration-300",
-                  current === index ? "bg-primary w-4" : "bg-primary/20"
-                )}
-                onClick={() => api?.scrollTo(index)}
-              />
+        <Carousel
+          opts={{ align: "start", loop: true }}
+          setApi={setApi}
+          className="w-full max-w-6xl mx-auto"
+        >
+          <CarouselContent>
+            {highlights.map((highlight, index) => (
+              <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3 h-full">
+                <CarouselCard highlight={highlight} index={index} />
+              </CarouselItem>
             ))}
-          </div>
+          </CarouselContent>
+          <CarouselPrevious className="hidden md:flex -left-12 lg:-left-16 h-12 w-12 border-2 border-primary/20 bg-white/80 hover:bg-white">
+            <ChevronLeft className="h-6 w-6 text-primary" />
+          </CarouselPrevious>
+          <CarouselNext className="hidden md:flex -right-12 lg:-right-16 h-12 w-12 border-2 border-primary/20 bg-white/80 hover:bg-white">
+            <ChevronRight className="h-6 w-6 text-primary" />
+          </CarouselNext>
+        </Carousel>
+
+        <div className="flex justify-center gap-2 mt-4 md:hidden">
+          {highlights.map((_, index) => (
+            <button
+              key={index}
+              className={cn(
+                "h-2 w-2 rounded-full transition-all duration-300",
+                current === index ? "bg-primary w-4" : "bg-primary/20"
+              )}
+              onClick={() => api?.scrollTo(index)}
+            />
+          ))}
         </div>
       </div>
     </section>

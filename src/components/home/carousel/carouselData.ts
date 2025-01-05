@@ -32,11 +32,10 @@ export const highlights: Highlight[] = [
     description: "Rejoignez-nous pour le plus grand événement chirurgical de l'année",
     category: "Événement",
     date: "20 Mar 2024",
-    author: "Comité Organisateur",
-    image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&auto=format&fit=crop&q=80",
     location: "Centre de Conférences Médical, Paris",
     duration: "2 jours",
-    maxParticipants: 150
+    maxParticipants: 150,
+    image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&auto=format&fit=crop&q=80"
   },
   {
     title: "Formation: Techniques avancées en laparoscopie",
