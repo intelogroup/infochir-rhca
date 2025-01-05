@@ -1,16 +1,20 @@
+export type ChapterStatus = "available" | "coming";
+
+export interface ChapterStats {
+  views: number;
+  shares: number;
+  downloads: number;
+}
+
 export interface AtlasChapter {
   id: string;
   title: string;
   description?: string;
   lastUpdate?: string;
   author?: string;
-  status: "available" | "coming";
+  status: ChapterStatus;
   coverImage?: string;
-  stats?: {
-    views: number;
-    shares: number;
-    downloads: number;
-  };
+  stats?: ChapterStats;
 }
 
 export interface AtlasModalProps {

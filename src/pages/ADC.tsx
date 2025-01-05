@@ -2,8 +2,11 @@ import { MainLayout } from "@/components/layouts/MainLayout";
 import { AtlasTableOfContents } from "@/components/atlas/AtlasTableOfContents";
 import { AtlasCard } from "@/components/atlas/AtlasCard";
 import { atlasChapters } from "@/components/atlas/data/atlasChapters";
+import { sortChaptersByDate } from "@/components/atlas/utils/chapterUtils";
 
 const ADC = () => {
+  const sortedChapters = sortChaptersByDate(atlasChapters);
+
   return (
     <MainLayout>
       <div className="container mx-auto px-4 py-8 space-y-8">
@@ -21,7 +24,7 @@ const ADC = () => {
         </section>
 
         <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {atlasChapters.map((chapter) => (
+          {sortedChapters.map((chapter) => (
             <AtlasCard key={chapter.id} chapter={chapter} />
           ))}
         </section>
