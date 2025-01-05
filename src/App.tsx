@@ -6,6 +6,7 @@ import ADC from "@/pages/ADC";
 import IndexMedicus from "@/pages/IndexMedicus";
 import About from "@/pages/About";
 import EditorialCommittee from "@/pages/EditorialCommittee";
+import Submission from "@/pages/Submission";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/adc" element={<ADC />} />
         <Route path="/index-medicus" element={<IndexMedicus />} />
         <Route path="/about" element={<About />} />
+        <Route path="/submission" element={<Submission />} />
       </Routes>
     </Router>
   );
