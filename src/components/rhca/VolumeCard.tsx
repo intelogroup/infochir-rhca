@@ -48,19 +48,22 @@ export const VolumeCard = ({ volume }: VolumeCardProps) => {
                   <div className="min-w-0">
                     <CardTitle 
                       id={`volume-title-${volume.id}`}
-                      className="text-2xl font-bold text-primary mb-2 truncate"
+                      className="text-primary mb-2 truncate"
+                      style={{ fontSize: 'clamp(1.25rem, 1rem + 1vw, 1.5rem)' }}
                     >
                       {volume.volume}
                     </CardTitle>
                     <p 
-                      className="text-sm text-gray-500"
+                      className="text-gray-500"
+                      style={{ fontSize: 'clamp(0.875rem, 0.8rem + 0.3vw, 1rem)' }}
                       aria-label={`Date de publication: ${format(new Date(volume.date), 'MMMM yyyy', { locale: fr })}`}
                     >
                       {format(new Date(volume.date), 'MMMM yyyy', { locale: fr })}
                     </p>
                     {volume.description && (
                       <p 
-                        className="text-sm text-gray-600 mt-2 line-clamp-2"
+                        className="text-gray-600 mt-2 line-clamp-2"
+                        style={{ fontSize: 'clamp(0.875rem, 0.8rem + 0.3vw, 1rem)' }}
                         aria-label="Description du volume"
                       >
                         {volume.description}
@@ -79,7 +82,8 @@ export const VolumeCard = ({ volume }: VolumeCardProps) => {
               </CardHeader>
               <CardContent className="p-0 mt-4">
                 <div 
-                  className="flex flex-wrap items-center gap-4 text-sm text-gray-500"
+                  className="flex flex-wrap items-center gap-4 text-gray-500"
+                  style={{ fontSize: 'clamp(0.75rem, 0.7rem + 0.2vw, 0.875rem)' }}
                   aria-label="Statistiques du volume"
                 >
                   <div className="flex items-center gap-2">

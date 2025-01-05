@@ -43,7 +43,12 @@ export const RhcaGrid = ({ viewMode = "grid" }: RhcaGridProps) => {
       <div className="space-y-12">
         {Object.entries(groupedVolumes).map(([year, volumes]) => (
           <div key={year} className="space-y-6">
-            <h2 className="text-2xl font-bold text-primary">{year}</h2>
+            <h2 
+              className="text-primary font-bold"
+              style={{ fontSize: 'clamp(1.5rem, 1.3rem + 1vw, 2rem)' }}
+            >
+              {year}
+            </h2>
             <div 
               className="grid gap-6"
               style={{
