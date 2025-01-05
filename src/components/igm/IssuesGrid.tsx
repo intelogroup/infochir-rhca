@@ -9,61 +9,7 @@ import type { Issue } from "./types";  // Using the IGM Issue type
 const mockIssues: Issue[] = [
   {
     id: "1",
-    title: "Info CHIR",
-    volume: "Volume 7",
-    issue: "No 32",
-    date: new Date(2020, 8, 15).toISOString(),
-    abstract: "Numéro spécial sur les avancées en chirurgie mini-invasive",
-    description: "Édité par Dr. Jean Alouidor",
-    pdfUrl: "https://example.com/sample1.pdf",
-    coverImage: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=500&h=700&fit=crop",
-    articleCount: 8,
-    downloads: 125,
-    shares: 45,
-    articles: [
-      {
-        id: "1-1",
-        title: "Les nouvelles techniques en chirurgie mini-invasive",
-        authors: ["Dr. Marie Laurent", "Dr. Pierre Dubois"],
-        pageNumber: 1,
-        abstract: "Une revue des dernières avancées en chirurgie mini-invasive",
-        tags: ["Chirurgie mini-invasive", "Innovation", "Techniques chirurgicales"]
-      },
-      {
-        id: "1-2",
-        title: "Impact de la chirurgie mini-invasive sur la récupération post-opératoire",
-        authors: ["Dr. Jean Martin", "Dr. Sophie Richard"],
-        pageNumber: 15,
-        tags: ["Récupération post-opératoire", "Étude clinique"]
-      }
-    ]
-  },
-  {
-    id: "2",
-    title: "Info CHIR",
-    volume: "Volume 7",
-    issue: "No 31",
-    date: new Date(2020, 5, 15).toISOString(),
-    abstract: "Focus sur l'anesthésie en chirurgie pédiatrique",
-    description: "Édité par Dr. Jean Alouidor",
-    pdfUrl: "https://example.com/sample2.pdf",
-    coverImage: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500&h=700&fit=crop",
-    articleCount: 6,
-    downloads: 98,
-    shares: 32,
-    articles: [
-      {
-        id: "2-1",
-        title: "Spécificités de l'anesthésie pédiatrique",
-        authors: ["Dr. Anne Dupont", "Dr. Marc Bernard"],
-        pageNumber: 1,
-        tags: ["Anesthésie", "Pédiatrie"]
-      }
-    ]
-  },
-  {
-    id: "3",
-    title: "IGM",
+    title: "IGM Volume 3 - No 39",
     volume: "Volume 3",
     issue: "No 39",
     date: new Date(2024, 2, 1).toISOString(),
@@ -77,8 +23,8 @@ const mockIssues: Issue[] = [
     articles: []
   },
   {
-    id: "4",
-    title: "IGM",
+    id: "2",
+    title: "IGM Volume 2 - No 38",
     volume: "Volume 2",
     issue: "No 38",
     date: new Date(2023, 11, 1).toISOString(),
@@ -92,8 +38,8 @@ const mockIssues: Issue[] = [
     articles: []
   },
   {
-    id: "5",
-    title: "IGM",
+    id: "3",
+    title: "IGM Volume 2 - No 37",
     volume: "Volume 2",
     issue: "No 37",
     date: new Date(2023, 8, 1).toISOString(),
