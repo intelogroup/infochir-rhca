@@ -8,5 +8,6 @@ export interface RhcaArticle {
   pdfUrl?: string;
   views?: number;
   citations?: number;
+  downloads?: number;
   tags?: string[];
 }
