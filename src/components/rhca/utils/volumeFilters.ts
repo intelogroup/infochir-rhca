@@ -4,7 +4,7 @@ export const filterVolumes = (volumes: RhcaVolume[], searchTerm: string): RhcaVo
   const searchLower = searchTerm.toLowerCase();
   return volumes.filter((volume) => {
     return (
-      volume.volume.toLowerCase().includes(searchLower) ||
+      volume.volume.toString().includes(searchTerm) ||
       volume.description?.toLowerCase().includes(searchLower) ||
       volume.articles.some(
         article =>

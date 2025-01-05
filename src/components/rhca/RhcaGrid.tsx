@@ -5,7 +5,7 @@ import { filterVolumes, sortVolumes, groupVolumesByYear } from "./utils/volumeFi
 import { mockVolumes } from "./data/mockVolumes";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 import type { RhcaVolume } from "./types";
-import { SORT_OPTIONS, type SortOption } from "../igm/constants/sortOptions";
+import { SORT_OPTIONS, type SortOption } from "@/types/sortOptions";
 
 interface RhcaGridProps {
   viewMode?: "grid" | "table";
