@@ -2,8 +2,7 @@ import { useState } from "react";
 import { SearchAndSort } from "@/components/issues/SearchAndSort";
 import { IssuesGridContent } from "./components/IssuesGridContent";
 import { useIssuesState } from "./hooks/useIssuesState";
-import { mockIssues } from "./data/mockIssues"; // Assuming we move mock data to a separate file
-import type { Issue } from "./types";
+import { mockIssues } from "./data/mockIssues";
 
 interface IssuesGridProps {
   viewMode?: "grid" | "table";

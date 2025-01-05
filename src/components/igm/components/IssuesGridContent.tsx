@@ -1,4 +1,4 @@
-import { YearGroup } from "@/components/issues/YearGroup";
+import { YearGroupList } from "./YearGroupList";
 import { IssuesTable } from "@/components/issues/IssuesTable";
 import type { Issue } from "../types";
 
@@ -17,15 +17,10 @@ export const IssuesGridContent = ({
 }: IssuesGridContentProps) => {
   if (viewMode === "grid") {
     return (
-      <div className="space-y-6">
-        {sortedYears.map((year) => (
-          <YearGroup
-            key={year}
-            year={year}
-            issues={issuesByYear[year]}
-          />
-        ))}
-      </div>
+      <YearGroupList
+        issuesByYear={issuesByYear}
+        sortedYears={sortedYears}
+      />
     );
   }
 

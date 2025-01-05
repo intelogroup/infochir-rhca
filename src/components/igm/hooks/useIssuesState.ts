@@ -1,20 +1,36 @@
 import { useMemo } from "react";
-import { getSortFunction } from "../utils/sortingUtils";
-import { filterIssuesBySearch } from "../utils/filterUtils";
 import type { Issue } from "../types";
+import type { SortOption } from "../constants/sortOptions";
 
 export const useIssuesState = (
   issues: Issue[],
   searchTerm: string,
-  sortBy: string
+  sortBy: SortOption
 ) => {
   const filteredIssues = useMemo(() => {
-    return filterIssuesBySearch(issues, searchTerm);
+    if (!searchTerm) return issues;
+    
+    const searchLower = searchTerm.toLowerCase();
+    return issues.filter((issue) => 
+      issue.title.toLowerCase().includes(searchLower) ||
+      issue.description?.toLowerCase().includes(searchLower)
+    );
   }, [issues, searchTerm]);
 
   const sortedIssues = useMemo(() => {
-    const sortFn = getSortFunction(sortBy);
-    return [...filteredIssues].sort(sortFn);
+    const sorted = [...filteredIssues];
+    switch (sortBy) {
+      case "latest":
+        return sorted.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      case "year":
+        return sorted.sort((a, b) => new Date(b.date).getFullYear() - new Date(a.date).getFullYear());
+      case "downloads":
+        return sorted.sort((a, b) => (b.downloads || 0) - (a.downloads || 0));
+      case "shares":
+        return sorted.sort((a, b) => (b.shares || 0) - (a.shares || 0));
+      default:
+        return sorted;
+    }
   }, [filteredIssues, sortBy]);
 
   const issuesByYear = useMemo(() => {
@@ -35,7 +51,6 @@ export const useIssuesState = (
   }, [issuesByYear]);
 
   return {
-    filteredIssues,
     sortedIssues,
     issuesByYear,
     sortedYears,
