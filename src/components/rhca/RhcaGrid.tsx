@@ -40,11 +40,16 @@ export const RhcaGrid = ({ viewMode = "grid" }: RhcaGridProps) => {
         ]}
       />
       
-      <div className="space-y-8">
+      <div className="space-y-12">
         {Object.entries(groupedVolumes).map(([year, volumes]) => (
-          <div key={year} className="space-y-4">
+          <div key={year} className="space-y-6">
             <h2 className="text-2xl font-bold text-primary">{year}</h2>
-            <div className="grid gap-6 md:grid-cols-2">
+            <div 
+              className="grid grid-cols-1 md:grid-cols-2 auto-rows-fr gap-6"
+              style={{
+                gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 400px), 1fr))"
+              }}
+            >
               {volumes.map((volume) => (
                 <VolumeCard
                   key={volume.id}
