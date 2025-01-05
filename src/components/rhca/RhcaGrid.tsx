@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { SearchAndSort } from "@/components/issues/SearchAndSort";
 import { VolumeCard } from "./VolumeCard";
-import { filterVolumes, sortVolumes } from "./utils/volumeFilters";
+import { filterVolumes, sortVolumes, groupVolumesByYear } from "./utils/volumeFilters";
 import { mockVolumes } from "./data/mockVolumes";
 import type { RhcaVolume } from "./types";
 
@@ -21,6 +21,10 @@ export const RhcaGrid = ({ viewMode = "grid" }: RhcaGridProps) => {
     return sortVolumes(filteredVolumes, sortBy);
   }, [filteredVolumes, sortBy]);
 
+  const groupedVolumes = useMemo(() => {
+    return groupVolumesByYear(sortedVolumes);
+  }, [sortedVolumes]);
+
   return (
     <div className="space-y-6">
       <SearchAndSort
@@ -36,12 +40,19 @@ export const RhcaGrid = ({ viewMode = "grid" }: RhcaGridProps) => {
         ]}
       />
       
-      <div className="grid gap-6 md:grid-cols-2">
-        {sortedVolumes.map((volume) => (
-          <VolumeCard
-            key={volume.id}
-            volume={volume}
-          />
+      <div className="space-y-8">
+        {Object.entries(groupedVolumes).map(([year, volumes]) => (
+          <div key={year} className="space-y-4">
+            <h2 className="text-2xl font-bold text-primary">{year}</h2>
+            <div className="grid gap-6 md:grid-cols-2">
+              {volumes.map((volume) => (
+                <VolumeCard
+                  key={volume.id}
+                  volume={volume}
+                />
+              ))}
+            </div>
+          </div>
         ))}
       </div>
     </div>

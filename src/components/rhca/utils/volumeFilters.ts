@@ -37,3 +37,14 @@ export const sortVolumes = (volumes: RhcaVolume[], sortType: string): RhcaVolume
       return sorted;
   }
 };
+
+export const groupVolumesByYear = (volumes: RhcaVolume[]): Record<string, RhcaVolume[]> => {
+  return volumes.reduce((acc, volume) => {
+    const year = new Date(volume.date).getFullYear().toString();
+    if (!acc[year]) {
+      acc[year] = [];
+    }
+    acc[year].push(volume);
+    return acc;
+  }, {} as Record<string, RhcaVolume[]>);
+};
