@@ -18,8 +18,8 @@ export const RhcaCard = ({ article, onCardClick }: RhcaCardProps) => {
       role="article"
       aria-labelledby={`article-title-${article.id}`}
     >
-      <div className="flex gap-4 p-4 h-full">
-        <div className="w-32 flex-shrink-0">
+      <div className="flex flex-col md:flex-row gap-4 p-3 md:p-4 h-full">
+        <div className="w-full md:w-32 flex-shrink-0">
           <AspectRatio ratio={3/4} className="overflow-hidden rounded-lg">
             {article.imageUrl ? (
               <img 

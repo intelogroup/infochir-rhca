@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Download, Share2 } from "lucide-react";
+import { Download, Share2, Eye } from "lucide-react";
 import { toast } from "sonner";
 
 interface ArticleActionsProps {
@@ -26,27 +26,40 @@ export const ArticleActions = ({ id, pdfUrl, onCardClick }: ArticleActionsProps)
     toast.success("Ouverture du PDF...");
   };
 
+  const handleView = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onCardClick?.();
+  };
+
   return (
-    <div className="flex gap-2 mt-auto pt-2">
+    <div className="flex gap-2 mt-auto pt-2 md:pt-3">
       <Button
         variant="outline"
         size="sm"
-        className="gap-2 bg-[#0EA5E9] text-white hover:bg-[#0EA5E9]/90 transition-colors"
+        className="flex-1 md:flex-none gap-2 h-8 text-[clamp(0.75rem,0.7rem+0.1vw,0.875rem)]"
         onClick={handleShare}
-        aria-label="Partager l'article"
       >
-        <Share2 className="h-4 w-4" aria-hidden="true" />
-        <span className="text-[clamp(0.75rem,0.7rem+0.25vw,0.875rem)]">Partager</span>
+        <Share2 className="h-4 w-4" />
+        <span className="hidden md:inline">Partager</span>
       </Button>
       <Button
         variant="outline"
         size="sm"
-        className="gap-2 bg-[#0EA5E9] text-white hover:bg-[#0EA5E9]/90 transition-colors"
+        className="flex-1 md:flex-none gap-2 h-8 text-[clamp(0.75rem,0.7rem+0.1vw,0.875rem)]"
         onClick={handleDownload}
-        aria-label={pdfUrl ? "Télécharger le PDF" : "PDF non disponible"}
+        disabled={!pdfUrl}
       >
-        <Download className="h-4 w-4" aria-hidden="true" />
-        <span className="text-[clamp(0.75rem,0.7rem+0.25vw,0.875rem)]">PDF</span>
+        <Download className="h-4 w-4" />
+        <span className="hidden md:inline">PDF</span>
+      </Button>
+      <Button
+        variant="secondary"
+        size="sm"
+        className="flex-1 md:flex-none gap-2 h-8 text-[clamp(0.75rem,0.7rem+0.1vw,0.875rem)]"
+        onClick={handleView}
+      >
+        <Eye className="h-4 w-4" />
+        <span className="hidden md:inline">Voir</span>
       </Button>
     </div>
   );
