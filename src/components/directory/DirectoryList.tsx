@@ -8,6 +8,7 @@ import { TableHeader } from "./TableHeader";
 import { MemberRow } from "./MemberRow";
 import { FixedSizeList as List } from 'react-window';
 import { useWindowSize } from "@/hooks/use-window-size";
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 interface Member {
   id: number;
@@ -24,7 +25,7 @@ export const DirectoryList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState<SortField>('id');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
-  const { width, height } = useWindowSize();
+  const { height } = useWindowSize();
 
   const { data: members = [], isLoading } = useQuery({
     queryKey: ['members', sortField, sortDirection],
@@ -58,16 +59,21 @@ export const DirectoryList = () => {
     member.phone?.includes(searchTerm)
   );
 
-  const ROW_HEIGHT = 80; // Height of each row
-  const TABLE_HEADER_HEIGHT = 56; // Height of the table header
-  const CONTAINER_PADDING = 32; // Padding around the table
-  const listHeight = Math.min(
-    height ? height - TABLE_HEADER_HEIGHT - CONTAINER_PADDING * 2 : 600,
-    filteredMembers.length * ROW_HEIGHT
-  );
+  const ROW_HEIGHT = 80;
+  const TABLE_HEADER_HEIGHT = 56;
+  const SEARCH_BAR_HEIGHT = 48;
+  const PADDING = 32;
+
+  const getListHeight = () => {
+    const availableHeight = height ? height - TABLE_HEADER_HEIGHT - SEARCH_BAR_HEIGHT - PADDING * 2 : 600;
+    const contentHeight = filteredMembers.length * ROW_HEIGHT;
+    return Math.min(availableHeight, contentHeight);
+  };
 
   const Row = ({ index, style }: { index: number, style: React.CSSProperties }) => {
     const member = filteredMembers[index];
+    if (!member) return null;
+    
     return (
       <div style={style}>
         <MemberRow member={member} />
@@ -113,14 +119,21 @@ export const DirectoryList = () => {
                 ) : (
                   <tr>
                     <td colSpan={5} className="p-0">
-                      <List
-                        height={listHeight}
-                        itemCount={filteredMembers.length}
-                        itemSize={ROW_HEIGHT}
-                        width="100%"
-                      >
-                        {Row}
-                      </List>
+                      <div style={{ height: getListHeight() }}>
+                        <AutoSizer>
+                          {({ width }) => (
+                            <List
+                              height={getListHeight()}
+                              itemCount={filteredMembers.length}
+                              itemSize={ROW_HEIGHT}
+                              width={width}
+                              overscanCount={5}
+                            >
+                              {Row}
+                            </List>
+                          )}
+                        </AutoSizer>
+                      </div>
                     </td>
                   </tr>
                 )}
