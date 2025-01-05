@@ -1,11 +1,11 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import RHCA from "./pages/RHCA";
-import IGM from "./pages/IGM";
-import ADC from "./pages/ADC";
-import IndexMedicus from "./pages/IndexMedicus";
-import About from "./pages/About";
-import EditorialCommittee from "./pages/EditorialCommittee";
+import Home from "@/pages/Home";
+import RHCA from "@/pages/RHCA";
+import IGM from "@/pages/IGM";
+import ADC from "@/pages/ADC";
+import IndexMedicus from "@/pages/IndexMedicus";
+import About from "@/pages/About";
+import EditorialCommittee from "@/pages/EditorialCommittee";
 
 function App() {
   return (
