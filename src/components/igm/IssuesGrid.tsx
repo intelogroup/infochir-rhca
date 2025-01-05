@@ -2,8 +2,9 @@ import { useState, useMemo } from "react";
 import { SearchAndSort } from "@/components/issues/SearchAndSort";
 import { YearGroup } from "@/components/issues/YearGroup";
 import { IssuesTable } from "@/components/issues/IssuesTable";
-import { toast } from "@/hooks/use-toast";
-import type { Issue } from "./types";  // Changed this import to use local IGM types
+import { sortIssues, groupIssuesByYear, getSortedYears } from "./utils/issueSorting";
+import { filterIssues } from "./utils/issueFiltering";
+import type { Issue } from "./types";  // Using the IGM Issue type
 
 const mockIssues: Issue[] = [
   {
@@ -116,67 +117,20 @@ export const IssuesGrid = ({ viewMode = "grid" }: IssuesGridProps) => {
   const [sortBy, setSortBy] = useState("latest");
 
   const filteredIssues = useMemo(() => {
-    const filtered = mockIssues.filter((issue) => {
-      const searchLower = searchTerm.toLowerCase();
-      return (
-        issue.title.toLowerCase().includes(searchLower) ||
-        issue.abstract.toLowerCase().includes(searchLower) ||
-        issue.description?.toLowerCase().includes(searchLower) ||
-        issue.volume.toLowerCase().includes(searchLower) ||
-        issue.issue.toLowerCase().includes(searchLower)
-      );
-    });
-
-    if (filtered.length === 0 && searchTerm !== "") {
-      toast({
-        title: "Aucun résultat",
-        description: "Essayez de modifier vos critères de recherche",
-        variant: "destructive",
-      });
-    }
-
-    return filtered;
+    return filterIssues(mockIssues, searchTerm);
   }, [searchTerm]);
 
-  const sortIssues = (issues: Issue[], sortType: string) => {
-    let sorted = [...issues];
-    switch (sortType) {
-      case "latest":
-        sorted.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-        break;
-      case "year":
-        sorted.sort((a, b) => {
-          const yearA = new Date(a.date).getFullYear();
-          const yearB = new Date(b.date).getFullYear();
-          return yearB - yearA;
-        });
-        break;
-      case "downloads":
-        sorted.sort((a, b) => (b.downloads || 0) - (a.downloads || 0));
-        break;
-      case "shares":
-        sorted.sort((a, b) => (b.shares || 0) - (a.shares || 0));
-        break;
-      default:
-        break;
-    }
-    return sorted;
-  };
+  const sortedIssues = useMemo(() => {
+    return sortIssues(filteredIssues, sortBy);
+  }, [filteredIssues, sortBy]);
 
-  const sortedIssues = sortIssues(filteredIssues, sortBy);
+  const issuesByYear = useMemo(() => {
+    return groupIssuesByYear(sortedIssues);
+  }, [sortedIssues]);
 
-  const issuesByYear = sortedIssues.reduce((acc, issue) => {
-    const year = new Date(issue.date).getFullYear();
-    if (!acc[year]) {
-      acc[year] = [];
-    }
-    acc[year].push(issue);
-    return acc;
-  }, {} as Record<number, Issue[]>);
-
-  const sortedYears = Object.keys(issuesByYear)
-    .map(Number)
-    .sort((a, b) => b - a);
+  const sortedYears = useMemo(() => {
+    return getSortedYears(issuesByYear);
+  }, [issuesByYear]);
 
   return (
     <div className="space-y-6">
@@ -199,13 +153,12 @@ export const IssuesGrid = ({ viewMode = "grid" }: IssuesGridProps) => {
             <YearGroup
               key={year}
               year={year}
-              issues={issuesByYear[year] as any} // Temporary type assertion to fix the type mismatch
+              issues={issuesByYear[year]}
             />
           ))}
         </div>
       ) : (
-        <IssuesTable issues={sortedIssues as any} // Temporary type assertion to fix the type mismatch
-        />
+        <IssuesTable issues={sortedIssues} />
       )}
     </div>
   );

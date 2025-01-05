@@ -1,5 +1,5 @@
 import { IssueCard } from "@/components/igm/IssueCard";
-import type { Issue } from "@/components/igm/types";
+import type { Issue } from "@/components/igm/types";  // Updated import
 
 interface YearGroupProps {
   year: number;
