@@ -5,6 +5,7 @@ import { ArticleTags } from "./article/ArticleTags";
 import { ArticleCategories } from "./article/ArticleCategories";
 import { ArticleMetadata } from "./article/ArticleMetadata";
 import { ArticleActions } from "./article/ArticleActions";
+import { toast } from "@/hooks/use-toast";
 
 interface ArticleCardProps {
   article: Article;
@@ -36,12 +37,18 @@ export const ArticleCard = ({ article, onTagClick, selectedTags }: ArticleCardPr
     }
 
     navigator.clipboard.writeText(citation);
-    toast.success(`Citation format ${format} copiée dans le presse-papier`);
+    toast({
+      title: "Citation copiée",
+      description: `Format ${format} copié dans le presse-papier`
+    });
   };
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href + '#' + article.id);
-    toast.success("Lien copié dans le presse-papier");
+    toast({
+      title: "Lien copié",
+      description: "Le lien a été copié dans le presse-papier"
+    });
   };
 
   return (
