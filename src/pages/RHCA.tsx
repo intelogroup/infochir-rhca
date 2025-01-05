@@ -6,6 +6,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { LayoutGrid, List, BookOpen, Users, MessageCircle } from "lucide-react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { RhcaGrid } from "@/components/rhca/RhcaGrid";
+import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 
 const RHCA = () => {
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
@@ -41,50 +42,58 @@ const RHCA = () => {
                 </ToggleGroupItem>
               </ToggleGroup>
             </div>
-            <RhcaGrid viewMode={viewMode} />
+            <ErrorBoundary>
+              <RhcaGrid viewMode={viewMode} />
+            </ErrorBoundary>
           </div>
           
           <div className="space-y-8">
-            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
-              <h2 className="text-2xl font-semibold text-primary mb-4 flex items-center gap-2">
-                <BookOpen className="h-5 w-5" />
-                Soumission d'articles
-              </h2>
-              <p className="text-gray-600 mb-6">
-                Nous accueillons les articles originaux, les revues systématiques, les cas cliniques et les lettres à l'éditeur.
-              </p>
-              <Button className="w-full bg-primary hover:bg-primary-light">
-                Soumettre un manuscrit
-              </Button>
-            </div>
-
-            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
-              <h2 className="text-2xl font-semibold text-primary mb-4 flex items-center gap-2">
-                <MessageCircle className="h-5 w-5" />
-                Instructions aux auteurs
-              </h2>
-              <p className="text-gray-600 mb-6">
-                Consultez nos directives détaillées pour la préparation et la soumission de votre manuscrit.
-              </p>
-              <Button variant="outline" className="w-full text-primary hover:text-primary-light">
-                Voir les directives
-              </Button>
-            </div>
-
-            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
-              <h2 className="text-2xl font-semibold text-primary mb-4 flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                Comité éditorial
-              </h2>
-              <p className="text-gray-600 mb-6">
-                Notre comité éditorial est composé d'experts reconnus dans leurs domaines respectifs.
-              </p>
-              <Link to="/rhca/editorial-committee">
-                <Button variant="outline" className="w-full text-primary hover:text-primary-light">
-                  Découvrir l'équipe
+            <ErrorBoundary>
+              <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
+                <h2 className="text-2xl font-semibold text-primary mb-4 flex items-center gap-2">
+                  <BookOpen className="h-5 w-5" />
+                  Soumission d'articles
+                </h2>
+                <p className="text-gray-600 mb-6">
+                  Nous accueillons les articles originaux, les revues systématiques, les cas cliniques et les lettres à l'éditeur.
+                </p>
+                <Button className="w-full bg-primary hover:bg-primary-light">
+                  Soumettre un manuscrit
                 </Button>
-              </Link>
-            </div>
+              </div>
+            </ErrorBoundary>
+
+            <ErrorBoundary>
+              <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
+                <h2 className="text-2xl font-semibold text-primary mb-4 flex items-center gap-2">
+                  <MessageCircle className="h-5 w-5" />
+                  Instructions aux auteurs
+                </h2>
+                <p className="text-gray-600 mb-6">
+                  Consultez nos directives détaillées pour la préparation et la soumission de votre manuscrit.
+                </p>
+                <Button variant="outline" className="w-full text-primary hover:text-primary-light">
+                  Voir les directives
+                </Button>
+              </div>
+            </ErrorBoundary>
+
+            <ErrorBoundary>
+              <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
+                <h2 className="text-2xl font-semibold text-primary mb-4 flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  Comité éditorial
+                </h2>
+                <p className="text-gray-600 mb-6">
+                  Notre comité éditorial est composé d'experts reconnus dans leurs domaines respectifs.
+                </p>
+                <Link to="/rhca/editorial-committee">
+                  <Button variant="outline" className="w-full text-primary hover:text-primary-light">
+                    Découvrir l'équipe
+                  </Button>
+                </Link>
+              </div>
+            </ErrorBoundary>
           </div>
         </div>
       </div>

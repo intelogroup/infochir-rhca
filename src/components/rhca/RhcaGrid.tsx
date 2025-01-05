@@ -3,13 +3,14 @@ import { SearchAndSort } from "@/components/issues/SearchAndSort";
 import { VolumeCard } from "./VolumeCard";
 import { filterVolumes, sortVolumes, groupVolumesByYear } from "./utils/volumeFilters";
 import { mockVolumes } from "./data/mockVolumes";
+import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 import type { RhcaVolume } from "./types";
 
 interface RhcaGridProps {
   viewMode?: "grid" | "table";
 }
 
-export const RhcaGrid = ({ viewMode = "grid" }: RhcaGridProps) => {
+const RhcaGridContent = ({ viewMode = "grid" }: RhcaGridProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("latest");
 
@@ -57,15 +58,22 @@ export const RhcaGrid = ({ viewMode = "grid" }: RhcaGridProps) => {
               }}
             >
               {volumes.map((volume) => (
-                <VolumeCard
-                  key={volume.id}
-                  volume={volume}
-                />
+                <ErrorBoundary key={volume.id}>
+                  <VolumeCard volume={volume} />
+                </ErrorBoundary>
               ))}
             </div>
           </div>
         ))}
       </div>
     </div>
+  );
+};
+
+export const RhcaGrid = (props: RhcaGridProps) => {
+  return (
+    <ErrorBoundary>
+      <RhcaGridContent {...props} />
+    </ErrorBoundary>
   );
 };
