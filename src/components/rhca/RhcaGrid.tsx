@@ -45,9 +45,10 @@ export const RhcaGrid = ({ viewMode = "grid" }: RhcaGridProps) => {
           <div key={year} className="space-y-6">
             <h2 className="text-2xl font-bold text-primary">{year}</h2>
             <div 
-              className="grid grid-cols-1 md:grid-cols-2 auto-rows-fr gap-6"
+              className="grid gap-6"
               style={{
-                gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 400px), 1fr))"
+                gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 400px), 1fr))",
+                gridAutoRows: "1fr"
               }}
             >
               {volumes.map((volume) => (

@@ -25,7 +25,7 @@ export const VolumeCard = ({ volume }: VolumeCardProps) => {
         <div className="flex gap-4 p-4 md:p-6 h-full">
           <div className="flex flex-col md:flex-row gap-4 w-full">
             <div 
-              className="w-full md:w-32 h-44 bg-muted rounded-lg overflow-hidden flex-shrink-0"
+              className="relative w-full md:w-32 flex-shrink-0 bg-muted rounded-lg overflow-hidden"
               style={{ aspectRatio: "3/4" }}
               aria-label={volume.coverImage ? `Couverture du volume ${volume.volume}` : "Image de couverture non disponible"}
             >
@@ -33,11 +33,11 @@ export const VolumeCard = ({ volume }: VolumeCardProps) => {
                 <img 
                   src={volume.coverImage} 
                   alt=""
-                  className="w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-105"
+                  className="absolute inset-0 w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-105"
                   aria-hidden="true"
                 />
               ) : (
-                <div className="w-full h-full bg-secondary/5 flex items-center justify-center">
+                <div className="absolute inset-0 flex items-center justify-center">
                   <span className="text-secondary/20 text-xl font-bold">PDF</span>
                 </div>
               )}
