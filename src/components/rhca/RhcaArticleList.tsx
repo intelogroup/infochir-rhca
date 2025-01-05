@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { RhcaArticle, SortOption } from "./types";
+import { RhcaArticle } from "./types";
 import { SearchAndSort } from "../issues/SearchAndSort";
-import { sortOptions } from "./constants";
+import { SORT_OPTIONS, type SortOption, type SortOptionType } from "@/types/sortOptions";
 
 interface RhcaArticleListProps {
   articles: RhcaArticle[];
@@ -10,7 +10,7 @@ interface RhcaArticleListProps {
 
 export const RhcaArticleList = ({ articles, onArticleClick }: RhcaArticleListProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState<SortOption>(sortOptions[0]);
+  const [sortBy, setSortBy] = useState<SortOption>("latest");
 
   const filteredArticles = articles.filter((article) =>
     article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -21,15 +21,15 @@ export const RhcaArticleList = ({ articles, onArticleClick }: RhcaArticleListPro
   );
 
   const sortedArticles = [...filteredArticles].sort((a, b) => {
-    switch (sortBy.value) {
-      case "date":
+    switch (sortBy) {
+      case "latest":
         return new Date(b.date).getTime() - new Date(a.date).getTime();
-      case "views":
-        return (b.views || 0) - (a.views || 0);
-      case "citations":
-        return (b.citations || 0) - (a.citations || 0);
       case "downloads":
         return (b.downloads || 0) - (a.downloads || 0);
+      case "shares":
+        return (b.shares || 0) - (a.shares || 0);
+      case "year":
+        return new Date(b.date).getFullYear() - new Date(a.date).getFullYear();
       default:
         return 0;
     }
@@ -39,10 +39,10 @@ export const RhcaArticleList = ({ articles, onArticleClick }: RhcaArticleListPro
     <div className="space-y-6">
       <SearchAndSort
         searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
+        onSearch={setSearchTerm}
         sortBy={sortBy}
-        onSortChange={setSortBy}
-        sortOptions={sortOptions}
+        onSort={setSortBy}
+        sortOptions={SORT_OPTIONS}
       />
       
       <div className="space-y-4">

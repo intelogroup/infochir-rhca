@@ -1,9 +1,4 @@
-export type SortOption = "latest" | "year" | "downloads" | "shares";
-
-export type SortOptionType = {
-  value: SortOption;
-  label: string;
-};
+export type { SortOption, SortOptionType } from "@/types/sortOptions";
 
 export interface Issue {
   id: string;

@@ -1,8 +1,3 @@
-import { SortOption } from "./types";
-
-export const sortOptions: SortOption[] = [
-  { label: "Date", value: "date" },
-  { label: "Views", value: "views" },
-  { label: "Citations", value: "citations" },
-  { label: "Downloads", value: "downloads" }
-];
+import { SORT_OPTIONS } from "@/types/sortOptions";
+export { SORT_OPTIONS };
+export type { SortOption, SortOptionType } from "@/types/sortOptions";

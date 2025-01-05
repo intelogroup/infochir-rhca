@@ -2,14 +2,8 @@ import { SearchAndSort } from "./issues/SearchAndSort";
 import { IssuesContent } from "./issues/IssuesContent";
 import { useIssuesState } from "./issues/hooks/useIssuesState";
 import { mockIssues } from "./igm/data/mockIssues";
-import type { SortOption, SortOptionType } from "./issues/types";
-
-const SORT_OPTIONS: readonly SortOptionType[] = [
-  { value: "latest", label: "Plus récents" },
-  { value: "year", label: "Par année" },
-  { value: "downloads", label: "Téléchargements" },
-  { value: "shares", label: "Partages" },
-] as const;
+import { SORT_OPTIONS } from "@/types/sortOptions";
+import type { SortOption } from "@/types/sortOptions";
 
 interface IssuesGridProps {
   viewMode?: "grid" | "table";
