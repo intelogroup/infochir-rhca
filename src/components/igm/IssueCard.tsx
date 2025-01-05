@@ -7,6 +7,7 @@ import { useState } from "react";
 import { IssueModal } from "./IssueModal";
 import { toast } from "sonner";
 import type { Issue } from "./types";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 interface IssueCardProps {
   issue: Issue;
@@ -41,18 +42,20 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
         aria-labelledby={`issue-title-${issue.id}`}
       >
         <div className="flex flex-col sm:flex-row h-full">
-          <div className="w-full sm:w-28 lg:w-32 h-36 sm:h-40 lg:h-44 flex-shrink-0 relative overflow-hidden">
-            {issue.coverImage ? (
-              <img 
-                src={issue.coverImage}
-                alt={`Couverture ${issue.title}`}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full bg-muted flex items-center justify-center">
-                <span className="text-muted-foreground text-sm sm:text-base">No cover</span>
-              </div>
-            )}
+          <div className="w-full sm:w-28 lg:w-32 flex-shrink-0">
+            <AspectRatio ratio={3/4} className="overflow-hidden">
+              {issue.coverImage ? (
+                <img 
+                  src={issue.coverImage}
+                  alt={`Couverture ${issue.title}`}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-muted flex items-center justify-center">
+                  <span className="text-muted-foreground text-sm sm:text-base">No cover</span>
+                </div>
+              )}
+            </AspectRatio>
           </div>
           
           <div className="flex-1 p-3 sm:p-4 lg:p-6 flex flex-col min-w-0">

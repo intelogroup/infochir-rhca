@@ -4,6 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 interface IssueCardProps {
   id: string;
@@ -49,24 +50,26 @@ export const IssueCard = ({
   return (
     <Card className="group hover:shadow-md transition-shadow h-full">
       <div className="flex gap-4 p-4 h-full">
-        <div className="w-32 h-44 bg-muted rounded-lg overflow-hidden flex-shrink-0 relative">
-          {coverImage ? (
-            <img 
-              src={coverImage} 
-              alt={`Couverture ${title} ${volume} ${issue}`}
-              className="w-full h-full object-cover absolute inset-0"
-            />
-          ) : (
-            <div className="w-full h-full bg-secondary/5 flex items-center justify-center absolute inset-0">
-              <span className="text-secondary/20 text-xl font-bold">PDF</span>
-            </div>
-          )}
+        <div className="w-32 flex-shrink-0">
+          <AspectRatio ratio={3/4} className="overflow-hidden rounded-lg">
+            {coverImage ? (
+              <img 
+                src={coverImage} 
+                alt={`Couverture ${title} ${volume} ${issue}`}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-secondary/5 flex items-center justify-center">
+                <span className="text-secondary/20 text-xl font-bold">PDF</span>
+              </div>
+            )}
+          </AspectRatio>
         </div>
         <div className="flex-1 min-w-0 flex flex-col">
           <CardHeader className="p-0 flex-1">
             <div className="flex justify-between items-start gap-4">
-              <div className="min-w-0 flex-1">
-                <CardTitle className="text-xl font-bold text-secondary truncate">
+              <div className="min-w-0">
+                <CardTitle className="text-primary mb-2 truncate">
                   {title}
                 </CardTitle>
                 <div className="text-lg font-medium text-secondary/80 truncate">
