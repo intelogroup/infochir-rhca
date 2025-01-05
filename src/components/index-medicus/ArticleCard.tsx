@@ -4,6 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Calendar, User, Eye, Quote, Download, Share2, Copy } from "lucide-react";
 import { Article } from "./types";
 import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface ArticleCardProps {
   article: Article;
@@ -12,7 +18,6 @@ interface ArticleCardProps {
 export const ArticleCard = ({ article }: ArticleCardProps) => {
   const handleDownload = () => {
     if (article.pdfUrl) {
-      // Create a temporary anchor element
       const link = document.createElement('a');
       link.href = article.pdfUrl;
       link.setAttribute('download', `${article.title}.pdf`);
@@ -30,11 +35,30 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
     toast.success("Lien copié dans le presse-papier");
   };
 
-  const generateCitation = () => {
-    // Generate citation in APA format
-    const citation = `${article.authors.join(", ")} (${new Date(article.date).getFullYear()}). ${article.title}. ${article.source}, ${article.category}. DOI: ${article.id}`;
+  const generateCitation = (format: 'APA' | 'MLA' | 'Chicago' | 'Harvard') => {
+    const year = new Date(article.date).getFullYear();
+    const authors = article.authors.join(", ");
+    let citation = '';
+
+    switch (format) {
+      case 'APA':
+        citation = `${authors} (${year}). ${article.title}. ${article.source}, ${article.category}. DOI: ${article.id}`;
+        break;
+      case 'MLA':
+        citation = `${authors}. "${article.title}." ${article.source}, ${year}.`;
+        break;
+      case 'Chicago':
+        citation = `${authors}. "${article.title}." ${article.source} (${year}).`;
+        break;
+      case 'Harvard':
+        citation = `${authors} ${year}, '${article.title}', ${article.source}, ${article.category}.`;
+        break;
+      default:
+        citation = `${authors} (${year}). ${article.title}`;
+    }
+
     navigator.clipboard.writeText(citation);
-    toast.success("Citation copiée dans le presse-papier");
+    toast.success(`Citation format ${format} copiée dans le presse-papier`);
   };
 
   return (
@@ -113,15 +137,32 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
                 <Download className="h-4 w-4" />
                 Télécharger PDF
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="gap-2"
-                onClick={generateCitation}
-              >
-                <Copy className="h-4 w-4" />
-                Copier la citation
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="gap-2"
+                  >
+                    <Copy className="h-4 w-4" />
+                    Copier la citation
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => generateCitation('APA')}>
+                    Format APA
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => generateCitation('MLA')}>
+                    Format MLA
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => generateCitation('Chicago')}>
+                    Format Chicago
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => generateCitation('Harvard')}>
+                    Format Harvard
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -136,5 +177,4 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
         </div>
       </div>
     </Card>
-  );
-};
+  </>;
