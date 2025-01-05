@@ -2,10 +2,15 @@ export interface RhcaArticle {
   id: string;
   title: string;
   authors: string[];
+  abstract: string;
+  date: string;
   pageNumber: number;
-  section: string;
-  abstract?: string;
   pdfUrl?: string;
+  coverImage?: string;
+  views?: number;
+  citations?: number;
+  downloads?: number;
+  tags: string[];
 }
 
 export interface RhcaIssue {
@@ -14,5 +19,6 @@ export interface RhcaIssue {
   volume: string;
   issueNumber: string;
   date: string;
+  description?: string;
   articles: RhcaArticle[];
 }
