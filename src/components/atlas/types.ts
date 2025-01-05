@@ -5,6 +5,7 @@ export interface AtlasChapter {
   lastUpdate?: string;
   author?: string;
   status: "available" | "coming";
+  coverImage?: string;
   stats?: {
     views: number;
     shares: number;
