@@ -34,11 +34,11 @@ export const IssueModal = ({ issue, isOpen, onClose }: IssueModalProps) => {
       <DialogContent className="sm:max-w-[800px] p-0 overflow-hidden bg-white/95 backdrop-blur-sm">
         <DialogHeader className="p-6 pb-0">
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-2xl font-bold text-primary">
+            <DialogTitle className="text-[clamp(1.5rem,1.35rem+0.75vw,2rem)] font-bold text-primary">
               {issue.title}
             </DialogTitle>
           </div>
-          <DialogDescription className="text-gray-600 mt-2">
+          <DialogDescription className="text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] text-gray-600 mt-2">
             {issue.description}
           </DialogDescription>
         </DialogHeader>
@@ -46,7 +46,7 @@ export const IssueModal = ({ issue, isOpen, onClose }: IssueModalProps) => {
         <ScrollArea className="max-h-[80vh]">
           <div className="p-6 space-y-6">
             <div className="flex items-center justify-between flex-wrap gap-4">
-              <div className="flex items-center gap-4 text-sm text-gray-500">
+              <div className="flex items-center gap-4 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] text-gray-500">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
                   {format(new Date(issue.date), 'dd MMMM yyyy', { locale: fr })}
@@ -68,7 +68,7 @@ export const IssueModal = ({ issue, isOpen, onClose }: IssueModalProps) => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="gap-2"
+                  className="gap-2 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)]"
                   onClick={handleShare}
                 >
                   <Share2 className="h-4 w-4" />
@@ -77,7 +77,7 @@ export const IssueModal = ({ issue, isOpen, onClose }: IssueModalProps) => {
                 <Button
                   variant="default"
                   size="sm"
-                  className="gap-2"
+                  className="gap-2 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)]"
                   onClick={handleDownload}
                 >
                   <Download className="h-4 w-4" />
@@ -87,21 +87,21 @@ export const IssueModal = ({ issue, isOpen, onClose }: IssueModalProps) => {
             </div>
 
             <div className="prose prose-sm max-w-none">
-              <h3 className="text-lg font-semibold text-primary mb-4">Résumé</h3>
-              <p className="text-gray-600">{issue.abstract}</p>
+              <h3 className="text-[clamp(1.125rem,1.075rem+0.25vw,1.25rem)] font-semibold text-primary mb-4">Résumé</h3>
+              <p className="text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] text-gray-600">{issue.abstract}</p>
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-primary">Table des matières</h3>
+              <h3 className="text-[clamp(1.125rem,1.075rem+0.25vw,1.25rem)] font-semibold text-primary">Table des matières</h3>
               {issue.articles.map((article) => (
                 <div
                   key={article.id}
                   className="p-4 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
                 >
-                  <h4 className="font-medium text-gray-900 mb-2">
+                  <h4 className="font-medium text-[clamp(1rem,0.95rem+0.25vw,1.125rem)] text-gray-900 mb-2">
                     {article.title}
                   </h4>
-                  <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                  <div className="flex flex-wrap gap-4 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] text-gray-500">
                     <div className="flex items-center gap-2">
                       <span>Page {article.pageNumber}</span>
                     </div>
@@ -110,7 +110,7 @@ export const IssueModal = ({ issue, isOpen, onClose }: IssueModalProps) => {
                     </div>
                   </div>
                   {article.abstract && (
-                    <p className="mt-2 text-sm text-gray-600">
+                    <p className="mt-2 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] text-gray-600">
                       {article.abstract}
                     </p>
                   )}
@@ -119,7 +119,7 @@ export const IssueModal = ({ issue, isOpen, onClose }: IssueModalProps) => {
                       {article.tags.map((tag, tagIndex) => (
                         <span
                           key={tagIndex}
-                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary"
+                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[clamp(0.75rem,0.7rem+0.25vw,0.875rem)] font-medium bg-primary/10 text-primary"
                         >
                           <Tag className="w-3 h-3 mr-1" />
                           {tag}

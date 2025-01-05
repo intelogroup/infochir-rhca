@@ -52,7 +52,7 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
                 />
               ) : (
                 <div className="w-full h-full bg-muted flex items-center justify-center">
-                  <span className="text-muted-foreground text-sm sm:text-base">No cover</span>
+                  <span className="text-muted-foreground text-[clamp(0.75rem,0.7rem+0.25vw,0.875rem)]">No cover</span>
                 </div>
               )}
             </AspectRatio>
@@ -63,18 +63,18 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
               <div>
                 <h3 
                   id={`issue-title-${issue.id}`}
-                  className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 line-clamp-2"
+                  className="text-[clamp(1rem,0.95rem+0.25vw,1.25rem)] font-semibold text-gray-900 line-clamp-2"
                 >
                   {issue.title}
                 </h3>
                 <p 
-                  className="text-sm lg:text-base text-gray-600 truncate"
+                  className="text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] text-gray-600 truncate"
                   aria-label="Numéro de volume et d'édition"
                 >
                   {issue.volume} - {issue.issue}
                 </p>
                 <div 
-                  className="flex items-center gap-2 text-xs sm:text-sm text-gray-500 mt-1 flex-wrap"
+                  className="flex items-center gap-2 text-[clamp(0.75rem,0.7rem+0.25vw,0.875rem)] text-gray-500 mt-1 flex-wrap"
                   aria-label="Informations de publication"
                 >
                   <span className="truncate">
@@ -84,14 +84,14 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
               </div>
 
               <p 
-                className="text-xs sm:text-sm lg:text-base text-gray-600 line-clamp-2 break-words"
+                className="text-[clamp(0.75rem,0.7rem+0.25vw,1rem)] text-gray-600 line-clamp-2 break-words"
                 aria-label="Résumé de l'édition"
               >
                 {issue.abstract}
               </p>
 
               <div 
-                className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-gray-500 flex-wrap"
+                className="flex items-center gap-3 sm:gap-4 text-[clamp(0.75rem,0.7rem+0.25vw,0.875rem)] text-gray-500 flex-wrap"
                 aria-label="Statistiques de l'édition"
               >
                 <div className="flex items-center gap-1 sm:gap-2">
@@ -113,7 +113,7 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-1 sm:gap-2 bg-ocean text-white hover:bg-ocean-hover flex-1 text-xs sm:text-sm h-8 sm:h-9"
+                className="gap-1 sm:gap-2 bg-ocean text-white hover:bg-ocean-hover flex-1 text-[clamp(0.75rem,0.7rem+0.25vw,0.875rem)] h-8 sm:h-9"
                 onClick={handleShare}
                 aria-label="Partager l'édition"
               >
@@ -123,7 +123,7 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-1 sm:gap-2 bg-ocean text-white hover:bg-ocean-hover flex-1 text-xs sm:text-sm h-8 sm:h-9"
+                className="gap-1 sm:gap-2 bg-ocean text-white hover:bg-ocean-hover flex-1 text-[clamp(0.75rem,0.7rem+0.25vw,0.875rem)] h-8 sm:h-9"
                 onClick={handleDownload}
                 aria-label={issue.pdfUrl ? "Télécharger le PDF" : "PDF non disponible"}
               >
