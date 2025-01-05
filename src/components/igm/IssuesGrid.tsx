@@ -59,79 +59,85 @@ const mockIssues: Issue[] = [
         tags: ["Anesthésie", "Pédiatrie"]
       }
     ]
-  }
+  },
   {
     id: "3",
     title: "IGM",
     volume: "Volume 3",
     issue: "No 39",
-    date: new Date(2024, 2, 1).toISOString(), // March 2024
+    date: new Date(2024, 2, 1).toISOString(),
     abstract: "Numéro sur la santé publique en Haïti. Édité par Dr. Jean Alouidor",
     description: "Dr. Jean Alouidor",
     pdfUrl: "#",
     coverImage: "https://images.unsplash.com/photo-1583912267550-d6c2ac3196c0?w=500&h=700&fit=crop",
     articleCount: 10,
+    articles: []
   },
   {
     id: "4",
     title: "IGM",
     volume: "Volume 2",
     issue: "No 38",
-    date: new Date(2023, 11, 1).toISOString(), // December 2023
+    date: new Date(2023, 11, 1).toISOString(),
     abstract: "Recherches sur la médecine préventive. Édité par Dr. Jean Alouidor",
     description: "Dr. Jean Alouidor",
     pdfUrl: "#",
     coverImage: "https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=500&h=700&fit=crop",
     articleCount: 9,
+    articles: []
   },
   {
     id: "5",
     title: "IGM",
     volume: "Volume 2",
     issue: "No 37",
-    date: new Date(2023, 8, 1).toISOString(), // September 2023
+    date: new Date(2023, 8, 1).toISOString(),
     abstract: "Innovations en cardiologie. Édité par Dr. Jean Alouidor",
     description: "Dr. Jean Alouidor",
     pdfUrl: "#",
     coverImage: "https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?w=500&h=700&fit=crop",
     articleCount: 11,
+    articles: []
   },
   {
     id: "6",
     title: "IGM",
     volume: "Volume 2",
     issue: "No 36",
-    date: new Date(2023, 5, 1).toISOString(), // June 2023
+    date: new Date(2023, 5, 1).toISOString(),
     abstract: "Actualités en pédiatrie. Édité par Dr. Jean Alouidor",
     description: "Dr. Jean Alouidor",
     pdfUrl: "#",
     coverImage: "https://images.unsplash.com/photo-1581093588401-fbb62a02f120?w=500&h=700&fit=crop",
     articleCount: 7,
+    articles: []
   },
   {
     id: "7",
     title: "IGM",
     volume: "Volume 1",
     issue: "No 35",
-    date: new Date(2022, 11, 1).toISOString(), // December 2022
+    date: new Date(2022, 11, 1).toISOString(),
     abstract: "Progrès en neurologie. Édité par Dr. Jean Alouidor",
     description: "Dr. Jean Alouidor",
     pdfUrl: "#",
     coverImage: "https://images.unsplash.com/photo-1581093588401-fbb62a02f120?w=500&h=700&fit=crop",
     articleCount: 10,
+    articles: []
   },
   {
     id: "8",
     title: "IGM",
     volume: "Volume 1",
     issue: "No 34",
-    date: new Date(2022, 8, 1).toISOString(), // September 2022
+    date: new Date(2022, 8, 1).toISOString(),
     abstract: "Études sur la médecine tropicale. Édité par Dr. Jean Alouidor",
     description: "Dr. Jean Alouidor",
     pdfUrl: "#",
     coverImage: "https://images.unsplash.com/photo-1581093588401-fbb62a02f120?w=500&h=700&fit=crop",
     articleCount: 8,
-  },
+    articles: []
+  }
 ];
 
 interface IssuesGridProps {
