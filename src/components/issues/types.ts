@@ -1,3 +1,10 @@
+export type SortOption = "latest" | "year" | "downloads" | "shares" | "views" | "citations";
+
+export type SortOptionType = {
+  value: SortOption;
+  label: string;
+};
+
 export interface Issue {
   id: string;
   title: string;
@@ -8,8 +15,7 @@ export interface Issue {
   description?: string;
   pdfUrl?: string;
   coverImage?: string;
-  articleCount: number;  // Made required to match IGM type
-  views?: number;
+  articleCount: number;
   downloads?: number;
   shares?: number;
   articles: {
