@@ -1,9 +1,11 @@
-export type SortOption = {
+export type SortOption = "latest" | "year" | "downloads" | "shares";
+
+export type SortOptionType = {
+  value: SortOption;
   label: string;
-  value: "date" | "views" | "citations" | "downloads";
 };
 
-export type RhcaArticle = {
+export interface RhcaArticle {
   id: string;
   title: string;
   abstract: string;
@@ -14,4 +16,18 @@ export type RhcaArticle = {
   downloads?: number;
   pageNumber: number;
   volume: number;
-};
+  pdfUrl?: string;
+  tags?: string[];
+}
+
+export interface RhcaVolume {
+  id: string;
+  volume: string;
+  date: string;
+  description?: string;
+  coverImage?: string;
+  articleCount: number;
+  downloadCount?: number;
+  shareCount?: number;
+  articles: RhcaArticle[];
+}

@@ -1,9 +1,31 @@
-export type SortOption = {
-  label: string;
-  value: "date" | "views" | "citations" | "downloads";
-};
+export type SortOption = "latest" | "year" | "downloads" | "shares";
 
 export type SortOptionType = {
-  label: string;
   value: SortOption;
+  label: string;
 };
+
+export interface Issue {
+  id: string;
+  title: string;
+  volume: string;
+  issue: string;
+  date: string;
+  abstract: string;
+  description?: string;
+  pdfUrl?: string;
+  coverImage?: string;
+  articleCount: number;
+  downloads?: number;
+  shares?: number;
+  articles: IssueArticle[];
+}
+
+export interface IssueArticle {
+  id: string;
+  title: string;
+  authors: string[];
+  pageNumber: number;
+  abstract?: string;
+  tags?: string[];
+}
