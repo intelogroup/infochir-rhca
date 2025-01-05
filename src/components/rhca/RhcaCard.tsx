@@ -13,7 +13,7 @@ interface RhcaCardProps {
 export const RhcaCard = ({ article, onCardClick }: RhcaCardProps) => {
   return (
     <Card 
-      className="group hover:shadow-lg transition-shadow h-full bg-white"
+      className="group hover:shadow-lg transition-shadow cursor-pointer bg-white h-full"
       onClick={onCardClick}
       role="article"
       aria-labelledby={`article-title-${article.id}`}
@@ -25,7 +25,7 @@ export const RhcaCard = ({ article, onCardClick }: RhcaCardProps) => {
               <img 
                 src={article.imageUrl} 
                 alt={`Image pour ${article.title}`}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
             ) : (
               <div className="w-full h-full bg-secondary/5 flex items-center justify-center">

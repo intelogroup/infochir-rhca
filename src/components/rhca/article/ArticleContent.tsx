@@ -6,22 +6,10 @@ interface ArticleContentProps {
 
 export const ArticleContent = ({ article }: ArticleContentProps) => {
   return (
-    <div className="flex-1">
-      <p className="text-gray-600 mb-4 line-clamp-3">
+    <div className="py-3">
+      <p className="text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] text-gray-600 line-clamp-2">
         {article.abstract}
       </p>
-      {article.tags && article.tags.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-4">
-          {article.tags.map((tag) => (
-            <span
-              key={tag}
-              className="px-2 py-1 bg-primary/5 text-primary text-sm rounded-full"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-      )}
     </div>
   );
 };

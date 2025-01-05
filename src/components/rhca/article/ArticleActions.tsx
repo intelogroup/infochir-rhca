@@ -27,26 +27,26 @@ export const ArticleActions = ({ id, pdfUrl, onCardClick }: ArticleActionsProps)
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 mt-auto pt-2">
       <Button
         variant="outline"
         size="sm"
-        className="gap-2 bg-ocean text-white hover:bg-ocean-hover"
+        className="gap-2 bg-[#0EA5E9] text-white hover:bg-[#0EA5E9]/90 transition-colors"
         onClick={handleShare}
         aria-label="Partager l'article"
       >
         <Share2 className="h-4 w-4" aria-hidden="true" />
-        <span>Partager</span>
+        <span className="text-[clamp(0.75rem,0.7rem+0.25vw,0.875rem)]">Partager</span>
       </Button>
       <Button
         variant="outline"
         size="sm"
-        className="gap-2 bg-ocean text-white hover:bg-ocean-hover"
+        className="gap-2 bg-[#0EA5E9] text-white hover:bg-[#0EA5E9]/90 transition-colors"
         onClick={handleDownload}
         aria-label={pdfUrl ? "Télécharger le PDF" : "PDF non disponible"}
       >
         <Download className="h-4 w-4" aria-hidden="true" />
-        <span>PDF</span>
+        <span className="text-[clamp(0.75rem,0.7rem+0.25vw,0.875rem)]">PDF</span>
       </Button>
     </div>
   );

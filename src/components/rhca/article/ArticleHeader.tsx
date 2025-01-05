@@ -1,3 +1,4 @@
+import { Calendar } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { RhcaArticle } from "../types";
@@ -8,19 +9,26 @@ interface ArticleHeaderProps {
 
 export const ArticleHeader = ({ article }: ArticleHeaderProps) => {
   return (
-    <div className="mb-4">
+    <div className="space-y-2 flex-1">
       <h3 
         id={`article-title-${article.id}`}
-        className="text-xl font-bold text-primary mb-2 line-clamp-2 group-hover:text-primary-light transition-colors"
+        className="text-[clamp(1rem,0.95rem+0.25vw,1.25rem)] font-semibold text-gray-900 line-clamp-2"
       >
         {article.title}
       </h3>
-      <p className="text-sm text-gray-600 mb-1 line-clamp-1">
-        {article.authors.join(", ")}
-      </p>
-      <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-        <span>Page {article.pageNumber}</span>
-        <span>{format(new Date(article.date), 'dd MMMM yyyy', { locale: fr })}</span>
+      <div className="flex items-center gap-2 text-sm text-gray-500 flex-wrap">
+        <Calendar className="h-4 w-4 flex-shrink-0" />
+        {article.publicationDate && (
+          <span className="truncate">
+            {format(new Date(article.publicationDate), 'dd MMMM yyyy', { locale: fr })}
+          </span>
+        )}
+        {article.authors?.length > 0 && (
+          <>
+            <span className="text-gray-300">•</span>
+            <span className="truncate">{article.authors.join(', ')}</span>
+          </>
+        )}
       </div>
     </div>
   );
