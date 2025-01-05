@@ -7,6 +7,7 @@ import IndexMedicus from "@/pages/IndexMedicus";
 import About from "@/pages/About";
 import EditorialCommittee from "@/pages/EditorialCommittee";
 import Submission from "@/pages/Submission";
+import Annuaire from "@/pages/Annuaire";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/index-medicus" element={<IndexMedicus />} />
         <Route path="/about" element={<About />} />
         <Route path="/submission" element={<Submission />} />
+        <Route path="/annuaire" element={<Annuaire />} />
       </Routes>
     </Router>
   );
