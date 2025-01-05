@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { RhcaArticle } from "./types";
 import { SearchAndSort } from "../issues/SearchAndSort";
-import { SORT_OPTIONS, type SortOption, type SortOptionType } from "@/types/sortOptions";
+import { SORT_OPTIONS, type SortOption } from "@/types/sortOptions";
 
 interface RhcaArticleListProps {
   articles: RhcaArticle[];
