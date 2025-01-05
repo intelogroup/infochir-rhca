@@ -5,7 +5,7 @@ import { RhcaTable } from "./RhcaTable";
 import { toast } from "@/hooks/use-toast";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 import type { RhcaVolume } from "./types";
-import { RHCA_SORT_OPTIONS, type RHCASortOption } from "@/types/sort";
+import { RHCA_SORT_OPTIONS, type RHCASortOption, type RHCASortOptionValue } from "@/types/sort";
 
 interface RhcaArticleListProps {
   volume: RhcaVolume;
@@ -14,7 +14,7 @@ interface RhcaArticleListProps {
 
 const RhcaArticleListContent = ({ volume, viewMode = "grid" }: RhcaArticleListProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState<RHCASortOption>("latest");
+  const [sortBy, setSortBy] = useState<RHCASortOptionValue>("latest");
 
   const filteredArticles = useMemo(() => {
     const filtered = volume.articles.filter((article) => {
@@ -42,7 +42,7 @@ const RhcaArticleListContent = ({ volume, viewMode = "grid" }: RhcaArticleListPr
     return filtered;
   }, [searchTerm, volume.articles]);
 
-  const sortArticles = (articles: typeof volume.articles, sortType: RHCASortOption) => {
+  const sortArticles = (articles: typeof volume.articles, sortType: RHCASortOptionValue) => {
     let sorted = [...articles];
     switch (sortType) {
       case "latest":
