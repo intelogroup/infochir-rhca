@@ -5,7 +5,7 @@ import { RhcaArticleList } from "./RhcaArticleList";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import type { RhcaVolume, RhcaArticle } from "./types";
+import type { RhcaVolume } from "./types";
 
 const mockVolumes: RhcaVolume[] = [
   {
@@ -89,7 +89,32 @@ const mockVolumes: RhcaVolume[] = [
     description: "Volume 46 de la revue INFOCHIR-RHCA",
     articleCount: 6,
     articles: [
-      // Add mock articles for volume 46
+      {
+        id: "6",
+        title: "Prise en charge des traumatismes crâniens en Haïti",
+        authors: ["Marie DURAND", "Jean PIERRE"],
+        abstract: "Étude sur les protocoles de prise en charge des traumatismes crâniens dans les hôpitaux haïtiens",
+        date: new Date(2024, 3, 1).toISOString(),
+        pageNumber: 4,
+        tags: ["neurochirurgie", "traumatologie"],
+        views: 180,
+        citations: 15,
+        downloads: 75,
+        volume: "46"
+      },
+      {
+        id: "7",
+        title: "Innovations en chirurgie laparoscopique",
+        authors: ["Paul MARTIN"],
+        abstract: "Revue des dernières avancées en chirurgie mini-invasive",
+        date: new Date(2024, 3, 1).toISOString(),
+        pageNumber: 12,
+        tags: ["chirurgie", "laparoscopie"],
+        views: 220,
+        citations: 18,
+        downloads: 95,
+        volume: "46"
+      }
     ]
   }
 ];
