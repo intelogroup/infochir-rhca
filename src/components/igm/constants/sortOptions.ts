@@ -5,4 +5,8 @@ export const SORT_OPTIONS = [
   { value: "shares", label: "Partages" },
 ] as const;
 
-export type SortOption = typeof SORT_OPTIONS[number]["value"];
+export type SortOption = (typeof SORT_OPTIONS)[number]["value"];
+export type SortOptionType = {
+  value: SortOption;
+  label: string;
+};

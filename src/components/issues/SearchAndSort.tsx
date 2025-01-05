@@ -10,10 +10,10 @@ interface SortOptionType {
 
 interface SearchAndSortProps {
   searchTerm: string;
-  sortBy: string;
+  sortBy: SortOption;
   onSearch: (value: string) => void;
   onSort: (value: SortOption) => void;
-  sortOptions?: SortOptionType[];
+  sortOptions: readonly SortOptionType[];
   disabled?: boolean;
 }
 
@@ -22,7 +22,7 @@ export const SearchAndSort = ({
   sortBy,
   onSearch,
   onSort,
-  sortOptions = [],
+  sortOptions,
   disabled = false
 }: SearchAndSortProps) => {
   return (
