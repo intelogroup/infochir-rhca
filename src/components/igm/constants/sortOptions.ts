@@ -1,6 +1,4 @@
-import { IGMSortOption } from "@/types/sort";
-
-export const SORT_OPTIONS: readonly IGMSortOption[] = [
+export const SORT_OPTIONS = [
   { value: "latest", label: "Plus récents" },
   { value: "year", label: "Par année" },
   { value: "downloads", label: "Téléchargements" },
@@ -8,3 +6,4 @@ export const SORT_OPTIONS: readonly IGMSortOption[] = [
 ] as const;
 
 export type SortOption = (typeof SORT_OPTIONS)[number]["value"];
+export type SortOptionType = (typeof SORT_OPTIONS)[number];

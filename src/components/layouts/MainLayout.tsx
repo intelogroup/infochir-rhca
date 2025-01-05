@@ -8,9 +8,9 @@ interface MainLayoutProps {
 
 export const MainLayout = ({ children, className = "" }: MainLayoutProps) => {
   return (
-    <div className="min-h-screen bg-[#f8fafc] w-full">
+    <div className={`min-h-screen bg-[#f8fafc] ${className}`}>
       <Navbar />
-      <main className="w-full">
+      <main>
         {children}
       </main>
       <Footer />

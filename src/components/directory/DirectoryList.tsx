@@ -6,9 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { SearchBar } from "./SearchBar";
 import { TableHeader } from "./TableHeader";
 import { MemberRow } from "./MemberRow";
-import { FixedSizeList as List } from 'react-window';
-import { useWindowSize } from "@/hooks/use-window-size";
-import AutoSizer from 'react-virtualized-auto-sizer';
+import { ArrowUpDown } from "lucide-react";
 
 interface Member {
   id: number;
@@ -25,7 +23,6 @@ export const DirectoryList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState<SortField>('id');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
-  const { height } = useWindowSize();
 
   const { data: members = [], isLoading } = useQuery({
     queryKey: ['members', sortField, sortDirection],
@@ -59,39 +56,17 @@ export const DirectoryList = () => {
     member.phone?.includes(searchTerm)
   );
 
-  const ROW_HEIGHT = 80;
-  const TABLE_HEADER_HEIGHT = 56;
-  const SEARCH_BAR_HEIGHT = 48;
-  const PADDING = 32;
-
-  const getListHeight = () => {
-    const availableHeight = height ? height - TABLE_HEADER_HEIGHT - SEARCH_BAR_HEIGHT - PADDING * 2 : 600;
-    const contentHeight = filteredMembers.length * ROW_HEIGHT;
-    return Math.min(availableHeight, contentHeight);
-  };
-
-  const Row = ({ index, style }: { index: number, style: React.CSSProperties }) => {
-    const member = filteredMembers[index];
-    if (!member) return null;
-    
-    return (
-      <div style={style}>
-        <MemberRow member={member} />
-      </div>
-    );
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="w-full max-w-full space-y-4"
+      className="space-y-4"
     >
       <SearchBar value={searchTerm} onChange={setSearchTerm} />
 
-      <div className="w-full bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-        <div className="w-full overflow-x-auto">
+      <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+        <div className="overflow-x-auto">
           <Table>
             <TableHeader 
               sortField={sortField}
@@ -117,25 +92,9 @@ export const DirectoryList = () => {
                     </td>
                   </tr>
                 ) : (
-                  <tr>
-                    <td colSpan={5} className="p-0">
-                      <div style={{ height: getListHeight() }}>
-                        <AutoSizer>
-                          {({ width }) => (
-                            <List
-                              height={getListHeight()}
-                              itemCount={filteredMembers.length}
-                              itemSize={ROW_HEIGHT}
-                              width={width}
-                              overscanCount={5}
-                            >
-                              {Row}
-                            </List>
-                          )}
-                        </AutoSizer>
-                      </div>
-                    </td>
-                  </tr>
+                  filteredMembers.map((member) => (
+                    <MemberRow key={member.id} member={member} />
+                  ))
                 )}
               </AnimatePresence>
             </TableBody>

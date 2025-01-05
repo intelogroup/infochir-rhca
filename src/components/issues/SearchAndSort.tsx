@@ -1,44 +1,41 @@
+import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import type { BaseSortOption } from "@/types/sort";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import type { SortOption, SortOptionType } from "@/components/igm/constants/sortOptions";
 
-interface SearchAndSortProps<T extends BaseSortOption> {
+interface SearchAndSortProps {
   searchTerm: string;
-  sortBy: T["value"];
-  onSearchChange: (value: string) => void;
-  onSortChange: (value: T["value"]) => void;
-  sortOptions: readonly T[];
+  sortBy: SortOption;
+  onSearch: (value: string) => void;
+  onSort: (value: SortOption) => void;
+  sortOptions: readonly SortOptionType[];
   disabled?: boolean;
 }
 
-export function SearchAndSort<T extends BaseSortOption>({
+export const SearchAndSort = ({
   searchTerm,
   sortBy,
-  onSearchChange,
-  onSortChange,
+  onSearch,
+  onSort,
   sortOptions,
-  disabled
-}: SearchAndSortProps<T>) {
+  disabled = false
+}: SearchAndSortProps) => {
   return (
     <div className="flex flex-col sm:flex-row gap-4">
-      <div className="flex-1">
+      <div className="relative flex-1">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
         <Input
+          type="text"
           placeholder="Rechercher..."
           value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full"
+          onChange={(e) => onSearch(e.target.value)}
+          className="pl-10"
           disabled={disabled}
         />
       </div>
-      <Select 
-        value={sortBy} 
-        onValueChange={onSortChange}
+      <Select
+        value={sortBy}
+        onValueChange={onSort}
         disabled={disabled}
       >
         <SelectTrigger className="w-full sm:w-[200px]">
@@ -54,4 +51,4 @@ export function SearchAndSort<T extends BaseSortOption>({
       </Select>
     </div>
   );
-}
+};

@@ -9,15 +9,13 @@ import { FoundersSection } from "@/components/home/FoundersSection";
 
 const Index = () => (
   <MainLayout>
-    <div className="w-full overflow-hidden">
-      <HeroSection />
-      <StatsSection />
-      <ProductsSection />
-      <CarouselSection />
-      <FoundersSection />
-      <NewsletterSection />
-      <SponsorsSection />
-    </div>
+    <HeroSection />
+    <StatsSection />
+    <ProductsSection />
+    <CarouselSection />
+    <FoundersSection />
+    <NewsletterSection />
+    <SponsorsSection />
   </MainLayout>
 );
 
