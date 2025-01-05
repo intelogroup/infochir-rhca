@@ -12,7 +12,7 @@ const IGM = () => {
 
   return (
     <MainLayout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 bg-[#F1F0FB]">
         <Link to="/" className="inline-block mb-8">
           <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary-light">
             <ArrowLeft className="h-4 w-4" />
@@ -50,7 +50,7 @@ const IGM = () => {
           </div>
           
           <div className="space-y-8">
-            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
+            <div className="bg-white rounded-2xl p-8 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
               <h2 className="text-2xl font-semibold text-primary mb-4 flex items-center gap-2">
                 <BookOpen className="h-5 w-5" />
                 Soumission d'articles
@@ -63,7 +63,7 @@ const IGM = () => {
               </Button>
             </div>
 
-            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
+            <div className="bg-white rounded-2xl p-8 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
               <h2 className="text-2xl font-semibold text-primary mb-4 flex items-center gap-2">
                 <MessageCircle className="h-5 w-5" />
                 Instructions aux auteurs
@@ -76,7 +76,7 @@ const IGM = () => {
               </Button>
             </div>
 
-            <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 hover:shadow-lg transition-shadow">
+            <div className="bg-white rounded-2xl p-8 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
               <h2 className="text-2xl font-semibold text-primary mb-4 flex items-center gap-2">
                 <Users className="h-5 w-5" />
                 Comité éditorial
@@ -94,7 +94,7 @@ const IGM = () => {
           </div>
         </div>
 
-        <div className="mt-16 bg-white rounded-2xl p-8 shadow-sm border border-gray-100 max-w-3xl mx-auto">
+        <div className="mt-16 bg-white rounded-2xl p-8 shadow-md border border-gray-100 max-w-3xl mx-auto">
           <h2 className="text-2xl font-semibold text-primary mb-4 flex items-center gap-2">
             <Check className="h-5 w-5" />
             Notre Mission

@@ -38,6 +38,10 @@ export default {
           DEFAULT: "#f8fafc",
           foreground: "#0c417b",
         },
+        ocean: {
+          DEFAULT: "#0EA5E9",
+          hover: "#0C8BC7",
+        },
       },
       keyframes: {
         "fade-up": {

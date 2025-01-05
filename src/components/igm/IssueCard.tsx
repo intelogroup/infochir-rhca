@@ -35,7 +35,7 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
   return (
     <>
       <Card 
-        className="hover:shadow-lg transition-shadow cursor-pointer group"
+        className="hover:shadow-lg transition-shadow cursor-pointer group bg-white"
         onClick={() => setIsModalOpen(true)}
       >
         <div className="flex">
@@ -92,7 +92,7 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="gap-2"
+                  className="gap-2 bg-[#0EA5E9] text-white hover:bg-[#0C8BC7]"
                   onClick={handleShare}
                 >
                   <Share2 className="h-4 w-4" />
@@ -101,7 +101,7 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="gap-2"
+                  className="gap-2 bg-[#0EA5E9] text-white hover:bg-[#0C8BC7]"
                   onClick={handleDownload}
                 >
                   <Download className="h-4 w-4" />
