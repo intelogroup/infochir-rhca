@@ -2,6 +2,13 @@ import { AtlasChapter } from "../types";
 
 export const atlasContent: AtlasChapter[] = [
   {
+    id: "0",
+    title: "Introduction à l'Atlas de Diagnostic Chirurgical",
+    description: "Introduction à l'Atlas de Diagnostic Chirurgical",
+    lastUpdate: "23/07/24",
+    status: "available"
+  },
+  {
     id: "1",
     title: "TRAUMA – PLAIES - BRULURES",
     description: "Introduction à l'Atlas de Diagnostic Chirurgical",
