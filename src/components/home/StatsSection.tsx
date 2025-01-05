@@ -9,9 +9,13 @@ export const StatsSection = () => {
         <h2 className="text-3xl font-bold text-gray-900 text-center mb-8">
           Nos chiffres clés
         </h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {stats.map((stat, index) => (
-            <StatCard key={stat.title} {...stat} index={index} />
+            <StatCard 
+              key={stat.title}
+              {...stat}
+              index={index}
+            />
           ))}
         </div>
       </div>

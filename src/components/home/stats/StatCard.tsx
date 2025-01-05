@@ -4,15 +4,17 @@ import { LucideIcon } from "lucide-react";
 import { useState } from "react";
 
 interface StatCardProps {
-  icon: LucideIcon;
   title: string;
   value: string;
-  details: string;
+  description: string;
+  trend: string;
+  change: string;
+  icon: LucideIcon;
   iconClassName: string;
   index: number;
 }
 
-export const StatCard = ({ icon, title, value, details, iconClassName, index }: StatCardProps) => {
+export const StatCard = ({ title, value, description, icon, iconClassName, index }: StatCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
