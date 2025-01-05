@@ -1,35 +1,46 @@
 import { useState, useMemo } from "react";
 import { SearchAndSort } from "@/components/issues/SearchAndSort";
-import { RhcaCard } from "./RhcaCard";
-import { RhcaTable } from "./RhcaTable";
+import { VolumeCard } from "./VolumeCard";
+import { RhcaArticleList } from "./RhcaArticleList";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import type { RhcaArticle } from "./types";
+import type { RhcaVolume, RhcaArticle } from "./types";
 
-const mockArticles: RhcaArticle[] = [
+const mockVolumes: RhcaVolume[] = [
   {
     id: "1",
-    title: "ÉDITORIAL",
-    authors: ["Comité éditorial"],
-    abstract: "Éditorial du numéro 47 de la revue INFOCHIR-RHCA",
+    volume: "47",
     date: new Date(2024, 6, 1).toISOString(),
-    pageNumber: 4,
-    tags: ["éditorial"],
-    views: 120,
-    citations: 5,
-    downloads: 45
-  },
-  {
-    id: "2",
-    title: "Lymphadénite tuberculeuse cervicale associée à une anémie chronique, à propos d'un cas",
-    authors: ["Eunice DERIVOIS MERISIER", "et al"],
-    abstract: "Étude de cas sur la lymphadénite tuberculeuse cervicale et ses complications",
-    date: new Date(2024, 6, 1).toISOString(),
-    pageNumber: 5,
-    tags: ["tuberculose", "anémie", "cas clinique"],
-    views: 85,
-    citations: 3,
-    downloads: 30
-  },
+    description: "Volume 47 de la revue INFOCHIR-RHCA",
+    articleCount: 5,
+    articles: [
+      {
+        id: "1",
+        title: "ÉDITORIAL",
+        authors: ["Comité éditorial"],
+        abstract: "Éditorial du numéro 47 de la revue INFOCHIR-RHCA",
+        date: new Date(2024, 6, 1).toISOString(),
+        pageNumber: 4,
+        tags: ["éditorial"],
+        views: 120,
+        citations: 5,
+        downloads: 45,
+        volume: "47"
+      },
+      {
+        id: "2",
+        title: "Lymphadénite tuberculeuse cervicale associée à une anémie chronique, à propos d'un cas",
+        authors: ["Eunice DERIVOIS MERISIER", "et al"],
+        abstract: "Étude de cas sur la lymphadénite tuberculeuse cervicale et ses complications",
+        date: new Date(2024, 6, 1).toISOString(),
+        pageNumber: 5,
+        tags: ["tuberculose", "anémie", "cas clinique"],
+        views: 85,
+        citations: 3,
+        downloads: 30,
+        volume: "47"
+      },
   {
     id: "3",
     title: "Corps étranger bronchique chez l'enfant, à propos d'un cas",
@@ -66,6 +77,18 @@ const mockArticles: RhcaArticle[] = [
     citations: 12,
     downloads: 88
   }
+    ]
+  },
+  {
+    id: "2",
+    volume: "46",
+    date: new Date(2024, 3, 1).toISOString(),
+    description: "Volume 46 de la revue INFOCHIR-RHCA",
+    articleCount: 6,
+    articles: [
+      // Add mock articles for volume 46
+    ]
+  }
 ];
 
 interface RhcaGridProps {
@@ -75,44 +98,31 @@ interface RhcaGridProps {
 export const RhcaGrid = ({ viewMode = "grid" }: RhcaGridProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("latest");
+  const [selectedVolume, setSelectedVolume] = useState<RhcaVolume | null>(null);
 
-  const filteredArticles = useMemo(() => {
-    const filtered = mockArticles.filter((article) => {
+  const filteredVolumes = useMemo(() => {
+    return mockVolumes.filter((volume) => {
       const searchLower = searchTerm.toLowerCase();
       return (
-        article.title.toLowerCase().includes(searchLower) ||
-        article.abstract.toLowerCase().includes(searchLower) ||
-        article.authors.some(author => 
-          author.toLowerCase().includes(searchLower)
-        ) ||
-        (article.tags && article.tags.some(tag => 
-          tag.toLowerCase().includes(searchLower)
-        ))
+        volume.volume.toLowerCase().includes(searchLower) ||
+        volume.description?.toLowerCase().includes(searchLower) ||
+        volume.articles.some(
+          article =>
+            article.title.toLowerCase().includes(searchLower) ||
+            article.abstract.toLowerCase().includes(searchLower) ||
+            article.authors.some(author => 
+              author.toLowerCase().includes(searchLower)
+            )
+        )
       );
     });
-
-    if (filtered.length === 0 && searchTerm !== "") {
-      toast({
-        title: "Aucun résultat",
-        description: "Essayez de modifier vos critères de recherche",
-        variant: "destructive",
-      });
-    }
-
-    return filtered;
   }, [searchTerm]);
 
-  const sortArticles = (articles: RhcaArticle[], sortType: string) => {
-    let sorted = [...articles];
+  const sortVolumes = (volumes: RhcaVolume[], sortType: string) => {
+    let sorted = [...volumes];
     switch (sortType) {
       case "latest":
         sorted.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-        break;
-      case "views":
-        sorted.sort((a, b) => (b.views || 0) - (a.views || 0));
-        break;
-      case "citations":
-        sorted.sort((a, b) => (b.citations || 0) - (a.citations || 0));
         break;
       default:
         break;
@@ -120,7 +130,23 @@ export const RhcaGrid = ({ viewMode = "grid" }: RhcaGridProps) => {
     return sorted;
   };
 
-  const sortedArticles = sortArticles(filteredArticles, sortBy);
+  const sortedVolumes = sortVolumes(filteredVolumes, sortBy);
+
+  if (selectedVolume) {
+    return (
+      <div className="space-y-6">
+        <Button
+          variant="ghost"
+          onClick={() => setSelectedVolume(null)}
+          className="mb-4"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Retour aux volumes
+        </Button>
+        <RhcaArticleList volume={selectedVolume} viewMode={viewMode} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -131,23 +157,18 @@ export const RhcaGrid = ({ viewMode = "grid" }: RhcaGridProps) => {
         onSort={setSortBy}
         sortOptions={[
           { value: "latest", label: "Plus récents" },
-          { value: "views", label: "Plus vus" },
-          { value: "citations", label: "Plus cités" },
         ]}
       />
       
-      {viewMode === "grid" ? (
-        <div className="grid gap-6">
-          {sortedArticles.map((article) => (
-            <RhcaCard
-              key={article.id}
-              article={article}
-            />
-          ))}
-        </div>
-      ) : (
-        <RhcaTable articles={sortedArticles} />
-      )}
+      <div className="grid gap-6 md:grid-cols-2">
+        {sortedVolumes.map((volume) => (
+          <VolumeCard
+            key={volume.id}
+            volume={volume}
+            onClick={setSelectedVolume}
+          />
+        ))}
+      </div>
     </div>
   );
 };

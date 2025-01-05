@@ -10,4 +10,15 @@ export interface RhcaArticle {
   citations?: number;
   downloads?: number;
   tags?: string[];
+  volume: string;
+}
+
+export interface RhcaVolume {
+  id: string;
+  volume: string;
+  date: string;
+  description?: string;
+  coverImage?: string;
+  articleCount: number;
+  articles: RhcaArticle[];
 }
