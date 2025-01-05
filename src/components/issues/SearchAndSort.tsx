@@ -1,12 +1,7 @@
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { SortOption } from "@/components/igm/constants/sortOptions";
-
-interface SortOptionType {
-  value: string;
-  label: string;
-}
+import type { SortOption, SortOptionType } from "@/components/igm/constants/sortOptions";
 
 interface SearchAndSortProps {
   searchTerm: string;
