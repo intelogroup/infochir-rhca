@@ -17,10 +17,21 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
   return (
     <>
       <Card 
-        className="hover:shadow-lg transition-shadow cursor-pointer group"
+        className="hover:shadow-lg transition-shadow cursor-pointer group relative overflow-hidden"
         onClick={() => setIsModalOpen(true)}
       >
-        <CardHeader>
+        <div className="absolute inset-0">
+          {issue.coverImage ? (
+            <img 
+              src={issue.coverImage}
+              alt={`Couverture ${issue.title}`}
+              className="w-full h-full object-cover opacity-10 group-hover:opacity-20 transition-opacity duration-300"
+            />
+          ) : null}
+          <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
+        </div>
+        
+        <CardHeader className="relative z-10">
           <div className="flex justify-between items-start gap-4">
             <div>
               <CardTitle className="text-lg font-semibold text-gray-900 mb-2">
@@ -37,7 +48,7 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="relative z-10">
           <p className="text-gray-600 mb-4 line-clamp-2">
             {issue.abstract}
           </p>
