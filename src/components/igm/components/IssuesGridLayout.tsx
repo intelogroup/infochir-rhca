@@ -2,8 +2,7 @@ import { useState } from "react";
 import { SearchAndSort } from "@/components/issues/SearchAndSort";
 import { IssuesGridContent } from "./IssuesGridContent";
 import { useIssuesState } from "../hooks/useIssuesState";
-import type { SortOption } from "../constants/sortOptions";
-import { mockIssues } from "../data/mockIssues";
+import { SORT_OPTIONS, type SortOption } from "../constants/sortOptions";
 
 interface IssuesGridLayoutProps {
   viewMode?: "grid" | "table";
@@ -26,6 +25,7 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
         onSearchChange={setSearchTerm}
         sortBy={sortBy}
         onSortChange={setSortBy}
+        sortOptions={SORT_OPTIONS}
       />
       
       <IssuesGridContent
