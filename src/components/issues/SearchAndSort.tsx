@@ -1,8 +1,9 @@
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import type { SortOption } from "@/components/igm/constants/sortOptions";
 
-interface SortOption {
+interface SortOptionType {
   value: string;
   label: string;
 }
@@ -11,8 +12,8 @@ interface SearchAndSortProps {
   searchTerm: string;
   sortBy: string;
   onSearch: (value: string) => void;
-  onSort: (value: string) => void;
-  sortOptions?: SortOption[];
+  onSort: (value: SortOption) => void;
+  sortOptions?: SortOptionType[];
 }
 
 export const SearchAndSort = ({ 

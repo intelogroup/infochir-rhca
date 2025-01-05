@@ -3,6 +3,7 @@ import { SearchAndSort } from "@/components/issues/SearchAndSort";
 import { IssuesGridContent } from "./components/IssuesGridContent";
 import { useIssuesState } from "./hooks/useIssuesState";
 import { mockIssues } from "./data/mockIssues";
+import { SORT_OPTIONS, type SortOption } from "./constants/sortOptions";
 
 interface IssuesGridProps {
   viewMode?: "grid" | "table";
@@ -10,7 +11,7 @@ interface IssuesGridProps {
 
 export const IssuesGrid = ({ viewMode = "grid" }: IssuesGridProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("latest");
+  const [sortBy, setSortBy] = useState<SortOption>("latest");
 
   const {
     sortedIssues,
@@ -25,12 +26,7 @@ export const IssuesGrid = ({ viewMode = "grid" }: IssuesGridProps) => {
         sortBy={sortBy}
         onSearch={setSearchTerm}
         onSort={setSortBy}
-        sortOptions={[
-          { value: "latest", label: "Plus récents" },
-          { value: "year", label: "Année" },
-          { value: "downloads", label: "Téléchargements" },
-          { value: "shares", label: "Partages" },
-        ]}
+        sortOptions={SORT_OPTIONS}
       />
       
       <IssuesGridContent
