@@ -1,15 +1,10 @@
 import { MainLayout } from "@/components/layouts/MainLayout";
-import { ADCHeader } from "@/components/adc/ADCHeader";
-import { ADCMission } from "@/components/adc/ADCMission";
-import { ADCSubmission } from "@/components/adc/ADCSubmission";
 
 const ADC = () => {
   return (
     <MainLayout>
-      <div className="min-h-screen bg-muted">
-        <ADCHeader />
-        <ADCMission />
-        <ADCSubmission />
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold text-primary">Atlas de Diagnostic Chirurgical</h1>
       </div>
     </MainLayout>
   );
