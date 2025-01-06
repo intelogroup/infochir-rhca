@@ -19,6 +19,13 @@ export interface AtlasChapter {
 
 export interface AtlasModalProps {
   chapter: AtlasChapter;
+  category?: AtlasCategory;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+}
+
+export interface AtlasCategory {
+  id: string;
+  title: string;
+  chapters: string[];
 }

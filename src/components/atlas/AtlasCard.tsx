@@ -1,17 +1,20 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, User, Eye, Share2, Download } from "lucide-react";
+import { Calendar, User, Eye, Share2, Download, BookOpen } from "lucide-react";
 import { AtlasChapter } from "./types";
 import { toast } from "sonner";
 import { useState } from "react";
 import { AtlasModal } from "./AtlasModal";
 import { motion } from "framer-motion";
+import { AtlasCategory } from "./data/atlasCategories";
+import { Badge } from "@/components/ui/badge";
 
 interface AtlasCardProps {
   chapter: AtlasChapter;
+  category?: AtlasCategory;
 }
 
-export const AtlasCard = ({ chapter }: AtlasCardProps) => {
+export const AtlasCard = ({ chapter, category }: AtlasCardProps) => {
   const [showModal, setShowModal] = useState(false);
 
   const handleShare = () => {
@@ -41,8 +44,8 @@ export const AtlasCard = ({ chapter }: AtlasCardProps) => {
         whileHover={{ y: -5 }}
         transition={{ duration: 0.2 }}
       >
-        <Card className="group overflow-hidden h-[280px] sm:h-[320px]">
-          <div className="relative h-32 sm:h-40 overflow-hidden">
+        <Card className="group overflow-hidden h-[260px] sm:h-[280px]">
+          <div className="relative h-28 sm:h-32 overflow-hidden">
             <img
               src={coverImage}
               alt={chapter.title}
@@ -50,8 +53,14 @@ export const AtlasCard = ({ chapter }: AtlasCardProps) => {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-background/20" />
           </div>
-          <CardHeader className="space-y-1 p-3 sm:p-4">
-            <CardTitle className="text-base sm:text-lg font-bold group-hover:text-primary transition-colors line-clamp-2">
+          <CardHeader className="space-y-1 p-3">
+            {category && (
+              <Badge variant="secondary" className="w-fit">
+                <BookOpen className="h-3 w-3 mr-1" />
+                {category.title}
+              </Badge>
+            )}
+            <CardTitle className="text-sm sm:text-base font-bold group-hover:text-primary transition-colors line-clamp-2">
               {chapter.title}
             </CardTitle>
             <div className="flex flex-wrap gap-2 text-xs text-gray-500">
@@ -69,9 +78,9 @@ export const AtlasCard = ({ chapter }: AtlasCardProps) => {
               )}
             </div>
           </CardHeader>
-          <CardContent className="space-y-2 p-3 sm:p-4 pt-0">
+          <CardContent className="space-y-2 p-3 pt-0">
             {chapter.description && (
-              <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">
+              <p className="text-xs text-gray-600 line-clamp-2">
                 {chapter.description}
               </p>
             )}
@@ -114,6 +123,7 @@ export const AtlasCard = ({ chapter }: AtlasCardProps) => {
       </motion.div>
       <AtlasModal 
         chapter={chapter}
+        category={category}
         open={showModal}
         onOpenChange={setShowModal}
       />
