@@ -16,14 +16,19 @@ export const RhcaGrid = () => {
     setSortBy(value);
   };
 
+  // Add console.log to debug the filtered articles
+  console.log('All mock articles:', mockArticles);
+
   const filteredArticles = mockArticles.filter(article =>
     article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     article.abstract.toLowerCase().includes(searchTerm.toLowerCase()) ||
     article.authors.some(author => author.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
+  console.log('Filtered articles:', filteredArticles);
+
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full max-w-7xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100">
         <SearchAndSort
           searchTerm={searchTerm}

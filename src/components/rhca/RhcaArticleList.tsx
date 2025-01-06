@@ -8,6 +8,8 @@ interface RhcaArticleListProps {
 }
 
 export const RhcaArticleList = ({ articles = [], viewMode }: RhcaArticleListProps) => {
+  console.log('RhcaArticleList - articles:', articles);
+  
   if (!articles?.length) {
     return (
       <div className="text-center py-8 text-gray-500">
