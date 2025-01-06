@@ -31,10 +31,10 @@ export const AtlasCard = ({ chapter, category }: AtlasCardProps) => {
 
   const defaultCoverImages = {
     "0": "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=800&fit=crop",
-    "1": "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?q=80&w=800&fit=crop",
-    "2": "https://images.unsplash.com/photo-1584515933487-779824d29309?q=80&w=800&fit=crop",
-    "3": "https://images.unsplash.com/photo-1584515933487-779824d29309?q=80&w=800&fit=crop",
-    "4": "https://images.unsplash.com/photo-1584515933487-779824d29309?q=80&w=800&fit=crop",
+    "1": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=800&fit=crop",
+    "2": "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?q=80&w=800&fit=crop",
+    "3": "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?q=80&w=800&fit=crop",
+    "4": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&fit=crop",
   };
 
   const coverImage = chapter.coverImage || defaultCoverImages[chapter.id as keyof typeof defaultCoverImages] || defaultCoverImages["0"];
