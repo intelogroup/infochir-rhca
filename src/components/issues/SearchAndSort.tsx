@@ -8,8 +8,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DateRange } from "react-day-picker";
-import { DateRangePicker } from "@/components/ui/date-range-picker";
-import type { SortOption } from "@/types/sortOptions";
+import { DatePickerWithRange } from "@/components/ui/date-range-picker";
+import type { SortOption, SortOptionType } from "@/types/sortOptions";
 import { motion } from "framer-motion";
 
 interface SearchAndSortProps {
@@ -17,7 +17,7 @@ interface SearchAndSortProps {
   sortBy: SortOption;
   onSearch: (value: string) => void;
   onSort: (value: SortOption) => void;
-  sortOptions: { value: SortOption; label: string }[];
+  sortOptions: readonly SortOptionType[];
   dateRange?: DateRange;
   onDateRangeChange?: (range: DateRange | undefined) => void;
   selectedCategories?: string[];
@@ -60,18 +60,15 @@ export const SearchAndSort = ({
 
       <div className="flex flex-wrap sm:flex-nowrap gap-4">
         {onDateRangeChange && (
-          <DateRangePicker
-            value={dateRange}
-            onChange={onDateRangeChange}
-            placeholder="Filtrer par date"
-            disabled={disabled}
-            className="min-w-[240px]"
+          <DatePickerWithRange
+            date={dateRange}
+            setDate={onDateRangeChange}
           />
         )}
 
         <Select
           value={sortBy}
-          onValueChange={(value) => onSort(value as SortOption)}
+          onValueChange={onSort}
           disabled={disabled}
         >
           <SelectTrigger className="w-[180px] bg-white">

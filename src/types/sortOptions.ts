@@ -1,8 +1,8 @@
 export type SortOption = "latest" | "year" | "downloads" | "shares";
 
 export type SortOptionType = {
-  value: SortOption;
-  label: string;
+  readonly value: SortOption;
+  readonly label: string;
 };
 
 export const SORT_OPTIONS: readonly SortOptionType[] = [

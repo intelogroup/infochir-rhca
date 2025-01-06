@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useInView } from "framer-motion";
 import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
 import { useIsMobile } from "@/hooks/use-mobile";
+import type { SortOption } from "@/types/sortOptions";
 
 interface IssuesGridLayoutProps {
   viewMode?: "grid" | "table";
@@ -16,8 +17,8 @@ interface IssuesGridLayoutProps {
 
 export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState(SORT_OPTIONS[0].value);
-  const [dateRange, setDateRange] = useState<DateRange>();
+  const [sortBy, setSortBy] = useState<SortOption>("latest");
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [displayCount, setDisplayCount] = useState(6);
@@ -44,6 +45,10 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
     setDisplayCount(prev => prev + (isMobile ? 3 : 6));
   };
 
+  const handleSortChange = (value: SortOption) => {
+    setSortBy(value);
+  };
+
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="mb-4 sm:mb-6">
@@ -65,7 +70,7 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
           searchTerm={searchTerm}
           sortBy={sortBy}
           onSearch={setSearchTerm}
-          onSort={setSortBy}
+          onSort={handleSortChange}
           sortOptions={SORT_OPTIONS}
           dateRange={dateRange}
           onDateRangeChange={setDateRange}
