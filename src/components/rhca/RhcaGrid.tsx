@@ -27,6 +27,13 @@ const RhcaGridContent = ({ viewMode = "grid" }: RhcaGridProps) => {
     return groupVolumesByYear(sortedVolumes);
   }, [sortedVolumes]);
 
+  // Get years array and sort in descending order
+  const sortedYears = useMemo(() => {
+    return Object.keys(groupedVolumes)
+      .map(Number)
+      .sort((a, b) => b - a);
+  }, [groupedVolumes]);
+
   return (
     <div className="space-y-6">
       <SearchAndSort
@@ -38,7 +45,7 @@ const RhcaGridContent = ({ viewMode = "grid" }: RhcaGridProps) => {
       />
       
       <div className="space-y-12">
-        {Object.entries(groupedVolumes).map(([year, volumes]) => (
+        {sortedYears.map((year) => (
           <div key={year} className="space-y-6">
             <h2 
               className="text-primary font-bold"
@@ -53,7 +60,7 @@ const RhcaGridContent = ({ viewMode = "grid" }: RhcaGridProps) => {
                 gridAutoRows: "1fr"
               }}
             >
-              {volumes.map((volume) => (
+              {groupedVolumes[year].map((volume) => (
                 <ErrorBoundary key={volume.id}>
                   <VolumeCard volume={volume} />
                 </ErrorBoundary>
