@@ -11,7 +11,7 @@ export const ADCHeader = () => {
           animate={{ opacity: 1, y: 0 }}
           className="space-y-8"
         >
-          <div className="inline-flex items-center justify-center w-32 h-32 rounded-full bg-white shadow-lg mb-6">
+          <div className="flex justify-center">
             <img 
               src="/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png"
               alt="Atlas ADC Logo"
