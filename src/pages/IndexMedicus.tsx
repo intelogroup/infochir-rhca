@@ -36,22 +36,48 @@ const IndexMedicus = () => {
           <div className="grid lg:grid-cols-[1fr,400px] gap-4 sm:gap-6 lg:gap-8">
             <div>
               <Tabs defaultValue="articles" className="mb-6">
-                <TabsList>
-                  <TabsTrigger value="articles">Articles</TabsTrigger>
-                  <TabsTrigger value="authors">Auteurs</TabsTrigger>
-                  <TabsTrigger value="institutions">Institutions</TabsTrigger>
+                <TabsList className="w-full justify-start border-b rounded-none p-0 h-auto">
+                  <TabsTrigger 
+                    value="articles" 
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3"
+                  >
+                    Articles
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="titre" 
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3"
+                  >
+                    Titre
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="authors" 
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3"
+                  >
+                    Auteurs
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="institutions" 
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3"
+                  >
+                    Institutions
+                  </TabsTrigger>
                 </TabsList>
-                <TabsContent value="articles">
+                <TabsContent value="articles" className="mt-6">
                   <div className="bg-white rounded-lg p-3 sm:p-4 lg:p-6 shadow-sm">
                     <ArticleGrid viewMode="table" />
                   </div>
                 </TabsContent>
-                <TabsContent value="authors">
+                <TabsContent value="titre" className="mt-6">
+                  <div className="bg-white rounded-lg p-6 shadow-sm">
+                    <p className="text-gray-600">Liste des titres à venir...</p>
+                  </div>
+                </TabsContent>
+                <TabsContent value="authors" className="mt-6">
                   <div className="bg-white rounded-lg p-6 shadow-sm">
                     <p className="text-gray-600">Liste des auteurs à venir...</p>
                   </div>
                 </TabsContent>
-                <TabsContent value="institutions">
+                <TabsContent value="institutions" className="mt-6">
                   <div className="bg-white rounded-lg p-6 shadow-sm">
                     <p className="text-gray-600">Liste des institutions à venir...</p>
                   </div>
