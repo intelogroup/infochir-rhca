@@ -5,7 +5,7 @@ import { LayoutGrid, List } from "lucide-react";
 import { SORT_OPTIONS } from "@/types/sortOptions";
 import type { SortOption } from "@/types/sortOptions";
 import { mockArticles } from "./data/mockArticles";
-import { UnifiedArticleList } from "@/components/shared/UnifiedArticleList";
+import { RhcaArticleList } from "./RhcaArticleList";
 
 export const RhcaGrid = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -59,10 +59,9 @@ export const RhcaGrid = () => {
         </ToggleGroup>
       </div>
 
-      <UnifiedArticleList
+      <RhcaArticleList
         articles={filteredArticles}
         viewMode={viewMode}
-        variant="rhca"
       />
     </div>
   );
