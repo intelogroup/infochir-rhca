@@ -41,8 +41,8 @@ export const AtlasCard = ({ chapter }: AtlasCardProps) => {
         whileHover={{ y: -5 }}
         transition={{ duration: 0.2 }}
       >
-        <Card className="group overflow-hidden">
-          <div className="relative h-48 overflow-hidden">
+        <Card className="group overflow-hidden h-[280px] sm:h-[320px]">
+          <div className="relative h-32 sm:h-40 overflow-hidden">
             <img
               src={coverImage}
               alt={chapter.title}
@@ -50,63 +50,63 @@ export const AtlasCard = ({ chapter }: AtlasCardProps) => {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-background/20" />
           </div>
-          <CardHeader className="space-y-2 p-4 sm:p-6">
-            <CardTitle className="text-lg sm:text-xl font-bold group-hover:text-primary transition-colors line-clamp-2">
+          <CardHeader className="space-y-1 p-3 sm:p-4">
+            <CardTitle className="text-base sm:text-lg font-bold group-hover:text-primary transition-colors line-clamp-2">
               {chapter.title}
             </CardTitle>
-            <div className="flex flex-wrap gap-3 sm:gap-4 text-xs sm:text-sm text-gray-500">
+            <div className="flex flex-wrap gap-2 text-xs text-gray-500">
               {chapter.lastUpdate && (
                 <div className="flex items-center gap-1">
-                  <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <Calendar className="h-3 w-3" />
                   <span>MàJ: {chapter.lastUpdate}</span>
                 </div>
               )}
               {chapter.author && (
                 <div className="flex items-center gap-1">
-                  <User className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <User className="h-3 w-3" />
                   <span>{chapter.author}</span>
                 </div>
               )}
             </div>
           </CardHeader>
-          <CardContent className="space-y-4 p-4 sm:p-6 pt-0 sm:pt-0">
+          <CardContent className="space-y-2 p-3 sm:p-4 pt-0">
             {chapter.description && (
-              <p className="text-sm sm:text-base text-gray-600 line-clamp-2">
+              <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">
                 {chapter.description}
               </p>
             )}
             <div className="flex justify-between items-center">
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex gap-1 flex-wrap">
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="gap-1 sm:gap-2 text-xs sm:text-sm hover:text-primary transition-colors h-8 sm:h-9"
+                  className="h-7 px-2 text-xs hover:text-primary transition-colors"
                   onClick={() => setShowModal(true)}
                 >
-                  <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
-                  <span className="hidden sm:inline">Consulter</span>
+                  <Eye className="h-3 w-3 mr-1" />
+                  <span>Consulter</span>
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleShare}
-                  className="gap-1 sm:gap-2 text-xs sm:text-sm h-8 sm:h-9"
+                  className="h-7 px-2 text-xs"
                 >
-                  <Share2 className="h-3 w-3 sm:h-4 sm:w-4" />
-                  <span className="hidden sm:inline">Partager</span>
+                  <Share2 className="h-3 w-3 mr-1" />
+                  <span>Partager</span>
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleDownload}
-                  className="gap-1 sm:gap-2 text-xs sm:text-sm h-8 sm:h-9"
+                  className="h-7 px-2 text-xs"
                 >
-                  <Download className="h-3 w-3 sm:h-4 sm:w-4" />
-                  <span className="hidden sm:inline">PDF</span>
+                  <Download className="h-3 w-3 mr-1" />
+                  <span>PDF</span>
                 </Button>
               </div>
               {chapter.status === "coming" && (
-                <span className="text-xs sm:text-sm text-gray-500 italic">À venir</span>
+                <span className="text-xs text-gray-500 italic">À venir</span>
               )}
             </div>
           </CardContent>
