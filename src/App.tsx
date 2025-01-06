@@ -15,8 +15,9 @@ const Annuaire = lazy(() => import("@/pages/Annuaire"));
 const Donate = lazy(() => import("@/pages/Donate"));
 const Resources = lazy(() => import("@/pages/Resources"));
 const Opportunities = lazy(() => import("@/pages/Opportunities"));
+const RHCADirectives = lazy(() => import("@/pages/rhca/Directives"));
+const IGMDirectives = lazy(() => import("@/pages/igm/Directives")); 
 
-// Loading fallback component
 const PageSkeleton = () => (
   <div className="min-h-screen bg-gray-50 p-4">
     <Skeleton className="h-[200px] w-full rounded-lg mb-4" />
@@ -34,7 +35,9 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/rhca" element={<RHCA />} />
+          <Route path="/rhca/directives" element={<RHCADirectives />} />
           <Route path="/igm" element={<IGM />} />
+          <Route path="/igm/directives" element={<IGMDirectives />} />
           <Route path="/adc/*" element={<ADC />} />
           <Route path="/igm/editorial-committee" element={<EditorialCommittee />} />
           <Route path="/index-medicus" element={<IndexMedicus />} />

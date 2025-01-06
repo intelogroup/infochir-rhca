@@ -1,22 +1,43 @@
-import { useScrollToTop } from "@/hooks/useScrollToTop";
-import { Button } from "@/components/ui/button";
+import { MainLayout } from "@/components/layouts/MainLayout";
 import { DirectivesHeader } from "@/components/directives/DirectivesHeader";
 import { ManuscriptPreparation } from "@/components/directives/ManuscriptPreparation";
 import { ManuscriptStructure } from "@/components/directives/ManuscriptStructure";
-import { AlertCircle } from "lucide-react";
 import { DirectiveSection, ChecklistItem } from "@/components/directives/DirectiveSection";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
-const Directives = () => {
-  useScrollToTop();
-
+const RHCADirectives = () => {
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
+    <MainLayout>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <DirectivesHeader />
 
         <div className="space-y-8">
           <ManuscriptPreparation />
           <ManuscriptStructure />
+
+          <DirectiveSection title="Structure détaillée">
+            <div className="grid md:grid-cols-2 gap-8">
+              <div>
+                <h3 className="font-semibold text-secondary mb-4">Introduction et méthodes</h3>
+                <ul className="space-y-3 text-gray-600">
+                  <ChecklistItem text="Introduction informant du problème et des trouvailles" />
+                  <ChecklistItem text="Objectifs clairement établis" />
+                  <ChecklistItem text="Procédures cliniques et techniques détaillées" />
+                  <ChecklistItem text="Méthodologie expérimentale précise" />
+                </ul>
+              </div>
+              <div>
+                <h3 className="font-semibold text-secondary mb-4">Résultats et discussion</h3>
+                <ul className="space-y-3 text-gray-600">
+                  <ChecklistItem text="Description des résultats sans commentaires" />
+                  <ChecklistItem text="Discussion mettant en relation avec d'autres études" />
+                  <ChecklistItem text="Arguments bien fondés" />
+                  <ChecklistItem text="Conclusion précisant les retombées pratiques" />
+                </ul>
+              </div>
+            </div>
+          </DirectiveSection>
 
           <DirectiveSection title="Éléments complémentaires">
             <div className="grid md:grid-cols-2 gap-8">
@@ -56,32 +77,17 @@ const Directives = () => {
             </div>
           </DirectiveSection>
 
-          <DirectiveSection title="Notes importantes">
-            <ul className="space-y-3 text-gray-600">
-              <ChecklistItem 
-                text="La revue des manuscrits et leur publication est gratuite jusqu'à nouvelle disposition"
-                icon={<AlertCircle className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />}
-              />
-              <ChecklistItem 
-                text="Les documents peuvent être soumis sur support papier, dans une puce ou par Internet (préférable)"
-                icon={<AlertCircle className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />}
-              />
-              <ChecklistItem 
-                text="Règlementation sujette à modification"
-                icon={<AlertCircle className="h-5 w-5 text-blue-500 mt-1 flex-shrink-0" />}
-              />
-            </ul>
-          </DirectiveSection>
-        </div>
-
-        <div className="flex justify-center pt-8">
-          <Button className="bg-secondary hover:bg-secondary-light">
-            Soumettre un manuscrit
-          </Button>
+          <div className="flex justify-center pt-8">
+            <Link to="/submission">
+              <Button className="bg-secondary hover:bg-secondary-light">
+                Soumettre un manuscrit
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
-    </div>
+    </MainLayout>
   );
 };
 
-export default Directives;
+export default RHCADirectives;
