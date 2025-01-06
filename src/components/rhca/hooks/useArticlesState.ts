@@ -30,7 +30,6 @@ export const useArticlesState = (articles: RhcaArticle[]) => {
         return sorted.sort((a, b) => {
           const yearDiff = new Date(b.date).getFullYear() - new Date(a.date).getFullYear();
           if (yearDiff === 0) {
-            // If same year, sort by date (newest first)
             return new Date(b.date).getTime() - new Date(a.date).getTime();
           }
           return yearDiff;
@@ -38,9 +37,9 @@ export const useArticlesState = (articles: RhcaArticle[]) => {
       case "latest":
         return sorted.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       case "downloads":
-        return sorted.sort((a, b) => (b.downloads || 0) - (a.downloads || 0));
+        return sorted.sort((a, b) => Number(b.downloads || "0") - Number(a.downloads || "0"));
       case "shares":
-        return sorted.sort((a, b) => (b.shares || 0) - (a.shares || 0));
+        return sorted.sort((a, b) => Number(b.shares || "0") - Number(a.shares || "0"));
       default:
         return sorted;
     }
@@ -60,7 +59,7 @@ export const useArticlesState = (articles: RhcaArticle[]) => {
   const years = useMemo(() => {
     return Object.keys(articlesByYear)
       .map(Number)
-      .sort((a, b) => b - a); // Sort years in descending order
+      .sort((a, b) => b - a);
   }, [articlesByYear]);
 
   return {

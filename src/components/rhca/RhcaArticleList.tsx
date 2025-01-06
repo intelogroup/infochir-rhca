@@ -61,7 +61,7 @@ export const RhcaArticleList = ({ articles = [], viewMode }: RhcaArticleListProp
               <div className="flex items-center gap-2 bg-secondary/15 px-4 py-2 rounded-full">
                 <FileText className="h-4 w-4 text-gray-700" />
                 <span className="text-sm font-medium text-gray-700">
-                  {articlesByYear[year].reduce((acc, article) => acc + (article.downloads || 0), 0)} téléchargements
+                  {articlesByYear[year].reduce((acc, article) => acc + Number(article.downloads || "0"), 0)} téléchargements
                 </span>
               </div>
             </div>
