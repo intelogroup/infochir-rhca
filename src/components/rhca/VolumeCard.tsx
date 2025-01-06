@@ -51,7 +51,7 @@ export const VolumeCard = ({ volume }: VolumeCardProps) => {
                       className="text-primary mb-2 truncate"
                       style={{ fontSize: 'clamp(1.25rem, 1rem + 1vw, 1.5rem)' }}
                     >
-                      {volume.volume}
+                      {`Infochir-RHCA Volume ${volume.volume}, No.${volume.volume}`}
                     </CardTitle>
                     <p 
                       className="text-gray-500"
