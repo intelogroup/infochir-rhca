@@ -1,17 +1,17 @@
-import { StatsData } from "./stats/StatsData";
-import { StatCard } from "./stats/StatCard";
+import { stats } from "./stats/StatsData";
+import { StatsCard } from "@/components/ui/stats-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 export const StatsSection = () => {
-  const { data: stats, isLoading, error } = useQuery({
+  const { data: statsData, isLoading, error } = useQuery({
     queryKey: ['stats'],
     queryFn: async () => {
       // Simulating a network request for demonstration
       await new Promise(resolve => setTimeout(resolve, 1000));
-      return StatsData;
+      return stats;
     }
   });
 
@@ -57,9 +57,9 @@ export const StatsSection = () => {
           role="list"
           aria-label="Liste des statistiques"
         >
-          {stats.map((stat, index) => (
+          {statsData.map((stat, index) => (
             <div key={index} role="listitem">
-              <StatCard {...stat} />
+              <StatsCard {...stat} />
             </div>
           ))}
         </div>

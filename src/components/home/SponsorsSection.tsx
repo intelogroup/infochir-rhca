@@ -1,4 +1,4 @@
-import { SponsorsData } from "./sponsors/SponsorsData";
+import { sponsors } from "./sponsors/SponsorsData";
 import { SponsorCard } from "./sponsors/SponsorCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -6,12 +6,12 @@ import { AlertTriangle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 export const SponsorsSection = () => {
-  const { data: sponsors, isLoading, error } = useQuery({
+  const { data: sponsorsData, isLoading, error } = useQuery({
     queryKey: ['sponsors'],
     queryFn: async () => {
       // Simulating a network request for demonstration
       await new Promise(resolve => setTimeout(resolve, 1000));
-      return SponsorsData;
+      return sponsors;
     }
   });
 
@@ -65,9 +65,9 @@ export const SponsorsSection = () => {
           role="list"
           aria-label="Liste des partenaires"
         >
-          {sponsors.map((sponsor, index) => (
+          {sponsorsData.map((sponsor, index) => (
             <div key={index} role="listitem">
-              <SponsorCard {...sponsor} />
+              <SponsorCard sponsor={sponsor} index={index} />
             </div>
           ))}
         </div>
