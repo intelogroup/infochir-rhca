@@ -2,11 +2,11 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Eye } from "lucide-react";
-import { AtlasModalProps } from "./types";
 import { toast } from "sonner";
+import { AtlasModalProps } from "./types";
 import { AtlasModalHeader } from "./modal/AtlasModalHeader";
 import { AtlasModalStats } from "./modal/AtlasModalStats";
 import { AtlasModalActions } from "./modal/AtlasModalActions";
@@ -34,27 +34,26 @@ export const AtlasModal = ({ chapter, open, onOpenChange }: AtlasModalProps) => 
         isMobile ? 'w-[95%] h-[85vh] mx-auto rounded-lg' : 
         'w-[90%] max-w-3xl h-[80vh]'
       } p-0 overflow-hidden bg-white/95 backdrop-blur-sm border border-gray-100 shadow-lg`}>
-        <DialogDescription className="sr-only">
+        <DialogTitle className="sr-only">
           Détails du chapitre {chapter.title}
-        </DialogDescription>
+        </DialogTitle>
         
         <AtlasModalHeader 
           title={chapter.title} 
           coverImage={chapter.coverImage}
         />
 
-        <div className="px-6 py-4 border-y bg-gray-50/50 backdrop-blur-sm">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <AtlasModalMetadata chapter={chapter} />
-            <div className="mt-4">
-              <AtlasModalStats stats={chapter.stats} />
-            </div>
-          </motion.div>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="px-6 py-4 border-y bg-gray-50/50 backdrop-blur-sm"
+        >
+          <AtlasModalMetadata chapter={chapter} />
+          <div className="mt-4">
+            <AtlasModalStats stats={chapter.stats} />
+          </div>
+        </motion.div>
 
         <ScrollArea className="flex-1 h-[calc(100%-280px)]">
           <div className="px-4 sm:px-6">

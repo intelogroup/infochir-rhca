@@ -1,7 +1,6 @@
 import { Book, Info, Tag } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
-import { AtlasChapter } from "../types";
 import { motion } from "framer-motion";
+import { AtlasChapter } from "../types";
 
 interface AtlasModalContentProps {
   chapter: AtlasChapter;
