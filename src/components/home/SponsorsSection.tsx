@@ -10,7 +10,7 @@ export const SponsorsSection = () => {
     queryKey: ['sponsors'],
     queryFn: async () => {
       // Simulating a network request for demonstration
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 500)); // Reduced timeout for faster loading
       return sponsors;
     }
   });

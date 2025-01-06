@@ -9,9 +9,7 @@ interface SponsorCardProps {
 export const SponsorCard = ({ sponsor, index }: SponsorCardProps) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
+      initial={{ opacity: 1, y: 0 }}
       whileHover={{ scale: 1.05 }}
       className="relative group"
     >
@@ -20,6 +18,7 @@ export const SponsorCard = ({ sponsor, index }: SponsorCardProps) => {
           src={sponsor.logo}
           alt={`${sponsor.name} logo`}
           className="w-full h-full object-contain mix-blend-multiply filter transition-all duration-300"
+          loading="eager"
         />
         <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 rounded-xl transition-all duration-300" />
       </div>
