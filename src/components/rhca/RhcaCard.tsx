@@ -8,13 +8,20 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 interface RhcaCardProps {
   article: RhcaArticle;
   onCardClick?: () => void;
+  className?: string;
 }
 
-export const RhcaCard = ({ article, onCardClick }: RhcaCardProps) => {
+export const RhcaCard = ({ article, onCardClick, className }: RhcaCardProps) => {
+  const handleClick = () => {
+    if (onCardClick) {
+      onCardClick();
+    }
+  };
+
   return (
     <Card 
-      className="group hover:shadow-lg transition-all duration-300 cursor-pointer bg-white h-full border-gray-100 overflow-hidden"
-      onClick={onCardClick}
+      className={`group hover:shadow-lg transition-all duration-300 ${onCardClick ? 'cursor-pointer' : ''} bg-white h-full border-gray-100 overflow-hidden ${className ?? ''}`}
+      onClick={handleClick}
       role="article"
       aria-labelledby={`article-title-${article.id}`}
     >
