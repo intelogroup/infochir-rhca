@@ -11,8 +11,8 @@ export interface Issue {
   pdfUrl?: string;
   coverImage?: string;
   articleCount: number;
-  downloads?: number;
-  shares?: number;
+  downloads: number;
+  shares: number;
   articles: IssueArticle[];
 }
 
