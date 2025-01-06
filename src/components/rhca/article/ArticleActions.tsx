@@ -36,29 +36,29 @@ export const ArticleActions = ({ id, pdfUrl, onCardClick }: ArticleActionsProps)
       <Button
         variant="outline"
         size="sm"
-        className="flex-1 md:flex-none gap-2 h-8 text-[clamp(0.75rem,0.7rem+0.1vw,0.875rem)]"
+        className="gap-1 sm:gap-2 bg-ocean text-white hover:bg-ocean-hover flex-1 text-[clamp(0.75rem,0.7rem+0.1vw,0.875rem)] h-8 sm:h-9"
         onClick={handleShare}
       >
-        <Share2 className="h-4 w-4" />
+        <Share2 className="h-3 w-3 sm:h-4 sm:w-4" />
         <span className="hidden md:inline">Partager</span>
       </Button>
       <Button
         variant="outline"
         size="sm"
-        className="flex-1 md:flex-none gap-2 h-8 text-[clamp(0.75rem,0.7rem+0.1vw,0.875rem)]"
+        className="gap-1 sm:gap-2 bg-ocean text-white hover:bg-ocean-hover flex-1 text-[clamp(0.75rem,0.7rem+0.1vw,0.875rem)] h-8 sm:h-9"
         onClick={handleDownload}
         disabled={!pdfUrl}
       >
-        <Download className="h-4 w-4" />
+        <Download className="h-3 w-3 sm:h-4 sm:w-4" />
         <span className="hidden md:inline">PDF</span>
       </Button>
       <Button
-        variant="secondary"
+        variant="outline"
         size="sm"
-        className="flex-1 md:flex-none gap-2 h-8 text-[clamp(0.75rem,0.7rem+0.1vw,0.875rem)]"
+        className="gap-1 sm:gap-2 bg-ocean text-white hover:bg-ocean-hover flex-1 text-[clamp(0.75rem,0.7rem+0.1vw,0.875rem)] h-8 sm:h-9"
         onClick={handleView}
       >
-        <Eye className="h-4 w-4" />
+        <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
         <span className="hidden md:inline">Voir</span>
       </Button>
     </div>
