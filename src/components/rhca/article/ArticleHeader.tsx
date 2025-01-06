@@ -9,14 +9,14 @@ interface ArticleHeaderProps {
 
 export const ArticleHeader = ({ article }: ArticleHeaderProps) => {
   return (
-    <div className="space-y-2 flex-1">
+    <div className="space-y-2">
       <h3 
         id={`article-title-${article.id}`}
-        className="text-[clamp(1rem,0.95rem+0.25vw,1.25rem)] font-semibold text-gray-900 line-clamp-2"
+        className="text-lg sm:text-xl font-semibold text-gray-900 line-clamp-2"
       >
         {article.title}
       </h3>
-      <div className="flex flex-wrap items-center gap-2 text-[clamp(0.75rem,0.7rem+0.1vw,0.875rem)] text-gray-500">
+      <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500">
         <Calendar className="h-4 w-4 flex-shrink-0" />
         {article.date && (
           <span className="truncate">

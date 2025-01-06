@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Download, Share2, Eye } from "lucide-react";
+import { Download, Share2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface ArticleActionsProps {
@@ -26,40 +26,27 @@ export const ArticleActions = ({ id, pdfUrl, onCardClick }: ArticleActionsProps)
     toast.success("Ouverture du PDF...");
   };
 
-  const handleView = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onCardClick?.();
-  };
-
   return (
-    <div className="flex gap-2 mt-auto pt-2 md:pt-3">
+    <div className="flex gap-3 w-full sm:w-auto">
       <Button
         variant="outline"
         size="sm"
-        className="gap-1 sm:gap-2 bg-ocean text-white hover:bg-ocean-hover flex-1 text-[clamp(0.75rem,0.7rem+0.1vw,0.875rem)] h-8 sm:h-9"
+        className="flex-1 sm:flex-none gap-2 bg-white hover:bg-gray-50"
         onClick={handleShare}
+        aria-label="Partager l'article"
       >
-        <Share2 className="h-3 w-3 sm:h-4 sm:w-4" />
-        <span className="hidden md:inline">Partager</span>
+        <Share2 className="h-4 w-4" aria-hidden="true" />
+        <span className="whitespace-nowrap">Partager</span>
       </Button>
       <Button
         variant="outline"
         size="sm"
-        className="gap-1 sm:gap-2 bg-ocean text-white hover:bg-ocean-hover flex-1 text-[clamp(0.75rem,0.7rem+0.1vw,0.875rem)] h-8 sm:h-9"
+        className="flex-1 sm:flex-none gap-2 bg-white hover:bg-gray-50"
         onClick={handleDownload}
-        disabled={!pdfUrl}
+        aria-label={pdfUrl ? "Télécharger le PDF" : "PDF non disponible"}
       >
-        <Download className="h-3 w-3 sm:h-4 sm:w-4" />
-        <span className="hidden md:inline">PDF</span>
-      </Button>
-      <Button
-        variant="outline"
-        size="sm"
-        className="gap-1 sm:gap-2 bg-ocean text-white hover:bg-ocean-hover flex-1 text-[clamp(0.75rem,0.7rem+0.1vw,0.875rem)] h-8 sm:h-9"
-        onClick={handleView}
-      >
-        <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
-        <span className="hidden md:inline">Voir</span>
+        <Download className="h-4 w-4" aria-hidden="true" />
+        <span className="whitespace-nowrap">PDF</span>
       </Button>
     </div>
   );
