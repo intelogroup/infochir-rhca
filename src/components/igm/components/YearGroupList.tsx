@@ -14,7 +14,7 @@ export const YearGroupList = ({ issuesByYear, sortedYears }: YearGroupListProps)
       {sortedYears.map((year) => (
         <motion.div 
           key={year}
-          className="space-y-6 bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+          className="space-y-6 bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
@@ -47,8 +47,8 @@ export const YearGroupList = ({ issuesByYear, sortedYears }: YearGroupListProps)
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <FileText className="h-4 w-4 text-secondary-foreground" />
-              <span className="text-sm font-medium text-secondary-foreground">
+              <FileText className="h-4 w-4 text-secondary-foreground/70" />
+              <span className="text-sm font-medium text-secondary-foreground/70">
                 {issuesByYear[year].reduce((acc, issue) => acc + (issue.articles?.length || 0), 0)} articles
               </span>
             </motion.div>
@@ -65,6 +65,7 @@ export const YearGroupList = ({ issuesByYear, sortedYears }: YearGroupListProps)
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
+                className="h-full"
               >
                 <IssueCard issue={issue} />
               </motion.div>
