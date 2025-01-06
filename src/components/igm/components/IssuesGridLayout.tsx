@@ -4,6 +4,7 @@ import { useIssuesState } from "../hooks/useIssuesState";
 import { mockIssues } from "../data/mockIssues";
 import { SORT_OPTIONS, type SortOption } from "../constants/sortOptions";
 import { useState } from "react";
+import { DateRange } from "react-day-picker";
 
 interface IssuesGridLayoutProps {
   viewMode?: "grid" | "table";
@@ -12,13 +13,21 @@ interface IssuesGridLayoutProps {
 export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("latest");
+  const [dateRange, setDateRange] = useState<DateRange>();
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const {
     sortedIssues,
     issuesByYear,
     sortedYears,
-  } = useIssuesState(mockIssues, searchTerm, sortBy);
+    availableCategories,
+  } = useIssuesState(mockIssues, {
+    searchTerm,
+    sortBy,
+    dateRange,
+    selectedCategories,
+  });
 
   // Simulate loading for demo purposes
   setTimeout(() => setIsLoading(false), 1000);
@@ -32,6 +41,11 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
           onSearch={setSearchTerm}
           onSort={setSortBy}
           sortOptions={SORT_OPTIONS}
+          dateRange={dateRange}
+          onDateRangeChange={setDateRange}
+          selectedCategories={selectedCategories}
+          onCategoryChange={setSelectedCategories}
+          availableCategories={availableCategories}
           disabled={isLoading}
         />
       </div>

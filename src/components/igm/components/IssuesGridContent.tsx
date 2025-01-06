@@ -1,6 +1,6 @@
 import { YearGroupList } from "./YearGroupList";
 import { IssuesTable } from "@/components/issues/IssuesTable";
-import { FileText, Search, Loader2, InboxX } from "lucide-react";
+import { FileText, Search, Loader2, Inbox } from "lucide-react";
 import type { Issue } from "../types";
 import { LoadingState } from "./LoadingState";
 
@@ -31,7 +31,7 @@ export const IssuesGridContent = ({
         aria-live="polite"
       >
         <div className="bg-secondary/10 p-4 rounded-full mb-6">
-          <InboxX className="h-8 w-8 text-secondary-foreground/70" aria-hidden="true" />
+          <Inbox className="h-8 w-8 text-secondary-foreground/70" aria-hidden="true" />
         </div>
         <h3 className="text-lg font-semibold text-gray-900 mb-3">Aucun numéro trouvé</h3>
         <p className="text-sm text-gray-500 max-w-md">
@@ -51,15 +51,10 @@ export const IssuesGridContent = ({
             {sortedIssues.length} numéro{sortedIssues.length !== 1 ? 's' : ''} trouvé{sortedIssues.length !== 1 ? 's' : ''}
           </span>
         </div>
-        <div className="space-y-8">
-          {sortedYears.map((year) => (
-            <YearGroup 
-              key={year}
-              year={year}
-              issues={issuesByYear[year]}
-            />
-          ))}
-        </div>
+        <YearGroupList 
+          issuesByYear={issuesByYear}
+          sortedYears={sortedYears}
+        />
       </div>
     );
   }

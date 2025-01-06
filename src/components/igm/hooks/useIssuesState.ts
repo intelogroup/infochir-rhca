@@ -2,26 +2,67 @@ import { useMemo } from "react";
 import type { Issue } from "../types";
 import type { SortOption } from "../constants/sortOptions";
 import { isValidDate } from "../types";
+import { DateRange } from "react-day-picker";
+
+interface IssuesStateOptions {
+  searchTerm: string;
+  sortBy: SortOption;
+  dateRange?: DateRange;
+  selectedCategories?: string[];
+}
 
 export const useIssuesState = (
   issues: Issue[],
-  searchTerm: string,
-  sortBy: SortOption
+  {
+    searchTerm,
+    sortBy,
+    dateRange,
+    selectedCategories = [],
+  }: IssuesStateOptions
 ) => {
   const filteredIssues = useMemo(() => {
-    if (!searchTerm) return issues;
-    
-    const searchLower = searchTerm.toLowerCase();
-    return issues.filter((issue) => 
-      issue.title.toLowerCase().includes(searchLower) ||
-      issue.description?.toLowerCase().includes(searchLower) ||
-      issue.articles.some(article => 
-        article.title.toLowerCase().includes(searchLower) ||
-        article.authors.some(author => author.toLowerCase().includes(searchLower)) ||
-        article.abstract?.toLowerCase().includes(searchLower)
-      )
-    );
-  }, [issues, searchTerm]);
+    let filtered = issues;
+
+    // Apply search filter
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.filter((issue) => 
+        issue.title.toLowerCase().includes(searchLower) ||
+        issue.description?.toLowerCase().includes(searchLower) ||
+        issue.articles.some(article => 
+          article.title.toLowerCase().includes(searchLower) ||
+          article.authors.some(author => author.toLowerCase().includes(searchLower)) ||
+          article.abstract?.toLowerCase().includes(searchLower)
+        )
+      );
+    }
+
+    // Apply date range filter
+    if (dateRange?.from || dateRange?.to) {
+      filtered = filtered.filter(issue => {
+        const issueDate = new Date(issue.date);
+        if (!isValidDate(issueDate)) return false;
+
+        const isAfterStart = !dateRange.from || issueDate >= dateRange.from;
+        const isBeforeEnd = !dateRange.to || issueDate <= dateRange.to;
+        
+        return isAfterStart && isBeforeEnd;
+      });
+    }
+
+    // Apply category filter
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter(issue =>
+        issue.articles.some(article =>
+          selectedCategories.some(category =>
+            article.tags?.includes(category)
+          )
+        )
+      );
+    }
+
+    return filtered;
+  }, [issues, searchTerm, dateRange, selectedCategories]);
 
   const sortedIssues = useMemo(() => {
     const sorted = [...filteredIssues];
@@ -82,9 +123,20 @@ export const useIssuesState = (
       .sort((a, b) => b - a);
   }, [issuesByYear]);
 
+  const availableCategories = useMemo(() => {
+    const categories = new Set<string>();
+    issues.forEach(issue => {
+      issue.articles.forEach(article => {
+        article.tags?.forEach(tag => categories.add(tag));
+      });
+    });
+    return Array.from(categories).sort();
+  }, [issues]);
+
   return {
     sortedIssues,
     issuesByYear,
     sortedYears,
+    availableCategories,
   };
 };
