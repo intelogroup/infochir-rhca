@@ -8,6 +8,7 @@ import { AtlasModal } from "./AtlasModal";
 import { motion } from "framer-motion";
 import { AtlasCategory } from "./data/atlasCategories";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface AtlasCardProps {
   chapter: AtlasChapter;
@@ -16,6 +17,7 @@ interface AtlasCardProps {
 
 export const AtlasCard = ({ chapter, category }: AtlasCardProps) => {
   const [showModal, setShowModal] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const handleShare = () => {
     const shareUrl = `${window.location.origin}/adc/chapters/${chapter.id}`;
@@ -28,14 +30,22 @@ export const AtlasCard = ({ chapter, category }: AtlasCardProps) => {
   };
 
   const defaultCoverImages = {
-    "0": "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=1470&fit=crop",
-    "1": "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?q=80&w=1470&fit=crop",
-    "2": "https://images.unsplash.com/photo-1584515933487-779824d29309?q=80&w=1470&fit=crop",
-    "3": "https://images.unsplash.com/photo-1584515933487-779824d29309?q=80&w=1470&fit=crop",
-    "4": "https://images.unsplash.com/photo-1584515933487-779824d29309?q=80&w=1470&fit=crop",
+    "0": "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=800&fit=crop",
+    "1": "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?q=80&w=800&fit=crop",
+    "2": "https://images.unsplash.com/photo-1584515933487-779824d29309?q=80&w=800&fit=crop",
+    "3": "https://images.unsplash.com/photo-1584515933487-779824d29309?q=80&w=800&fit=crop",
+    "4": "https://images.unsplash.com/photo-1584515933487-779824d29309?q=80&w=800&fit=crop",
   };
 
   const coverImage = chapter.coverImage || defaultCoverImages[chapter.id as keyof typeof defaultCoverImages] || defaultCoverImages["0"];
+
+  // Generate srcset for responsive images
+  const generateSrcSet = (baseUrl: string) => {
+    const widths = [400, 800, 1200];
+    return widths
+      .map(width => `${baseUrl}&w=${width}&fit=crop ${width}w`)
+      .join(", ");
+  };
 
   return (
     <>
@@ -46,10 +56,19 @@ export const AtlasCard = ({ chapter, category }: AtlasCardProps) => {
       >
         <Card className="group h-full flex flex-col">
           <div className="relative h-28 sm:h-32 overflow-hidden">
+            {!imageLoaded && (
+              <Skeleton className="absolute inset-0 w-full h-full" />
+            )}
             <img
               src={coverImage}
+              srcSet={generateSrcSet(coverImage)}
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               alt={chapter.title}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+              className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 ${
+                !imageLoaded ? 'opacity-0' : 'opacity-100'
+              }`}
+              onLoad={() => setImageLoaded(true)}
+              loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-background/20" />
           </div>

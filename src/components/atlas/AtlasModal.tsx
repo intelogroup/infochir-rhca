@@ -11,9 +11,12 @@ import { AtlasModalHeader } from "./modal/AtlasModalHeader";
 import { AtlasModalStats } from "./modal/AtlasModalStats";
 import { AtlasModalActions } from "./modal/AtlasModalActions";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useState } from "react";
 
 export const AtlasModal = ({ chapter, open, onOpenChange }: AtlasModalProps) => {
   const isMobile = useIsMobile();
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const handleShare = () => {
     const shareUrl = `${window.location.origin}/adc/chapters/${chapter.id}`;
@@ -32,7 +35,16 @@ export const AtlasModal = ({ chapter, open, onOpenChange }: AtlasModalProps) => 
           Détails du chapitre {chapter.title}
         </DialogDescription>
         
-        <AtlasModalHeader title={chapter.title} coverImage={chapter.coverImage} />
+        <div className="relative">
+          {!imageLoaded && chapter.coverImage && (
+            <Skeleton className="w-full h-[200px]" />
+          )}
+          <AtlasModalHeader 
+            title={chapter.title} 
+            coverImage={chapter.coverImage}
+            onImageLoad={() => setImageLoaded(true)}
+          />
+        </div>
 
         <ScrollArea className={`${isMobile ? 'h-[calc(100vh-200px)]' : 'h-[calc(90vh-200px)]'} px-4 sm:px-8`}>
           <div className="space-y-6 py-6">

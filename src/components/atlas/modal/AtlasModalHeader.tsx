@@ -1,26 +1,48 @@
-import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface AtlasModalHeaderProps {
   title: string;
   coverImage?: string;
+  onImageLoad?: () => void;
 }
 
-const defaultCoverImage = "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=1470&fit=crop";
+export const AtlasModalHeader = ({ title, coverImage, onImageLoad }: AtlasModalHeaderProps) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
 
-export const AtlasModalHeader = ({ title, coverImage }: AtlasModalHeaderProps) => {
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+    onImageLoad?.();
+  };
+
   return (
-    <div className="relative h-[300px] w-full">
-      <img
-        src={coverImage || defaultCoverImage}
-        alt={title}
-        className="w-full h-full object-cover"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/50 to-transparent" />
-      <DialogHeader className="absolute bottom-6 left-8 right-8">
-        <DialogTitle className="text-3xl sm:text-4xl font-bold text-white leading-tight">
+    <div className="relative h-[200px] bg-gray-100 dark:bg-gray-900">
+      {coverImage ? (
+        <>
+          {!imageLoaded && (
+            <Skeleton className="absolute inset-0 w-full h-full" />
+          )}
+          <img
+            src={coverImage}
+            alt=""
+            className={`w-full h-full object-cover transition-opacity duration-300 ${
+              imageLoaded ? 'opacity-100' : 'opacity-0'
+            }`}
+            onLoad={handleImageLoad}
+            loading="lazy"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 1200px"
+            srcSet={`${coverImage}&w=640 640w, ${coverImage}&w=1024 1024w, ${coverImage}&w=1200 1200w`}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-background/20" />
+        </>
+      ) : (
+        <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900" />
+      )}
+      <div className="absolute bottom-0 left-0 right-0 p-6">
+        <h2 className="text-2xl font-bold text-white drop-shadow-md">
           {title}
-        </DialogTitle>
-      </DialogHeader>
+        </h2>
+      </div>
     </div>
   );
 };
