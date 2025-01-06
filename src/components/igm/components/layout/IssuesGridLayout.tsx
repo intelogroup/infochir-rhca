@@ -4,10 +4,10 @@ import { useIssuesState } from "../../hooks/useIssuesState";
 import { mockIssues } from "../../data/mockIssues";
 import { SORT_OPTIONS } from "../../constants/sortOptions";
 import { useState, useEffect } from "react";
-import { DateRange } from "react-day-picker";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { SortOption } from "@/types/sortOptions";
+import { DateRange } from "react-day-picker";
 
 interface IssuesGridLayoutProps {
   viewMode?: "grid" | "table";
@@ -38,14 +38,10 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
     setDisplayCount(prev => prev + (isMobile ? 3 : 6));
   };
 
-  const handleDateRangeChange = (range: DateRange | undefined) => {
-    setDateRange(range);
-  };
-
   return (
     <div className="space-y-4 sm:space-y-6">
       <motion.div 
-        className="bg-white rounded-lg sm:rounded-xl border-b border-gray-100 p-4 sm:p-6 shadow-sm"
+        className="bg-white rounded-lg sm:rounded-xl border border-gray-200 p-4 sm:p-6 shadow-sm"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
@@ -57,7 +53,7 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
           onSort={setSortBy}
           sortOptions={SORT_OPTIONS}
           dateRange={dateRange}
-          onDateRangeChange={handleDateRangeChange}
+          onDateRangeChange={setDateRange}
           selectedCategories={selectedCategories}
           onCategoryChange={setSelectedCategories}
           availableCategories={availableCategories}
