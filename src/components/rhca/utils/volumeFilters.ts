@@ -6,18 +6,25 @@ export const filterVolumes = (volumes: RhcaVolume[], searchTerm: string): RhcaVo
   
   const searchLower = searchTerm.toLowerCase();
   return volumes.filter((volume) => {
-    return (
+    // Search in volume metadata
+    const volumeMatch = 
       volume.volume.toString().includes(searchTerm) ||
-      volume.description?.toLowerCase().includes(searchLower) ||
-      volume.articles.some(
-        article =>
-          article.title?.toLowerCase().includes(searchLower) ||
-          article.abstract?.toLowerCase().includes(searchLower) ||
-          article.authors.some(author => 
-            author.toLowerCase().includes(searchLower)
-          )
-      )
+      volume.description?.toLowerCase().includes(searchLower);
+
+    // Search in articles within the volume
+    const articlesMatch = volume.articles.some(
+      article =>
+        article.title?.toLowerCase().includes(searchLower) ||
+        article.abstract?.toLowerCase().includes(searchLower) ||
+        article.authors.some(author => 
+          author.toLowerCase().includes(searchLower)
+        ) ||
+        article.tags?.some(tag =>
+          tag.toLowerCase().includes(searchLower)
+        )
     );
+
+    return volumeMatch || articlesMatch;
   });
 };
 
@@ -31,7 +38,7 @@ export const sortVolumes = (volumes: RhcaVolume[], sortType: SortOption): RhcaVo
         const dateA = new Date(a.date);
         const dateB = new Date(b.date);
         console.log(`Comparing dates: ${dateA} vs ${dateB}`);
-        return dateB.getTime() - dateA.getTime(); // Use getTime() for more accurate sorting
+        return dateB.getTime() - dateA.getTime();
       });
     case "year":
       return sorted.sort((a, b) => {
@@ -54,11 +61,11 @@ export const sortVolumes = (volumes: RhcaVolume[], sortType: SortOption): RhcaVo
   }
 };
 
-export const groupVolumesByYear = (volumes: RhcaVolume[]): Record<string, RhcaVolume[]> => {
+export const groupVolumesByYear = (volumes: RhcaVolume[]): Record<number, RhcaVolume[]> => {
   console.log('Grouping volumes by year:', volumes.map(v => ({ date: v.date, year: new Date(v.date).getFullYear() })));
   
   const grouped = volumes.reduce((acc, volume) => {
-    const year = new Date(volume.date).getFullYear().toString();
+    const year = new Date(volume.date).getFullYear();
     if (!acc[year]) {
       acc[year] = [];
     }
@@ -66,16 +73,8 @@ export const groupVolumesByYear = (volumes: RhcaVolume[]): Record<string, RhcaVo
     // Sort volumes within each year by month (newest first)
     acc[year].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     return acc;
-  }, {} as Record<string, RhcaVolume[]>);
+  }, {} as Record<number, RhcaVolume[]>);
 
-  // Return an object with years sorted in descending order
-  const sortedByYear = Object.keys(grouped)
-    .sort((a, b) => Number(b) - Number(a))
-    .reduce((acc, year) => {
-      acc[year] = grouped[year];
-      return acc;
-    }, {} as Record<string, RhcaVolume[]>);
-
-  console.log('Final grouped and sorted volumes:', sortedByYear);
-  return sortedByYear;
+  console.log('Final grouped and sorted volumes:', grouped);
+  return grouped;
 };
