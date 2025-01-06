@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import type { Issue } from "./types";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { supabase } from "@/integrations/supabase/client";
+import { motion } from "framer-motion";
 
 interface IssueCardProps {
   issue: Issue;
@@ -66,26 +67,35 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
   };
 
   return (
-    <>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      whileHover={{ scale: 1.02 }}
+      className="h-full"
+    >
       <Card 
-        className="group hover:shadow-lg transition-shadow cursor-pointer bg-white h-full"
+        className="group cursor-pointer bg-white h-full relative overflow-hidden border border-gray-100 transition-all duration-300 hover:shadow-lg"
         onClick={() => setIsModalOpen(true)}
         role="article"
         aria-labelledby={`issue-title-${issue.id}`}
       >
-        <div className="flex flex-col sm:flex-row h-full">
+        {/* Subtle pattern background */}
+        <div className="absolute inset-0 opacity-5 bg-[radial-gradient(#e5deff_1px,transparent_1px)] [background-size:16px_16px]" />
+        
+        <div className="flex flex-col sm:flex-row h-full relative">
           <div className="w-full sm:w-24 md:w-28 lg:w-32 flex-shrink-0">
             <AspectRatio ratio={3/4} className="overflow-hidden">
               {issue.coverImage ? (
                 <img 
                   src={issue.coverImage}
                   alt={`Couverture ${issue.title}`}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   loading="lazy"
                 />
               ) : (
-                <div className="w-full h-full bg-muted flex items-center justify-center">
-                  <span className="text-xs sm:text-sm text-muted-foreground">No cover</span>
+                <div className="w-full h-full bg-[#F1F0FB] flex items-center justify-center">
+                  <span className="text-xs sm:text-sm text-primary/40">No cover</span>
                 </div>
               )}
             </AspectRatio>
@@ -96,21 +106,21 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
               <div>
                 <h3 
                   id={`issue-title-${issue.id}`}
-                  className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900 line-clamp-2"
+                  className="text-sm sm:text-base lg:text-lg font-semibold text-primary line-clamp-2 group-hover:text-primary-light transition-colors"
                 >
                   {issue.title}
                 </h3>
                 <p 
-                  className="text-xs sm:text-sm text-gray-600 truncate"
+                  className="text-xs sm:text-sm text-gray-500 truncate mt-1"
                   aria-label="Numéro de volume et d'édition"
                 >
-                  {issue.volume} - {issue.issue}
+                  {issue.volume} • {issue.issue}
                 </p>
                 <div 
-                  className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-500 mt-1 flex-wrap"
+                  className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-[#8E9196] mt-2 flex-wrap"
                   aria-label="Informations de publication"
                 >
-                  <span className="truncate">
+                  <span className="bg-[#F1F0FB] px-2 py-0.5 rounded-full">
                     {format(new Date(issue.date), 'MMMM yyyy', { locale: fr })}
                   </span>
                 </div>
@@ -124,29 +134,29 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
               </p>
 
               <div 
-                className="flex items-center gap-2 text-xs sm:text-sm text-gray-500 flex-wrap"
+                className="flex items-center gap-3 text-xs sm:text-sm text-[#8A898C] flex-wrap mt-auto pt-2"
                 aria-label="Statistiques de l'édition"
               >
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5 bg-[#F1F1F1] px-2 py-0.5 rounded-full">
                   <FileText className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" aria-hidden="true" />
-                  <span className="truncate">{issue.articleCount} articles</span>
+                  <span>{issue.articleCount} articles</span>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5 bg-[#F1F1F1] px-2 py-0.5 rounded-full">
                   <Download className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" aria-hidden="true" />
-                  <span className="truncate">{issue.downloads || 0}</span>
+                  <span>{issue.downloads || 0}</span>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5 bg-[#F1F1F1] px-2 py-0.5 rounded-full">
                   <Share2 className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" aria-hidden="true" />
-                  <span className="truncate">{issue.shares || 0}</span>
+                  <span>{issue.shares || 0}</span>
                 </div>
               </div>
             </div>
 
-            <div className="flex gap-2 mt-3 sm:mt-4">
+            <div className="flex gap-2 mt-4">
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-1 bg-ocean text-white hover:bg-ocean-hover flex-1 text-xs sm:text-sm h-7 sm:h-8"
+                className="gap-1.5 bg-ocean text-white hover:bg-ocean-hover flex-1 text-xs sm:text-sm h-8 transition-colors"
                 onClick={handleShare}
                 aria-label="Partager l'édition"
               >
@@ -156,7 +166,7 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-1 bg-ocean text-white hover:bg-ocean-hover flex-1 text-xs sm:text-sm h-7 sm:h-8"
+                className="gap-1.5 bg-ocean text-white hover:bg-ocean-hover flex-1 text-xs sm:text-sm h-8 transition-colors"
                 onClick={handleDownload}
                 aria-label={issue.pdfUrl ? "Télécharger le PDF" : "PDF non disponible"}
               >
@@ -173,6 +183,6 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
-    </>
+    </motion.div>
   );
 };
