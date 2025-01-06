@@ -82,20 +82,20 @@ export const Navbar = () => {
         role="navigation" 
         aria-label="Main navigation"
       >
-        <div className="w-full border-b border-gray-200/50 bg-white/80 backdrop-blur-sm shadow-sm">
+        <div className="w-full border-b border-gray-200/50 bg-white/80 backdrop-blur-md shadow-lg">
           <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-12">
             <div className="flex h-16 md:h-20 items-center justify-between">
               <Link 
                 to="/" 
-                className="flex items-center space-x-2 sm:space-x-4 transition-transform duration-200 hover:scale-[0.98] touch-manipulation"
+                className="flex items-center space-x-2 sm:space-x-4 transition-all duration-300 hover:scale-[0.98] active:scale-[0.95] touch-manipulation"
                 aria-label="Return to homepage"
               >
                 <img
                   src="/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png"
                   alt="Info Chir Logo"
-                  className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 object-contain transition-all duration-200"
+                  className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 object-contain transition-all duration-300 hover:brightness-110"
                 />
-                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-transparent whitespace-nowrap transition-all duration-200">
+                <span className="bg-gradient-to-r from-primary via-primary-light to-secondary bg-clip-text text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-transparent whitespace-nowrap transition-all duration-300">
                   INFOCHIR/RHCA
                 </span>
               </Link>
@@ -106,7 +106,7 @@ export const Navbar = () => {
 
               <motion.button
                 onClick={() => setIsOpen(!isOpen)}
-                className="md:hidden p-4 rounded-lg hover:bg-gray-100/50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 touch-manipulation"
+                className="md:hidden p-4 rounded-lg hover:bg-gray-100/80 active:bg-gray-200/80 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 touch-manipulation shadow-sm hover:shadow-md"
                 aria-label={isOpen ? "Close menu" : "Open menu"}
                 aria-expanded={isOpen}
                 aria-controls="mobile-menu"
@@ -122,7 +122,7 @@ export const Navbar = () => {
                       exit={{ rotate: 90, opacity: 0 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <X className="h-6 w-6" aria-hidden="true" />
+                      <X className="h-6 w-6 text-primary hover:text-primary-light transition-colors duration-200" aria-hidden="true" />
                     </motion.div>
                   ) : (
                     <motion.div
@@ -132,7 +132,7 @@ export const Navbar = () => {
                       exit={{ rotate: -90, opacity: 0 }}
                       transition={{ duration: 0.2 }}
                     >
-                      <Menu className="h-6 w-6" aria-hidden="true" />
+                      <Menu className="h-6 w-6 text-primary hover:text-primary-light transition-colors duration-200" aria-hidden="true" />
                     </motion.div>
                   )}
                 </AnimatePresence>
