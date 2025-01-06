@@ -13,7 +13,7 @@ const RHCA = () => {
 
   return (
     <MainLayout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-20">
         <Link to="/" className="inline-block mb-8">
           <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary-light">
             <ArrowLeft className="h-4 w-4" />

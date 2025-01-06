@@ -9,7 +9,7 @@ const ADC = () => {
 
   return (
     <MainLayout>
-      <div className="container mx-auto px-4 py-8 space-y-8">
+      <div className="container mx-auto px-4 py-8 pt-20 space-y-8">
         <section className="space-y-4">
           <h1 className="text-4xl font-bold text-primary">
             Atlas de Diagnostic Chirurgical

@@ -13,7 +13,7 @@ const IGM = () => {
   return (
     <MainLayout>
       <div className="min-h-screen bg-[#F1F0FB]">
-        <div className="container max-w-[1600px] mx-auto px-2 sm:px-4 lg:px-6 py-4 lg:py-8">
+        <div className="container max-w-[1600px] mx-auto px-2 sm:px-4 lg:px-6 py-4 lg:py-8 pt-20">
           <Link to="/" className="inline-block mb-4 sm:mb-6">
             <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary-light">
               <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
