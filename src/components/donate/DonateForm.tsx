@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ChangeEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,20 +8,19 @@ import { motion } from "framer-motion";
 
 const DonationAmounts = [10, 25, 50, 100, 250, 500];
 
-export const DonateForm = () => {
-  const [selectedAmount, setSelectedAmount] = useState<number>(0);
-  const [customAmount, setCustomAmount] = useState<string>("");
+interface DonateFormProps {
+  onAmountChange: (amount: number) => void;
+  selectedAmount: number;
+  customAmount: string;
+  onCustomAmountChange: (e: ChangeEvent<HTMLInputElement>) => void;
+}
 
-  const handleAmountSelect = (amount: number) => {
-    setSelectedAmount(amount);
-    setCustomAmount("");
-  };
-
-  const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCustomAmount(e.target.value);
-    setSelectedAmount(0);
-  };
-
+export const DonateForm = ({
+  onAmountChange,
+  selectedAmount,
+  customAmount,
+  onCustomAmountChange
+}: DonateFormProps) => {
   return (
     <div className="space-y-6">
       <Card className="shadow-lg backdrop-blur-sm bg-white/80 border-gray-100/20 hover:shadow-xl transition-shadow duration-300">
@@ -41,7 +40,7 @@ export const DonateForm = () => {
                 key={amount}
                 variant={selectedAmount === amount ? "default" : "outline"}
                 className="h-16 text-lg relative overflow-hidden group"
-                onClick={() => handleAmountSelect(amount)}
+                onClick={() => onAmountChange(amount)}
               >
                 <span className="relative z-10">${amount}</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-secondary/10 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
@@ -56,7 +55,7 @@ export const DonateForm = () => {
                 placeholder="0"
                 className="pl-8 text-lg"
                 value={customAmount}
-                onChange={handleCustomAmountChange}
+                onChange={onCustomAmountChange}
               />
               <span className="absolute left-3 top-1/2 -translate-y-1/2">$</span>
             </div>
