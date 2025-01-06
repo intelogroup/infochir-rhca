@@ -16,17 +16,19 @@ export const volumes2022: RhcaVolume[] = [
         abstract: "Synthèse des innovations majeures...",
         authors: ["Dr. Jean Alouidor", "Dr. Marie-Claire Dubois"],
         date: "2022-12-15",
-        views: 320,
-        citations: 45,
-        downloads: 115,
-        shares: 62,
-        pageNumber: 1,
-        volume: 12,
-        tags: ["Rétrospective", "Innovation"]
+        views: "320",
+        citations: "45",
+        downloads: "115",
+        shares: "62",
+        pageNumber: "1",
+        volume: "12",
+        tags: ["Rétrospective", "Innovation"],
+        publicationDate: "2022-12-15",
+        specialty: "Chirurgie générale"
       }
-    ]
+    ],
+    coverImage: "/placeholder.svg"
   },
-  // Add entries for each month of 2022 (11 to 1)
   {
     id: "2022-11",
     volume: 11,
@@ -42,17 +44,19 @@ export const volumes2022: RhcaVolume[] = [
         abstract: "Nouvelles techniques de reconstruction...",
         authors: ["Dr. Michel Blanc", "Dr. Anne Noir"],
         date: "2022-11-15",
-        views: 290,
-        citations: 38,
-        downloads: 98,
-        shares: 52,
-        pageNumber: 1,
-        volume: 11,
-        tags: ["Orthopédie", "Innovation"]
+        views: "290",
+        citations: "38",
+        downloads: "98",
+        shares: "52",
+        pageNumber: "1",
+        volume: "11",
+        tags: ["Orthopédie", "Innovation"],
+        publicationDate: "2022-11-15",
+        specialty: "Orthopédie"
       }
-    ]
+    ],
+    coverImage: "/placeholder.svg"
   },
-  // Continue with months 10 through 1...
   {
     id: "2022-01",
     volume: 1,
@@ -68,14 +72,17 @@ export const volumes2022: RhcaVolume[] = [
         abstract: "Analyse des nouvelles approches...",
         authors: ["Dr. Paul Bernard", "Dr. Claire Martin"],
         date: "2022-01-15",
-        views: 275,
-        citations: 32,
-        downloads: 88,
-        shares: 45,
-        pageNumber: 1,
-        volume: 1,
-        tags: ["Chirurgie générale", "Innovation"]
+        views: "275",
+        citations: "32",
+        downloads: "88",
+        shares: "45",
+        pageNumber: "1",
+        volume: "1",
+        tags: ["Chirurgie générale", "Innovation"],
+        publicationDate: "2022-01-15",
+        specialty: "Chirurgie générale"
       }
-    ]
+    ],
+    coverImage: "/placeholder.svg"
   }
 ];

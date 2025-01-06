@@ -16,17 +16,19 @@ export const volumes2021: RhcaVolume[] = [
         abstract: "Revue des avancées majeures...",
         authors: ["Dr. Marc Antoine", "Dr. Julie Pierre"],
         date: "2021-12-15",
-        views: 310,
-        citations: 42,
-        downloads: 105,
-        shares: 58,
-        pageNumber: 1,
-        volume: 12,
-        tags: ["Rétrospective", "Bilan"]
+        views: "310",
+        citations: "42",
+        downloads: "105",
+        shares: "58",
+        pageNumber: "1",
+        volume: "12",
+        tags: ["Rétrospective", "Bilan"],
+        publicationDate: "2021-12-15",
+        specialty: "Chirurgie générale"
       }
-    ]
+    ],
+    coverImage: "/placeholder.svg"
   },
-  // Add entries for each month of 2021 (11 to 1)
   {
     id: "2021-01",
     volume: 1,
@@ -42,14 +44,17 @@ export const volumes2021: RhcaVolume[] = [
         abstract: "Mise à jour des protocoles...",
         authors: ["Dr. Pierre Louis", "Dr. Marie Joseph"],
         date: "2021-01-15",
-        views: 260,
-        citations: 28,
-        downloads: 78,
-        shares: 42,
-        pageNumber: 1,
-        volume: 1,
-        tags: ["Urgence", "Protocoles"]
+        views: "260",
+        citations: "28",
+        downloads: "78",
+        shares: "42",
+        pageNumber: "1",
+        volume: "1",
+        tags: ["Urgence", "Protocoles"],
+        publicationDate: "2021-01-15",
+        specialty: "Chirurgie d'urgence"
       }
-    ]
+    ],
+    coverImage: "/placeholder.svg"
   }
 ];

@@ -16,15 +16,18 @@ export const volumes2024: RhcaVolume[] = [
         abstract: "Évaluation des approches innovantes...",
         authors: ["Dr. Marie Dupont", "Dr. Jean Robert"],
         date: "2024-06-15",
-        views: 210,
-        citations: 18,
-        downloads: 75,
-        shares: 35,
-        pageNumber: 1,
-        volume: 6,
-        tags: ["Chirurgie plastique", "Reconstruction", "Innovation"]
+        views: "210",
+        citations: "18",
+        downloads: "75",
+        shares: "35",
+        pageNumber: "1",
+        volume: "6",
+        tags: ["Chirurgie plastique", "Reconstruction", "Innovation"],
+        publicationDate: "2024-06-15",
+        specialty: "Chirurgie plastique"
       }
-    ]
+    ],
+    coverImage: "/placeholder.svg"
   },
   {
     id: "2024-05",
@@ -41,15 +44,18 @@ export const volumes2024: RhcaVolume[] = [
         abstract: "Analyse des résultats sur 5 ans...",
         authors: ["Dr. Pierre Martin", "Dr. Sophie Claire"],
         date: "2024-05-15",
-        views: 195,
-        citations: 22,
-        downloads: 68,
-        shares: 38,
-        pageNumber: 1,
-        volume: 5,
-        tags: ["Pédiatrie", "Mini-invasif"]
+        views: "195",
+        citations: "22",
+        downloads: "68",
+        shares: "38",
+        pageNumber: "1",
+        volume: "5",
+        tags: ["Pédiatrie", "Mini-invasif"],
+        publicationDate: "2024-05-15",
+        specialty: "Pédiatrie"
       }
-    ]
+    ],
+    coverImage: "/placeholder.svg"
   },
   {
     id: "2024-04",
@@ -66,15 +72,18 @@ export const volumes2024: RhcaVolume[] = [
         abstract: "Les dernières innovations en matière de prothèses...",
         authors: ["Dr. Marc Bernard", "Dr. Julie Thomas"],
         date: "2024-04-15",
-        views: 230,
-        citations: 25,
-        downloads: 82,
-        shares: 45,
-        pageNumber: 1,
-        volume: 4,
-        tags: ["Orthopédie", "Innovation", "Prothèses"]
+        views: "230",
+        citations: "25",
+        downloads: "82",
+        shares: "45",
+        pageNumber: "1",
+        volume: "4",
+        tags: ["Orthopédie", "Innovation", "Prothèses"],
+        publicationDate: "2024-04-15",
+        specialty: "Orthopédie"
       }
-    ]
+    ],
+    coverImage: "/placeholder.svg"
   },
   {
     id: "2024-03",
@@ -91,15 +100,18 @@ export const volumes2024: RhcaVolume[] = [
         abstract: "Analyse des possibilités d'implémentation...",
         authors: ["Dr. Marc Dubois", "Dr. Sarah Jean"],
         date: "2024-03-15",
-        views: 180,
-        citations: 15,
-        downloads: 65,
-        shares: 32,
-        pageNumber: 1,
-        volume: 3,
-        tags: ["Robotique", "Innovation", "Chirurgie"]
+        views: "180",
+        citations: "15",
+        downloads: "65",
+        shares: "32",
+        pageNumber: "1",
+        volume: "3",
+        tags: ["Robotique", "Innovation", "Chirurgie"],
+        publicationDate: "2024-03-15",
+        specialty: "Chirurgie robotique"
       }
-    ]
+    ],
+    coverImage: "/placeholder.svg"
   },
   {
     id: "2024-02",
@@ -116,15 +128,18 @@ export const volumes2024: RhcaVolume[] = [
         abstract: "Étude sur l'optimisation des protocoles...",
         authors: ["Dr. Sophie Martin", "Dr. Paul Dubois"],
         date: "2024-02-15",
-        views: 220,
-        citations: 28,
-        downloads: 75,
-        shares: 42,
-        pageNumber: 1,
-        volume: 2,
-        tags: ["Anesthésie", "Protocoles", "Personnalisation"]
+        views: "220",
+        citations: "28",
+        downloads: "75",
+        shares: "42",
+        pageNumber: "1",
+        volume: "2",
+        tags: ["Anesthésie", "Protocoles", "Personnalisation"],
+        publicationDate: "2024-02-15",
+        specialty: "Anesthésiologie"
       }
-    ]
+    ],
+    coverImage: "/placeholder.svg"
   },
   {
     id: "2024-01",
@@ -141,14 +156,17 @@ export const volumes2024: RhcaVolume[] = [
         abstract: "Analyse des techniques innovantes...",
         authors: ["Dr. Jean Pierre", "Dr. Marie Claire"],
         date: "2024-01-15",
-        views: 276,
-        citations: 32,
-        downloads: 92,
-        shares: 48,
-        pageNumber: 1,
-        volume: 1,
-        tags: ["Laparoscopie", "Innovation"]
+        views: "276",
+        citations: "32",
+        downloads: "92",
+        shares: "48",
+        pageNumber: "1",
+        volume: "1",
+        tags: ["Laparoscopie", "Innovation"],
+        publicationDate: "2024-01-15",
+        specialty: "Chirurgie mini-invasive"
       }
-    ]
+    ],
+    coverImage: "/placeholder.svg"
   }
 ];

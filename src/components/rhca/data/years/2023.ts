@@ -16,17 +16,19 @@ export const volumes2023: RhcaVolume[] = [
         abstract: "Synthèse des progrès majeurs...",
         authors: ["Dr. Marie Lambert", "Dr. Jean-Marc Bernard"],
         date: "2023-12-15",
-        views: 245,
-        citations: 28,
-        downloads: 86,
-        shares: 43,
-        pageNumber: 1,
-        volume: 12,
-        tags: ["Rétrospective", "Innovation"]
+        views: "245",
+        citations: "28",
+        downloads: "86",
+        shares: "43",
+        pageNumber: "1",
+        volume: "12",
+        tags: ["Rétrospective", "Innovation"],
+        publicationDate: "2023-12-15",
+        specialty: "Chirurgie générale"
       }
-    ]
+    ],
+    coverImage: "/placeholder.svg"
   },
-  // Add entries for each month of 2023 (11 to 1)
   {
     id: "2023-11",
     volume: 11,
@@ -42,17 +44,19 @@ export const volumes2023: RhcaVolume[] = [
         abstract: "Innovations dans le domaine...",
         authors: ["Dr. Claire Martin", "Dr. Paul Robert"],
         date: "2023-11-15",
-        views: 230,
-        citations: 25,
-        downloads: 82,
-        shares: 40,
-        pageNumber: 1,
-        volume: 11,
-        tags: ["Pédiatrie", "Innovation"]
+        views: "230",
+        citations: "25",
+        downloads: "82",
+        shares: "40",
+        pageNumber: "1",
+        volume: "11",
+        tags: ["Pédiatrie", "Innovation"],
+        publicationDate: "2023-11-15",
+        specialty: "Pédiatrie"
       }
-    ]
+    ],
+    coverImage: "/placeholder.svg"
   },
-  // Continue with months 10 through 1...
   {
     id: "2023-01",
     volume: 1,
@@ -68,14 +72,17 @@ export const volumes2023: RhcaVolume[] = [
         abstract: "État de l'art des techniques modernes...",
         authors: ["Dr. Pierre Martin", "Dr. Sophie Dubois"],
         date: "2023-01-15",
-        views: 280,
-        citations: 35,
-        downloads: 92,
-        shares: 48,
-        pageNumber: 1,
-        volume: 1,
-        tags: ["Cardiaque", "Innovation"]
+        views: "280",
+        citations: "35",
+        downloads: "92",
+        shares: "48",
+        pageNumber: "1",
+        volume: "1",
+        tags: ["Cardiaque", "Innovation"],
+        publicationDate: "2023-01-15",
+        specialty: "Cardiologie"
       }
-    ]
+    ],
+    coverImage: "/placeholder.svg"
   }
 ];
