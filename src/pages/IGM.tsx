@@ -1,14 +1,14 @@
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { LayoutGrid, List } from "lucide-react";
 import { useState } from "react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { LayoutGrid, List, BookOpen, Users, MessageCircle, Check } from "lucide-react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { IssuesGrid } from "@/components/igm/IssuesGrid";
 import { BackToTop } from "@/components/navigation/BackToTop";
 import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
 import { YearNavigation } from "@/components/igm/components/YearNavigation";
+import { IGMHeader } from "@/components/igm/components/IGMHeader";
+import { AnimatePresence, motion } from "framer-motion";
 
 const IGM = () => {
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
@@ -18,8 +18,8 @@ const IGM = () => {
   return (
     <MainLayout>
       <div className="min-h-screen bg-[#F1F0FB]">
-        <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 lg:py-8 pt-16 sm:pt-20">
-          {/* Breadcrumbs */}
+        {/* Breadcrumbs */}
+        <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 pt-16 sm:pt-20">
           <div className="mb-4">
             <Breadcrumbs
               items={[
@@ -28,34 +28,13 @@ const IGM = () => {
               ]}
             />
           </div>
+        </div>
 
-          {/* Header Section */}
-          <div className="space-y-4 sm:space-y-6">
-            <Link to="/" className="inline-block">
-              <Button variant="ghost" size="sm" className="gap-1.5 sm:gap-2 text-primary hover:text-primary-light">
-                <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
-                Retour
-              </Button>
-            </Link>
+        {/* Header Section */}
+        <IGMHeader />
 
-            <div className="text-center animate-fade-up space-y-4">
-              <img 
-                src="/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png"
-                alt="IGM Logo"
-                className="h-12 w-12 sm:h-16 sm:w-16 mx-auto object-contain"
-              />
-              <div className="space-y-2">
-                <h1 className="text-xl sm:text-3xl font-bold text-primary">
-                  Info Gazette Médicale
-                </h1>
-                <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto">
-                  Votre source d'information médicale de référence en Haïti.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Main Content */}
+        {/* Main Content */}
+        <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 lg:py-8">
           <div className="mt-6 sm:mt-8 space-y-4 sm:space-y-6 lg:space-y-0 lg:grid lg:grid-cols-[1fr,350px] lg:gap-6">
             <div className="space-y-4">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -81,9 +60,18 @@ const IGM = () => {
                 </ToggleGroup>
               </div>
               
-              <div className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-100">
-                <IssuesGrid viewMode={viewMode} />
-              </div>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={viewMode}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-100"
+                >
+                  <IssuesGrid viewMode={viewMode} />
+                </motion.div>
+              </AnimatePresence>
             </div>
             
             {/* Sidebar */}
