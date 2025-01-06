@@ -116,7 +116,7 @@ export const VolumeCard = ({ volume }: VolumeCardProps) => {
 
       <VolumeModal
         volume={volume}
-        isOpen={isModalOpen}
+        open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
     </>

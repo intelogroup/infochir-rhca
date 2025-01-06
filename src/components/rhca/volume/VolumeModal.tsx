@@ -8,13 +8,13 @@ import type { RhcaVolume } from "../types";
 
 interface VolumeModalProps {
   volume: RhcaVolume;
-  isOpen: boolean;
+  open: boolean;
   onClose: () => void;
 }
 
-export const VolumeModal = ({ volume, isOpen, onClose }: VolumeModalProps) => {
+export const VolumeModal = ({ volume, open, onClose }: VolumeModalProps) => {
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={onClose}>
       <DialogContent 
         className="sm:max-w-[600px] p-0 overflow-hidden bg-white/95 backdrop-blur-sm"
         aria-describedby={`volume-${volume.volume}-description`}
