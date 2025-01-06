@@ -52,14 +52,15 @@ export const ArticleCard = ({ article, onTagClick, selectedTags }: ArticleCardPr
   };
 
   return (
-    <Card className="hover:shadow-lg transition-shadow overflow-hidden group scale-[0.7] origin-top rounded-3xl">
+    <Card className="hover:shadow-lg transition-shadow overflow-hidden group rounded-3xl">
       <div className="flex flex-col md:flex-row">
         {article.imageUrl ? (
           <div className="md:w-48 h-48 md:h-auto relative overflow-hidden">
             <img 
               src={article.imageUrl} 
               alt={article.title}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              className="w-full h-full object-cover"
+              loading="lazy"
             />
           </div>
         ) : (
