@@ -33,9 +33,9 @@ export const AtlasModal = ({ chapter, category, open, onOpenChange }: AtlasModal
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl p-0 overflow-hidden bg-white/80 backdrop-blur-xl">
+      <DialogContent className="max-w-2xl p-0 overflow-hidden bg-white/80 backdrop-blur-xl">
         <div className="relative">
-          <div className="relative h-48 sm:h-64 overflow-hidden">
+          <div className="relative h-40 overflow-hidden">
             {!imageLoaded && (
               <Skeleton className="absolute inset-0 w-full h-full" />
             )}
@@ -53,25 +53,25 @@ export const AtlasModal = ({ chapter, category, open, onOpenChange }: AtlasModal
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="absolute bottom-0 left-0 right-0 p-6 text-white"
+            className="absolute bottom-0 left-0 right-0 p-4 text-white"
           >
             {category && (
-              <Badge variant="secondary" className="mb-2">
+              <Badge variant="secondary" className="mb-2 text-xs">
                 <BookOpen className="w-3 h-3 mr-1" />
                 {category.title}
               </Badge>
             )}
-            <h2 className="text-2xl font-bold mb-2">{chapter.title}</h2>
-            <div className="flex flex-wrap gap-4 text-sm">
+            <h2 className="text-xl font-bold mb-2">{chapter.title}</h2>
+            <div className="flex flex-wrap gap-3 text-xs">
               {chapter.lastUpdate && (
                 <div className="flex items-center gap-1">
-                  <Calendar className="w-4 h-4" />
+                  <Calendar className="w-3 h-3" />
                   <span>MàJ: {chapter.lastUpdate}</span>
                 </div>
               )}
               {chapter.author && (
                 <div className="flex items-center gap-1">
-                  <User className="w-4 h-4" />
+                  <User className="w-3 h-3" />
                   <span>{chapter.author}</span>
                 </div>
               )}
@@ -79,7 +79,7 @@ export const AtlasModal = ({ chapter, category, open, onOpenChange }: AtlasModal
           </motion.div>
         </div>
 
-        <div className="p-6">
+        <div className="p-4">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -87,12 +87,12 @@ export const AtlasModal = ({ chapter, category, open, onOpenChange }: AtlasModal
             className="prose prose-sm max-w-none"
           >
             {chapter.description && (
-              <p className="text-gray-600 leading-relaxed">{chapter.description}</p>
+              <p className="text-sm text-gray-600 leading-relaxed">{chapter.description}</p>
             )}
             {chapter.tags && chapter.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-4">
+              <div className="flex flex-wrap gap-1.5 mt-3">
                 {chapter.tags.map((tag, index) => (
-                  <Badge key={index} variant="outline" className="text-xs">
+                  <Badge key={index} variant="outline" className="text-xs px-2 py-0.5">
                     {tag}
                   </Badge>
                 ))}
@@ -104,32 +104,32 @@ export const AtlasModal = ({ chapter, category, open, onOpenChange }: AtlasModal
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="mt-6 flex flex-wrap gap-3"
+            className="mt-4 flex flex-wrap gap-2"
           >
             <Button
               variant="outline"
               size="sm"
-              className="gap-2"
+              className="h-8 text-xs gap-1.5"
               onClick={handleShare}
             >
-              <Share2 className="w-4 h-4" />
+              <Share2 className="w-3 h-3" />
               Partager
             </Button>
             <Button
               variant="outline"
               size="sm"
-              className="gap-2"
+              className="h-8 text-xs gap-1.5"
               onClick={handleDownload}
             >
-              <Download className="w-4 h-4" />
-              Télécharger PDF
+              <Download className="w-3 h-3" />
+              PDF
             </Button>
             <Button
               variant="default"
               size="sm"
-              className="gap-2 bg-secondary hover:bg-secondary/90"
+              className="h-8 text-xs gap-1.5 bg-secondary hover:bg-secondary/90"
             >
-              <ArrowUpRight className="w-4 h-4" />
+              <ArrowUpRight className="w-3 h-3" />
               Consulter
             </Button>
           </motion.div>
