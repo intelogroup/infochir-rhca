@@ -9,6 +9,7 @@ interface Member {
   phone?: string;
   email?: string;
   avatar_url?: string;
+  titre?: string;
 }
 
 export const MemberRow = ({ member }: { member: Member }) => {
@@ -34,6 +35,11 @@ export const MemberRow = ({ member }: { member: Member }) => {
           <div className="font-medium text-gray-900 group-hover:text-primary transition-colors duration-300">
             {member.name}
           </div>
+          {member.titre && (
+            <div className="text-sm text-gray-600">
+              {member.titre}
+            </div>
+          )}
           <div className="md:hidden space-y-1">
             {member.phone && (
               <div className="flex items-center gap-2 text-gray-600 text-sm">
