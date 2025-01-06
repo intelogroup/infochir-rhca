@@ -192,5 +192,101 @@ export const mockIssues: Issue[] = [
         tags: ["Neurologie", "Thérapeutique"]
       }
     ]
+  },
+  {
+    id: "7",
+    title: "IGM Volume 6 - No 26",
+    volume: "Volume 6",
+    issue: "No 26",
+    date: new Date(2019, 4, 1).toISOString(),
+    abstract: "Médecine d'urgence et soins intensifs",
+    description: "Édité par Dr. Jean Alouidor",
+    pdfUrl: "https://example.com/sample7.pdf",
+    coverImage: "https://images.unsplash.com/photo-1516549655169-df83a0774514?w=500&h=700&fit=crop",
+    articleCount: 9,
+    downloads: 189,
+    shares: 82,
+    articles: [
+      {
+        id: "13",
+        title: "Prise en charge des polytraumatisés",
+        authors: ["Dr. Michel Dupont", "Dr. Claire Martin"],
+        pageNumber: 1,
+        abstract: "Protocoles actualisés de prise en charge des patients polytraumatisés",
+        tags: ["Urgences", "Traumatologie", "Protocoles"]
+      },
+      {
+        id: "14",
+        title: "Ventilation mécanique : nouvelles stratégies",
+        authors: ["Dr. Sophie Bernard"],
+        pageNumber: 22,
+        abstract: "Optimisation des stratégies de ventilation en soins intensifs",
+        tags: ["Soins intensifs", "Ventilation", "Innovation"]
+      }
+    ]
+  },
+  {
+    id: "8",
+    title: "IGM Volume 6 - No 25",
+    volume: "Volume 6",
+    issue: "No 25",
+    date: new Date(2019, 2, 15).toISOString(),
+    abstract: "Maladies infectieuses émergentes",
+    description: "Édité par Dr. Jean Alouidor",
+    pdfUrl: "https://example.com/sample8.pdf",
+    coverImage: "https://images.unsplash.com/photo-1576086213369-97a306d36557?w=500&h=700&fit=crop",
+    articleCount: 8,
+    downloads: 210,
+    shares: 95,
+    articles: [
+      {
+        id: "15",
+        title: "Résistance aux antibiotiques : enjeux actuels",
+        authors: ["Dr. Pierre Lambert", "Dr. Marie Rousseau"],
+        pageNumber: 1,
+        abstract: "État des lieux de la résistance aux antibiotiques en Haïti",
+        tags: ["Infectiologie", "Antibiotiques", "Santé publique"]
+      },
+      {
+        id: "16",
+        title: "Maladies tropicales négligées",
+        authors: ["Dr. Jean-Marc Martin"],
+        pageNumber: 25,
+        abstract: "Stratégies de prévention et de contrôle",
+        tags: ["Maladies tropicales", "Prévention", "Santé publique"]
+      }
+    ]
+  },
+  {
+    id: "9",
+    title: "IGM Volume 6 - No 24",
+    volume: "Volume 6",
+    issue: "No 24",
+    date: new Date(2019, 1, 1).toISOString(),
+    abstract: "Innovations en imagerie médicale",
+    description: "Édité par Dr. Jean Alouidor",
+    pdfUrl: "https://example.com/sample9.pdf",
+    coverImage: "https://images.unsplash.com/photo-1516549655169-df83a0774514?w=500&h=700&fit=crop",
+    articleCount: 7,
+    downloads: 178,
+    shares: 76,
+    articles: [
+      {
+        id: "17",
+        title: "Intelligence artificielle en radiologie",
+        authors: ["Dr. Thomas Bernard", "Dr. Sophie Martin"],
+        pageNumber: 1,
+        abstract: "Applications de l'IA dans l'interprétation des images médicales",
+        tags: ["Radiologie", "IA", "Innovation"]
+      },
+      {
+        id: "18",
+        title: "Échographie point-of-care",
+        authors: ["Dr. Marie-Claire Dubois"],
+        pageNumber: 20,
+        abstract: "Utilisation de l'échographie au lit du patient",
+        tags: ["Échographie", "Point-of-care", "Pratique clinique"]
+      }
+    ]
   }
 ];

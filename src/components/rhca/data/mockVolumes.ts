@@ -1,6 +1,10 @@
+import { cardiologyVolumes } from "./specialties/cardiology";
+import { neurosurgeryVolumes } from "./specialties/neurosurgery";
+import { pediatricVolumes } from "./specialties/pediatric";
 import type { RhcaVolume } from "../types";
 
-export const mockVolumes: RhcaVolume[] = [
+// Import existing volumes from the original file
+const existingVolumes: RhcaVolume[] = [
   {
     id: "1",
     volume: 1,
@@ -225,4 +229,11 @@ export const mockVolumes: RhcaVolume[] = [
       }
     ]
   }
+];
+
+export const mockVolumes: RhcaVolume[] = [
+  ...existingVolumes,
+  ...cardiologyVolumes,
+  ...neurosurgeryVolumes,
+  ...pediatricVolumes
 ];
