@@ -4,9 +4,16 @@ import { volumes2022 } from "./years/2022";
 import { volumes2021 } from "./years/2021";
 import type { RhcaVolume } from "../types";
 
+// Sort volumes by date (newest first) before exporting
 export const mockVolumes: RhcaVolume[] = [
   ...volumes2024,
   ...volumes2023,
   ...volumes2022,
   ...volumes2021
 ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+console.log('Initial mockVolumes:', mockVolumes.map(v => ({
+  date: v.date,
+  year: new Date(v.date).getFullYear(),
+  volume: v.volume
+})));
