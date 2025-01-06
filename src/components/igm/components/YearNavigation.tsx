@@ -37,7 +37,7 @@ export const YearNavigation = ({
     <div className="flex items-center gap-2 bg-white rounded-lg border border-gray-200 p-2">
       <Button
         variant="outline"
-        size="icon"
+        size="sm"
         onClick={handlePreviousYear}
         disabled={currentYear === Math.min(...availableYears)}
         className="h-8 w-8"
@@ -66,7 +66,7 @@ export const YearNavigation = ({
 
       <Button
         variant="outline"
-        size="icon"
+        size="sm"
         onClick={handleNextYear}
         disabled={currentYear === Math.max(...availableYears)}
         className="h-8 w-8"
