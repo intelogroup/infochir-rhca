@@ -16,16 +16,14 @@ export const neurosurgeryVolumes: RhcaVolume[] = [
         abstract: "Analyse des protocoles innovants en chirurgie éveillée...",
         authors: ["Dr. Marc Dupont", "Dr. Claire Rousseau"],
         date: "2024-01-15",
-        views: "276",
-        citations: "32",
-        downloads: "92",
-        shares: "48",
-        pageNumber: "1",
-        volume: "8",
+        views: 276,
+        citations: 32,
+        downloads: 92,
+        shares: 48,
+        pageNumber: 1,
+        volume: 8,
         pdfUrl: "/path/to/pdf15.pdf",
-        tags: ["Neurochirurgie", "Tumeurs cérébrales", "Innovation"],
-        publicationDate: "2024-01-15",
-        specialty: "Neurochirurgie"
+        tags: ["Neurochirurgie", "Tumeurs cérébrales", "Innovation"]
       },
       {
         id: "16",
