@@ -6,14 +6,29 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { LayoutGrid, List, BookOpen, Users, MessageCircle, Check } from "lucide-react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { IssuesGrid } from "@/components/igm/IssuesGrid";
+import { BackToTop } from "@/components/navigation/BackToTop";
+import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
+import { YearNavigation } from "@/components/igm/components/YearNavigation";
 
 const IGM = () => {
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const availableYears = [2020, 2021, 2022, 2023, 2024];
 
   return (
     <MainLayout>
       <div className="min-h-screen bg-[#F1F0FB]">
         <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 lg:py-8 pt-16 sm:pt-20">
+          {/* Breadcrumbs */}
+          <div className="mb-4">
+            <Breadcrumbs
+              items={[
+                { label: "IGM", href: "/igm" },
+                { label: "Publications" },
+              ]}
+            />
+          </div>
+
           {/* Header Section */}
           <div className="space-y-6 sm:space-y-8">
             <Link to="/" className="inline-block">
@@ -43,7 +58,13 @@ const IGM = () => {
           {/* Main Content */}
           <div className="mt-8 sm:mt-12 grid lg:grid-cols-[1fr,400px] gap-4 sm:gap-6 lg:gap-8">
             <div className="space-y-4 sm:space-y-6">
-              <div className="flex justify-end">
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <YearNavigation
+                  currentYear={currentYear}
+                  availableYears={availableYears}
+                  onYearChange={setCurrentYear}
+                />
+                
                 <ToggleGroup 
                   type="single" 
                   value={viewMode} 
@@ -143,6 +164,7 @@ const IGM = () => {
           </div>
         </div>
       </div>
+      <BackToTop />
     </MainLayout>
   );
 };
