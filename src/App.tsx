@@ -13,6 +13,8 @@ const EditorialCommittee = lazy(() => import("@/pages/EditorialCommittee"));
 const Submission = lazy(() => import("@/pages/Submission"));
 const Annuaire = lazy(() => import("@/pages/Annuaire"));
 const Donate = lazy(() => import("@/pages/Donate"));
+const Resources = lazy(() => import("@/pages/Resources"));
+const Opportunities = lazy(() => import("@/pages/Opportunities"));
 
 // Loading fallback component
 const PageSkeleton = () => (
@@ -40,6 +42,8 @@ function App() {
           <Route path="/submission" element={<Submission />} />
           <Route path="/annuaire" element={<Annuaire />} />
           <Route path="/donate" element={<Donate />} />
+          <Route path="/resources" element={<Resources />} />
+          <Route path="/opportunities" element={<Opportunities />} />
         </Routes>
       </Suspense>
     </Router>
