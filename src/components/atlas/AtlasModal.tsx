@@ -30,14 +30,17 @@ export const AtlasModal = ({ chapter, open, onOpenChange }: AtlasModalProps) => 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={`${isMobile ? 'w-full h-full max-w-none m-0 rounded-none' : 'max-w-5xl h-[90vh]'} p-0`}>
+      <DialogContent className={`${
+        isMobile ? 'w-full h-[90vh] max-w-none m-0 rounded-t-lg rounded-b-none' : 
+        'w-[90%] max-w-3xl h-[80vh]'
+      } p-0 overflow-hidden`}>
         <DialogDescription className="sr-only">
           Détails du chapitre {chapter.title}
         </DialogDescription>
         
         <div className="relative">
           {!imageLoaded && chapter.coverImage && (
-            <Skeleton className="w-full h-[200px]" />
+            <Skeleton className="w-full h-[160px]" />
           )}
           <AtlasModalHeader 
             title={chapter.title} 
@@ -46,7 +49,7 @@ export const AtlasModal = ({ chapter, open, onOpenChange }: AtlasModalProps) => 
           />
         </div>
 
-        <ScrollArea className={`${isMobile ? 'h-[calc(100vh-200px)]' : 'h-[calc(90vh-200px)]'} px-4 sm:px-8`}>
+        <ScrollArea className="h-[calc(100%-160px)] px-4 sm:px-6">
           <div className="space-y-6 py-6">
             <div className="flex flex-wrap gap-2 text-sm text-gray-500">
               {chapter.lastUpdate && (
@@ -71,7 +74,7 @@ export const AtlasModal = ({ chapter, open, onOpenChange }: AtlasModalProps) => 
 
             {chapter.description && (
               <div className="prose prose-sm sm:prose-base max-w-none">
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
                   À propos de ce chapitre
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
@@ -81,7 +84,7 @@ export const AtlasModal = ({ chapter, open, onOpenChange }: AtlasModalProps) => 
             )}
 
             <div className="space-y-4">
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                 Statistiques
               </h3>
               <AtlasModalStats stats={chapter.stats} />

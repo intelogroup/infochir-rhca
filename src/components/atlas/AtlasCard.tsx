@@ -39,32 +39,21 @@ export const AtlasCard = ({ chapter, category }: AtlasCardProps) => {
 
   const coverImage = chapter.coverImage || defaultCoverImages[chapter.id as keyof typeof defaultCoverImages] || defaultCoverImages["0"];
 
-  // Generate srcset for responsive images
-  const generateSrcSet = (baseUrl: string) => {
-    const widths = [400, 800, 1200];
-    return widths
-      .map(width => `${baseUrl}&w=${width}&fit=crop ${width}w`)
-      .join(", ");
-  };
-
   return (
     <>
       <motion.div
-        whileHover={{ y: -5 }}
-        transition={{ duration: 0.2 }}
+        whileHover={{ y: -4, transition: { duration: 0.2 } }}
         className="h-full"
       >
-        <Card className="group h-full flex flex-col">
-          <div className="relative h-28 sm:h-32 overflow-hidden">
+        <Card className="group h-full flex flex-col overflow-hidden border-transparent hover:border-secondary/30 transition-all duration-300">
+          <div className="relative h-32 overflow-hidden">
             {!imageLoaded && (
               <Skeleton className="absolute inset-0 w-full h-full" />
             )}
             <img
               src={coverImage}
-              srcSet={generateSrcSet(coverImage)}
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               alt={chapter.title}
-              className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 ${
+              className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-105 ${
                 !imageLoaded ? 'opacity-0' : 'opacity-100'
               }`}
               onLoad={() => setImageLoaded(true)}
@@ -72,7 +61,8 @@ export const AtlasCard = ({ chapter, category }: AtlasCardProps) => {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-background/20" />
           </div>
-          <CardHeader className="space-y-1 p-3 flex-grow">
+          
+          <CardHeader className="space-y-2 p-4 flex-grow">
             {category && (
               <Badge variant="secondary" className="w-fit">
                 <BookOpen className="h-3 w-3 mr-1" />
@@ -97,18 +87,19 @@ export const AtlasCard = ({ chapter, category }: AtlasCardProps) => {
               )}
             </div>
           </CardHeader>
-          <CardContent className="p-3 pt-0">
+          
+          <CardContent className="p-4 pt-0">
             {chapter.description && (
               <p className="text-xs text-gray-600 line-clamp-2 mb-3">
                 {chapter.description}
               </p>
             )}
             <div className="flex justify-between items-center">
-              <div className="flex gap-1.5 flex-wrap">
+              <div className="flex gap-1.5">
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="h-7 px-2 text-xs hover:text-primary transition-colors"
+                  className="h-7 px-2 text-xs hover:bg-secondary/10 hover:text-secondary transition-colors"
                   onClick={() => setShowModal(true)}
                 >
                   <Eye className="h-3 w-3 mr-1" />
@@ -118,7 +109,7 @@ export const AtlasCard = ({ chapter, category }: AtlasCardProps) => {
                   variant="outline"
                   size="sm"
                   onClick={handleShare}
-                  className="h-7 px-2 text-xs"
+                  className="h-7 px-2 text-xs hover:bg-primary/10 hover:text-primary transition-colors"
                 >
                   <Share2 className="h-3 w-3 mr-1" />
                   <span className="hidden sm:inline">Partager</span>
@@ -127,7 +118,7 @@ export const AtlasCard = ({ chapter, category }: AtlasCardProps) => {
                   variant="outline"
                   size="sm"
                   onClick={handleDownload}
-                  className="h-7 px-2 text-xs"
+                  className="h-7 px-2 text-xs hover:bg-primary/10 hover:text-primary transition-colors"
                 >
                   <Download className="h-3 w-3 mr-1" />
                   <span className="hidden sm:inline">PDF</span>
