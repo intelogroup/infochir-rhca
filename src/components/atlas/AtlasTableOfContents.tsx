@@ -4,34 +4,40 @@ import { Button } from "@/components/ui/button";
 import { TableProperties } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { atlasChapters } from "./data/atlasChapters";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export const AtlasTableOfContents = () => {
   const [open, setOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="outline" size="sm" className="gap-2">
           <TableProperties className="h-4 w-4" />
-          Table des matières
+          <span className="hidden sm:inline">Table des matières</span>
+          <span className="sm:hidden">TDM</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[90vw] sm:w-[540px]">
+      <SheetContent 
+        side="left" 
+        className={isMobile ? "w-[85vw]" : "w-[540px]"}
+      >
         <SheetHeader>
-          <SheetTitle className="text-xl sm:text-2xl font-bold text-primary">
+          <SheetTitle className="text-xl font-bold text-primary">
             Table des matières
           </SheetTitle>
         </SheetHeader>
         <ScrollArea className="h-[calc(100vh-100px)] mt-6 pr-4">
-          <div className="space-y-4">
+          <div className="space-y-6">
             {atlasChapters.map((chapter, index) => (
               <div key={chapter.id} className="space-y-2">
-                <h3 className="text-base sm:text-lg font-semibold flex items-baseline gap-2">
+                <h3 className="text-base font-semibold flex items-baseline gap-2">
                   <span className="text-primary">{index + 1}.</span>
                   {chapter.title}
                 </h3>
                 {chapter.lastUpdate && (
-                  <p className="text-xs sm:text-sm text-gray-500">
+                  <p className="text-sm text-gray-500">
                     Dernière mise à jour: {chapter.lastUpdate}
                   </p>
                 )}

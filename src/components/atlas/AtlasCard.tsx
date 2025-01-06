@@ -27,7 +27,6 @@ export const AtlasCard = ({ chapter, category }: AtlasCardProps) => {
     toast.error("Le téléchargement n'est pas encore disponible");
   };
 
-  // Default cover images based on chapter categories
   const defaultCoverImages = {
     "0": "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=1470&fit=crop",
     "1": "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?q=80&w=1470&fit=crop",
@@ -43,8 +42,9 @@ export const AtlasCard = ({ chapter, category }: AtlasCardProps) => {
       <motion.div
         whileHover={{ y: -5 }}
         transition={{ duration: 0.2 }}
+        className="h-full"
       >
-        <Card className="group overflow-hidden h-[260px] sm:h-[280px]">
+        <Card className="group h-full flex flex-col">
           <div className="relative h-28 sm:h-32 overflow-hidden">
             <img
               src={coverImage}
@@ -53,14 +53,14 @@ export const AtlasCard = ({ chapter, category }: AtlasCardProps) => {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-background/20" />
           </div>
-          <CardHeader className="space-y-1 p-3">
+          <CardHeader className="space-y-1 p-3 flex-grow">
             {category && (
               <Badge variant="secondary" className="w-fit">
                 <BookOpen className="h-3 w-3 mr-1" />
                 {category.title}
               </Badge>
             )}
-            <CardTitle className="text-sm sm:text-base font-bold group-hover:text-primary transition-colors line-clamp-2">
+            <CardTitle className="text-sm font-bold group-hover:text-primary transition-colors line-clamp-2">
               {chapter.title}
             </CardTitle>
             <div className="flex flex-wrap gap-2 text-xs text-gray-500">
@@ -78,14 +78,14 @@ export const AtlasCard = ({ chapter, category }: AtlasCardProps) => {
               )}
             </div>
           </CardHeader>
-          <CardContent className="space-y-2 p-3 pt-0">
+          <CardContent className="p-3 pt-0">
             {chapter.description && (
-              <p className="text-xs text-gray-600 line-clamp-2">
+              <p className="text-xs text-gray-600 line-clamp-2 mb-3">
                 {chapter.description}
               </p>
             )}
             <div className="flex justify-between items-center">
-              <div className="flex gap-1 flex-wrap">
+              <div className="flex gap-1.5 flex-wrap">
                 <Button 
                   variant="outline" 
                   size="sm"
@@ -93,7 +93,7 @@ export const AtlasCard = ({ chapter, category }: AtlasCardProps) => {
                   onClick={() => setShowModal(true)}
                 >
                   <Eye className="h-3 w-3 mr-1" />
-                  <span>Consulter</span>
+                  <span className="hidden sm:inline">Consulter</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -102,7 +102,7 @@ export const AtlasCard = ({ chapter, category }: AtlasCardProps) => {
                   className="h-7 px-2 text-xs"
                 >
                   <Share2 className="h-3 w-3 mr-1" />
-                  <span>Partager</span>
+                  <span className="hidden sm:inline">Partager</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -111,7 +111,7 @@ export const AtlasCard = ({ chapter, category }: AtlasCardProps) => {
                   className="h-7 px-2 text-xs"
                 >
                   <Download className="h-3 w-3 mr-1" />
-                  <span>PDF</span>
+                  <span className="hidden sm:inline">PDF</span>
                 </Button>
               </div>
               {chapter.status === "coming" && (
