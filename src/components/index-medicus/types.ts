@@ -11,6 +11,7 @@ export interface Article {
   views?: number;
   citations?: number;
   pdfUrl?: string;
+  downloads?: number;
 }
 
 export interface SearchFilters {

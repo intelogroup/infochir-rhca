@@ -12,7 +12,8 @@ export const mockArticles: Article[] = [
     tags: ["hypertension", "santé publique", "Haïti"],
     views: 150,
     citations: 12,
-    downloads: 45
+    downloads: 45,
+    imageUrl: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80"
   },
   {
     id: "2",
@@ -25,7 +26,8 @@ export const mockArticles: Article[] = [
     tags: ["COVID-19", "pandémie", "système de santé"],
     views: 280,
     citations: 8,
-    downloads: 67
+    downloads: 67,
+    imageUrl: "https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?auto=format&fit=crop&q=80"
   },
   {
     id: "3",
@@ -38,6 +40,7 @@ export const mockArticles: Article[] = [
     tags: ["diabète", "facteurs de risque", "épidémiologie"],
     views: 195,
     citations: 15,
-    downloads: 89
+    downloads: 89,
+    imageUrl: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&q=80"
   }
 ];
