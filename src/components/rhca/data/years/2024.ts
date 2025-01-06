@@ -13,7 +13,7 @@ export const volumes2024: RhcaVolume[] = [
       {
         id: "24-06-1",
         title: "Nouvelles techniques de reconstruction mammaire",
-        abstract: "Évaluation des approches innovantes...",
+        abstract: "Évaluation des approches innovantes en reconstruction mammaire post-mastectomie, incluant l'utilisation de matrices dermiques et les techniques de lipofilling...",
         authors: ["Dr. Marie Dupont", "Dr. Jean Robert"],
         date: "2024-06-15",
         views: "210",
@@ -24,10 +24,11 @@ export const volumes2024: RhcaVolume[] = [
         volume: "6",
         tags: ["Chirurgie plastique", "Reconstruction", "Innovation"],
         publicationDate: "2024-06-15",
-        specialty: "Chirurgie plastique"
+        specialty: "Chirurgie plastique",
+        imageUrl: "https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?w=800&auto=format"
       }
     ],
-    coverImage: "/placeholder.svg"
+    coverImage: "https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?w=800&auto=format"
   },
   {
     id: "2024-05",
@@ -41,7 +42,7 @@ export const volumes2024: RhcaVolume[] = [
       {
         id: "24-05-1",
         title: "Chirurgie mini-invasive chez l'enfant",
-        abstract: "Analyse des résultats sur 5 ans...",
+        abstract: "Analyse des résultats sur 5 ans d'interventions mini-invasives en chirurgie pédiatrique, démontrant une réduction significative des temps de récupération...",
         authors: ["Dr. Pierre Martin", "Dr. Sophie Claire"],
         date: "2024-05-15",
         views: "195",
@@ -52,10 +53,11 @@ export const volumes2024: RhcaVolume[] = [
         volume: "5",
         tags: ["Pédiatrie", "Mini-invasif"],
         publicationDate: "2024-05-15",
-        specialty: "Pédiatrie"
+        specialty: "Pédiatrie",
+        imageUrl: "https://images.pexels.com/photos/4226264/pexels-photo-4226264.jpeg?auto=format"
       }
     ],
-    coverImage: "/placeholder.svg"
+    coverImage: "https://images.pexels.com/photos/4226264/pexels-photo-4226264.jpeg?auto=format"
   },
   {
     id: "2024-04",
@@ -69,7 +71,7 @@ export const volumes2024: RhcaVolume[] = [
       {
         id: "24-04-1",
         title: "Prothèses intelligentes en orthopédie",
-        abstract: "Les dernières innovations en matière de prothèses...",
+        abstract: "Les dernières innovations en matière de prothèses connectées, permettant un suivi en temps réel et une adaptation dynamique aux mouvements du patient...",
         authors: ["Dr. Marc Bernard", "Dr. Julie Thomas"],
         date: "2024-04-15",
         views: "230",
@@ -80,10 +82,11 @@ export const volumes2024: RhcaVolume[] = [
         volume: "4",
         tags: ["Orthopédie", "Innovation", "Prothèses"],
         publicationDate: "2024-04-15",
-        specialty: "Orthopédie"
+        specialty: "Orthopédie",
+        imageUrl: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&auto=format"
       }
     ],
-    coverImage: "/placeholder.svg"
+    coverImage: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&auto=format"
   },
   {
     id: "2024-03",
@@ -97,7 +100,7 @@ export const volumes2024: RhcaVolume[] = [
       {
         id: "24-03-1",
         title: "Applications innovantes de la chirurgie robotique en Haïti",
-        abstract: "Analyse des possibilités d'implémentation...",
+        abstract: "Analyse des possibilités d'implémentation de la chirurgie robotique dans le contexte haïtien, avec étude des coûts et bénéfices...",
         authors: ["Dr. Marc Dubois", "Dr. Sarah Jean"],
         date: "2024-03-15",
         views: "180",
@@ -108,10 +111,11 @@ export const volumes2024: RhcaVolume[] = [
         volume: "3",
         tags: ["Robotique", "Innovation", "Chirurgie"],
         publicationDate: "2024-03-15",
-        specialty: "Chirurgie robotique"
+        specialty: "Chirurgie robotique",
+        imageUrl: "https://images.pexels.com/photos/3825586/pexels-photo-3825586.jpeg?auto=format"
       }
     ],
-    coverImage: "/placeholder.svg"
+    coverImage: "https://images.pexels.com/photos/3825586/pexels-photo-3825586.jpeg?auto=format"
   },
   {
     id: "2024-02",
@@ -125,7 +129,7 @@ export const volumes2024: RhcaVolume[] = [
       {
         id: "24-02-1",
         title: "Protocoles d'anesthésie personnalisés",
-        abstract: "Étude sur l'optimisation des protocoles...",
+        abstract: "Étude sur l'optimisation des protocoles d'anesthésie basée sur les caractéristiques individuelles des patients...",
         authors: ["Dr. Sophie Martin", "Dr. Paul Dubois"],
         date: "2024-02-15",
         views: "220",
@@ -136,37 +140,10 @@ export const volumes2024: RhcaVolume[] = [
         volume: "2",
         tags: ["Anesthésie", "Protocoles", "Personnalisation"],
         publicationDate: "2024-02-15",
-        specialty: "Anesthésiologie"
+        specialty: "Anesthésiologie",
+        imageUrl: "https://images.unsplash.com/photo-1551076805-e1869033e561?w=800&auto=format"
       }
     ],
-    coverImage: "/placeholder.svg"
-  },
-  {
-    id: "2024-01",
-    volume: 1,
-    date: "2024-01-15",
-    description: "Innovations en chirurgie mini-invasive",
-    articleCount: 13,
-    downloadCount: 495,
-    shareCount: 98,
-    articles: [
-      {
-        id: "24-01-1",
-        title: "Nouvelles approches en chirurgie laparoscopique",
-        abstract: "Analyse des techniques innovantes...",
-        authors: ["Dr. Jean Pierre", "Dr. Marie Claire"],
-        date: "2024-01-15",
-        views: "276",
-        citations: "32",
-        downloads: "92",
-        shares: "48",
-        pageNumber: "1",
-        volume: "1",
-        tags: ["Laparoscopie", "Innovation"],
-        publicationDate: "2024-01-15",
-        specialty: "Chirurgie mini-invasive"
-      }
-    ],
-    coverImage: "/placeholder.svg"
+    coverImage: "https://images.unsplash.com/photo-1551076805-e1869033e561?w=800&auto=format"
   }
 ];

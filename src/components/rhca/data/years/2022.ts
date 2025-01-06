@@ -13,7 +13,7 @@ export const volumes2022: RhcaVolume[] = [
       {
         id: "22-12-1",
         title: "Bilan des avancées chirurgicales 2022",
-        abstract: "Synthèse des innovations majeures...",
+        abstract: "Synthèse des innovations majeures en chirurgie au cours de l'année 2022, avec un accent particulier sur l'intelligence artificielle et la robotique...",
         authors: ["Dr. Jean Alouidor", "Dr. Marie-Claire Dubois"],
         date: "2022-12-15",
         views: "320",
@@ -22,67 +22,99 @@ export const volumes2022: RhcaVolume[] = [
         shares: "62",
         pageNumber: "1",
         volume: "12",
-        tags: ["Rétrospective", "Innovation"],
+        tags: ["Rétrospective", "Innovation", "IA"],
         publicationDate: "2022-12-15",
-        specialty: "Chirurgie générale"
+        specialty: "Chirurgie générale",
+        imageUrl: "https://images.pexels.com/photos/4225880/pexels-photo-4225880.jpeg?auto=format"
       }
     ],
-    coverImage: "/placeholder.svg"
+    coverImage: "https://images.pexels.com/photos/4225880/pexels-photo-4225880.jpeg?auto=format"
   },
   {
-    id: "2022-11",
-    volume: 11,
-    date: "2022-11-15",
-    description: "Chirurgie orthopédique",
+    id: "2022-09",
+    volume: 9,
+    date: "2022-09-15",
+    description: "Chirurgie digestive",
     articleCount: 14,
     downloadCount: 520,
     shareCount: 105,
     articles: [
       {
-        id: "22-11-1",
-        title: "Avancées en chirurgie orthopédique",
-        abstract: "Nouvelles techniques de reconstruction...",
-        authors: ["Dr. Michel Blanc", "Dr. Anne Noir"],
-        date: "2022-11-15",
+        id: "22-09-1",
+        title: "Innovations en chirurgie colorectale",
+        abstract: "Présentation des nouvelles techniques en chirurgie colorectale mini-invasive, incluant l'approche robotique et laparoscopique...",
+        authors: ["Dr. Pierre Martin", "Dr. Sophie Bernard"],
+        date: "2022-09-15",
         views: "290",
         citations: "38",
         downloads: "98",
         shares: "52",
         pageNumber: "1",
-        volume: "11",
-        tags: ["Orthopédie", "Innovation"],
-        publicationDate: "2022-11-15",
-        specialty: "Orthopédie"
+        volume: "9",
+        tags: ["Digestif", "Colorectal", "Robotique"],
+        publicationDate: "2022-09-15",
+        specialty: "Chirurgie digestive",
+        imageUrl: "https://images.unsplash.com/photo-1579165466741-7f35e4755660?w=800&auto=format"
       }
     ],
-    coverImage: "/placeholder.svg"
+    coverImage: "https://images.unsplash.com/photo-1579165466741-7f35e4755660?w=800&auto=format"
   },
   {
-    id: "2022-01",
-    volume: 1,
-    date: "2022-01-15",
-    description: "Chirurgie générale",
+    id: "2022-06",
+    volume: 6,
+    date: "2022-06-15",
+    description: "Chirurgie cardiaque",
     articleCount: 13,
     downloadCount: 460,
     shareCount: 98,
     articles: [
       {
-        id: "22-01-1",
-        title: "Tendances en chirurgie générale",
-        abstract: "Analyse des nouvelles approches...",
-        authors: ["Dr. Paul Bernard", "Dr. Claire Martin"],
-        date: "2022-01-15",
+        id: "22-06-1",
+        title: "Nouvelles approches en chirurgie valvulaire",
+        abstract: "Analyse des résultats des techniques transcathéter dans le remplacement valvulaire aortique...",
+        authors: ["Dr. Marc Dubois", "Dr. Claire Martin"],
+        date: "2022-06-15",
         views: "275",
         citations: "32",
         downloads: "88",
         shares: "45",
         pageNumber: "1",
-        volume: "1",
-        tags: ["Chirurgie générale", "Innovation"],
-        publicationDate: "2022-01-15",
-        specialty: "Chirurgie générale"
+        volume: "6",
+        tags: ["Cardiaque", "Valvulaire", "TAVI"],
+        publicationDate: "2022-06-15",
+        specialty: "Chirurgie cardiaque",
+        imageUrl: "https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?w=800&auto=format"
       }
     ],
-    coverImage: "/placeholder.svg"
+    coverImage: "https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?w=800&auto=format"
+  },
+  {
+    id: "2022-03",
+    volume: 3,
+    date: "2022-03-15",
+    description: "Traumatologie",
+    articleCount: 12,
+    downloadCount: 440,
+    shareCount: 92,
+    articles: [
+      {
+        id: "22-03-1",
+        title: "Prise en charge des polytraumatisés",
+        abstract: "Mise à jour des protocoles de prise en charge des patients polytraumatisés, intégrant les dernières recommandations internationales...",
+        authors: ["Dr. Jean-Paul Bernard", "Dr. Marie Lambert"],
+        date: "2022-03-15",
+        views: "265",
+        citations: "30",
+        downloads: "85",
+        shares: "48",
+        pageNumber: "1",
+        volume: "3",
+        tags: ["Traumatologie", "Urgences", "Protocoles"],
+        publicationDate: "2022-03-15",
+        specialty: "Traumatologie",
+        imageUrl: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a7?w=800&auto=format"
+      }
+    ],
+    coverImage: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a7?w=800&auto=format"
   }
 ];
