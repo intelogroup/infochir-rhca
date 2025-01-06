@@ -55,8 +55,14 @@ const SidebarCard = ({
   buttonClassName = "",
   buttonLink,
 }: SidebarCardProps) => {
-  const ButtonWrapper = buttonLink ? Link : "div";
-  const buttonProps = buttonLink ? { to: buttonLink } : {};
+  const ButtonContent = (
+    <Button 
+      variant={buttonVariant} 
+      className={`w-full ${buttonClassName}`}
+    >
+      {buttonText}
+    </Button>
+  );
 
   return (
     <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
@@ -67,14 +73,11 @@ const SidebarCard = ({
       <p className="text-sm text-gray-600 mb-4">
         {description}
       </p>
-      <ButtonWrapper {...buttonProps}>
-        <Button 
-          variant={buttonVariant} 
-          className={`w-full ${buttonClassName}`}
-        >
-          {buttonText}
-        </Button>
-      </ButtonWrapper>
+      {buttonLink ? (
+        <Link to={buttonLink}>{ButtonContent}</Link>
+      ) : (
+        ButtonContent
+      )}
     </div>
   );
 };

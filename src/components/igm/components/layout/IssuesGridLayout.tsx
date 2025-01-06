@@ -1,33 +1,26 @@
 import { SearchAndSort } from "@/components/issues/SearchAndSort";
-import { IssuesGridContent } from "../content/IssuesGridContent";
+import { IssuesGridContent } from "@/components/igm/components/IssuesGridContent";
 import { useIssuesState } from "../../hooks/useIssuesState";
 import { mockIssues } from "../../data/mockIssues";
 import { SORT_OPTIONS } from "../../constants/sortOptions";
 import { useState } from "react";
-import { DateRange } from "react-day-picker";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
-import type { SortOption } from "@/types/sortOptions";
 
 interface IssuesGridLayoutProps {
-  viewMode: "grid" | "table";
+  viewMode?: "grid" | "table";
 }
 
-export const IssuesGridLayout = ({ viewMode }: IssuesGridLayoutProps) => {
+export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState<SortOption>("latest");
-  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [sortBy, setSortBy] = useState("latest");
+  const [dateRange, setDateRange] = useState();
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [displayCount, setDisplayCount] = useState(6);
   const isMobile = useIsMobile();
 
-  const {
-    sortedIssues,
-    issuesByYear,
-    sortedYears,
-    availableCategories,
-  } = useIssuesState(mockIssues, {
+  const { sortedIssues, issuesByYear, sortedYears, availableCategories } = useIssuesState(mockIssues, {
     searchTerm,
     sortBy,
     dateRange,
