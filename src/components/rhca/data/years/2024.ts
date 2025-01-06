@@ -2,6 +2,81 @@ import type { RhcaVolume } from "../../types";
 
 export const volumes2024: RhcaVolume[] = [
   {
+    id: "2024-06",
+    volume: 6,
+    date: "2024-06-15",
+    description: "Innovations en chirurgie plastique et reconstructive",
+    articleCount: 15,
+    downloadCount: 320,
+    shareCount: 85,
+    articles: [
+      {
+        id: "24-06-1",
+        title: "Nouvelles techniques de reconstruction mammaire",
+        abstract: "Évaluation des approches innovantes...",
+        authors: ["Dr. Marie Dupont", "Dr. Jean Robert"],
+        date: "2024-06-15",
+        views: 210,
+        citations: 18,
+        downloads: 75,
+        shares: 35,
+        pageNumber: 1,
+        volume: 6,
+        tags: ["Chirurgie plastique", "Reconstruction", "Innovation"]
+      }
+    ]
+  },
+  {
+    id: "2024-05",
+    volume: 5,
+    date: "2024-05-15",
+    description: "Avancées en chirurgie pédiatrique",
+    articleCount: 14,
+    downloadCount: 290,
+    shareCount: 82,
+    articles: [
+      {
+        id: "24-05-1",
+        title: "Chirurgie mini-invasive chez l'enfant",
+        abstract: "Analyse des résultats sur 5 ans...",
+        authors: ["Dr. Pierre Martin", "Dr. Sophie Claire"],
+        date: "2024-05-15",
+        views: 195,
+        citations: 22,
+        downloads: 68,
+        shares: 38,
+        pageNumber: 1,
+        volume: 5,
+        tags: ["Pédiatrie", "Mini-invasif"]
+      }
+    ]
+  },
+  {
+    id: "2024-04",
+    volume: 4,
+    date: "2024-04-15",
+    description: "Chirurgie orthopédique moderne",
+    articleCount: 16,
+    downloadCount: 345,
+    shareCount: 92,
+    articles: [
+      {
+        id: "24-04-1",
+        title: "Prothèses intelligentes en orthopédie",
+        abstract: "Les dernières innovations en matière de prothèses...",
+        authors: ["Dr. Marc Bernard", "Dr. Julie Thomas"],
+        date: "2024-04-15",
+        views: 230,
+        citations: 25,
+        downloads: 82,
+        shares: 45,
+        pageNumber: 1,
+        volume: 4,
+        tags: ["Orthopédie", "Innovation", "Prothèses"]
+      }
+    ]
+  },
+  {
     id: "2024-03",
     volume: 3,
     date: "2024-03-15",
