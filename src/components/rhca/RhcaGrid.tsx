@@ -20,9 +20,19 @@ export const RhcaGrid = () => {
   const filteredArticles = mockArticles.filter(article =>
     article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     article.abstract.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    article.authors.some(author => author.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    article.authors.some(author => 
+      typeof author === 'string' && author.toLowerCase().includes(searchTerm.toLowerCase())
+    ) ||
     article.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+
+  // Sort articles by date
+  const sortedArticles = [...filteredArticles].sort((a, b) => {
+    if (sortBy === "latest") {
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    }
+    return new Date(a.date).getTime() - new Date(b.date).getTime();
+  });
 
   return (
     <div className="w-full space-y-6">
@@ -75,7 +85,7 @@ export const RhcaGrid = () => {
           transition={{ duration: 0.2 }}
         >
           <RhcaArticleList
-            articles={filteredArticles}
+            articles={sortedArticles}
             viewMode={viewMode}
           />
         </motion.div>

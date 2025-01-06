@@ -1,6 +1,16 @@
 import { RhcaArticle } from "../types";
+import { volumes2024 } from "./years/2024";
+import { volumes2023 } from "./years/2023";
+import { volumes2022 } from "./years/2022";
+import { volumes2021 } from "./years/2021";
 
+// Flatten all articles from all volumes into a single array
 export const mockArticles: RhcaArticle[] = [
+  ...volumes2024.flatMap(volume => volume.articles),
+  ...volumes2023.flatMap(volume => volume.articles),
+  ...volumes2022.flatMap(volume => volume.articles),
+  ...volumes2021.flatMap(volume => volume.articles),
+  // Include the existing mock articles
   {
     id: "1",
     title: "Nouvelles approches en chirurgie mini-invasive",
