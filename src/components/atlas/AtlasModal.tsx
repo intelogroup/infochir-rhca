@@ -1,6 +1,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Calendar, User, Tag } from "lucide-react";
@@ -24,6 +25,10 @@ export const AtlasModal = ({ chapter, open, onOpenChange }: AtlasModalProps) => 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl h-[85vh] p-0">
+        <DialogDescription className="sr-only">
+          Détails du chapitre {chapter.title}
+        </DialogDescription>
+        
         <AtlasModalHeader title={chapter.title} coverImage={chapter.coverImage} />
 
         <ScrollArea className="h-[calc(85vh-200px)] px-4 sm:px-6">

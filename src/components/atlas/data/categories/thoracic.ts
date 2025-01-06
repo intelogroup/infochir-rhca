@@ -7,7 +7,7 @@ export const thoracicChapters: AtlasChapter[] = [
     lastUpdate: "30/03/22",
     status: "available",
     description: "Examen des pathologies du cou, incluant les traitements chirurgicaux et médicaux.",
-    coverImage: "https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?q=80&w=1632&fit=crop",
+    coverImage: "https://images.unsplash.com/photo-1584017911780-6e64c7b25c58?q=80&w=1470&fit=crop",
     stats: {
       views: 600,
       shares: 25,
@@ -20,7 +20,7 @@ export const thoracicChapters: AtlasChapter[] = [
     lastUpdate: "29/05/24",
     status: "available",
     description: "Analyse des interventions thoraciques, des maladies pulmonaires et des traitements associés.",
-    coverImage: "https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?q=80&w=1632&fit=crop",
+    coverImage: "https://images.unsplash.com/photo-1584017911780-6e64c7b25c58?q=80&w=1470&fit=crop",
     stats: {
       views: 700,
       shares: 30,

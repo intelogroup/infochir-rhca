@@ -7,7 +7,7 @@ export const specialtiesChapters: AtlasChapter[] = [
     lastUpdate: "30/03/23",
     status: "available",
     description: "Analyse des pathologies mammaires, incluant les techniques de dépistage et de traitement.",
-    coverImage: "https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?q=80&w=1632&fit=crop",
+    coverImage: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=1470&fit=crop",
     stats: {
       views: 500,
       shares: 20,
@@ -20,7 +20,7 @@ export const specialtiesChapters: AtlasChapter[] = [
     lastUpdate: "11/10/21",
     status: "available",
     description: "Guide sur les interventions neurochirurgicales, les indications et les techniques modernes.",
-    coverImage: "https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?q=80&w=1632&fit=crop",
+    coverImage: "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?q=80&w=1470&fit=crop",
     stats: {
       views: 300,
       shares: 15,
@@ -33,7 +33,7 @@ export const specialtiesChapters: AtlasChapter[] = [
     lastUpdate: "11/10/21",
     status: "available",
     description: "Approche intégrée des pathologies ophtalmologiques et ORL, avec un focus sur les traitements.",
-    coverImage: "https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?q=80&w=1632&fit=crop",
+    coverImage: "https://images.unsplash.com/photo-1584017911780-6e64c7b25c58?q=80&w=1470&fit=crop",
     stats: {
       views: 450,
       shares: 18,

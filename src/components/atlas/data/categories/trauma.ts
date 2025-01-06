@@ -8,7 +8,7 @@ export const traumaChapters: AtlasChapter[] = [
     lastUpdate: "23/07/24",
     author: "Dr. Bernard",
     status: "available",
-    coverImage: "https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?q=80&w=1632&fit=crop",
+    coverImage: "https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?q=80&w=1470&fit=crop",
     stats: {
       views: 890,
       shares: 32,
@@ -22,7 +22,7 @@ export const traumaChapters: AtlasChapter[] = [
     author: "Dr. Dubois",
     description: "Exploration détaillée des pathologies cutanées, des infections tissulaires et des tumeurs. Focus sur les approches diagnostiques et thérapeutiques modernes.",
     status: "available",
-    coverImage: "https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?q=80&w=1632&fit=crop",
+    coverImage: "https://images.unsplash.com/photo-1584515933487-779824d29309?q=80&w=1470&fit=crop",
     stats: {
       views: 756,
       shares: 28,

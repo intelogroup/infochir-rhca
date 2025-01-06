@@ -5,11 +5,7 @@ import { ADCSubmission } from "@/components/adc/ADCSubmission";
 import { Routes, Route } from "react-router-dom";
 import { AtlasCard } from "@/components/atlas/AtlasCard";
 import { AtlasTableOfContents } from "@/components/atlas/AtlasTableOfContents";
-import { introductionChapter } from "@/components/atlas/data/categories/introduction";
-import { traumaChapters } from "@/components/atlas/data/categories/trauma";
-import { specialtiesChapters } from "@/components/atlas/data/categories/specialties";
-import { thoracicChapters } from "@/components/atlas/data/categories/thoracic";
-import { digestiveChapters } from "@/components/atlas/data/categories/digestive";
+import { atlasChapters } from "@/components/atlas/data/atlasChapters";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useState } from "react";
@@ -17,15 +13,7 @@ import { useState } from "react";
 const ADC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   
-  const allChapters = [
-    introductionChapter,
-    ...traumaChapters,
-    ...specialtiesChapters,
-    ...thoracicChapters,
-    ...digestiveChapters,
-  ];
-
-  const filteredChapters = allChapters.filter(chapter => 
+  const filteredChapters = atlasChapters.filter(chapter => 
     chapter.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     chapter.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
