@@ -4,9 +4,8 @@ export const TableHeader = () => {
   return (
     <TableHeaderBase>
       <TableRow className="bg-muted/50">
-        <TableHead className="w-[400px]">Titre</TableHead>
+        <TableHead className="w-[400px]">Article</TableHead>
         <TableHead>Année</TableHead>
-        <TableHead>Auteurs</TableHead>
         <TableHead>Source</TableHead>
         <TableHead>Catégorie</TableHead>
         <TableHead>Tags</TableHead>

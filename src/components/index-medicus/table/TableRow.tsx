@@ -2,16 +2,13 @@ import { TableCell, TableRow as TableRowBase } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { TableActions } from "./TableActions";
 import type { Article } from "../types";
+import { User } from "lucide-react";
 
 interface ArticleTableRowProps {
   article: Article;
 }
 
 export const ArticleTableRow = ({ article }: ArticleTableRowProps) => {
-  const getYear = (date: string) => {
-    return new Date(date).getFullYear();
-  };
-
   return (
     <TableRowBase className="hover:bg-muted/50">
       <TableCell className="font-medium">
@@ -20,30 +17,18 @@ export const ArticleTableRow = ({ article }: ArticleTableRowProps) => {
             <div className="font-medium text-primary hover:text-primary-light cursor-pointer">
               {article.title}
             </div>
-            <div className="text-sm text-gray-500 mt-1 line-clamp-2">
-              {article.abstract}
+            <div className="flex items-center gap-1.5 mt-1.5 text-sm text-muted-foreground">
+              <User className="h-3.5 w-3.5" />
+              {article.authors.join(", ")}
             </div>
           </div>
         </div>
       </TableCell>
-      <TableCell className="text-muted-foreground">
-        {getYear(article.date)}
+      <TableCell>
+        {new Date(article.date).getFullYear()}
       </TableCell>
       <TableCell>
-        <div className="max-w-[200px] truncate">
-          {article.authors.join(", ")}
-        </div>
-      </TableCell>
-      <TableCell>
-        <Badge 
-          variant="outline" 
-          className={`
-            font-semibold
-            ${article.source === 'RHCA' ? 'bg-blue-50 text-blue-700 border-blue-200' : ''}
-            ${article.source === 'IGM' ? 'bg-green-50 text-green-700 border-green-200' : ''}
-            ${article.source === 'ADC' ? 'bg-purple-50 text-purple-700 border-purple-200' : ''}
-          `}
-        >
+        <Badge variant="outline" className="font-normal">
           {article.source}
         </Badge>
       </TableCell>
