@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { DonationAmountSelector } from "./DonationAmountSelector";
 import { PaymentMethodSelector } from "./PaymentMethodSelector";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface DonateFormProps {
   onAmountChange: (amount: number) => void;
@@ -22,10 +23,11 @@ export const DonateForm = ({
 }: DonateFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("card");
+  const [showAmountDialog, setShowAmountDialog] = useState(false);
 
   const validateDonation = () => {
     if (!selectedAmount && !customAmount) {
-      toast.error("Please select or enter a donation amount");
+      setShowAmountDialog(true);
       return false;
     }
 
@@ -70,7 +72,7 @@ export const DonateForm = ({
 
   const handleInactiveButtonClick = () => {
     if (!selectedAmount && !customAmount) {
-      toast.error("Please choose a donation amount to continue");
+      setShowAmountDialog(true);
     }
   };
 
@@ -138,6 +140,17 @@ export const DonateForm = ({
           </Button>
         </CardFooter>
       </Card>
+
+      <Dialog open={showAmountDialog} onOpenChange={setShowAmountDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Choose Donation Amount</DialogTitle>
+            <DialogDescription>
+              Please select a preset amount or enter a custom amount to proceed with your donation.
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
