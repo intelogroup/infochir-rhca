@@ -8,9 +8,11 @@ interface YearGroupProps {
 
 export const YearGroup = ({ year, issues }: YearGroupProps) => {
   return (
-    <div className="space-y-3 sm:space-y-4">
-      <h2 className="text-xl sm:text-2xl font-bold text-gray-900">{year}</h2>
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4 sm:gap-6">
+    <div className="space-y-4">
+      <h2 className="text-lg sm:text-xl font-semibold text-gray-900 px-2 sm:px-4">
+        {year}
+      </h2>
+      <div className="grid grid-cols-1 gap-4 px-2 sm:px-4">
         {issues.map((issue) => (
           <IssueCard key={issue.id} issue={issue} />
         ))}

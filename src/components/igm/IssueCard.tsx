@@ -49,32 +49,33 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
                   src={issue.coverImage}
                   alt={`Couverture ${issue.title}`}
                   className="w-full h-full object-cover"
+                  loading="lazy"
                 />
               ) : (
                 <div className="w-full h-full bg-muted flex items-center justify-center">
-                  <span className="text-muted-foreground text-[clamp(0.75rem,0.7rem+0.25vw,0.875rem)]">No cover</span>
+                  <span className="text-muted-foreground text-xs sm:text-sm">No cover</span>
                 </div>
               )}
             </AspectRatio>
           </div>
           
-          <div className="flex-1 p-3 sm:p-4 lg:p-6 flex flex-col min-w-0">
+          <div className="flex-1 p-2 sm:p-4 lg:p-6 flex flex-col min-w-0">
             <div className="space-y-2 sm:space-y-3 lg:space-y-4 flex-1">
               <div>
                 <h3 
                   id={`issue-title-${issue.id}`}
-                  className="text-[clamp(1rem,0.95rem+0.25vw,1.25rem)] font-semibold text-gray-900 line-clamp-2"
+                  className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900 line-clamp-2"
                 >
                   {issue.title}
                 </h3>
                 <p 
-                  className="text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] text-gray-600 truncate"
+                  className="text-xs sm:text-sm text-gray-600 truncate"
                   aria-label="Numéro de volume et d'édition"
                 >
                   {issue.volume} - {issue.issue}
                 </p>
                 <div 
-                  className="flex items-center gap-2 text-[clamp(0.75rem,0.7rem+0.25vw,0.875rem)] text-gray-500 mt-1 flex-wrap"
+                  className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-500 mt-1 flex-wrap"
                   aria-label="Informations de publication"
                 >
                   <span className="truncate">
@@ -84,51 +85,51 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
               </div>
 
               <p 
-                className="text-[clamp(0.75rem,0.7rem+0.25vw,1rem)] text-gray-600 line-clamp-2 break-words"
+                className="text-xs sm:text-sm text-gray-600 line-clamp-2 break-words"
                 aria-label="Résumé de l'édition"
               >
                 {issue.abstract}
               </p>
 
               <div 
-                className="flex items-center gap-3 sm:gap-4 text-[clamp(0.75rem,0.7rem+0.25vw,0.875rem)] text-gray-500 flex-wrap"
+                className="flex items-center gap-2 text-xs sm:text-sm text-gray-500 flex-wrap"
                 aria-label="Statistiques de l'édition"
               >
-                <div className="flex items-center gap-1 sm:gap-2">
+                <div className="flex items-center gap-1">
                   <FileText className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" aria-hidden="true" />
                   <span className="truncate">{issue.articleCount} articles</span>
                 </div>
-                <div className="flex items-center gap-1 sm:gap-2">
+                <div className="flex items-center gap-1">
                   <Download className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" aria-hidden="true" />
                   <span className="truncate">{issue.downloads || 0}</span>
                 </div>
-                <div className="flex items-center gap-1 sm:gap-2">
+                <div className="flex items-center gap-1">
                   <Share2 className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" aria-hidden="true" />
                   <span className="truncate">{issue.shares || 0}</span>
                 </div>
               </div>
             </div>
 
-            <div className="flex gap-2 mt-3 sm:mt-4">
+            <div className="flex gap-2 mt-2 sm:mt-4">
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-1 sm:gap-2 bg-ocean text-white hover:bg-ocean-hover flex-1 text-[clamp(0.75rem,0.7rem+0.25vw,0.875rem)] h-8 sm:h-9"
+                className="gap-1 bg-ocean text-white hover:bg-ocean-hover flex-1 text-xs sm:text-sm h-8"
                 onClick={handleShare}
                 aria-label="Partager l'édition"
               >
                 <Share2 className="h-3 w-3 sm:h-4 sm:w-4" aria-hidden="true" />
-                Partager
+                <span className="hidden sm:inline">Partager</span>
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-1 sm:gap-2 bg-ocean text-white hover:bg-ocean-hover flex-1 text-[clamp(0.75rem,0.7rem+0.25vw,0.875rem)] h-8 sm:h-9"
+                className="gap-1 bg-ocean text-white hover:bg-ocean-hover flex-1 text-xs sm:text-sm h-8"
                 onClick={handleDownload}
                 aria-label={issue.pdfUrl ? "Télécharger le PDF" : "PDF non disponible"}
               >
                 <Download className="h-3 w-3 sm:h-4 sm:w-4" aria-hidden="true" />
-                PDF
+                <span className="hidden sm:inline">PDF</span>
               </Button>
             </div>
           </div>
