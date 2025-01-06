@@ -13,6 +13,7 @@ export const ArticleModal = ({ article, open, onClose }: ArticleModalProps) => {
   const renderContent = (document: RhcaArticle) => (
     <div className="space-y-6">
       <div className="prose prose-sm dark:prose-invert max-w-none">
+        <p className="text-lg font-semibold text-gray-900 mb-4">{document.title}</p>
         <h3 className="text-lg font-semibold text-primary">Résumé</h3>
         <p className="text-gray-600 dark:text-gray-300">{document.abstract}</p>
       </div>
@@ -55,7 +56,7 @@ export const ArticleModal = ({ article, open, onClose }: ArticleModalProps) => {
         id: article.id,
         title: `Infochir/RHCA Volume ${article.volume} No 1`,
         date: article.date,
-        description: `Par ${article.authors.join(", ")}`,
+        description: article.title,
         downloadCount: parseInt(article.downloads || "0"),
         shareCount: parseInt(article.shares || "0"),
         pdfUrl: article.pdfUrl,
