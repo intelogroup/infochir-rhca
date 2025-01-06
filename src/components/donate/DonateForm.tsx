@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Building2, CreditCard, Wallet, Apple, DollarSign } from "lucide-react";
+import { Building2, CreditCard, Wallet, DollarSign } from "lucide-react";
 import { motion } from "framer-motion";
 
 const DonationAmounts = [10, 25, 50, 100, 250, 500];
@@ -73,7 +73,7 @@ export const DonateForm = () => {
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="card" className="w-full">
-            <TabsList className="grid grid-cols-5 w-full">
+            <TabsList className="grid grid-cols-4 w-full">
               <TabsTrigger value="card" className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4" />
                 Card
@@ -89,10 +89,6 @@ export const DonateForm = () => {
               <TabsTrigger value="wallet" className="flex items-center gap-2">
                 <Wallet className="h-4 w-4" />
                 PayPal
-              </TabsTrigger>
-              <TabsTrigger value="apple" className="flex items-center gap-2">
-                <Apple className="h-4 w-4" />
-                Apple
               </TabsTrigger>
             </TabsList>
 
@@ -142,15 +138,6 @@ export const DonateForm = () => {
                 <Button variant="outline" className="w-full max-w-sm">
                   <Wallet className="mr-2 h-4 w-4" />
                   Pay with PayPal
-                </Button>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="apple" className="mt-4">
-              <div className="text-center py-8">
-                <Button variant="outline" className="w-full max-w-sm">
-                  <Apple className="mr-2 h-4 w-4" />
-                  Pay with Apple Pay
                 </Button>
               </div>
             </TabsContent>
