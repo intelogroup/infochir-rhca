@@ -3,7 +3,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Button } from "@/components/ui/button";
 import { TableProperties } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { atlasContent } from "./data/atlasContent";
+import { atlasChapters } from "./data/atlasChapters";
 
 export const AtlasTableOfContents = () => {
   const [open, setOpen] = useState(false);
@@ -24,7 +24,7 @@ export const AtlasTableOfContents = () => {
         </SheetHeader>
         <ScrollArea className="h-[calc(100vh-100px)] mt-6 pr-4">
           <div className="space-y-4">
-            {atlasContent.map((chapter, index) => (
+            {atlasChapters.map((chapter, index) => (
               <div key={chapter.id} className="space-y-2">
                 <h3 className="text-base sm:text-lg font-semibold flex items-baseline gap-2">
                   <span className="text-primary">{index + 1}.</span>
