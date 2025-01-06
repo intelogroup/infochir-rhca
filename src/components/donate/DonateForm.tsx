@@ -5,8 +5,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Building2, CreditCard, Wallet, DollarSign } from "lucide-react";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 const DonationAmounts = [10, 25, 50, 100, 250, 500];
+const MAX_DONATION = 10000;
 
 interface DonateFormProps {
   onAmountChange: (amount: number) => void;
@@ -21,6 +23,34 @@ export const DonateForm = ({
   customAmount,
   onCustomAmountChange
 }: DonateFormProps) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("card");
+
+  const handleCustomAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value === "" || (Number(value) >= 0 && Number(value) <= MAX_DONATION)) {
+      onCustomAmountChange(e);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!selectedAmount && !customAmount) {
+      toast.error("Please select or enter a donation amount");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // Placeholder for Stripe integration
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast.success("Thank you for your donation!");
+    } catch (error) {
+      toast.error("Failed to process donation. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Card className="shadow-lg backdrop-blur-sm bg-white/80 border-gray-100/20 hover:shadow-xl transition-shadow duration-300">
@@ -36,15 +66,22 @@ export const DonateForm = ({
         <CardContent>
           <div className="grid grid-cols-3 gap-4 mb-6">
             {DonationAmounts.map((amount) => (
-              <Button
+              <motion.button
                 key={amount}
-                variant={selectedAmount === amount ? "default" : "outline"}
-                className="h-16 text-lg relative overflow-hidden group"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => onAmountChange(amount)}
+                className={`h-16 text-lg relative overflow-hidden rounded-lg border ${
+                  selectedAmount === amount 
+                    ? "border-primary bg-primary text-white"
+                    : "border-gray-200 hover:border-primary/50"
+                }`}
               >
                 <span className="relative z-10">${amount}</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-secondary/10 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
-              </Button>
+                <div className={`absolute inset-0 bg-gradient-to-r from-primary/10 to-secondary/10 transition-opacity ${
+                  selectedAmount === amount ? "opacity-100" : "opacity-0"
+                }`} />
+              </motion.button>
             ))}
           </div>
           <div className="space-y-2">
@@ -55,10 +92,15 @@ export const DonateForm = ({
                 placeholder="0"
                 className="pl-8 text-lg"
                 value={customAmount}
-                onChange={onCustomAmountChange}
+                onChange={handleCustomAmountChange}
+                max={MAX_DONATION}
+                min={0}
               />
               <span className="absolute left-3 top-1/2 -translate-y-1/2">$</span>
             </div>
+            {Number(customAmount) > MAX_DONATION && (
+              <p className="text-sm text-red-500">Maximum donation amount is ${MAX_DONATION}</p>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -71,7 +113,7 @@ export const DonateForm = ({
           <CardDescription>Choose your preferred payment method</CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="card" className="w-full">
+          <Tabs value={selectedPaymentMethod} onValueChange={setSelectedPaymentMethod} className="w-full">
             <TabsList className="grid grid-cols-4 w-full">
               <TabsTrigger value="card" className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4" />
@@ -85,7 +127,7 @@ export const DonateForm = ({
                 <DollarSign className="h-4 w-4" />
                 Zelle
               </TabsTrigger>
-              <TabsTrigger value="wallet" className="flex items-center gap-2">
+              <TabsTrigger value="paypal" className="flex items-center gap-2">
                 <Wallet className="h-4 w-4" />
                 PayPal
               </TabsTrigger>
@@ -132,7 +174,7 @@ export const DonateForm = ({
               </div>
             </TabsContent>
 
-            <TabsContent value="wallet" className="mt-4">
+            <TabsContent value="paypal" className="mt-4">
               <div className="text-center py-8">
                 <Button variant="outline" className="w-full max-w-sm">
                   <Wallet className="mr-2 h-4 w-4" />
@@ -145,9 +187,21 @@ export const DonateForm = ({
         <CardFooter>
           <Button 
             className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white" 
-            disabled={!selectedAmount && !customAmount}
+            disabled={(!selectedAmount && !customAmount) || isSubmitting}
+            onClick={handleSubmit}
           >
-            Complete Donation
+            {isSubmitting ? (
+              <span className="flex items-center gap-2">
+                <motion.div
+                  className="h-4 w-4 border-2 border-white border-t-transparent rounded-full"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                />
+                Processing...
+              </span>
+            ) : (
+              "Complete Donation"
+            )}
           </Button>
         </CardFooter>
       </Card>

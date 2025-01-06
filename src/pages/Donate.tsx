@@ -5,6 +5,7 @@ import { DonateHeader } from "@/components/donate/DonateHeader";
 import { DonationSummary } from "@/components/donate/DonationSummary";
 import { DonateForm } from "@/components/donate/DonateForm";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
+import { Toaster } from "sonner";
 
 const Donate = () => {
   useScrollToTop();
@@ -57,6 +58,7 @@ const Donate = () => {
           </div>
         </div>
       </div>
+      <Toaster position="top-center" />
     </MainLayout>
   );
 };
