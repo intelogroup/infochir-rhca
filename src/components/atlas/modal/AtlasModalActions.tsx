@@ -8,23 +8,23 @@ interface AtlasModalActionsProps {
 
 export const AtlasModalActions = ({ onShare, onDownload }: AtlasModalActionsProps) => {
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-3">
       <Button
         variant="outline"
-        size="lg"
+        size="sm"
         className="flex-1 hover:bg-primary hover:text-white transition-colors"
         onClick={onShare}
       >
-        <Share2 className="h-5 w-5 mr-2" />
+        <Share2 className="h-4 w-4 mr-2" />
         Partager
       </Button>
       <Button
         variant="outline"
-        size="lg"
+        size="sm"
         className="flex-1 hover:bg-primary hover:text-white transition-colors"
         onClick={onDownload}
       >
-        <Download className="h-5 w-5 mr-2" />
+        <Download className="h-4 w-4 mr-2" />
         Télécharger le PDF
       </Button>
     </div>
