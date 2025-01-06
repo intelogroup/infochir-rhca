@@ -1,23 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import type { Article, DatabaseArticle, ArticleSource } from "../types/article";
+import type { Article } from "../types";
 
-const mapDatabaseArticleToArticle = (dbArticle: DatabaseArticle): Article => {
+const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
   console.log('Mapping database article:', dbArticle);
   
-  // Validate source type
-  const validSources: ArticleSource[] = ["RHCA", "IGM", "ADC"];
-  const source = validSources.includes(dbArticle.source as ArticleSource) 
-    ? dbArticle.source as ArticleSource 
-    : "RHCA"; // Default to RHCA if invalid source
-
   // Extract author names from the joined data
-  const authorNames = dbArticle.author_names || [];
+  const authorNames = dbArticle.authors?.map((author: any) => author.name) || [];
 
   const mappedArticle = {
-    ...dbArticle,
+    id: dbArticle.id,
+    title: dbArticle.title,
+    abstract: dbArticle.abstract,
     date: dbArticle.publication_date,
-    source,
+    source: dbArticle.source,
+    category: dbArticle.category,
     authors: authorNames,
     tags: dbArticle.tags || [],
     imageUrl: dbArticle.image_url || undefined,
@@ -41,7 +38,11 @@ export const useArticlesQuery = () => {
         .from("articles")
         .select(`
           *,
-          author_names:members!articles_authors_fkey(name)
+          authors:article_authors(
+            member:members(
+              name
+            )
+          )
         `)
         .order("publication_date", { ascending: false });
 
@@ -60,8 +61,8 @@ export const useArticlesQuery = () => {
       // Map database response to match Article type
       const mappedArticles = data.map((article) => {
         // Transform the joined author data into a simple array of names
-        const authorNames = article.author_names?.map((author: any) => author.name) || [];
-        return mapDatabaseArticleToArticle({ ...article, author_names: authorNames });
+        const authorNames = article.authors?.map((author: any) => author.member.name) || [];
+        return mapDatabaseArticleToArticle({ ...article, authors: authorNames });
       });
 
       console.log('Final mapped articles:', mappedArticles);
