@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { DateRangeSelector } from "./DateRangeSelector";
 import { TagSelector } from "./TagSelector";
 import { DateRange } from "react-day-picker";
+import { Input } from "@/components/ui/input";
 
 interface FilterAccordionProps {
   selectedCategory: string;
@@ -14,16 +15,22 @@ interface FilterAccordionProps {
   setSelectedSource: (value: string) => void;
   selectedTags: string[];
   setSelectedTags: (tags: string[]) => void;
+  selectedAuthors: string[];
+  setSelectedAuthors: (authors: string[]) => void;
+  titleFilter: string;
+  setTitleFilter: (value: string) => void;
   date: DateRange | undefined;
   setDate: (date: DateRange | undefined) => void;
   categories: string[];
   sources: string[];
   availableTags: string[];
+  availableAuthors: string[];
   articleStats: {
     total: number;
     filtered: number;
     sources: Record<string, number>;
     categories: Record<string, number>;
+    authors: Record<string, number>;
   };
   hasActiveFilters: boolean;
   clearFilters: () => void;
@@ -36,11 +43,16 @@ export const FilterAccordion = ({
   setSelectedSource,
   selectedTags,
   setSelectedTags,
+  selectedAuthors,
+  setSelectedAuthors,
+  titleFilter,
+  setTitleFilter,
   date,
   setDate,
   categories,
   sources,
   availableTags,
+  availableAuthors,
   articleStats,
   hasActiveFilters,
   clearFilters,
@@ -53,9 +65,29 @@ export const FilterAccordion = ({
     }
   };
 
+  const handleAuthorToggle = (author: string) => {
+    if (selectedAuthors.includes(author)) {
+      setSelectedAuthors(selectedAuthors.filter(a => a !== author));
+    } else {
+      setSelectedAuthors([...selectedAuthors, author]);
+    }
+  };
+
   return (
     <div className="space-y-6 mt-4">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="space-y-2">
+          <label htmlFor="title-filter" className="text-sm font-medium text-gray-700">
+            Titre
+          </label>
+          <Input
+            id="title-filter"
+            placeholder="Filtrer par titre..."
+            value={titleFilter}
+            onChange={(e) => setTitleFilter(e.target.value)}
+          />
+        </div>
+
         <Select onValueChange={setSelectedCategory} value={selectedCategory}>
           <SelectTrigger>
             <SelectValue placeholder="Catégorie" />
@@ -97,11 +129,34 @@ export const FilterAccordion = ({
         <DateRangeSelector date={date} setDate={setDate} />
       </div>
 
-      <TagSelector
-        availableTags={availableTags}
-        selectedTags={selectedTags}
-        onTagToggle={handleTagToggle}
-      />
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-sm font-medium text-gray-700 mb-2">Auteurs</h3>
+          <ScrollArea className="h-[100px] w-full border rounded-md p-2">
+            <div className="flex flex-wrap gap-2">
+              {availableAuthors.map((author) => (
+                <Badge
+                  key={author}
+                  variant={selectedAuthors.includes(author) ? "default" : "outline"}
+                  className="cursor-pointer"
+                  onClick={() => handleAuthorToggle(author)}
+                >
+                  {author}
+                  <span className="ml-1 text-xs">
+                    ({articleStats.authors[author] || 0})
+                  </span>
+                </Badge>
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
+
+        <TagSelector
+          availableTags={availableTags}
+          selectedTags={selectedTags}
+          onTagToggle={handleTagToggle}
+        />
+      </div>
 
       {hasActiveFilters && (
         <div className="flex items-center justify-between pt-4 border-t">

@@ -7,6 +7,8 @@ export const useArticlesState = (articles: Article[]) => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedSource, setSelectedSource] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedAuthors, setSelectedAuthors] = useState<string[]>([]);
+  const [titleFilter, setTitleFilter] = useState("");
   const [date, setDate] = useState<DateRange | undefined>();
   const [isLoading] = useState(false);
 
@@ -25,8 +27,21 @@ export const useArticlesState = (articles: Article[]) => {
     return Array.from(uniqueTags).sort();
   }, [articles]);
 
+  const availableAuthors = useMemo(() => {
+    const uniqueAuthors = new Set(articles.flatMap(article => article.authors || []));
+    return Array.from(uniqueAuthors).sort();
+  }, [articles]);
+
   const filteredArticles = useMemo(() => {
-    console.log('Filtering articles with:', { searchTerm, selectedCategory, selectedSource, selectedTags, date });
+    console.log('Filtering articles with:', { 
+      searchTerm, 
+      selectedCategory, 
+      selectedSource, 
+      selectedTags, 
+      selectedAuthors,
+      titleFilter,
+      date 
+    });
     
     return articles.filter(article => {
       // Search term filter
@@ -40,6 +55,16 @@ export const useArticlesState = (articles: Article[]) => {
         article.category.toLowerCase().includes(searchLower) ||
         article.tags?.some(tag => 
           tag.toLowerCase().includes(searchLower)
+        );
+
+      // Title filter
+      const matchesTitle = !titleFilter || 
+        article.title.toLowerCase().includes(titleFilter.toLowerCase());
+
+      // Author filter
+      const matchesAuthors = selectedAuthors.length === 0 || 
+        selectedAuthors.every(author => 
+          article.authors.includes(author)
         );
 
       // Category filter
@@ -56,9 +81,10 @@ export const useArticlesState = (articles: Article[]) => {
       const matchesDate = !date?.from || !date?.to || 
         (new Date(article.date) >= date.from && new Date(article.date) <= date.to);
 
-      return matchesSearch && matchesCategory && matchesSource && matchesTags && matchesDate;
+      return matchesSearch && matchesTitle && matchesAuthors && 
+             matchesCategory && matchesSource && matchesTags && matchesDate;
     });
-  }, [articles, searchTerm, selectedCategory, selectedSource, selectedTags, date]);
+  }, [articles, searchTerm, titleFilter, selectedAuthors, selectedCategory, selectedSource, selectedTags, date]);
 
   const articleStats = useMemo(() => {
     return {
@@ -75,9 +101,15 @@ export const useArticlesState = (articles: Article[]) => {
           category,
           articles.filter(a => a.category === category).length
         ])
+      ),
+      authors: Object.fromEntries(
+        availableAuthors.map(author => [
+          author,
+          articles.filter(a => a.authors.includes(author)).length
+        ])
       )
     };
-  }, [articles, filteredArticles, sources, categories]);
+  }, [articles, filteredArticles, sources, categories, availableAuthors]);
 
   return {
     searchTerm,
@@ -88,6 +120,10 @@ export const useArticlesState = (articles: Article[]) => {
     setSelectedSource,
     selectedTags,
     setSelectedTags,
+    selectedAuthors,
+    setSelectedAuthors,
+    titleFilter,
+    setTitleFilter,
     date,
     setDate,
     filteredArticles,
@@ -95,6 +131,7 @@ export const useArticlesState = (articles: Article[]) => {
     categories,
     sources,
     availableTags,
+    availableAuthors,
     articleStats
   };
 };

@@ -19,17 +19,23 @@ interface SearchBarProps {
   setSelectedSource: (value: string) => void;
   selectedTags: string[];
   setSelectedTags: (tags: string[]) => void;
+  selectedAuthors: string[];
+  setSelectedAuthors: (authors: string[]) => void;
+  titleFilter: string;
+  setTitleFilter: (value: string) => void;
   date: DateRange | undefined;
   setDate: (date: DateRange | undefined) => void;
   onSearch: () => void;
   categories: string[];
   sources: string[];
   availableTags: string[];
+  availableAuthors: string[];
   articleStats: {
     total: number;
     filtered: number;
     sources: Record<string, number>;
     categories: Record<string, number>;
+    authors: Record<string, number>;
   };
 }
 
@@ -42,11 +48,16 @@ export const SearchBar = ({
   setSelectedSource,
   selectedTags,
   setSelectedTags,
+  selectedAuthors,
+  setSelectedAuthors,
+  titleFilter,
+  setTitleFilter,
   date,
   setDate,
   categories,
   sources,
   availableTags,
+  availableAuthors,
   articleStats
 }: SearchBarProps) => {
   const hasActiveFilters = Boolean(
@@ -54,6 +65,8 @@ export const SearchBar = ({
     selectedCategory || 
     selectedSource || 
     selectedTags.length > 0 || 
+    selectedAuthors.length > 0 ||
+    titleFilter ||
     date
   );
 
@@ -62,6 +75,8 @@ export const SearchBar = ({
     setSelectedCategory("");
     setSelectedSource("");
     setSelectedTags([]);
+    setSelectedAuthors([]);
+    setTitleFilter("");
     setDate(undefined);
   };
 
@@ -87,11 +102,16 @@ export const SearchBar = ({
               setSelectedSource={setSelectedSource}
               selectedTags={selectedTags}
               setSelectedTags={setSelectedTags}
+              selectedAuthors={selectedAuthors}
+              setSelectedAuthors={setSelectedAuthors}
+              titleFilter={titleFilter}
+              setTitleFilter={setTitleFilter}
               date={date}
               setDate={setDate}
               categories={categories}
               sources={sources}
               availableTags={availableTags}
+              availableAuthors={availableAuthors}
               articleStats={articleStats}
               hasActiveFilters={hasActiveFilters}
               clearFilters={clearFilters}

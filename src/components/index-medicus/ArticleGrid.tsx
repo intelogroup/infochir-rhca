@@ -20,17 +20,30 @@ export const ArticleGrid = ({ viewMode = "table" }: ArticleGridProps) => {
     setSelectedSource,
     selectedTags,
     setSelectedTags,
+    selectedAuthors,
+    setSelectedAuthors,
+    titleFilter,
+    setTitleFilter,
     date,
     setDate,
     filteredArticles,
     categories,
     sources,
     availableTags,
+    availableAuthors,
     articleStats
   } = useArticlesState(articles || []);
 
   const handleSearch = () => {
-    console.log("Searching with filters:", { searchTerm, selectedCategory, selectedSource, selectedTags, date });
+    console.log("Searching with filters:", { 
+      searchTerm, 
+      selectedCategory, 
+      selectedSource, 
+      selectedTags,
+      selectedAuthors,
+      titleFilter,
+      date 
+    });
   };
 
   if (viewMode === "grid") {
@@ -45,12 +58,17 @@ export const ArticleGrid = ({ viewMode = "table" }: ArticleGridProps) => {
           setSelectedSource={setSelectedSource}
           selectedTags={selectedTags}
           setSelectedTags={setSelectedTags}
+          selectedAuthors={selectedAuthors}
+          setSelectedAuthors={setSelectedAuthors}
+          titleFilter={titleFilter}
+          setTitleFilter={setTitleFilter}
           date={date}
           setDate={setDate}
           onSearch={handleSearch}
           categories={categories}
           sources={sources}
           availableTags={availableTags}
+          availableAuthors={availableAuthors}
           articleStats={articleStats}
         />
         
@@ -78,12 +96,17 @@ export const ArticleGrid = ({ viewMode = "table" }: ArticleGridProps) => {
         setSelectedSource={setSelectedSource}
         selectedTags={selectedTags}
         setSelectedTags={setSelectedTags}
+        selectedAuthors={selectedAuthors}
+        setSelectedAuthors={setSelectedAuthors}
+        titleFilter={titleFilter}
+        setTitleFilter={setTitleFilter}
         date={date}
         setDate={setDate}
         onSearch={handleSearch}
         categories={categories}
         sources={sources}
         availableTags={availableTags}
+        availableAuthors={availableAuthors}
         articleStats={articleStats}
       />
       
