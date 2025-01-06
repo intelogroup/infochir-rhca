@@ -7,15 +7,12 @@ const Home = lazy(() => import("@/pages/Home"));
 const RHCA = lazy(() => import("@/pages/RHCA"));
 const IGM = lazy(() => import("@/pages/IGM"));
 
-// Lazy load less frequently accessed routes
-const ADC = lazy(() => {
-  // Add a small delay to prioritize main routes
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve(import("@/pages/ADC"));
-    }, 100);
-  });
-});
+// Lazy load less frequently accessed routes with delay
+const ADC = lazy(() => 
+  new Promise(resolve => 
+    setTimeout(() => resolve(import("@/pages/ADC")), 100)
+  ) as Promise<typeof import("@/pages/ADC")>
+);
 
 const IndexMedicus = lazy(() => import("@/pages/IndexMedicus"));
 const About = lazy(() => import("@/pages/About"));
