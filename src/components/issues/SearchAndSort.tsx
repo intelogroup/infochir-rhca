@@ -21,7 +21,7 @@ export const SearchAndSort = ({
   disabled = false,
 }: SearchAndSortProps) => {
   return (
-    <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 px-2 sm:px-4">
+    <div className="flex flex-col sm:flex-row gap-4">
       <div className="relative flex-1">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
         <Input
@@ -29,7 +29,7 @@ export const SearchAndSort = ({
           placeholder="Rechercher une édition..."
           value={searchTerm}
           onChange={(e) => onSearch(e.target.value)}
-          className="pl-10 h-9 sm:h-10 text-sm"
+          className="pl-10 h-11 text-base bg-gray-50 border-gray-200 focus:border-ocean focus:ring-ocean"
           disabled={disabled}
         />
       </div>
@@ -38,7 +38,7 @@ export const SearchAndSort = ({
         onValueChange={onSort}
         disabled={disabled}
       >
-        <SelectTrigger className="w-full sm:w-[180px] h-9 sm:h-10 text-sm">
+        <SelectTrigger className="w-full sm:w-[200px] h-11 text-base bg-gray-50 border-gray-200">
           <SelectValue placeholder="Trier par" />
         </SelectTrigger>
         <SelectContent>
@@ -46,7 +46,7 @@ export const SearchAndSort = ({
             <SelectItem
               key={option.value}
               value={option.value}
-              className="text-sm"
+              className="text-base"
             >
               {option.label}
             </SelectItem>

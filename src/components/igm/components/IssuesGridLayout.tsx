@@ -24,8 +24,8 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
   setTimeout(() => setIsLoading(false), 1000);
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="bg-[#F1F0FB] pt-2 pb-4">
+    <div className="space-y-6">
+      <div className="bg-white rounded-t-xl border-b border-gray-100 p-4 shadow-sm">
         <SearchAndSort
           searchTerm={searchTerm}
           sortBy={sortBy}
@@ -36,13 +36,15 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
         />
       </div>
       
-      <IssuesGridContent
-        viewMode={viewMode}
-        sortedIssues={sortedIssues}
-        issuesByYear={issuesByYear}
-        sortedYears={sortedYears}
-        isLoading={isLoading}
-      />
+      <div className="px-4">
+        <IssuesGridContent
+          viewMode={viewMode}
+          sortedIssues={sortedIssues}
+          issuesByYear={issuesByYear}
+          sortedYears={sortedYears}
+          isLoading={isLoading}
+        />
+      </div>
     </div>
   );
 };
