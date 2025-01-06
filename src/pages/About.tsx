@@ -1,5 +1,6 @@
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { FoundersSection } from "@/components/home/FoundersSection";
+import { SponsorsSection } from "@/components/home/SponsorsSection";
 import { motion } from "framer-motion";
 import { BookOpen, Target, Users, Award } from "lucide-react";
 
@@ -157,6 +158,8 @@ const About = () => {
         </section>
 
         <FoundersSection />
+        
+        <SponsorsSection />
       </div>
     </MainLayout>
   );
