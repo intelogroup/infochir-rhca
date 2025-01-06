@@ -32,7 +32,7 @@ export const ArticleModal = ({ article, open, onClose }: ArticleModalProps) => {
       )}
 
       <div>
-        <h3 className="text-lg font-semibold text-primary mb-3">Articles associés</h3>
+        <h3 className="text-lg font-semibold text-primary mb-3">Articles</h3>
         <ScrollArea className="h-[200px] w-full rounded-md border p-4">
           <div className="space-y-2">
             {mockArticleTitles.map((title, index) => (
@@ -70,16 +70,16 @@ export const ArticleModal = ({ article, open, onClose }: ArticleModalProps) => {
 
 // Temporary mock data for demonstration
 const mockArticleTitles = [
-  "L'impact des nouvelles technologies en chirurgie cardiaque",
-  "Évolution des techniques de transplantation hépatique",
-  "Innovations en chirurgie mini-invasive",
-  "Approches modernes en chirurgie pédiatrique",
-  "Techniques avancées en neurochirurgie",
-  "Les progrès en chirurgie robotique",
-  "Nouvelles perspectives en chirurgie plastique",
-  "Développements récents en chirurgie orthopédique",
-  "Avancées en chirurgie vasculaire",
-  "La chirurgie assistée par ordinateur : état des lieux",
-  "Techniques émergentes en microchirurgie",
-  "L'intelligence artificielle en chirurgie",
+  "Martin et al. - L'impact des nouvelles technologies en chirurgie cardiaque",
+  "Dubois et al. - Évolution des techniques de transplantation hépatique",
+  "Bernard et al. - Innovations en chirurgie mini-invasive",
+  "Lambert et al. - Approches modernes en chirurgie pédiatrique",
+  "Robert et al. - Techniques avancées en neurochirurgie",
+  "Dupont et al. - Les progrès en chirurgie robotique",
+  "Claire et al. - Nouvelles perspectives en chirurgie plastique",
+  "Pierre et al. - Développements récents en chirurgie orthopédique",
+  "Sophie et al. - Avancées en chirurgie vasculaire",
+  "Jean et al. - La chirurgie assistée par ordinateur : état des lieux",
+  "Marie et al. - Techniques émergentes en microchirurgie",
+  "Paul et al. - L'intelligence artificielle en chirurgie",
 ];
