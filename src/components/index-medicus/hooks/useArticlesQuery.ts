@@ -24,7 +24,8 @@ export const useArticlesQuery = () => {
         tags: article.tags || [],
         views: article.views || 0,
         citations: article.citations || 0,
-        downloads: article.downloads || 0
+        downloads: article.downloads || 0,
+        source: article.source as "RHCA" | "IGM" | "ADC" // Type assertion for source
       }));
     },
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
