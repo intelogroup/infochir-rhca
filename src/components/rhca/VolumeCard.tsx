@@ -34,6 +34,7 @@ export const VolumeCard = ({ volume }: VolumeCardProps) => {
                   src={volume.coverImage} 
                   alt=""
                   className="absolute inset-0 w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
                   aria-hidden="true"
                 />
               ) : (
@@ -49,7 +50,7 @@ export const VolumeCard = ({ volume }: VolumeCardProps) => {
                     <CardTitle 
                       id={`volume-title-${volume.id}`}
                       className="text-primary mb-2 truncate"
-                      style={{ fontSize: 'clamp(1.25rem, 1rem + 1vw, 1.5rem)' }}
+                      style={{ fontSize: 'clamp(1rem, 0.85rem + 0.5vw, 1.25rem)' }}
                     >
                       {`Infochir-RHCA Volume ${volume.volume}, No.${volume.volume}`}
                     </CardTitle>
