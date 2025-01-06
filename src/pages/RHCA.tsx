@@ -5,6 +5,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { RhcaArticleList } from "@/components/rhca/RhcaArticleList";
 import { BackToTop } from "@/components/navigation/BackToTop";
+import { mockArticles } from "@/components/rhca/data/mockArticles";
 
 const RHCA = () => {
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
@@ -32,7 +33,10 @@ const RHCA = () => {
             </ToggleGroup>
           </div>
           
-          <RhcaArticleList viewMode={viewMode} />
+          <RhcaArticleList 
+            articles={mockArticles} 
+            viewMode={viewMode} 
+          />
         </div>
       </div>
       <BackToTop />

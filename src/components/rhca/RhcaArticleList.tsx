@@ -9,9 +9,11 @@ interface RhcaArticleListProps {
   viewMode: "grid" | "table";
 }
 
-export const RhcaArticleList = ({ articles, viewMode }: RhcaArticleListProps) => {
+export const RhcaArticleList = ({ articles = [], viewMode }: RhcaArticleListProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("latest");
+
+  if (!articles) return null;
 
   return (
     <div className="space-y-6">
