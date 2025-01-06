@@ -48,6 +48,7 @@ export const NavLinks = () => {
       <motion.button
         onClick={() => navigate('/donate')}
         className={`
+          group
           flex h-9 px-4 items-center justify-center rounded-full
           bg-gradient-to-r from-secondary to-secondary-light
           text-white hover:opacity-90 transition-all duration-300
@@ -68,7 +69,10 @@ export const NavLinks = () => {
         }}
       >
         <span className="text-sm font-medium whitespace-nowrap">Faire un don</span>
-        <Heart className="h-4 w-4 text-white fill-white" aria-hidden="true" />
+        <Heart 
+          className="h-4 w-4 text-white fill-white transition-all duration-300 group-hover:fill-[#ea384c] group-hover:text-[#ea384c] group-hover:animate-[shake_0.5s_ease-in-out_infinite]" 
+          aria-hidden="true" 
+        />
       </motion.button>
     </div>
   );
