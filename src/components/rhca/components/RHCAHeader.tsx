@@ -13,7 +13,7 @@ export const RHCAHeader = () => {
   const scale = useTransform(scrollY, [0, 300], [1, 0.95]);
 
   return (
-    <div ref={ref} className="relative overflow-hidden mt-[30px]">
+    <div ref={ref} className="relative overflow-hidden">
       <div 
         className="absolute inset-0 bg-gradient-to-br from-primary/5 via-primary/10 to-transparent animate-gradient"
         style={{
@@ -38,11 +38,11 @@ export const RHCAHeader = () => {
           style={{ y, opacity, scale }}
           className="space-y-8"
         >
-          <div className="inline-flex items-center justify-center w-32 h-32 rounded-full bg-white shadow-lg mb-6 overflow-hidden">
+          <div className="inline-flex items-center justify-center w-40 h-40 rounded-full bg-white shadow-lg mb-6 overflow-hidden">
             <motion.img 
               src="/lovable-uploads/f65134f5-3929-4504-9567-104510b21f5d.png"
               alt="RHCA Logo"
-              className="h-32 w-32 object-contain"
+              className="h-40 w-40 object-contain p-2"
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 300 }}
             />
