@@ -34,7 +34,7 @@ const Opportunities = () => {
 
   return (
     <MainLayout>
-      <div className="container mx-auto px-4 py-12 mt-20">
+      <div className="container mx-auto px-4 py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
