@@ -31,9 +31,9 @@ export const AtlasModal = ({ chapter, open, onOpenChange }: AtlasModalProps) => 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={`${
-        isMobile ? 'w-full h-[90vh] max-w-none m-0 rounded-t-lg rounded-b-none' : 
+        isMobile ? 'w-[95%] h-[85vh] mx-auto rounded-lg' : 
         'w-[90%] max-w-3xl h-[80vh]'
-      } p-0 overflow-hidden`}>
+      } p-0 overflow-hidden bg-white/95 backdrop-blur-sm border border-gray-100 shadow-lg`}>
         <DialogDescription className="sr-only">
           Détails du chapitre {chapter.title}
         </DialogDescription>
