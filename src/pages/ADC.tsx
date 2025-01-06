@@ -8,7 +8,7 @@ import { AtlasTableOfContents } from "@/components/atlas/AtlasTableOfContents";
 import { atlasChapters } from "@/components/atlas/data/atlasChapters";
 import { atlasCategories } from "@/components/atlas/data/atlasCategories";
 import { Input } from "@/components/ui/input";
-import { Search, SortAsc } from "lucide-react";
+import { Search } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -54,7 +54,7 @@ const ADC = () => {
           return new Date(b.lastUpdate).getTime() - new Date(a.lastUpdate).getTime();
       }
     });
-  }, [searchQuery, selectedCategory, sortBy, atlasChapters]);
+  }, [searchQuery, selectedCategory, sortBy]);
 
   return (
     <MainLayout>
