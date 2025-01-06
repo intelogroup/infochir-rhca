@@ -20,10 +20,10 @@ const About = () => {
               transition={{ duration: 0.6 }}
               className="text-center max-w-3xl mx-auto"
             >
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-primary via-secondary to-ocean bg-clip-text text-transparent mb-3 sm:mb-4 md:mb-6 px-3 sm:px-4">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-primary mb-3 sm:mb-4 md:mb-6 px-3 sm:px-4">
                 À propos d'INFOCHIR/RHCA
               </h1>
-              <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed px-3 sm:px-4 md:px-6">
+              <p className="text-sm sm:text-base md:text-lg text-gray-800 leading-relaxed px-3 sm:px-4 md:px-6">
                 INFOCHIR/RHCA est une plateforme dédiée à l'avancement des connaissances en chirurgie et anesthésiologie.
                 Notre mission est de faciliter le partage des connaissances médicales et de promouvoir la recherche scientifique.
               </p>
@@ -81,7 +81,7 @@ const About = () => {
                   >
                     {item.title}
                   </h3>
-                  <p className="text-xs sm:text-sm md:text-base text-gray-600">
+                  <p className="text-sm sm:text-base text-gray-800">
                     {item.description}
                   </p>
                 </div>
@@ -132,7 +132,7 @@ const About = () => {
                     >
                       {service.title}
                     </h3>
-                    <p className="text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed">
+                    <p className="text-sm sm:text-base text-gray-800 leading-relaxed">
                       {service.description}
                     </p>
                   </div>
