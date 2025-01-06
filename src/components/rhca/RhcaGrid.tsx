@@ -18,25 +18,34 @@ export const RhcaGrid = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-200">
         <SearchAndSort
           searchTerm={searchTerm}
           sortBy={sortBy}
           onSearch={setSearchTerm}
           onSort={handleSortChange}
           sortOptions={SORT_OPTIONS}
+          className="flex-1"
         />
         
         <ToggleGroup 
           type="single" 
           value={viewMode} 
           onValueChange={(value) => value && setViewMode(value as "grid" | "table")}
-          className="self-end sm:self-auto"
+          className="self-end sm:self-auto bg-gray-50 p-1 rounded-md border border-gray-200"
         >
-          <ToggleGroupItem value="grid" size="sm">
+          <ToggleGroupItem 
+            value="grid" 
+            size="sm"
+            className="data-[state=on]:bg-white data-[state=on]:text-primary data-[state=on]:shadow-sm"
+          >
             <LayoutGrid className="h-4 w-4" />
           </ToggleGroupItem>
-          <ToggleGroupItem value="table" size="sm">
+          <ToggleGroupItem 
+            value="table" 
+            size="sm"
+            className="data-[state=on]:bg-white data-[state=on]:text-primary data-[state=on]:shadow-sm"
+          >
             <List className="h-4 w-4" />
           </ToggleGroupItem>
         </ToggleGroup>
