@@ -1,14 +1,11 @@
-import { Card } from "@/components/ui/card";
+import { Calendar, Download, Eye, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Download, Share2, FileText } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { toast } from "sonner";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { useState } from "react";
-import { IssueModal } from "./IssueModal";
-import { toast } from "sonner";
-import type { Issue } from "./types";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { supabase } from "@/integrations/supabase/client";
+import type { Issue } from "./types";
 import { motion } from "framer-motion";
 
 interface IssueCardProps {
@@ -16,54 +13,20 @@ interface IssueCardProps {
 }
 
 export const IssueCard = ({ issue }: IssueCardProps) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleShare = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const shareUrl = `${window.location.origin}/igm/issues/${issue.id}`;
-    
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      
-      const { error } = await supabase
-        .from('articles')
-        .update({ shares: (issue.shares || 0) + 1 })
-        .eq('id', issue.id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      
-      toast.success("Lien copié dans le presse-papier");
-    } catch (error) {
-      console.error('Error sharing:', error);
-      toast.error("Erreur lors du partage");
-    }
-  };
-
-  const handleDownload = async (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleDownload = async () => {
     if (!issue.pdfUrl) {
       toast.error("Le PDF n'est pas encore disponible");
       return;
     }
+    
+    window.open(issue.pdfUrl, '_blank');
+    toast.success("Ouverture du PDF...");
+  };
 
-    try {
-      const { error } = await supabase
-        .from('articles')
-        .update({ downloads: (issue.downloads || 0) + 1 })
-        .eq('id', issue.id)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      window.open(issue.pdfUrl, '_blank');
-      toast.success("Ouverture du PDF...");
-    } catch (error) {
-      console.error('Error downloading:', error);
-      toast.error("Erreur lors du téléchargement");
-    }
+  const handleShare = () => {
+    const shareUrl = `${window.location.origin}/igm/issues/${issue.id}`;
+    navigator.clipboard.writeText(shareUrl);
+    toast.success("Lien copié dans le presse-papier");
   };
 
   return (
@@ -71,118 +34,78 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      whileHover={{ scale: 1.02 }}
-      className="h-full"
     >
-      <Card 
-        className="group cursor-pointer bg-white h-full relative overflow-hidden border border-gray-100 transition-all duration-300 hover:shadow-lg"
-        onClick={() => setIsModalOpen(true)}
-        role="article"
-        aria-labelledby={`issue-title-${issue.id}`}
-      >
-        {/* Subtle pattern background */}
-        <div className="absolute inset-0 opacity-5 bg-[radial-gradient(#e5deff_1px,transparent_1px)] [background-size:16px_16px]" />
-        
-        <div className="flex flex-col sm:flex-row h-full relative">
-          <div className="w-full sm:w-24 md:w-28 lg:w-32 flex-shrink-0">
-            <AspectRatio ratio={3/4} className="overflow-hidden">
+      <Card className="group hover:shadow-md transition-shadow">
+        <div className="flex gap-4 p-4">
+          <div className="w-24 flex-shrink-0">
+            <AspectRatio ratio={3/4} className="overflow-hidden rounded-lg">
               {issue.coverImage ? (
                 <img 
-                  src={issue.coverImage}
+                  src={issue.coverImage} 
                   alt={`Couverture ${issue.title}`}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  loading="lazy"
+                  className="w-full h-full object-cover transition-transform group-hover:scale-105"
                 />
               ) : (
-                <div className="w-full h-full bg-[#F1F0FB] flex items-center justify-center">
-                  <span className="text-xs sm:text-sm text-primary/40">No cover</span>
+                <div className="w-full h-full bg-secondary/5 flex items-center justify-center">
+                  <span className="text-secondary/20 text-xl font-bold">PDF</span>
                 </div>
               )}
             </AspectRatio>
           </div>
-          
-          <div className="flex-1 p-3 sm:p-4 lg:p-6 flex flex-col min-w-0">
-            <div className="space-y-2 sm:space-y-3 lg:space-y-4 flex-1">
-              <div>
-                <h3 
-                  id={`issue-title-${issue.id}`}
-                  className="text-sm sm:text-base lg:text-lg font-semibold text-primary line-clamp-2 group-hover:text-primary-light transition-colors"
-                >
+          <div className="flex-1 min-w-0 space-y-2">
+            <div className="flex justify-between items-start gap-4">
+              <div className="min-w-0">
+                <h3 className="text-lg font-medium text-primary truncate">
                   {issue.title}
                 </h3>
-                <p 
-                  className="text-xs sm:text-sm text-gray-500 truncate mt-1"
-                  aria-label="Numéro de volume et d'édition"
-                >
+                <div className="text-sm font-medium text-secondary/80">
                   {issue.volume} • {issue.issue}
-                </p>
-                <div 
-                  className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-[#8E9196] mt-2 flex-wrap"
-                  aria-label="Informations de publication"
-                >
-                  <span className="bg-[#F1F0FB] px-2 py-0.5 rounded-full">
-                    {format(new Date(issue.date), 'MMMM yyyy', { locale: fr })}
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                  <Calendar className="h-3.5 w-3.5 flex-shrink-0" />
+                  <span className="truncate">
+                    {format(new Date(issue.date), 'dd MMMM yyyy', { locale: fr })}
                   </span>
                 </div>
               </div>
-
-              <p 
-                className="text-xs sm:text-sm text-gray-600 line-clamp-2 break-words"
-                aria-label="Résumé de l'édition"
-              >
-                {issue.abstract}
-              </p>
-
-              <div 
-                className="flex items-center gap-3 text-xs sm:text-sm text-[#8A898C] flex-wrap mt-auto pt-2"
-                aria-label="Statistiques de l'édition"
-              >
-                <div className="flex items-center gap-1.5 bg-[#F1F1F1] px-2 py-0.5 rounded-full">
-                  <FileText className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" aria-hidden="true" />
-                  <span>{issue.articleCount} articles</span>
-                </div>
-                <div className="flex items-center gap-1.5 bg-[#F1F1F1] px-2 py-0.5 rounded-full">
-                  <Download className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" aria-hidden="true" />
-                  <span>{issue.downloads || 0}</span>
-                </div>
-                <div className="flex items-center gap-1.5 bg-[#F1F1F1] px-2 py-0.5 rounded-full">
-                  <Share2 className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" aria-hidden="true" />
-                  <span>{issue.shares || 0}</span>
-                </div>
+              <div className="flex gap-1.5 flex-shrink-0">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-8 w-8 p-0"
+                  onClick={handleShare}
+                >
+                  <Share2 className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="ghost"
+                  size="sm" 
+                  className="h-8 w-8 p-0"
+                  onClick={handleDownload}
+                  disabled={!issue.pdfUrl}
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                >
+                  <Eye className="h-4 w-4" />
+                </Button>
               </div>
             </div>
-
-            <div className="flex gap-2 mt-4">
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-1.5 bg-ocean text-white hover:bg-ocean-hover flex-1 text-xs sm:text-sm h-8 transition-colors"
-                onClick={handleShare}
-                aria-label="Partager l'édition"
-              >
-                <Share2 className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" aria-hidden="true" />
-                <span className="hidden sm:inline">Partager</span>
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-1.5 bg-ocean text-white hover:bg-ocean-hover flex-1 text-xs sm:text-sm h-8 transition-colors"
-                onClick={handleDownload}
-                aria-label={issue.pdfUrl ? "Télécharger le PDF" : "PDF non disponible"}
-              >
-                <Download className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" aria-hidden="true" />
-                <span className="hidden sm:inline">PDF</span>
-              </Button>
+            <p className="text-sm text-gray-600 line-clamp-2">
+              {issue.abstract}
+            </p>
+            <div className="flex items-center gap-4 text-sm text-gray-500">
+              <span>{issue.articleCount} articles</span>
+              <span>{issue.downloads} téléchargements</span>
+              <span>{issue.shares} partages</span>
             </div>
           </div>
         </div>
       </Card>
-
-      <IssueModal
-        issue={issue}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
     </motion.div>
   );
 };

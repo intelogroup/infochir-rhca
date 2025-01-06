@@ -2,6 +2,29 @@ import type { Issue } from "../../types";
 
 export const issues2024: Issue[] = [
   {
+    id: "2024-03",
+    title: "IGM Volume 8 - No 3",
+    volume: "Volume 8",
+    issue: "No 3",
+    date: new Date(2024, 2, 15).toISOString(),
+    abstract: "Innovations en chirurgie cardiaque",
+    pdfUrl: "https://example.com/sample2024-03.pdf",
+    coverImage: "https://images.unsplash.com/photo-1631815589968-fdb09a223b1e",
+    articleCount: 7,
+    downloads: 145,
+    shares: 38,
+    articles: [
+      {
+        id: "24-03-1",
+        title: "Nouvelles techniques chirurgicales",
+        authors: ["Dr. Thomas Martin", "Dr. Sarah Johnson"],
+        pageNumber: 1,
+        abstract: "Avancées en chirurgie mini-invasive",
+        tags: ["Chirurgie", "Innovation"]
+      }
+    ]
+  },
+  {
     id: "2024-02",
     title: "IGM Volume 8 - No 2",
     volume: "Volume 8",

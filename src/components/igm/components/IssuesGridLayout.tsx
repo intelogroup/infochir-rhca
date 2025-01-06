@@ -3,9 +3,11 @@ import { IssuesGridContent } from "./IssuesGridContent";
 import { useIssuesState } from "../hooks/useIssuesState";
 import { mockIssues } from "../data/mockIssues";
 import { SORT_OPTIONS, type SortOption } from "../constants/sortOptions";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DateRange } from "react-day-picker";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useInView } from "framer-motion";
+import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
 
 interface IssuesGridLayoutProps {
   viewMode?: "grid" | "table";
@@ -17,6 +19,7 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
   const [dateRange, setDateRange] = useState<DateRange>();
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [displayCount, setDisplayCount] = useState(6);
 
   const {
     sortedIssues,
@@ -31,10 +34,26 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
   });
 
   // Simulate loading for demo purposes
-  setTimeout(() => setIsLoading(false), 1000);
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const loadMore = () => {
+    setDisplayCount(prev => prev + 6);
+  };
 
   return (
     <div className="space-y-6">
+      <div className="mb-6">
+        <Breadcrumbs
+          items={[
+            { label: "IGM", href: "/igm" },
+            { label: "Publications" },
+          ]}
+        />
+      </div>
+
       <motion.div 
         className="bg-white rounded-t-xl border-b border-gray-100 p-6 shadow-sm"
         initial={{ opacity: 0, y: -20 }}
@@ -57,13 +76,17 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
       </motion.div>
       
       <div className="px-4">
-        <IssuesGridContent
-          viewMode={viewMode}
-          sortedIssues={sortedIssues}
-          issuesByYear={issuesByYear}
-          sortedYears={sortedYears}
-          isLoading={isLoading}
-        />
+        <AnimatePresence mode="wait">
+          <IssuesGridContent
+            viewMode={viewMode}
+            sortedIssues={sortedIssues.slice(0, displayCount)}
+            issuesByYear={issuesByYear}
+            sortedYears={sortedYears}
+            isLoading={isLoading}
+            onLoadMore={loadMore}
+            hasMore={displayCount < sortedIssues.length}
+          />
+        </AnimatePresence>
       </div>
     </div>
   );

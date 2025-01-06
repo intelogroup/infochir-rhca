@@ -4,6 +4,9 @@ import { FileText, Search } from "lucide-react";
 import type { Issue } from "../types";
 import { IssueCardSkeleton } from "./IssueCardSkeleton";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { useInView } from "framer-motion";
+import { useRef, useEffect } from "react";
 
 interface IssuesGridContentProps {
   viewMode: "grid" | "table";
@@ -11,6 +14,8 @@ interface IssuesGridContentProps {
   issuesByYear: Record<number, Issue[]>;
   sortedYears: number[];
   isLoading: boolean;
+  onLoadMore: () => void;
+  hasMore: boolean;
 }
 
 export const IssuesGridContent = ({
@@ -19,7 +24,18 @@ export const IssuesGridContent = ({
   issuesByYear,
   sortedYears,
   isLoading,
+  onLoadMore,
+  hasMore,
 }: IssuesGridContentProps) => {
+  const loadMoreRef = useRef(null);
+  const isInView = useInView(loadMoreRef);
+
+  useEffect(() => {
+    if (isInView && hasMore && !isLoading) {
+      onLoadMore();
+    }
+  }, [isInView, hasMore, isLoading, onLoadMore]);
+
   if (isLoading) {
     return (
       <div className="space-y-8">
@@ -66,10 +82,23 @@ export const IssuesGridContent = ({
 
   if (viewMode === "grid") {
     return (
-      <YearGroupList
-        issuesByYear={issuesByYear}
-        sortedYears={sortedYears}
-      />
+      <>
+        <YearGroupList
+          issuesByYear={issuesByYear}
+          sortedYears={sortedYears}
+        />
+        {hasMore && (
+          <div ref={loadMoreRef} className="flex justify-center mt-8">
+            <Button
+              variant="outline"
+              onClick={onLoadMore}
+              className="animate-pulse"
+            >
+              Charger plus de numéros
+            </Button>
+          </div>
+        )}
+      </>
     );
   }
 
