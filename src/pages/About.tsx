@@ -7,10 +7,10 @@ const About = () => {
   return (
     <MainLayout>
       <div className="min-h-screen bg-gradient-to-br from-white to-gray-50">
-        {/* Hero Section */}
         <section 
           className="relative overflow-hidden py-8 sm:py-12 md:py-16 lg:py-24"
           aria-label="Introduction"
+          tabIndex={0}
         >
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -31,10 +31,10 @@ const About = () => {
           </div>
         </section>
 
-        {/* Mission Section */}
         <section 
           className="py-6 sm:py-8 md:py-12 bg-white"
           aria-label="Notre mission et valeurs"
+          tabIndex={0}
         >
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div 
@@ -42,6 +42,8 @@ const About = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6"
+              role="list"
+              aria-label="Liste des valeurs"
             >
               {[
                 {
@@ -67,9 +69,15 @@ const About = () => {
               ].map((item, index) => (
                 <div 
                   key={item.title}
-                  className="p-4 sm:p-5 md:p-6 rounded-2xl bg-gradient-to-br from-white to-gray-50 shadow-lg shadow-gray-200/50 hover:shadow-xl transition-all duration-300"
-                  role="article"
-                  aria-labelledby={`mission-title-${index}`}
+                  className="p-4 sm:p-5 md:p-6 rounded-2xl bg-gradient-to-br from-white to-gray-50 shadow-lg shadow-gray-200/50 hover:shadow-xl transition-all duration-300 focus-within:ring-2 focus-within:ring-primary/50 outline-none"
+                  role="listitem"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      e.currentTarget.focus();
+                    }
+                  }}
                 >
                   <item.icon 
                     className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 text-primary mb-3 sm:mb-4" 
@@ -90,10 +98,10 @@ const About = () => {
           </div>
         </section>
 
-        {/* Services Section */}
         <section 
           className="py-6 sm:py-8 md:py-12 bg-gradient-to-br from-gray-50 to-white"
           aria-label="Nos services"
+          tabIndex={0}
         >
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div 
@@ -122,9 +130,15 @@ const About = () => {
                 ].map((service, index) => (
                   <div 
                     key={service.title}
-                    className="p-4 sm:p-5 md:p-6 rounded-2xl bg-white shadow-lg shadow-primary/5 hover:shadow-xl transition-all duration-300 border border-gray-100"
+                    className="p-4 sm:p-5 md:p-6 rounded-2xl bg-white shadow-lg shadow-primary/5 hover:shadow-xl transition-all duration-300 border border-gray-100 focus-within:ring-2 focus-within:ring-primary/50 outline-none"
                     role="listitem"
-                    aria-labelledby={`service-title-${index}`}
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        e.currentTarget.focus();
+                      }
+                    }}
                   >
                     <h3 
                       id={`service-title-${index}`}
@@ -142,7 +156,6 @@ const About = () => {
           </div>
         </section>
 
-        {/* Founders Section */}
         <FoundersSection />
       </div>
     </MainLayout>

@@ -17,6 +17,16 @@ export const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent, path: string) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      navigate(path);
+      onClose();
+    } else if (e.key === 'Escape') {
+      onClose();
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -33,6 +43,8 @@ export const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
       dragElastic={0.2}
       onDragEnd={handleDragEnd}
       className="fixed top-16 md:top-20 left-0 right-0 w-full bg-white/95 backdrop-blur-sm shadow-lg border-b border-gray-200/50 md:hidden z-[100] overflow-hidden touch-pan-y max-h-[calc(100vh-4rem)] overflow-y-auto"
+      onKeyDown={(e) => e.key === 'Escape' && onClose()}
+      tabIndex={0}
     >
       <div className="space-y-2 p-4">
         {navItems.map((item, index) => (
@@ -50,6 +62,8 @@ export const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
             whileTap={{ scale: 0.98 }}
             role="menuitem"
             aria-label={item.name}
+            onKeyDown={(e) => handleKeyDown(e, item.href)}
+            tabIndex={0}
           >
             {item.icon && (
               <item.icon className="h-5 w-5 mr-3 text-primary/80" aria-hidden="true" />
@@ -72,6 +86,8 @@ export const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
           whileTap={{ scale: 0.98 }}
           role="menuitem"
           aria-label="Faire un don"
+          onKeyDown={(e) => handleKeyDown(e, '/donate')}
+          tabIndex={0}
         >
           <span className="text-base sm:text-lg">Faire un don</span>
           <Heart className="h-5 w-5 text-white fill-white" aria-hidden="true" />

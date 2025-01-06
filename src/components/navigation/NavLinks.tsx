@@ -17,6 +17,12 @@ export const NavLinks = () => {
           whileTap={{ scale: 0.95 }}
           role="menuitem"
           aria-label={item.name}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              navigate(item.href);
+            }
+          }}
         >
           <span className="text-sm font-medium">{item.name}</span>
         </motion.button>
@@ -28,6 +34,12 @@ export const NavLinks = () => {
         whileTap={{ scale: 0.95 }}
         role="menuitem"
         aria-label="Faire un don"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            navigate('/donate');
+          }
+        }}
       >
         <span className="text-sm font-medium whitespace-nowrap">Faire un don</span>
         <Heart className="h-4 w-4 text-white fill-white" aria-hidden="true" />
