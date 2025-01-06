@@ -21,13 +21,17 @@ export const IssuesGrid = ({ viewMode = "grid" }: IssuesGridProps) => {
     sortedYears,
   } = useIssuesState(mockIssues);
 
+  const handleSortChange = (value: SortOption) => {
+    setSortBy(value);
+  };
+
   return (
     <div className="space-y-4 px-4">
       <SearchAndSort
         searchTerm={searchTerm}
         sortBy={sortBy}
         onSearch={setSearchTerm}
-        onSort={setSortBy}
+        onSort={handleSortChange}
         sortOptions={SORT_OPTIONS}
       />
       

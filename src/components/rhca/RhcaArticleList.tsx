@@ -1,65 +1,59 @@
 import { useState } from "react";
-import { RhcaArticle } from "./types";
-import { SearchAndSort } from "../issues/SearchAndSort";
-import { SORT_OPTIONS, type SortOption } from "@/types/sortOptions";
+import { SearchAndSort } from "@/components/issues/SearchAndSort";
+import { SORT_OPTIONS } from "@/types/sortOptions";
+import type { Article } from "@/types/article";
 
 interface RhcaArticleListProps {
-  articles: RhcaArticle[];
-  onArticleClick?: (article: RhcaArticle) => void;
+  articles: Article[];
+  viewMode?: "grid" | "table";
 }
 
-export const RhcaArticleList = ({ articles, onArticleClick }: RhcaArticleListProps) => {
+export const RhcaArticleList = ({ articles, viewMode = "grid" }: RhcaArticleListProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("latest");
 
-  const filteredArticles = articles.filter((article) =>
-    article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    article.abstract.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    article.authors.some(author => 
-      author.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
-
-  const sortedArticles = [...filteredArticles].sort((a, b) => {
-    switch (sortBy) {
-      case "latest":
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
-      case "downloads":
-        return (b.downloads || 0) - (a.downloads || 0);
-      case "shares":
-        return (b.shares || 0) - (a.shares || 0);
-      case "year":
-        return new Date(b.date).getFullYear() - new Date(a.date).getFullYear();
-      default:
-        return 0;
-    }
-  });
+  const handleSortChange = (value: SortOption) => {
+    setSortBy(value);
+  };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <SearchAndSort
         searchTerm={searchTerm}
-        onSearch={setSearchTerm}
         sortBy={sortBy}
-        onSort={setSortBy}
+        onSearch={setSearchTerm}
+        onSort={handleSortChange}
         sortOptions={SORT_OPTIONS}
       />
       
-      <div className="space-y-4">
-        {sortedArticles.map((article) => (
-          <div
-            key={article.id}
-            className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer"
-            onClick={() => onArticleClick?.(article)}
-          >
-            <h3 className="text-lg font-semibold mb-2">{article.title}</h3>
-            <p className="text-sm text-gray-600 mb-2">{article.authors.join(", ")}</p>
-            <p className="text-sm text-gray-500">
-              Page {article.pageNumber} • Volume {article.volume}
-            </p>
-          </div>
-        ))}
-      </div>
+      {/* Render articles based on viewMode */}
+      {viewMode === "grid" ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {articles.map(article => (
+            <div key={article.id} className="p-4 border rounded-lg">
+              <h3 className="font-semibold">{article.title}</h3>
+              <p>{article.abstract}</p>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <table className="min-w-full">
+          <thead>
+            <tr>
+              <th className="px-4 py-2">Title</th>
+              <th className="px-4 py-2">Abstract</th>
+            </tr>
+          </thead>
+          <tbody>
+            {articles.map(article => (
+              <tr key={article.id}>
+                <td className="border px-4 py-2">{article.title}</td>
+                <td className="border px-4 py-2">{article.abstract}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };
