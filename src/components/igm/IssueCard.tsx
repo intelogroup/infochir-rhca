@@ -42,7 +42,7 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
         aria-labelledby={`issue-title-${issue.id}`}
       >
         <div className="flex flex-col sm:flex-row h-full">
-          <div className="w-full sm:w-28 lg:w-32 flex-shrink-0">
+          <div className="w-full sm:w-24 md:w-28 lg:w-32 flex-shrink-0">
             <AspectRatio ratio={3/4} className="overflow-hidden">
               {issue.coverImage ? (
                 <img 
@@ -53,13 +53,13 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
                 />
               ) : (
                 <div className="w-full h-full bg-muted flex items-center justify-center">
-                  <span className="text-muted-foreground text-xs sm:text-sm">No cover</span>
+                  <span className="text-xs sm:text-sm text-muted-foreground">No cover</span>
                 </div>
               )}
             </AspectRatio>
           </div>
           
-          <div className="flex-1 p-2 sm:p-4 lg:p-6 flex flex-col min-w-0">
+          <div className="flex-1 p-3 sm:p-4 lg:p-6 flex flex-col min-w-0">
             <div className="space-y-2 sm:space-y-3 lg:space-y-4 flex-1">
               <div>
                 <h3 
@@ -110,25 +110,25 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
               </div>
             </div>
 
-            <div className="flex gap-2 mt-2 sm:mt-4">
+            <div className="flex gap-2 mt-3 sm:mt-4">
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-1 bg-ocean text-white hover:bg-ocean-hover flex-1 text-xs sm:text-sm h-8"
+                className="gap-1 bg-ocean text-white hover:bg-ocean-hover flex-1 text-xs sm:text-sm h-7 sm:h-8"
                 onClick={handleShare}
                 aria-label="Partager l'édition"
               >
-                <Share2 className="h-3 w-3 sm:h-4 sm:w-4" aria-hidden="true" />
+                <Share2 className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" aria-hidden="true" />
                 <span className="hidden sm:inline">Partager</span>
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-1 bg-ocean text-white hover:bg-ocean-hover flex-1 text-xs sm:text-sm h-8"
+                className="gap-1 bg-ocean text-white hover:bg-ocean-hover flex-1 text-xs sm:text-sm h-7 sm:h-8"
                 onClick={handleDownload}
                 aria-label={issue.pdfUrl ? "Télécharger le PDF" : "PDF non disponible"}
               >
-                <Download className="h-3 w-3 sm:h-4 sm:w-4" aria-hidden="true" />
+                <Download className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" aria-hidden="true" />
                 <span className="hidden sm:inline">PDF</span>
               </Button>
             </div>
