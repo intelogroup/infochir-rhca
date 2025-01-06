@@ -9,7 +9,6 @@ export const filterIssuesBySearch = (issues: Issue[], searchTerm: string) => {
     const issueMatch = 
       issue.title.toLowerCase().includes(lowercaseSearch) ||
       issue.abstract.toLowerCase().includes(lowercaseSearch) ||
-      issue.description?.toLowerCase().includes(lowercaseSearch) ||
       issue.volume.toLowerCase().includes(lowercaseSearch) ||
       issue.issue.toLowerCase().includes(lowercaseSearch);
 

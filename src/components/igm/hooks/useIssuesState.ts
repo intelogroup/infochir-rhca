@@ -28,7 +28,7 @@ export const useIssuesState = (
       const searchLower = searchTerm.toLowerCase();
       filtered = filtered.filter((issue) => 
         issue.title.toLowerCase().includes(searchLower) ||
-        issue.description?.toLowerCase().includes(searchLower) ||
+        issue.abstract.toLowerCase().includes(searchLower) ||
         issue.articles.some(article => 
           article.title.toLowerCase().includes(searchLower) ||
           article.authors.some(author => author.toLowerCase().includes(searchLower)) ||

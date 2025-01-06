@@ -8,7 +8,6 @@ export const issues2023: Issue[] = [
     issue: "No 12",
     date: new Date(2023, 11, 15).toISOString(),
     abstract: "Bilan annuel de la recherche médicale",
-    description: "Édité par Dr. Jean Alouidor",
     pdfUrl: "https://example.com/sample2023-12.pdf",
     coverImage: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
     articleCount: 10,
@@ -24,6 +23,5 @@ export const issues2023: Issue[] = [
         tags: ["Rétrospective", "Innovation"]
       }
     ]
-  },
-  // ... Add entries for each month of 2023
+  }
 ];
