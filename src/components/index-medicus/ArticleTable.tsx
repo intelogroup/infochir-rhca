@@ -4,6 +4,7 @@ import { Download, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { Badge } from "@/components/ui/badge";
 import type { Article } from "./types";
 
 export const ArticleTable = ({ articles }: { articles: Article[] }) => {
@@ -31,19 +32,35 @@ export const ArticleTable = ({ articles }: { articles: Article[] }) => {
           <TableHead>Date</TableHead>
           <TableHead>Source</TableHead>
           <TableHead>Catégorie</TableHead>
+          <TableHead>Tags</TableHead>
           <TableHead className="text-right">Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {articles.map((article) => (
           <TableRow key={article.id}>
-            <TableCell className="font-medium">{article.title}</TableCell>
+            <TableCell className="font-medium max-w-md">
+              <div className="truncate">{article.title}</div>
+            </TableCell>
             <TableCell>{article.authors.join(", ")}</TableCell>
             <TableCell>
               {format(new Date(article.date), 'dd MMM yyyy', { locale: fr })}
             </TableCell>
-            <TableCell>{article.source}</TableCell>
+            <TableCell>
+              <Badge variant="outline" className="font-semibold">
+                {article.source}
+              </Badge>
+            </TableCell>
             <TableCell>{article.category}</TableCell>
+            <TableCell>
+              <div className="flex flex-wrap gap-1">
+                {article.tags.map((tag) => (
+                  <Badge key={tag} variant="secondary" className="text-xs">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            </TableCell>
             <TableCell className="text-right">
               <Button
                 variant="ghost"

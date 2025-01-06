@@ -1,50 +1,22 @@
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { ArticleGrid } from "@/components/index-medicus/ArticleGrid";
-import { ViewToggle } from "@/components/diagnostic/ViewToggle";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const IndexMedicus = () => {
-  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
-  const navigate = useNavigate();
-
   return (
     <MainLayout>
       <div className="min-h-screen bg-[#F1F0FB]">
         <div className="container max-w-[1600px] mx-auto px-2 sm:px-4 lg:px-6 py-4 lg:py-8 pt-20">
-          <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <div className="flex items-center mb-4 sm:mb-6">
             <Link to="/" className="inline-block">
               <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary-light">
                 <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
                 Retour
               </Button>
             </Link>
-            <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => navigate('/rhca')}
-              >
-                RHCA
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => navigate('/igm')}
-              >
-                IGM
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => navigate('/adc')}
-              >
-                Atlas ADC
-              </Button>
-            </div>
           </div>
 
           <div className="text-center mb-8 sm:mb-12 animate-fade-up">
@@ -70,11 +42,8 @@ const IndexMedicus = () => {
                   <TabsTrigger value="institutions">Institutions</TabsTrigger>
                 </TabsList>
                 <TabsContent value="articles">
-                  <div className="flex justify-end mb-4 sm:mb-6">
-                    <ViewToggle view={viewMode} setView={setViewMode} />
-                  </div>
                   <div className="bg-white rounded-lg p-3 sm:p-4 lg:p-6 shadow-sm">
-                    <ArticleGrid viewMode={viewMode} />
+                    <ArticleGrid viewMode="table" />
                   </div>
                 </TabsContent>
                 <TabsContent value="authors">

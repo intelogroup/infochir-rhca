@@ -7,7 +7,7 @@ interface ArticleGridProps {
   viewMode?: "grid" | "table";
 }
 
-export const ArticleGrid = ({ viewMode = "grid" }: ArticleGridProps) => {
+export const ArticleGrid = ({ viewMode = "table" }: ArticleGridProps) => {
   const {
     searchTerm,
     setSearchTerm,
