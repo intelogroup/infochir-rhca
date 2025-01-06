@@ -2,7 +2,7 @@ import { MainLayout } from "@/components/layouts/MainLayout";
 import { Suspense, lazy } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Lazy load components for better initial load performance
+// Lazy load components with proper loading states
 const HeroSection = lazy(() => import("@/components/home/HeroSection").then(module => ({ default: module.HeroSection })));
 const StatsSection = lazy(() => import("@/components/home/StatsSection").then(module => ({ default: module.StatsSection })));
 const ProductsSection = lazy(() => import("@/components/home/ProductsSection").then(module => ({ default: module.ProductsSection })));
@@ -11,9 +11,9 @@ const FoundersSection = lazy(() => import("@/components/home/FoundersSection").t
 const NewsletterSection = lazy(() => import("@/components/home/NewsletterSection").then(module => ({ default: module.NewsletterSection })));
 const SponsorsSection = lazy(() => import("@/components/home/SponsorsSection").then(module => ({ default: module.SponsorsSection })));
 
-// Loading fallback component
+// Improved loading skeleton with proper animation and sizing
 const SectionSkeleton = () => (
-  <div className="w-full h-[50vh] animate-pulse bg-gray-100 rounded-lg" />
+  <div className="w-full min-h-[400px] animate-pulse bg-gray-100/80 backdrop-blur-sm rounded-lg" />
 );
 
 const Index = () => (
