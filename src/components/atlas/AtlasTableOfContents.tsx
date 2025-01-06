@@ -11,8 +11,8 @@ export const AtlasTableOfContents = () => {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="outline" size="lg" className="gap-2 text-sm sm:text-base h-9 sm:h-10">
-          <TableProperties className="h-4 w-4 sm:h-5 sm:w-5" />
+        <Button variant="outline" size="sm" className="gap-2">
+          <TableProperties className="h-4 w-4" />
           Table des matières
         </Button>
       </SheetTrigger>
