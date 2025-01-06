@@ -3,6 +3,7 @@ import { IssuesTable } from "@/components/issues/IssuesTable";
 import { FileText, Search } from "lucide-react";
 import type { Issue } from "../types";
 import { IssueCardSkeleton } from "./IssueCardSkeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface IssuesGridContentProps {
   viewMode: "grid" | "table";
