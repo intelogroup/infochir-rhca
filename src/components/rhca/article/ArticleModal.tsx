@@ -53,7 +53,7 @@ export const ArticleModal = ({ article, open, onClose }: ArticleModalProps) => {
     <DocumentModal
       document={{
         id: article.id,
-        title: article.title,
+        title: `Infochir/RHCA Volume ${article.volume} No 1`,
         date: article.date,
         description: `Par ${article.authors.join(", ")}`,
         downloadCount: parseInt(article.downloads || "0"),

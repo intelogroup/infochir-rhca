@@ -55,7 +55,7 @@ export const RHCAHeader = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              Infochir/RHCA Volume 12 No 1
+              Revue Haïtienne de Chirurgie et d'Anesthésiologie
             </motion.h1>
             <motion.p 
               className="text-lg sm:text-xl text-[#41b06e]/80"
