@@ -7,6 +7,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DateRange } from "react-day-picker";
+import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import type { SortOption, SortOptionType } from "@/types/sortOptions";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +19,12 @@ export interface SearchAndSortProps {
   onSort: (value: SortOption) => void;
   sortOptions: readonly SortOptionType[];
   className?: string;
+  dateRange?: DateRange;
+  onDateRangeChange?: (range: DateRange | undefined) => void;
+  selectedCategories?: string[];
+  onCategoryChange?: (categories: string[]) => void;
+  availableCategories?: string[];
+  disabled?: boolean;
 }
 
 export const SearchAndSort = ({
@@ -25,7 +33,10 @@ export const SearchAndSort = ({
   onSearch,
   onSort,
   sortOptions,
-  className
+  className,
+  dateRange,
+  onDateRangeChange,
+  disabled = false,
 }: SearchAndSortProps) => {
   return (
     <div className={cn("flex flex-col sm:flex-row gap-4", className)}>
@@ -37,20 +48,31 @@ export const SearchAndSort = ({
           value={searchTerm}
           onChange={(e) => onSearch(e.target.value)}
           className="pl-10"
+          disabled={disabled}
         />
       </div>
-      <Select value={sortBy} onValueChange={onSort}>
-        <SelectTrigger className="w-full sm:w-[180px]">
-          <SelectValue placeholder="Trier par" />
-        </SelectTrigger>
-        <SelectContent>
-          {sortOptions.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      
+      <div className="flex flex-wrap sm:flex-nowrap gap-4">
+        {onDateRangeChange && (
+          <DatePickerWithRange
+            date={dateRange}
+            setDate={onDateRangeChange}
+          />
+        )}
+
+        <Select value={sortBy} onValueChange={onSort} disabled={disabled}>
+          <SelectTrigger className="w-full sm:w-[180px] bg-white">
+            <SelectValue placeholder="Trier par" />
+          </SelectTrigger>
+          <SelectContent>
+            {sortOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
     </div>
   );
 };

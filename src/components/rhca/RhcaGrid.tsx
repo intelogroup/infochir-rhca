@@ -16,6 +16,12 @@ export const RhcaGrid = () => {
     setSortBy(value);
   };
 
+  const filteredArticles = mockArticles.filter(article =>
+    article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    article.abstract.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    article.authors.some(author => author.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-200">
@@ -52,7 +58,7 @@ export const RhcaGrid = () => {
       </div>
 
       <RhcaArticleList
-        articles={mockArticles}
+        articles={filteredArticles}
         viewMode={viewMode}
       />
     </div>

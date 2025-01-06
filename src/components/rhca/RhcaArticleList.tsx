@@ -1,8 +1,6 @@
-import { useState } from "react";
 import { RhcaCard } from "./RhcaCard";
 import { RhcaTable } from "./RhcaTable";
 import type { RhcaArticle } from "./types";
-import type { SortOption } from "@/types/sortOptions";
 
 interface RhcaArticleListProps {
   articles: RhcaArticle[];
@@ -10,10 +8,13 @@ interface RhcaArticleListProps {
 }
 
 export const RhcaArticleList = ({ articles = [], viewMode }: RhcaArticleListProps) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState<SortOption>("latest");
-
-  if (!articles) return null;
+  if (!articles?.length) {
+    return (
+      <div className="text-center py-8 text-gray-500">
+        Aucun article trouvé
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
