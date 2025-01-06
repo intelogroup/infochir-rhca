@@ -10,12 +10,12 @@ interface VolumeModalProps {
 }
 
 export const VolumeModal = ({ volume, open, onClose, title }: VolumeModalProps) => {
-  const renderContent = (volume: RhcaVolume) => (
+  const renderContent = (document: RhcaVolume) => (
     <div className="space-y-4">
       <h3 className="text-[clamp(1.125rem,1.075rem+0.25vw,1.25rem)] font-semibold text-primary">
         Table des matières
       </h3>
-      {volume.articles.map((article) => (
+      {document.articles.map((article) => (
         <div
           key={article.id}
           className="p-4 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
@@ -65,10 +65,11 @@ export const VolumeModal = ({ volume, open, onClose, title }: VolumeModalProps) 
         downloadCount: volume.downloadCount,
         shareCount: volume.shareCount,
         pdfUrl: volume.articles[0]?.pdfUrl,
+        coverImage: volume.coverImage,
       }}
       open={open}
       onClose={onClose}
-      renderContent={renderContent}
+      renderContent={() => renderContent(volume)}
     />
   );
 };
