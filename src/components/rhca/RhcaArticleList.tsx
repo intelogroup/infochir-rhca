@@ -1,8 +1,9 @@
 import { RhcaCard } from "./RhcaCard";
 import { RhcaTable } from "./RhcaTable";
 import type { RhcaArticle } from "./types";
-import { motion } from "framer-motion";
-import { Calendar, FileText } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Calendar, FileText, ChevronDown } from "lucide-react";
+import { useState } from "react";
 
 interface RhcaArticleListProps {
   articles: RhcaArticle[];
@@ -10,6 +11,8 @@ interface RhcaArticleListProps {
 }
 
 export const RhcaArticleList = ({ articles = [], viewMode }: RhcaArticleListProps) => {
+  const [expandedYears, setExpandedYears] = useState<number[]>([]);
+
   const articlesByYear = articles.reduce((acc, article) => {
     const year = new Date(article.date).getFullYear();
     if (!acc[year]) {
@@ -22,6 +25,14 @@ export const RhcaArticleList = ({ articles = [], viewMode }: RhcaArticleListProp
   const sortedYears = Object.keys(articlesByYear)
     .map(Number)
     .sort((a, b) => b - a);
+
+  const toggleYear = (year: number) => {
+    setExpandedYears(prev => 
+      prev.includes(year) 
+        ? prev.filter(y => y !== year)
+        : [...prev, year]
+    );
+  };
 
   if (!articles?.length) {
     return (
@@ -44,40 +55,67 @@ export const RhcaArticleList = ({ articles = [], viewMode }: RhcaArticleListProp
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-200 pb-4 gap-3">
-              <div className="flex items-center gap-3">
-                <div className="bg-primary/5 p-2 rounded-lg">
-                  <Calendar className="h-5 w-5 text-primary" />
+            <button
+              onClick={() => toggleYear(year)}
+              className="w-full"
+              aria-expanded={expandedYears.includes(year)}
+              aria-controls={`year-content-${year}`}
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-200 pb-4 gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="bg-primary/5 p-2 rounded-lg">
+                    <Calendar className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 tracking-tight">
+                      {year}
+                    </h2>
+                    <p className="text-sm text-gray-600 mt-0.5">
+                      {articlesByYear[year].length} article{articlesByYear[year].length !== 1 ? 's' : ''}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 tracking-tight">
-                    {year}
-                  </h2>
-                  <p className="text-sm text-gray-600 mt-0.5">
-                    {articlesByYear[year].length} article{articlesByYear[year].length !== 1 ? 's' : ''}
-                  </p>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2 bg-secondary/15 px-4 py-2 rounded-full">
+                    <FileText className="h-4 w-4 text-gray-700" />
+                    <span className="text-sm font-medium text-gray-700">
+                      {articlesByYear[year].reduce((acc, article) => acc + Number(article.downloads || "0"), 0)} téléchargements
+                    </span>
+                  </div>
+                  <ChevronDown 
+                    className={`h-5 w-5 text-gray-500 transition-transform duration-200 ${
+                      expandedYears.includes(year) ? 'rotate-180' : ''
+                    }`}
+                  />
                 </div>
               </div>
-              <div className="flex items-center gap-2 bg-secondary/15 px-4 py-2 rounded-full">
-                <FileText className="h-4 w-4 text-gray-700" />
-                <span className="text-sm font-medium text-gray-700">
-                  {articlesByYear[year].reduce((acc, article) => acc + Number(article.downloads || "0"), 0)} téléchargements
-                </span>
-              </div>
-            </div>
+            </button>
             
-            <div className="grid grid-cols-1 gap-4">
-              {articlesByYear[year].map((article) => (
+            <AnimatePresence>
+              {expandedYears.includes(year) && (
                 <motion.div
-                  key={article.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
+                  id={`year-content-${year}`}
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden"
                 >
-                  <RhcaCard article={article} />
+                  <div className="grid grid-cols-1 gap-4 pt-4">
+                    {articlesByYear[year].map((article) => (
+                      <motion.div
+                        key={article.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <RhcaCard article={article} />
+                      </motion.div>
+                    ))}
+                  </div>
                 </motion.div>
-              ))}
-            </div>
+              )}
+            </AnimatePresence>
           </motion.div>
         ))}
       </div>
