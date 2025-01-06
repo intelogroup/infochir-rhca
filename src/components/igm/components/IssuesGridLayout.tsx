@@ -7,7 +7,6 @@ import { useState, useEffect } from "react";
 import { DateRange } from "react-day-picker";
 import { motion, AnimatePresence } from "framer-motion";
 import { useInView } from "framer-motion";
-import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { SortOption } from "@/types/sortOptions";
 
@@ -51,15 +50,6 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <div className="mb-4 sm:mb-6">
-        <Breadcrumbs
-          items={[
-            { label: "IGM", href: "/igm" },
-            { label: "Publications" },
-          ]}
-        />
-      </div>
-
       <motion.div 
         className="bg-white rounded-lg sm:rounded-xl border-b border-gray-100 p-4 sm:p-6 shadow-sm"
         initial={{ opacity: 0, y: -20 }}
