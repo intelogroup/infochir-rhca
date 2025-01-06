@@ -59,18 +59,6 @@ export const navItems: NavItem[] = [
     logo: "/lovable-uploads/f2409464-47cf-4348-ada0-e328e86be01b.png"
   },
   {
-    name: "Ressources",
-    href: "/resources",
-    icon: Book,
-    description: "Accédez à nos ressources médicales et opportunités"
-  },
-  {
-    name: "Opportunités",
-    href: "/opportunities",
-    icon: List,
-    description: "Découvrez les opportunités professionnelles dans le domaine médical"
-  },
-  {
     name: "À propos",
     href: "/about",
     icon: Info,
