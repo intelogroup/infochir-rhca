@@ -1,14 +1,14 @@
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
-import { IssuesGridLayout } from "./components/IssuesGridLayout";
+import { IssuesGridLayout } from "./components/layout/IssuesGridLayout";
 
 interface IssuesGridProps {
   viewMode?: "grid" | "table";
 }
 
-export const IssuesGrid = (props: IssuesGridProps) => {
+export const IssuesGrid = ({ viewMode = "grid" }: IssuesGridProps) => {
   return (
     <ErrorBoundary>
-      <IssuesGridLayout {...props} />
+      <IssuesGridLayout viewMode={viewMode} />
     </ErrorBoundary>
   );
 };
