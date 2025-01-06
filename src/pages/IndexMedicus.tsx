@@ -21,7 +21,7 @@ const IndexMedicus = () => {
 
           <div className="text-center mb-4 sm:mb-8 lg:mb-12 animate-fade-up">
             <img 
-              src="/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png"
+              src="/lovable-uploads/f2409464-47cf-4348-ada0-e328e86be01b.png"
               alt="Index Medicus Logo"
               className="h-10 w-10 sm:h-16 sm:w-16 lg:h-24 lg:w-24 mx-auto mb-2 sm:mb-4 object-contain"
             />

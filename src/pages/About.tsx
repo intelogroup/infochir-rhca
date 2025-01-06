@@ -6,7 +6,7 @@ import { BookOpen, Target, Users, Award } from "lucide-react";
 const About = () => {
   return (
     <MainLayout>
-      <div className="min-h-screen bg-gradient-to-br from-white to-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-white to-gray-50 pt-[50px]">
         <section 
           className="relative overflow-hidden py-8 sm:py-12 md:py-16 lg:py-24"
           aria-label="Introduction"

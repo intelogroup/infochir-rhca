@@ -31,14 +31,13 @@ const Donate = () => {
 
   return (
     <MainLayout>
-      <div className="relative min-h-screen bg-gradient-to-b from-gray-50 to-white">
-        {/* Decorative background elements */}
+      <div className="relative min-h-screen bg-gradient-to-b from-gray-50 to-white pt-[50px]">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_70%,transparent_100%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_70%,transparent_100%)]" />
         
         <div className="relative max-w-4xl mx-auto px-4 py-12">
           <DonateHeader />
-
+          
           <div className="grid md:grid-cols-3 gap-8">
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
