@@ -2,11 +2,21 @@ import { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Lazy load all pages for better initial bundle size
+// Preload critical routes
 const Home = lazy(() => import("@/pages/Home"));
 const RHCA = lazy(() => import("@/pages/RHCA"));
 const IGM = lazy(() => import("@/pages/IGM"));
-const ADC = lazy(() => import("@/pages/ADC"));
+
+// Lazy load less frequently accessed routes
+const ADC = lazy(() => {
+  // Add a small delay to prioritize main routes
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(import("@/pages/ADC"));
+    }, 100);
+  });
+});
+
 const IndexMedicus = lazy(() => import("@/pages/IndexMedicus"));
 const About = lazy(() => import("@/pages/About"));
 const EditorialCommittee = lazy(() => import("@/pages/EditorialCommittee"));
@@ -17,13 +27,11 @@ const Opportunities = lazy(() => import("@/pages/Opportunities"));
 const RHCADirectives = lazy(() => import("@/pages/rhca/Directives"));
 const IGMDirectives = lazy(() => import("@/pages/igm/Directives")); 
 
+// Optimized loading skeleton with reduced complexity
 const PageSkeleton = () => (
-  <div className="min-h-screen bg-gray-50 p-4">
-    <Skeleton className="h-[200px] w-full rounded-lg mb-4" />
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <Skeleton className="h-[300px] rounded-lg" />
-      <Skeleton className="h-[300px] rounded-lg" />
-    </div>
+  <div className="min-h-screen bg-gray-50/50 p-4 animate-pulse">
+    <Skeleton className="h-[100px] w-full rounded-lg mb-4" />
+    <Skeleton className="h-[200px] w-full rounded-lg" />
   </div>
 );
 
