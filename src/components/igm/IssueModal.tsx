@@ -1,13 +1,14 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { Download, Share2, Tag, Calendar, BookOpen, Share } from "lucide-react";
+import { Download, Share2, Tag, Calendar, BookOpen, Share, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
 import type { Issue } from "./types";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
 
 interface IssueModalProps {
   issue: Issue;
@@ -16,7 +17,11 @@ interface IssueModalProps {
 }
 
 export const IssueModal = ({ issue, isOpen, onClose }: IssueModalProps) => {
+  const [isSharing, setIsSharing] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+
   const handleShare = async () => {
+    setIsSharing(true);
     const shareUrl = `${window.location.origin}/igm/issues/${issue.id}`;
     
     try {
@@ -29,10 +34,14 @@ export const IssueModal = ({ issue, isOpen, onClose }: IssueModalProps) => {
 
       if (error) throw error;
       
-      toast.success("Lien copié dans le presse-papier");
+      toast.success("Lien copié dans le presse-papier", {
+        className: "bg-secondary text-white",
+      });
     } catch (error) {
       console.error('Error sharing:', error);
       toast.error("Erreur lors du partage");
+    } finally {
+      setTimeout(() => setIsSharing(false), 1000);
     }
   };
 
@@ -42,6 +51,7 @@ export const IssueModal = ({ issue, isOpen, onClose }: IssueModalProps) => {
       return;
     }
 
+    setIsDownloading(true);
     try {
       const { error } = await supabase
         .from('articles')
@@ -51,10 +61,14 @@ export const IssueModal = ({ issue, isOpen, onClose }: IssueModalProps) => {
       if (error) throw error;
 
       window.open(issue.pdfUrl, '_blank');
-      toast.success("Téléchargement du PDF en cours...");
+      toast.success("Téléchargement du PDF en cours...", {
+        className: "bg-secondary text-white",
+      });
     } catch (error) {
       console.error('Error downloading:', error);
       toast.error("Erreur lors du téléchargement");
+    } finally {
+      setTimeout(() => setIsDownloading(false), 1000);
     }
   };
 
@@ -74,14 +88,9 @@ export const IssueModal = ({ issue, isOpen, onClose }: IssueModalProps) => {
                   {issue.title}
                 </DialogTitle>
               </motion.div>
-              <motion.p 
-                className="text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] text-gray-600 mt-2 leading-relaxed"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.1 }}
-              >
+              <DialogDescription className="text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] text-gray-600 mt-2 leading-relaxed">
                 {issue.abstract}
-              </motion.p>
+              </DialogDescription>
             </DialogHeader>
             
             <ScrollArea className="max-h-[80vh]">
@@ -97,7 +106,7 @@ export const IssueModal = ({ issue, isOpen, onClose }: IssueModalProps) => {
                       <Calendar className="h-4 w-4" />
                       {format(new Date(issue.date), 'dd MMMM yyyy', { locale: fr })}
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 bg-secondary/5 px-3 py-1 rounded-full">
                       <BookOpen className="h-4 w-4" />
                       {issue.articleCount} articles
                     </div>
@@ -114,19 +123,29 @@ export const IssueModal = ({ issue, isOpen, onClose }: IssueModalProps) => {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="gap-2 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)]"
+                      className="gap-2 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] hover:bg-secondary/10 hover:text-secondary transition-colors"
                       onClick={handleShare}
+                      disabled={isSharing}
                     >
-                      <Share2 className="h-4 w-4" />
+                      {isSharing ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Share2 className="h-4 w-4" />
+                      )}
                       Partager
                     </Button>
                     <Button
                       variant="default"
                       size="sm"
-                      className="gap-2 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)]"
+                      className="gap-2 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] bg-secondary hover:bg-secondary-light transition-colors"
                       onClick={handleDownload}
+                      disabled={isDownloading}
                     >
-                      <Download className="h-4 w-4" />
+                      {isDownloading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Download className="h-4 w-4" />
+                      )}
                       Télécharger PDF
                     </Button>
                   </div>
