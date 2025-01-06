@@ -11,11 +11,14 @@ const mapDatabaseArticleToArticle = (dbArticle: DatabaseArticle): Article => {
     ? dbArticle.source as ArticleSource 
     : "RHCA"; // Default to RHCA if invalid source
 
+  // Extract author names from the joined data
+  const authorNames = dbArticle.author_names || [];
+
   const mappedArticle = {
     ...dbArticle,
     date: dbArticle.publication_date,
     source,
-    authors: dbArticle.authors || [], // Ensure authors is always an array
+    authors: authorNames,
     tags: dbArticle.tags || [],
     imageUrl: dbArticle.image_url || undefined,
     views: dbArticle.views || 0,
@@ -36,7 +39,10 @@ export const useArticlesQuery = () => {
       
       const { data, error } = await supabase
         .from("articles")
-        .select("*")
+        .select(`
+          *,
+          author_names:members!articles_authors_fkey(name)
+        `)
         .order("publication_date", { ascending: false });
 
       if (error) {
@@ -52,9 +58,11 @@ export const useArticlesQuery = () => {
       console.log('Raw data from Supabase:', data);
 
       // Map database response to match Article type
-      const mappedArticles = data.map((article) => 
-        mapDatabaseArticleToArticle(article as DatabaseArticle)
-      );
+      const mappedArticles = data.map((article) => {
+        // Transform the joined author data into a simple array of names
+        const authorNames = article.author_names?.map((author: any) => author.name) || [];
+        return mapDatabaseArticleToArticle({ ...article, author_names: authorNames });
+      });
 
       console.log('Final mapped articles:', mappedArticles);
       return mappedArticles;

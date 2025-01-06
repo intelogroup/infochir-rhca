@@ -20,6 +20,7 @@ export interface DatabaseArticle {
   id: string;
   title: string;
   authors: string[];
+  author_names?: string[];
   publication_date: string;
   category: string;
   source: string;
