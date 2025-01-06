@@ -7,6 +7,20 @@ import { useState } from "react";
 import { VolumeModal } from "./volume/VolumeModal";
 import type { RhcaVolume } from "./types";
 
+const PLACEHOLDER_IMAGES = [
+  "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
+  "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
+  "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
+  "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
+  "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7"
+];
+
+const getPlaceholderImage = (id: string) => {
+  // Use the volume id to consistently get the same placeholder image
+  const index = parseInt(id, 36) % PLACEHOLDER_IMAGES.length;
+  return `${PLACEHOLDER_IMAGES[index]}?auto=format&fit=crop&w=400&q=80`;
+};
+
 interface VolumeCardProps {
   volume: RhcaVolume;
 }
@@ -29,19 +43,13 @@ export const VolumeCard = ({ volume }: VolumeCardProps) => {
               style={{ aspectRatio: "3/4" }}
               aria-label={volume.coverImage ? `Couverture du volume ${volume.volume}` : "Image de couverture non disponible"}
             >
-              {volume.coverImage ? (
-                <img 
-                  src={volume.coverImage} 
-                  alt=""
-                  className="absolute inset-0 w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-105"
-                  loading="lazy"
-                  aria-hidden="true"
-                />
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-secondary/20 text-xl font-bold">PDF</span>
-                </div>
-              )}
+              <img 
+                src={volume.coverImage || getPlaceholderImage(volume.id)}
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-105"
+                loading="lazy"
+                aria-hidden="true"
+              />
             </div>
             <div className="flex-1 flex flex-col min-w-0">
               <CardHeader className="p-0 flex-1">
