@@ -6,7 +6,7 @@ const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
   console.log('Mapping database article:', dbArticle);
   
   // Extract author names from the joined data
-  const authorNames = dbArticle.authors?.map((author: any) => author.name) || [];
+  const authorNames = dbArticle.article_authors?.map((author: any) => author.member.name) || [];
 
   const mappedArticle = {
     id: dbArticle.id,
@@ -38,8 +38,8 @@ export const useArticlesQuery = () => {
         .from("articles")
         .select(`
           *,
-          authors:article_authors(
-            member:members(
+          article_authors (
+            member:members (
               name
             )
           )
@@ -59,11 +59,7 @@ export const useArticlesQuery = () => {
       console.log('Raw data from Supabase:', data);
 
       // Map database response to match Article type
-      const mappedArticles = data.map((article) => {
-        // Transform the joined author data into a simple array of names
-        const authorNames = article.authors?.map((author: any) => author.member.name) || [];
-        return mapDatabaseArticleToArticle({ ...article, authors: authorNames });
-      });
+      const mappedArticles = data.map((article) => mapDatabaseArticleToArticle(article));
 
       console.log('Final mapped articles:', mappedArticles);
       return mappedArticles;
