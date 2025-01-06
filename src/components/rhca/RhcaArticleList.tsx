@@ -3,7 +3,7 @@ import { RhcaTable } from "./RhcaTable";
 import type { RhcaArticle } from "./types";
 import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, FileText, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface RhcaArticleListProps {
   articles: RhcaArticle[];
@@ -25,6 +25,13 @@ export const RhcaArticleList = ({ articles = [], viewMode }: RhcaArticleListProp
   const sortedYears = Object.keys(articlesByYear)
     .map(Number)
     .sort((a, b) => b - a);
+
+  // Set the most recent year as expanded by default
+  useEffect(() => {
+    if (sortedYears.length > 0 && expandedYears.length === 0) {
+      setExpandedYears([sortedYears[0]]);
+    }
+  }, [sortedYears]);
 
   const toggleYear = (year: number) => {
     setExpandedYears(prev => 
