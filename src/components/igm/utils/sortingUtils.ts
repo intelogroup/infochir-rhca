@@ -1,13 +1,30 @@
 import type { Issue } from "../types";
 
-export const sortByDate = (a: Issue, b: Issue) => 
-  new Date(b.date).getTime() - new Date(a.date).getTime();
+export const sortByDate = (a: Issue, b: Issue) => {
+  const dateA = new Date(a.date);
+  const dateB = new Date(b.date);
+  
+  if (!isNaN(dateA.getTime()) && !isNaN(dateB.getTime())) {
+    return dateB.getTime() - dateA.getTime();
+  }
+  
+  console.error('Invalid date encountered while sorting');
+  return 0;
+};
 
 export const sortByYear = (a: Issue, b: Issue) => {
-  const yearDiff = new Date(b.date).getFullYear() - new Date(a.date).getFullYear();
+  const dateA = new Date(a.date);
+  const dateB = new Date(b.date);
+  
+  if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
+    console.error('Invalid date encountered while sorting by year');
+    return 0;
+  }
+
+  const yearDiff = dateB.getFullYear() - dateA.getFullYear();
   if (yearDiff === 0) {
     // If same year, sort by month (newest first)
-    return new Date(b.date).getMonth() - new Date(a.date).getMonth();
+    return dateB.getMonth() - dateA.getMonth();
   }
   return yearDiff;
 };
