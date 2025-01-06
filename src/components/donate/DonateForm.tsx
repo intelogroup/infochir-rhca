@@ -1,14 +1,11 @@
 import { useState, type ChangeEvent } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Building2, CreditCard, Wallet, DollarSign } from "lucide-react";
+import { DollarSign } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-
-const DonationAmounts = [10, 25, 50, 100, 250, 500];
-const MAX_DONATION = 10000;
+import { DonationAmountSelector } from "./DonationAmountSelector";
+import { PaymentMethodSelector } from "./PaymentMethodSelector";
 
 interface DonateFormProps {
   onAmountChange: (amount: number) => void;
@@ -26,18 +23,38 @@ export const DonateForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("card");
 
-  const handleCustomAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (value === "" || (Number(value) >= 0 && Number(value) <= MAX_DONATION)) {
-      onCustomAmountChange(e);
+  const validateDonation = () => {
+    if (!selectedAmount && !customAmount) {
+      toast.error("Please select or enter a donation amount");
+      return false;
     }
+
+    if (Number(customAmount) > 10000) {
+      toast.error("Maximum donation amount is $10,000");
+      return false;
+    }
+
+    if (selectedPaymentMethod === "card" && !validateCardFields()) {
+      return false;
+    }
+
+    return true;
+  };
+
+  const validateCardFields = () => {
+    const cardInputs = document.querySelectorAll('input');
+    let isValid = true;
+    cardInputs.forEach(input => {
+      if (!input.value && input.placeholder !== "0") {
+        toast.error(`Please enter ${input.placeholder}`);
+        isValid = false;
+      }
+    });
+    return isValid;
   };
 
   const handleSubmit = async () => {
-    if (!selectedAmount && !customAmount) {
-      toast.error("Please select or enter a donation amount");
-      return;
-    }
+    if (!validateDonation()) return;
 
     setIsSubmitting(true);
     try {
@@ -64,44 +81,12 @@ export const DonateForm = ({
           <CardDescription>Select a preset amount or enter a custom amount</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-3 gap-4 mb-6">
-            {DonationAmounts.map((amount) => (
-              <motion.button
-                key={amount}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => onAmountChange(amount)}
-                className={`h-16 text-lg relative overflow-hidden rounded-lg border ${
-                  selectedAmount === amount 
-                    ? "border-primary bg-primary text-white"
-                    : "border-gray-200 hover:border-primary/50"
-                }`}
-              >
-                <span className="relative z-10">${amount}</span>
-                <div className={`absolute inset-0 bg-gradient-to-r from-primary/10 to-secondary/10 transition-opacity ${
-                  selectedAmount === amount ? "opacity-100" : "opacity-0"
-                }`} />
-              </motion.button>
-            ))}
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Or enter a custom amount</label>
-            <div className="relative">
-              <Input
-                type="number"
-                placeholder="0"
-                className="pl-8 text-lg"
-                value={customAmount}
-                onChange={handleCustomAmountChange}
-                max={MAX_DONATION}
-                min={0}
-              />
-              <span className="absolute left-3 top-1/2 -translate-y-1/2">$</span>
-            </div>
-            {Number(customAmount) > MAX_DONATION && (
-              <p className="text-sm text-red-500">Maximum donation amount is ${MAX_DONATION}</p>
-            )}
-          </div>
+          <DonationAmountSelector
+            selectedAmount={selectedAmount}
+            customAmount={customAmount}
+            onAmountChange={onAmountChange}
+            onCustomAmountChange={onCustomAmountChange}
+          />
         </CardContent>
       </Card>
 
@@ -113,80 +98,14 @@ export const DonateForm = ({
           <CardDescription>Choose your preferred payment method</CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs value={selectedPaymentMethod} onValueChange={setSelectedPaymentMethod} className="w-full">
-            <TabsList className="grid grid-cols-4 w-full">
-              <TabsTrigger value="card" className="flex items-center gap-2">
-                <CreditCard className="h-4 w-4" />
-                Card
-              </TabsTrigger>
-              <TabsTrigger value="bank" className="flex items-center gap-2">
-                <Building2 className="h-4 w-4" />
-                Bank
-              </TabsTrigger>
-              <TabsTrigger value="zelle" className="flex items-center gap-2">
-                <DollarSign className="h-4 w-4" />
-                Zelle
-              </TabsTrigger>
-              <TabsTrigger value="paypal" className="flex items-center gap-2">
-                <Wallet className="h-4 w-4" />
-                PayPal
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="card" className="space-y-4 mt-4">
-              <div className="space-y-4">
-                <Input placeholder="Card number" />
-                <div className="grid grid-cols-3 gap-4">
-                  <Input placeholder="MM/YY" className="col-span-1" />
-                  <Input placeholder="CVC" className="col-span-1" />
-                  <Input placeholder="ZIP" className="col-span-1" />
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="bank" className="mt-4">
-              <div className="space-y-4 p-4 bg-secondary/20 rounded-lg">
-                <div className="space-y-2">
-                  <p className="font-medium">Bank Account Details:</p>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <span className="text-gray-600">Bank Name:</span>
-                    <span>INFOCHIR Bank</span>
-                    <span className="text-gray-600">Account Number:</span>
-                    <span>XXXX-XXXX-XXXX</span>
-                    <span className="text-gray-600">Routing Number:</span>
-                    <span>XXX-XXX-XXX</span>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="zelle" className="mt-4">
-              <div className="space-y-4 p-4 bg-secondary/20 rounded-lg">
-                <div className="space-y-2">
-                  <p className="font-medium">Zelle Payment Details:</p>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <span className="text-gray-600">Email:</span>
-                    <span>donate@infochir.org</span>
-                    <span className="text-gray-600">Phone:</span>
-                    <span>+1 (XXX) XXX-XXXX</span>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="paypal" className="mt-4">
-              <div className="text-center py-8">
-                <Button variant="outline" className="w-full max-w-sm">
-                  <Wallet className="mr-2 h-4 w-4" />
-                  Pay with PayPal
-                </Button>
-              </div>
-            </TabsContent>
-          </Tabs>
+          <PaymentMethodSelector
+            selectedPaymentMethod={selectedPaymentMethod}
+            onPaymentMethodChange={setSelectedPaymentMethod}
+          />
         </CardContent>
         <CardFooter>
           <Button 
-            className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white" 
+            className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white relative overflow-hidden group" 
             disabled={(!selectedAmount && !customAmount) || isSubmitting}
             onClick={handleSubmit}
           >
@@ -200,7 +119,15 @@ export const DonateForm = ({
                 Processing...
               </span>
             ) : (
-              "Complete Donation"
+              <>
+                <span className="relative z-10">Complete Donation</span>
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-primary/20 to-blue-600/20"
+                  initial={{ x: "-100%" }}
+                  animate={{ x: "100%" }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                />
+              </>
             )}
           </Button>
         </CardFooter>
