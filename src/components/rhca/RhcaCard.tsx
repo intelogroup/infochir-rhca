@@ -13,12 +13,12 @@ interface RhcaCardProps {
 export const RhcaCard = ({ article, onCardClick }: RhcaCardProps) => {
   return (
     <Card 
-      className="group hover:shadow-lg transition-all duration-300 cursor-pointer bg-white h-full border-gray-100"
+      className="group hover:shadow-lg transition-all duration-300 cursor-pointer bg-white h-full border-gray-100 overflow-hidden"
       onClick={onCardClick}
       role="article"
       aria-labelledby={`article-title-${article.id}`}
     >
-      <div className="flex flex-col md:flex-row gap-6 p-6 h-full">
+      <div className="flex flex-col md:flex-row gap-4 p-4 sm:p-6 h-full">
         <div className="w-full md:w-36 flex-shrink-0">
           <AspectRatio ratio={3/4} className="overflow-hidden rounded-lg bg-gray-50 border border-gray-100">
             {article.imageUrl ? (
@@ -34,14 +34,16 @@ export const RhcaCard = ({ article, onCardClick }: RhcaCardProps) => {
             )}
           </AspectRatio>
         </div>
-        <div className="flex-1 min-w-0 flex flex-col">
+        <div className="flex-1 min-w-0 flex flex-col h-full">
           <ArticleHeader article={article} />
           <ArticleContent article={article} />
-          <ArticleActions 
-            id={article.id}
-            pdfUrl={article.pdfUrl}
-            onCardClick={onCardClick}
-          />
+          <div className="mt-auto pt-4">
+            <ArticleActions 
+              id={article.id}
+              pdfUrl={article.pdfUrl}
+              onCardClick={onCardClick}
+            />
+          </div>
         </div>
       </div>
     </Card>

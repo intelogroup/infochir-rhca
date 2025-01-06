@@ -23,15 +23,15 @@ export const RhcaGrid = () => {
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+    <div className="w-full space-y-6">
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100">
         <SearchAndSort
           searchTerm={searchTerm}
           sortBy={sortBy}
           onSearch={setSearchTerm}
           onSort={handleSortChange}
           sortOptions={SORT_OPTIONS}
-          className="flex-1"
+          className="flex-1 min-w-0"
         />
         
         <ToggleGroup 
@@ -44,6 +44,7 @@ export const RhcaGrid = () => {
             value="grid" 
             size="sm"
             className="data-[state=on]:bg-white data-[state=on]:text-primary data-[state=on]:shadow-sm px-3 py-2"
+            aria-label="Vue grille"
           >
             <LayoutGrid className="h-4 w-4" />
           </ToggleGroupItem>
@@ -51,6 +52,7 @@ export const RhcaGrid = () => {
             value="table" 
             size="sm"
             className="data-[state=on]:bg-white data-[state=on]:text-primary data-[state=on]:shadow-sm px-3 py-2"
+            aria-label="Vue liste"
           >
             <List className="h-4 w-4" />
           </ToggleGroupItem>
