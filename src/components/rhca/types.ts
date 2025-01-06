@@ -9,9 +9,10 @@ export interface RhcaArticle {
   volume: string;
   pageNumber: string;
   date: string;
-  views?: number;
-  downloads?: number;
-  shares?: number;
+  views?: string;
+  downloads?: string;
+  shares?: string;
+  citations?: string;
   tags?: string[];
   imageUrl?: string;
   pdfUrl?: string;
@@ -26,4 +27,5 @@ export interface RhcaVolume {
   downloadCount: number;
   shareCount: number;
   articles: RhcaArticle[];
+  coverImage?: string;
 }
