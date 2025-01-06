@@ -1,14 +1,14 @@
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search } from "lucide-react";
-import type { SortOption } from "@/types/sortOptions";
+import type { SortOption, SortOptionType } from "@/types/sortOptions";
 
 interface SearchAndSortProps {
   searchTerm: string;
   sortBy: string;
   onSearch: (value: string) => void;
   onSort: (value: SortOption) => void;
-  sortOptions: { value: SortOption; label: string }[];
+  sortOptions: readonly SortOptionType[];
   disabled?: boolean;
 }
 
