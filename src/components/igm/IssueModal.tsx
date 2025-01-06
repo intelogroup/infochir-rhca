@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Download, Share2, Tag, Calendar, BookOpen, Share } from "lucide-react";
@@ -66,9 +66,9 @@ export const IssueModal = ({ issue, isOpen, onClose }: IssueModalProps) => {
               {issue.title}
             </DialogTitle>
           </div>
-          <DialogDescription className="text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] text-gray-600 mt-2">
-            {issue.description}
-          </DialogDescription>
+          <p className="text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] text-gray-600 mt-2">
+            {issue.abstract}
+          </p>
         </DialogHeader>
         
         <ScrollArea className="max-h-[80vh]">

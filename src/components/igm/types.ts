@@ -14,7 +14,6 @@ export interface Issue {
   issue: string;
   date: string;
   abstract: string;
-  description?: string;
   pdfUrl?: string;
   coverImage?: string;
   articleCount: number;
