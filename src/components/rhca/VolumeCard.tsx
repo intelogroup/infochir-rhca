@@ -8,11 +8,18 @@ import { VolumeModal } from "./volume/VolumeModal";
 import type { RhcaVolume } from "./types";
 
 const PLACEHOLDER_IMAGES = [
-  "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
-  "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
-  "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
-  "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
-  "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7"
+  // Medical research and laboratory
+  "https://images.unsplash.com/photo-1579165466741-7f35e4755660",
+  "https://images.pexels.com/photos/3825586/pexels-photo-3825586.jpeg",
+  // Medical equipment and technology
+  "https://images.unsplash.com/photo-1516549655169-df83a0774514",
+  "https://images.pexels.com/photos/4226769/pexels-photo-4226769.jpeg",
+  // Operating rooms and surgical environments
+  "https://images.unsplash.com/photo-1551076805-e1869033e561",
+  "https://images.pexels.com/photos/3259624/pexels-photo-3259624.jpeg",
+  // Medical professionals
+  "https://images.unsplash.com/photo-1527613426441-4da17471b66d",
+  "https://images.pexels.com/photos/4225880/pexels-photo-4225880.jpeg"
 ];
 
 const getPlaceholderImage = (id: string) => {
