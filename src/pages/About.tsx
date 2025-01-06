@@ -8,7 +8,10 @@ const About = () => {
     <MainLayout>
       <div className="min-h-screen bg-gradient-to-br from-white to-gray-50">
         {/* Hero Section */}
-        <section className="relative overflow-hidden py-8 sm:py-12 md:py-16 lg:py-24">
+        <section 
+          className="relative overflow-hidden py-8 sm:py-12 md:py-16 lg:py-24"
+          aria-label="Introduction"
+        >
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div 
@@ -29,7 +32,10 @@ const About = () => {
         </section>
 
         {/* Mission Section */}
-        <section className="py-6 sm:py-8 md:py-12 bg-white">
+        <section 
+          className="py-6 sm:py-8 md:py-12 bg-white"
+          aria-label="Notre mission et valeurs"
+        >
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
@@ -62,9 +68,17 @@ const About = () => {
                 <div 
                   key={item.title}
                   className="p-4 sm:p-5 md:p-6 rounded-2xl bg-gradient-to-br from-white to-gray-50 shadow-lg shadow-gray-200/50 hover:shadow-xl transition-all duration-300"
+                  role="article"
+                  aria-labelledby={`mission-title-${index}`}
                 >
-                  <item.icon className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 text-primary mb-3 sm:mb-4" />
-                  <h3 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900 mb-2">
+                  <item.icon 
+                    className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 text-primary mb-3 sm:mb-4" 
+                    aria-hidden="true"
+                  />
+                  <h3 
+                    id={`mission-title-${index}`}
+                    className="text-base sm:text-lg md:text-xl font-semibold text-gray-900 mb-2"
+                  >
                     {item.title}
                   </h3>
                   <p className="text-xs sm:text-sm md:text-base text-gray-600">
@@ -77,7 +91,10 @@ const About = () => {
         </section>
 
         {/* Services Section */}
-        <section className="py-6 sm:py-8 md:py-12 bg-gradient-to-br from-gray-50 to-white">
+        <section 
+          className="py-6 sm:py-8 md:py-12 bg-gradient-to-br from-gray-50 to-white"
+          aria-label="Nos services"
+        >
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
@@ -88,7 +105,11 @@ const About = () => {
               <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-primary mb-4 sm:mb-6 md:mb-8">
                 Nos Services
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
+              <div 
+                className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6"
+                role="list"
+                aria-label="Liste des services"
+              >
                 {[
                   {
                     title: "Publications Scientifiques",
@@ -98,12 +119,17 @@ const About = () => {
                     title: "Base de Données Médicale",
                     description: "Accès à une vaste collection de ressources médicales et de références bibliographiques."
                   }
-                ].map((service) => (
+                ].map((service, index) => (
                   <div 
                     key={service.title}
                     className="p-4 sm:p-5 md:p-6 rounded-2xl bg-white shadow-lg shadow-primary/5 hover:shadow-xl transition-all duration-300 border border-gray-100"
+                    role="listitem"
+                    aria-labelledby={`service-title-${index}`}
                   >
-                    <h3 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900 mb-2 sm:mb-3">
+                    <h3 
+                      id={`service-title-${index}`}
+                      className="text-base sm:text-lg md:text-xl font-semibold text-gray-900 mb-2 sm:mb-3"
+                    >
                       {service.title}
                     </h3>
                     <p className="text-xs sm:text-sm md:text-base text-gray-600 leading-relaxed">

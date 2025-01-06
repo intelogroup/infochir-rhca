@@ -10,7 +10,10 @@ export const FoundersSection = () => {
   const [selectedFounder, setSelectedFounder] = useState<Founder | null>(null);
 
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section 
+      className="py-24 relative overflow-hidden"
+      aria-label="Membres fondateurs"
+    >
       <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] opacity-5" />
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
       
@@ -22,11 +25,17 @@ export const FoundersSection = () => {
             transition={{ duration: 0.6 }}
             className="flex items-center justify-center gap-2 mb-4"
           >
-            <Star className="w-8 h-8 text-[#1E40AF] animate-pulse" />
+            <Star 
+              className="w-8 h-8 text-[#1E40AF] animate-pulse" 
+              aria-hidden="true"
+            />
             <h2 className="text-4xl font-bold bg-gradient-to-r from-[#1E40AF] via-[#41b06e] to-[#41b06e] bg-clip-text text-transparent">
               Nos Membres Fondateurs
             </h2>
-            <Star className="w-8 h-8 text-[#1E40AF] animate-pulse" />
+            <Star 
+              className="w-8 h-8 text-[#1E40AF] animate-pulse" 
+              aria-hidden="true"
+            />
           </motion.div>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
@@ -38,7 +47,11 @@ export const FoundersSection = () => {
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+          role="list"
+          aria-label="Liste des membres fondateurs"
+        >
           {founders.map((founder, index) => (
             <motion.div
               key={founder.name}
@@ -46,6 +59,7 @@ export const FoundersSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
+              role="listitem"
             >
               <FounderCard 
                 founder={founder}
