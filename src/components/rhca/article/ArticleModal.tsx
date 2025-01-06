@@ -1,6 +1,7 @@
 import { DocumentModal } from "@/components/shared/DocumentModal";
 import { Tag } from "lucide-react";
 import type { RhcaArticle } from "../types";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ArticleModalProps {
   article: RhcaArticle;
@@ -10,14 +11,14 @@ interface ArticleModalProps {
 
 export const ArticleModal = ({ article, open, onClose }: ArticleModalProps) => {
   const renderContent = (document: RhcaArticle) => (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="prose prose-sm dark:prose-invert max-w-none">
         <h3 className="text-lg font-semibold text-primary">Résumé</h3>
         <p className="text-gray-600 dark:text-gray-300">{document.abstract}</p>
       </div>
 
       {document.tags && document.tags.length > 0 && (
-        <div className="flex flex-wrap gap-2 mt-4">
+        <div className="flex flex-wrap gap-2">
           {document.tags.map((tag, index) => (
             <span
               key={index}
@@ -29,6 +30,22 @@ export const ArticleModal = ({ article, open, onClose }: ArticleModalProps) => {
           ))}
         </div>
       )}
+
+      <div>
+        <h3 className="text-lg font-semibold text-primary mb-3">Articles associés</h3>
+        <ScrollArea className="h-[200px] w-full rounded-md border p-4">
+          <div className="space-y-2">
+            {mockArticleTitles.map((title, index) => (
+              <div 
+                key={index}
+                className="p-2 hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+              >
+                <p className="text-sm text-gray-700">{title}</p>
+              </div>
+            ))}
+          </div>
+        </ScrollArea>
+      </div>
     </div>
   );
 
@@ -50,3 +67,19 @@ export const ArticleModal = ({ article, open, onClose }: ArticleModalProps) => {
     />
   );
 };
+
+// Temporary mock data for demonstration
+const mockArticleTitles = [
+  "L'impact des nouvelles technologies en chirurgie cardiaque",
+  "Évolution des techniques de transplantation hépatique",
+  "Innovations en chirurgie mini-invasive",
+  "Approches modernes en chirurgie pédiatrique",
+  "Techniques avancées en neurochirurgie",
+  "Les progrès en chirurgie robotique",
+  "Nouvelles perspectives en chirurgie plastique",
+  "Développements récents en chirurgie orthopédique",
+  "Avancées en chirurgie vasculaire",
+  "La chirurgie assistée par ordinateur : état des lieux",
+  "Techniques émergentes en microchirurgie",
+  "L'intelligence artificielle en chirurgie",
+];
