@@ -1,12 +1,12 @@
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { RhcaGrid } from "@/components/rhca/RhcaGrid";
 import { mockVolumes } from "@/components/rhca/data/mockVolumes";
-import { Volume } from "@/components/rhca/types";
+import { RhcaVolume } from "@/components/rhca/types";
 import { useState } from "react";
 import { VolumeModal } from "@/components/rhca/volume/VolumeModal";
 
 const RHCA = () => {
-  const [selectedVolume, setSelectedVolume] = useState<Volume | null>(null);
+  const [selectedVolume, setSelectedVolume] = useState<RhcaVolume | null>(null);
 
   return (
     <MainLayout>

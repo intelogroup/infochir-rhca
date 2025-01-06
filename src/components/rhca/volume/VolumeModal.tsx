@@ -7,11 +7,11 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Calendar, Download, Share2 } from "lucide-react";
-import { Volume } from "../types";
+import { RhcaVolume } from "../types";
 import { toast } from "sonner";
 
 interface VolumeModalProps {
-  volume: Volume;
+  volume: RhcaVolume;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }

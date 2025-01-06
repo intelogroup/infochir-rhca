@@ -3,10 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Download, Eye, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
-import { Volume } from "./types";
+import { RhcaVolume } from "./types";
 
 interface RhcaCardProps {
-  volume: Volume;
+  volume: RhcaVolume;
   onView?: () => void;
 }
 

@@ -1,9 +1,9 @@
 import { RhcaCard } from "./RhcaCard";
-import { Volume } from "./types";
+import { RhcaVolume } from "./types";
 
 interface RhcaGridProps {
-  volumes: Volume[];
-  onVolumeView?: (volume: Volume) => void;
+  volumes: RhcaVolume[];
+  onVolumeView?: (volume: RhcaVolume) => void;
 }
 
 export const RhcaGrid = ({ volumes, onVolumeView }: RhcaGridProps) => {
