@@ -13,7 +13,7 @@ const IGM = () => {
   return (
     <MainLayout>
       <div className="min-h-screen bg-[#F1F0FB]">
-        <div className="container max-w-[1600px] mx-auto px-2 sm:px-4 lg:px-6 py-4 lg:py-8 pt-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-8 pt-20">
           <Link to="/" className="inline-block mb-4 sm:mb-6">
             <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary-light">
               <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -21,16 +21,16 @@ const IGM = () => {
             </Button>
           </Link>
 
-          <div className="text-center mb-8 sm:mb-12 animate-fade-up">
+          <div className="text-center mb-6 sm:mb-12 animate-fade-up">
             <img 
               src="/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png"
               alt="IGM Logo"
-              className="h-16 w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24 mx-auto mb-4 sm:mb-6 object-contain"
+              className="h-12 w-12 sm:h-20 sm:w-20 mx-auto mb-3 sm:mb-6 object-contain"
             />
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary mb-3 sm:mb-4">
+            <h1 className="text-xl sm:text-3xl lg:text-4xl font-bold text-primary mb-2 sm:mb-4">
               Info Gazette Médicale
             </h1>
-            <p className="text-base sm:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto mb-8 sm:mb-12 px-2">
+            <p className="text-sm sm:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto mb-6 sm:mb-12 px-2">
               Votre source d'information médicale de référence en Haïti.
             </p>
           </div>
@@ -61,34 +61,34 @@ const IGM = () => {
                 <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
                   Nous accueillons les articles originaux, les revues systématiques, les cas cliniques et les lettres à l'éditeur.
                 </p>
-                <Button className="w-full bg-ocean hover:bg-ocean-hover text-white text-sm sm:text-base">
+                <Button className="w-full bg-ocean hover:bg-ocean-hover text-sm sm:text-base">
                   Soumettre un manuscrit
                 </Button>
               </div>
 
-              <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-                <h2 className="text-xl sm:text-2xl font-semibold text-primary mb-4 flex items-center gap-2">
-                  <MessageCircle className="h-5 w-5" />
+              <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-primary mb-3 sm:mb-4 flex items-center gap-2">
+                  <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5" />
                   Instructions aux auteurs
                 </h2>
-                <p className="text-gray-600 mb-6">
+                <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
                   Consultez nos directives détaillées pour la préparation et la soumission de votre manuscrit.
                 </p>
-                <Button variant="outline" className="w-full text-ocean hover:bg-ocean hover:text-white border-ocean">
+                <Button variant="outline" className="w-full text-ocean hover:bg-ocean hover:text-white border-ocean text-sm sm:text-base">
                   Voir les directives
                 </Button>
               </div>
 
-              <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-                <h2 className="text-xl sm:text-2xl font-semibold text-primary mb-4 flex items-center gap-2">
-                  <Users className="h-5 w-5" />
+              <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-primary mb-3 sm:mb-4 flex items-center gap-2">
+                  <Users className="h-4 w-4 sm:h-5 sm:w-5" />
                   Comité éditorial
                 </h2>
-                <p className="text-gray-600 mb-6">
+                <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
                   Notre comité éditorial est composé d'experts reconnus dans leurs domaines respectifs.
                 </p>
                 <Link to="/igm/editorial-committee" className="block">
-                  <Button variant="outline" className="w-full text-ocean hover:bg-ocean hover:text-white border-ocean">
+                  <Button variant="outline" className="w-full text-ocean hover:bg-ocean hover:text-white border-ocean text-sm sm:text-base">
                     Découvrir l'équipe
                   </Button>
                 </Link>
@@ -96,18 +96,18 @@ const IGM = () => {
             </div>
           </div>
 
-          <div className="mt-12 lg:mt-16 bg-white rounded-2xl p-6 sm:p-8 shadow-md border border-gray-100 max-w-3xl mx-auto">
-            <h2 className="text-xl sm:text-2xl font-semibold text-primary mb-4 flex items-center gap-2">
-              <Check className="h-5 w-5" />
+          <div className="mt-8 lg:mt-16 bg-white rounded-xl sm:rounded-2xl p-4 sm:p-8 shadow-md border border-gray-100 max-w-3xl mx-auto">
+            <h2 className="text-lg sm:text-2xl font-semibold text-primary mb-3 sm:mb-4 flex items-center gap-2">
+              <Check className="h-4 w-4 sm:h-5 sm:w-5" />
               Notre Mission
             </h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6">
               L'Info Gazette Médicale (IGM) est une publication périodique dédiée à l'information médicale en Haïti. Notre mission est de fournir des informations actualisées et pertinentes sur les avancées médicales et les pratiques cliniques.
             </p>
-            <div className="grid sm:grid-cols-2 gap-6 text-left">
+            <div className="grid sm:grid-cols-2 gap-4 sm:gap-6 text-left">
               <div>
-                <h3 className="font-semibold text-primary mb-2">Objectifs</h3>
-                <ul className="list-disc list-inside text-gray-600 space-y-2">
+                <h3 className="font-semibold text-primary mb-2 text-sm sm:text-base">Objectifs</h3>
+                <ul className="list-disc list-inside text-gray-600 space-y-1 sm:space-y-2 text-sm sm:text-base">
                   <li>Diffuser l'information médicale</li>
                   <li>Promouvoir la recherche locale</li>
                   <li>Améliorer les pratiques cliniques</li>
@@ -115,8 +115,8 @@ const IGM = () => {
                 </ul>
               </div>
               <div>
-                <h3 className="font-semibold text-primary mb-2">Impact</h3>
-                <ul className="list-disc list-inside text-gray-600 space-y-2">
+                <h3 className="font-semibold text-primary mb-2 text-sm sm:text-base">Impact</h3>
+                <ul className="list-disc list-inside text-gray-600 space-y-1 sm:space-y-2 text-sm sm:text-base">
                   <li>Publication mensuelle</li>
                   <li>Réseau national de contributeurs</li>
                   <li>Actualités médicales vérifiées</li>
