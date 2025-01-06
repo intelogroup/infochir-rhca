@@ -15,6 +15,7 @@ export interface AtlasChapter {
   status: ChapterStatus;
   coverImage?: string;
   stats?: ChapterStats;
+  tags?: string[];
 }
 
 export interface AtlasModalProps {
