@@ -14,7 +14,12 @@ export const useIssuesState = (
     const searchLower = searchTerm.toLowerCase();
     return issues.filter((issue) => 
       issue.title.toLowerCase().includes(searchLower) ||
-      issue.description?.toLowerCase().includes(searchLower)
+      issue.description?.toLowerCase().includes(searchLower) ||
+      issue.articles.some(article => 
+        article.title.toLowerCase().includes(searchLower) ||
+        article.authors.some(author => author.toLowerCase().includes(searchLower)) ||
+        article.abstract?.toLowerCase().includes(searchLower)
+      )
     );
   }, [issues, searchTerm]);
 
@@ -39,7 +44,12 @@ export const useIssuesState = (
             console.error('Invalid date encountered while sorting by year');
             return 0;
           }
-          return dateB.getFullYear() - dateA.getFullYear();
+          const yearDiff = dateB.getFullYear() - dateA.getFullYear();
+          if (yearDiff === 0) {
+            // If same year, sort by month (newest first)
+            return dateB.getMonth() - dateA.getMonth();
+          }
+          return yearDiff;
         });
       case "downloads":
         return sorted.sort((a, b) => (b.downloads || 0) - (a.downloads || 0));

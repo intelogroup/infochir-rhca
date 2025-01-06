@@ -32,7 +32,7 @@ export const isValidDate = (date: unknown): date is Date => {
   return date instanceof Date && !isNaN(date.getTime());
 };
 
-// Convert database issue to frontend issue
+// Convert database issue to frontend issue with proper date handling
 export const mapDatabaseIssueToIssue = (dbIssue: DatabaseIssue): Issue => {
   let dateString: string;
 
@@ -54,4 +54,17 @@ export const mapDatabaseIssueToIssue = (dbIssue: DatabaseIssue): Issue => {
     ...dbIssue,
     date: dateString,
   };
+};
+
+// Format date for display with proper validation
+export const formatIssueDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  if (!isValidDate(date)) {
+    console.error('Invalid date provided to formatIssueDate');
+    return 'Date invalide';
+  }
+  return date.toLocaleDateString('fr-FR', {
+    year: 'numeric',
+    month: 'long',
+  });
 };

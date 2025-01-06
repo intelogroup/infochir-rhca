@@ -1,7 +1,5 @@
 import { YearGroupList } from "./YearGroupList";
 import { IssuesTable } from "@/components/issues/IssuesTable";
-import { LoadingState } from "./LoadingState";
-import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 import type { Issue } from "../types";
 
 interface IssuesGridContentProps {
@@ -9,7 +7,7 @@ interface IssuesGridContentProps {
   sortedIssues: Issue[];
   issuesByYear: Record<number, Issue[]>;
   sortedYears: number[];
-  isLoading?: boolean;
+  isLoading: boolean;
 }
 
 export const IssuesGridContent = ({
@@ -17,26 +15,45 @@ export const IssuesGridContent = ({
   sortedIssues,
   issuesByYear,
   sortedYears,
-  isLoading = false
+  isLoading,
 }: IssuesGridContentProps) => {
   if (isLoading) {
-    return <LoadingState />;
+    return (
+      <div 
+        className="p-4"
+        role="status"
+        aria-live="polite"
+      >
+        Chargement des articles...
+      </div>
+    );
+  }
+
+  if (sortedIssues.length === 0) {
+    return (
+      <div 
+        className="p-4 text-center text-gray-500"
+        role="status"
+        aria-live="polite"
+      >
+        Aucun numéro trouvé
+      </div>
+    );
   }
 
   if (viewMode === "grid") {
     return (
-      <ErrorBoundary>
-        <YearGroupList
-          issuesByYear={issuesByYear}
-          sortedYears={sortedYears}
-        />
-      </ErrorBoundary>
+      <YearGroupList 
+        issuesByYear={issuesByYear}
+        sortedYears={sortedYears}
+      />
     );
   }
 
   return (
-    <ErrorBoundary>
-      <IssuesTable issues={sortedIssues} />
-    </ErrorBoundary>
+    <IssuesTable 
+      issues={sortedIssues}
+      aria-label="Liste des numéros en format tableau"
+    />
   );
 };
