@@ -24,6 +24,7 @@ export const ArticleGrid = ({ viewMode = "table" }: ArticleGridProps) => {
     categories,
     sources,
     availableTags,
+    articleStats
   } = useArticlesState(mockArticles);
 
   const handleSearch = () => {
@@ -48,6 +49,7 @@ export const ArticleGrid = ({ viewMode = "table" }: ArticleGridProps) => {
         categories={categories}
         sources={sources}
         availableTags={availableTags}
+        articleStats={articleStats}
       />
       
       <ArticleContent
