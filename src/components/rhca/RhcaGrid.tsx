@@ -4,8 +4,8 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { LayoutGrid, List } from "lucide-react";
 import { SORT_OPTIONS } from "@/types/sortOptions";
 import type { SortOption } from "@/types/sortOptions";
-import { RhcaArticleList } from "./RhcaArticleList";
 import { mockArticles } from "./data/mockArticles";
+import { UnifiedArticleList } from "@/components/shared/UnifiedArticleList";
 
 export const RhcaGrid = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -16,16 +16,11 @@ export const RhcaGrid = () => {
     setSortBy(value);
   };
 
-  // Add console.log to debug the filtered articles
-  console.log('All mock articles:', mockArticles);
-
   const filteredArticles = mockArticles.filter(article =>
     article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     article.abstract.toLowerCase().includes(searchTerm.toLowerCase()) ||
     article.authors.some(author => author.toLowerCase().includes(searchTerm.toLowerCase()))
   );
-
-  console.log('Filtered articles:', filteredArticles);
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
@@ -64,9 +59,10 @@ export const RhcaGrid = () => {
         </ToggleGroup>
       </div>
 
-      <RhcaArticleList
+      <UnifiedArticleList
         articles={filteredArticles}
         viewMode={viewMode}
+        variant="rhca"
       />
     </div>
   );

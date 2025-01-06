@@ -1,5 +1,4 @@
-import { ArticleCard } from "./ArticleCard";
-import { ArticleTable } from "./ArticleTable";
+import { UnifiedArticleList } from "@/components/shared/UnifiedArticleList";
 import type { Article } from "./types";
 
 interface ArticleContentProps {
@@ -17,32 +16,14 @@ export const ArticleContent = ({
   onTagClick,
   selectedTags,
 }: ArticleContentProps) => {
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 bg-primary/20 rounded-full animate-bounce" />
-          <div className="w-3 h-3 bg-primary/40 rounded-full animate-bounce [animation-delay:-.3s]" />
-          <div className="w-3 h-3 bg-primary/60 rounded-full animate-bounce [animation-delay:-.5s]" />
-        </div>
-      </div>
-    );
-  }
-
-  if (viewMode === "grid") {
-    return (
-      <div className="grid grid-cols-1 gap-6">
-        {articles.map((article) => (
-          <ArticleCard
-            key={article.id}
-            article={article}
-            onTagClick={onTagClick}
-            selectedTags={selectedTags}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  return <ArticleTable articles={articles} />;
+  return (
+    <UnifiedArticleList
+      viewMode={viewMode}
+      articles={articles}
+      variant="index-medicus"
+      onTagClick={onTagClick}
+      selectedTags={selectedTags}
+      isLoading={isLoading}
+    />
+  );
 };
