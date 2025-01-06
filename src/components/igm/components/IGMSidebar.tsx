@@ -1,50 +1,49 @@
-import { Button } from "@/components/ui/button";
-import { BookOpen, MessageCircle, Users } from "lucide-react";
 import { Link } from "react-router-dom";
-
-export const IGMSidebar = () => {
-  return (
-    <div className="space-y-4 order-first lg:order-none">
-      <SidebarCard
-        icon={<BookOpen className="h-5 w-5" />}
-        title="Soumission d'articles"
-        description="Nous accueillons les articles originaux, les revues systématiques, les cas cliniques et les lettres à l'éditeur."
-        buttonText="Soumettre un manuscrit"
-        buttonVariant="default"
-        buttonClassName="bg-ocean hover:bg-ocean-hover"
-      />
-
-      <SidebarCard
-        icon={<MessageCircle className="h-5 w-5" />}
-        title="Instructions aux auteurs"
-        description="Consultez nos directives détaillées pour la préparation et la soumission de votre manuscrit."
-        buttonText="Voir les directives"
-        buttonVariant="outline"
-        buttonClassName="text-ocean hover:bg-ocean hover:text-white border-ocean"
-      />
-
-      <SidebarCard
-        icon={<Users className="h-5 w-5" />}
-        title="Comité éditorial"
-        description="Notre comité éditorial est composé d'experts reconnus dans leurs domaines respectifs."
-        buttonText="Découvrir l'équipe"
-        buttonVariant="outline"
-        buttonClassName="text-ocean hover:bg-ocean hover:text-white border-ocean"
-        buttonLink="/igm/editorial-committee"
-      />
-    </div>
-  );
-};
+import { Button } from "@/components/ui/button";
+import { FileText, Send, Users } from "lucide-react";
 
 interface SidebarCardProps {
   icon: React.ReactNode;
   title: string;
   description: string;
   buttonText: string;
-  buttonVariant?: "default" | "outline";
+  buttonVariant?: "default" | "secondary" | "outline";
   buttonClassName?: string;
   buttonLink?: string;
 }
+
+export const IGMSidebar = () => {
+  return (
+    <div className="space-y-4">
+      <SidebarCard
+        icon={<Send className="h-5 w-5 text-primary" />}
+        title="Soumettre un article"
+        description="Vous souhaitez publier dans l'IGM ? Soumettez votre article en suivant nos directives."
+        buttonText="Soumettre un article"
+        buttonVariant="default"
+        buttonLink="/igm/directives"
+      />
+
+      <SidebarCard
+        icon={<FileText className="h-5 w-5 text-primary" />}
+        title="Directives aux auteurs"
+        description="Consultez nos directives pour la soumission d'articles et la préparation des manuscrits."
+        buttonText="Voir les directives"
+        buttonVariant="outline"
+        buttonLink="/igm/directives"
+      />
+
+      <SidebarCard
+        icon={<Users className="h-5 w-5 text-primary" />}
+        title="Comité éditorial"
+        description="Découvrez l'équipe éditoriale de l'IGM et son processus de révision."
+        buttonText="Voir le comité"
+        buttonVariant="outline"
+        buttonLink="/editorial"
+      />
+    </div>
+  );
+};
 
 const SidebarCard = ({
   icon,
@@ -66,10 +65,10 @@ const SidebarCard = ({
 
   return (
     <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-      <h2 className="text-lg font-semibold text-primary mb-3 flex items-center gap-2">
+      <div className="flex items-center gap-3 mb-3">
         {icon}
-        {title}
-      </h2>
+        <h3 className="font-semibold text-gray-900">{title}</h3>
+      </div>
       <p className="text-sm text-gray-600 mb-4">
         {description}
       </p>

@@ -3,9 +3,11 @@ import { IssuesGridContent } from "@/components/igm/components/IssuesGridContent
 import { useIssuesState } from "../../hooks/useIssuesState";
 import { mockIssues } from "../../data/mockIssues";
 import { SORT_OPTIONS } from "../../constants/sortOptions";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { DateRange } from "react-day-picker";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
+import type { SortOption } from "@/types/sortOptions";
 
 interface IssuesGridLayoutProps {
   viewMode?: "grid" | "table";
@@ -13,8 +15,8 @@ interface IssuesGridLayoutProps {
 
 export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState("latest");
-  const [dateRange, setDateRange] = useState();
+  const [sortBy, setSortBy] = useState<SortOption>("latest");
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [displayCount, setDisplayCount] = useState(6);
@@ -27,14 +29,17 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
     selectedCategories,
   });
 
-  // Simulate loading state
-  useState(() => {
+  useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1000);
     return () => clearTimeout(timer);
   }, []);
 
   const loadMore = () => {
     setDisplayCount(prev => prev + (isMobile ? 3 : 6));
+  };
+
+  const handleDateRangeChange = (range: DateRange | undefined) => {
+    setDateRange(range);
   };
 
   return (
@@ -52,9 +57,10 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
           onSort={setSortBy}
           sortOptions={SORT_OPTIONS}
           dateRange={dateRange}
-          onDateRangeChange={setDateRange}
+          onDateRangeChange={handleDateRangeChange}
           selectedCategories={selectedCategories}
           onCategoryChange={setSelectedCategories}
+          availableCategories={availableCategories}
           disabled={isLoading}
         />
       </motion.div>
