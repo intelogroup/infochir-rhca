@@ -1,4 +1,4 @@
-import { FileUploader } from "@/components/pdf/MultiFileUploader";
+import { MultiFileUploader } from "@/components/pdf/MultiFileUploader";
 
 interface FileUploadersProps {
   setArticleFilesUrls: (urls: string[]) => void;
@@ -15,7 +15,7 @@ export const FileUploaders = ({
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold mb-2">Fichiers de l'article</h3>
-        <FileUploader
+        <MultiFileUploader
           bucket="article_files"
           acceptedFileTypes={{
             'application/pdf': ['.pdf'],
@@ -34,7 +34,7 @@ export const FileUploaders = ({
 
       <div>
         <h3 className="text-lg font-semibold mb-2">Images et annexes</h3>
-        <FileUploader
+        <MultiFileUploader
           bucket="article_annexes"
           acceptedFileTypes={{
             'image/*': ['.png', '.jpg', '.jpeg', '.gif']

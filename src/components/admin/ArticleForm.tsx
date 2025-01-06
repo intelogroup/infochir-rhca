@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 import { PublicationTypeSelector } from "./article-form/PublicationTypeSelector";
 import { ArticleDetails } from "./article-form/ArticleDetails";
 import { FileUploaders } from "./article-form/FileUploaders";
 import { DraftPreview } from "./article-form/DraftPreview";
-import { motion, AnimatePresence } from "framer-motion";
+import { FormErrors } from "./article-form/FormErrors";
+import { SubmitButton } from "./article-form/SubmitButton";
 
 interface ArticleFormProps {
   initialData?: {
@@ -71,7 +72,6 @@ export const ArticleForm = ({ initialData, onSubmit, isLoading }: ArticleFormPro
   };
 
   const handleSaveDraft = () => {
-    // Save draft to localStorage
     const draft = {
       title,
       abstract,
@@ -124,46 +124,13 @@ export const ArticleForm = ({ initialData, onSubmit, isLoading }: ArticleFormPro
         />
       </motion.div>
 
-      <AnimatePresence>
-        {Object.keys(errors).length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="bg-destructive/10 p-4 rounded-lg"
-          >
-            <ul className="list-disc list-inside text-sm text-destructive">
-              {Object.values(errors).map((error, index) => (
-                <li key={index}>{error}</li>
-              ))}
-            </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <FormErrors errors={errors} />
 
       <div className="flex justify-end">
-        <Button 
-          type="submit" 
-          disabled={isLoading}
-          className="min-w-[200px] relative overflow-hidden group"
-        >
-          <motion.span
-            initial={false}
-            animate={{ x: isLoading ? 20 : 0, opacity: isLoading ? 0 : 1 }}
-            className="inline-block"
-          >
-            {initialData ? "Mettre à jour" : "Enregistrer"}
-          </motion.span>
-          {isLoading && (
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="absolute inset-0 flex items-center justify-center"
-            >
-              <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            </motion.div>
-          )}
-        </Button>
+        <SubmitButton 
+          isLoading={isLoading}
+          isEditing={!!initialData}
+        />
       </div>
     </motion.form>
   );
