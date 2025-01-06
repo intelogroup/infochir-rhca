@@ -7,17 +7,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 interface YearNavigationProps {
   currentYear: number;
   availableYears: number[];
   onYearChange: (year: number) => void;
+  className?: string;
 }
 
 export const YearNavigation = ({
   currentYear,
   availableYears,
   onYearChange,
+  className,
 }: YearNavigationProps) => {
   const handlePreviousYear = () => {
     const currentIndex = availableYears.indexOf(currentYear);
@@ -34,24 +37,30 @@ export const YearNavigation = ({
   };
 
   return (
-    <div className="flex items-center gap-2 bg-white rounded-lg border border-gray-200 p-2">
+    <div 
+      className={cn(
+        "flex flex-wrap items-center gap-2 bg-white rounded-lg border border-gray-200 p-2 shadow-sm transition-shadow hover:shadow-md",
+        className
+      )}
+    >
       <Button
         variant="outline"
         size="sm"
         onClick={handlePreviousYear}
         disabled={currentYear === Math.min(...availableYears)}
-        className="h-8 w-8"
+        className="h-8 w-8 sm:h-9 sm:w-9"
+        aria-label="Année précédente"
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
 
       <div className="flex items-center gap-2">
-        <Calendar className="h-4 w-4 text-gray-500" />
+        <Calendar className="hidden sm:block h-4 w-4 text-gray-500" aria-hidden="true" />
         <Select
           value={currentYear.toString()}
           onValueChange={(value) => onYearChange(parseInt(value))}
         >
-          <SelectTrigger className="w-[100px]">
+          <SelectTrigger className="w-[90px] sm:w-[120px] h-8 sm:h-9">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -69,7 +78,8 @@ export const YearNavigation = ({
         size="sm"
         onClick={handleNextYear}
         disabled={currentYear === Math.max(...availableYears)}
-        className="h-8 w-8"
+        className="h-8 w-8 sm:h-9 sm:w-9"
+        aria-label="Année suivante"
       >
         <ChevronRight className="h-4 w-4" />
       </Button>
