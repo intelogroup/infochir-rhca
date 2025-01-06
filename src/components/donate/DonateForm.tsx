@@ -68,6 +68,12 @@ export const DonateForm = ({
     }
   };
 
+  const handleInactiveButtonClick = () => {
+    if (!selectedAmount && !customAmount) {
+      toast.error("Please choose a donation amount to continue");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Card className="shadow-lg backdrop-blur-sm bg-white/80 border-gray-100/20 hover:shadow-xl transition-shadow duration-300">
@@ -107,7 +113,7 @@ export const DonateForm = ({
           <Button 
             className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white relative overflow-hidden group" 
             disabled={(!selectedAmount && !customAmount) || isSubmitting}
-            onClick={handleSubmit}
+            onClick={(!selectedAmount && !customAmount) ? handleInactiveButtonClick : handleSubmit}
           >
             {isSubmitting ? (
               <span className="flex items-center gap-2">
