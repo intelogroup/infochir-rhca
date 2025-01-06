@@ -13,6 +13,7 @@ import { AtlasModalActions } from "./modal/AtlasModalActions";
 import { AtlasModalMetadata } from "./modal/AtlasModalMetadata";
 import { AtlasModalContent } from "./modal/AtlasModalContent";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { motion } from "framer-motion";
 
 export const AtlasModal = ({ chapter, open, onOpenChange }: AtlasModalProps) => {
   const isMobile = useIsMobile();
@@ -42,19 +43,23 @@ export const AtlasModal = ({ chapter, open, onOpenChange }: AtlasModalProps) => 
           coverImage={chapter.coverImage}
         />
 
+        <div className="px-6 py-4 border-y bg-gray-50/50 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <AtlasModalMetadata chapter={chapter} />
+            <div className="mt-4">
+              <AtlasModalStats stats={chapter.stats} />
+            </div>
+          </motion.div>
+        </div>
+
         <ScrollArea className="flex-1 h-[calc(100%-280px)]">
           <div className="px-4 sm:px-6">
             <div className="space-y-8 py-6">
-              <AtlasModalMetadata chapter={chapter} />
               <AtlasModalContent chapter={chapter} />
-
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 text-primary">
-                  <Eye className="h-5 w-5" />
-                  <h3 className="text-lg font-semibold">Statistiques</h3>
-                </div>
-                <AtlasModalStats stats={chapter.stats} />
-              </div>
             </div>
           </div>
         </ScrollArea>

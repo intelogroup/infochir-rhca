@@ -1,4 +1,5 @@
 import { Eye, Share2, Download } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 interface AtlasModalStatsProps {
   stats?: {
@@ -10,27 +11,20 @@ interface AtlasModalStatsProps {
 
 export const AtlasModalStats = ({ stats }: AtlasModalStatsProps) => {
   return (
-    <div className="grid grid-cols-3 gap-3">
-      <div className="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-900 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-        <Eye className="h-6 w-6 text-primary mb-2" />
-        <span className="text-2xl font-bold text-primary">
-          {stats?.views || 0}
-        </span>
-        <span className="text-xs text-gray-500">Vues</span>
+    <div className="flex items-center gap-6 text-sm text-gray-500">
+      <div className="flex items-center gap-2">
+        <Eye className="h-4 w-4" />
+        <span>{stats?.views || 0}</span>
       </div>
-      <div className="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-900 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-        <Share2 className="h-6 w-6 text-primary mb-2" />
-        <span className="text-2xl font-bold text-primary">
-          {stats?.shares || 0}
-        </span>
-        <span className="text-xs text-gray-500">Partages</span>
+      <Separator orientation="vertical" className="h-4" />
+      <div className="flex items-center gap-2">
+        <Share2 className="h-4 w-4" />
+        <span>{stats?.shares || 0}</span>
       </div>
-      <div className="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-900 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-        <Download className="h-6 w-6 text-primary mb-2" />
-        <span className="text-2xl font-bold text-primary">
-          {stats?.downloads || 0}
-        </span>
-        <span className="text-xs text-gray-500">Téléchargements</span>
+      <Separator orientation="vertical" className="h-4" />
+      <div className="flex items-center gap-2">
+        <Download className="h-4 w-4" />
+        <span>{stats?.downloads || 0}</span>
       </div>
     </div>
   );
