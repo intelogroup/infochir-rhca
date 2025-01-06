@@ -16,9 +16,18 @@ export const useArticlesQuery = () => {
         throw error;
       }
 
-      return data as Article[];
+      // Map database response to match Article type
+      return data.map((article): Article => ({
+        ...article,
+        date: article.publication_date,
+        authors: article.authors || [],
+        tags: article.tags || [],
+        views: article.views || 0,
+        citations: article.citations || 0,
+        downloads: article.downloads || 0
+      }));
     },
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-    cacheTime: 30 * 60 * 1000, // Cache for 30 minutes
+    gcTime: 30 * 60 * 1000, // Cache for 30 minutes (formerly cacheTime)
   });
 };
