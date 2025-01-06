@@ -25,7 +25,7 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <div className="sticky top-16 sm:top-20 bg-[#F1F0FB] pt-2 pb-4 z-10">
+      <div className="bg-[#F1F0FB] pt-2 pb-4">
         <SearchAndSort
           searchTerm={searchTerm}
           sortBy={sortBy}
