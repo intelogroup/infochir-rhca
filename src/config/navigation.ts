@@ -42,7 +42,7 @@ export const navItems: NavItem[] = [
     logo: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png"
   },
   {
-    name: "Atlas ADC",
+    name: "Atlas",
     href: "/adc",
     icon: BookOpen,
     description: "Explorez une base visuelle unique de diagnostics chirurgicaux pour faciliter vos pratiques cliniques",
