@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useInView } from "framer-motion";
 import { useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface IssuesGridContentProps {
   viewMode: "grid" | "table";
@@ -38,7 +39,12 @@ export const IssuesGridContent = ({
 
   if (isLoading) {
     return (
-      <div className="space-y-8">
+      <motion.div 
+        className="space-y-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+      >
         {[1, 2].map((year) => (
           <div key={year} className="space-y-6">
             <div className="flex items-center justify-between border-b border-gray-200 pb-4">
@@ -57,14 +63,17 @@ export const IssuesGridContent = ({
             </div>
           </div>
         ))}
-      </div>
+      </motion.div>
     );
   }
 
   if (sortedIssues.length === 0) {
     return (
-      <div 
-        className="flex flex-col items-center justify-center p-12 bg-white rounded-xl border border-gray-100 text-center"
+      <motion.div 
+        className="flex flex-col items-center justify-center p-8 sm:p-12 bg-white rounded-xl border border-gray-100 text-center"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
         role="status"
         aria-live="polite"
       >
@@ -76,29 +85,36 @@ export const IssuesGridContent = ({
           Nous n'avons trouvé aucun numéro correspondant à vos critères de recherche. 
           Essayez de modifier vos filtres ou d'effectuer une nouvelle recherche.
         </p>
-      </div>
+      </motion.div>
     );
   }
 
   if (viewMode === "grid") {
     return (
-      <>
-        <YearGroupList
-          issuesByYear={issuesByYear}
-          sortedYears={sortedYears}
-        />
-        {hasMore && (
-          <div ref={loadMoreRef} className="flex justify-center mt-8">
-            <Button
-              variant="outline"
-              onClick={onLoadMore}
-              className="animate-pulse"
-            >
-              Charger plus de numéros
-            </Button>
-          </div>
-        )}
-      </>
+      <AnimatePresence mode="wait">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <YearGroupList
+            issuesByYear={issuesByYear}
+            sortedYears={sortedYears}
+          />
+          {hasMore && (
+            <div ref={loadMoreRef} className="flex justify-center mt-8">
+              <Button
+                variant="outline"
+                onClick={onLoadMore}
+                className="animate-pulse"
+              >
+                Charger plus de numéros
+              </Button>
+            </div>
+          )}
+        </motion.div>
+      </AnimatePresence>
     );
   }
 
