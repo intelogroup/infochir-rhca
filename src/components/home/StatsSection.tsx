@@ -1,22 +1,69 @@
-import { stats } from "./stats/StatsData";
+import { StatsData } from "./stats/StatsData";
 import { StatCard } from "./stats/StatCard";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertTriangle } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
-export const StatsSection = () => (
-  <section className="relative my-8 bg-gradient-to-br from-white via-gray-50/50 to-white py-8">
-    <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] opacity-5" />
-    <div className="max-w-[90vw] mx-auto px-4 sm:px-6 lg:px-8 relative">
-      <h2 className="text-3xl font-bold text-gray-900 text-center mb-8">
-        Nos chiffres clés
-      </h2>
-      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat, index) => (
-          <StatCard 
-            key={stat.title}
-            {...stat}
-            index={index}
-          />
-        ))}
+export const StatsSection = () => {
+  const { data: stats, isLoading, error } = useQuery({
+    queryKey: ['stats'],
+    queryFn: async () => {
+      // Simulating a network request for demonstration
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return StatsData;
+    }
+  });
+
+  if (isLoading) {
+    return (
+      <section className="py-12 bg-white" aria-label="Statistiques">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="p-6 bg-gray-50 rounded-xl">
+                <Skeleton className="h-12 w-12 rounded-full mb-4" />
+                <Skeleton className="h-8 w-24 mb-2" />
+                <Skeleton className="h-4 w-32" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="py-12 bg-white" aria-label="Erreur de chargement">
+        <div className="container mx-auto px-4">
+          <Alert variant="destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Erreur</AlertTitle>
+            <AlertDescription>
+              Une erreur est survenue lors du chargement des statistiques. Veuillez réessayer plus tard.
+            </AlertDescription>
+          </Alert>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="py-12 bg-white" aria-label="Statistiques">
+      <div className="container mx-auto px-4">
+        <div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+          role="list"
+          aria-label="Liste des statistiques"
+        >
+          {stats.map((stat, index) => (
+            <div key={index} role="listitem">
+              <StatCard {...stat} />
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};

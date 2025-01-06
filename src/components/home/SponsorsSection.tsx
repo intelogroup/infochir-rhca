@@ -1,72 +1,75 @@
-import { motion } from "framer-motion";
-import { sponsors } from "./sponsors/SponsorsData";
+import { SponsorsData } from "./sponsors/SponsorsData";
 import { SponsorCard } from "./sponsors/SponsorCard";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertTriangle } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 export const SponsorsSection = () => {
-  const partners = sponsors.filter(s => s.type === 'partner');
-  const sponsorsList = sponsors.filter(s => s.type === 'sponsor');
+  const { data: sponsors, isLoading, error } = useQuery({
+    queryKey: ['sponsors'],
+    queryFn: async () => {
+      // Simulating a network request for demonstration
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return SponsorsData;
+    }
+  });
 
-  return (
-    <section className="py-24 relative overflow-hidden">
-      {/* Background gradients */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] opacity-5" />
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative space-y-16">
-        {/* Partners Section */}
-        <div>
+  if (isLoading) {
+    return (
+      <section className="py-12 bg-gray-50" aria-label="Partenaires">
+        <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <motion.h2 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-4xl font-bold bg-gradient-to-r from-[#1E40AF] via-[#41b06e] to-[#41b06e] bg-clip-text text-transparent mb-4"
-            >
-              Nos Partenaires
-            </motion.h2>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-lg text-gray-600 max-w-2xl mx-auto"
-            >
-              Ils nous accompagnent dans notre mission
-            </motion.p>
+            <Skeleton className="h-8 w-64 mx-auto mb-4" />
+            <Skeleton className="h-4 w-96 mx-auto" />
           </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-12 items-center">
-            {partners.map((sponsor, index) => (
-              <SponsorCard key={sponsor.name} sponsor={sponsor} index={index} />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} className="h-32 w-full rounded-xl" />
             ))}
           </div>
         </div>
+      </section>
+    );
+  }
 
-        {/* Sponsors Section */}
-        <div>
-          <div className="text-center mb-12">
-            <motion.h2 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="text-4xl font-bold bg-gradient-to-r from-[#1E40AF] via-[#41b06e] to-[#41b06e] bg-clip-text text-transparent mb-4"
-            >
-              Nos Sponsors
-            </motion.h2>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-lg text-gray-600 max-w-2xl mx-auto"
-            >
-              Ils nous soutiennent financièrement
-            </motion.p>
-          </div>
+  if (error) {
+    return (
+      <section className="py-12 bg-gray-50" aria-label="Erreur de chargement">
+        <div className="container mx-auto px-4">
+          <Alert variant="destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Erreur</AlertTitle>
+            <AlertDescription>
+              Une erreur est survenue lors du chargement des partenaires. Veuillez réessayer plus tard.
+            </AlertDescription>
+          </Alert>
+        </div>
+      </section>
+    );
+  }
 
-          <div className="grid grid-cols-2 md:grid-cols-2 gap-12 items-center max-w-2xl mx-auto">
-            {sponsorsList.map((sponsor, index) => (
-              <SponsorCard key={sponsor.name} sponsor={sponsor} index={index} />
-            ))}
-          </div>
+  return (
+    <section className="py-12 bg-gray-50" aria-label="Partenaires">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            Nos Partenaires
+          </h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Découvrez les organisations qui soutiennent notre mission et contribuent à notre succès.
+          </p>
+        </div>
+        <div 
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
+          role="list"
+          aria-label="Liste des partenaires"
+        >
+          {sponsors.map((sponsor, index) => (
+            <div key={index} role="listitem">
+              <SponsorCard {...sponsor} />
+            </div>
+          ))}
         </div>
       </div>
     </section>
