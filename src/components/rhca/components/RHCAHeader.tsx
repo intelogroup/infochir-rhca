@@ -27,7 +27,7 @@ export const RHCAHeader = () => {
           <Button 
             variant="ghost" 
             size="sm" 
-            className="gap-1.5 sm:gap-2 text-primary hover:text-primary-light transition-colors duration-200"
+            className="gap-1.5 sm:gap-2 text-[#41b06e] hover:text-[#41b06e]/80 transition-colors duration-200"
           >
             <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
             Retour
@@ -38,11 +38,11 @@ export const RHCAHeader = () => {
           style={{ y, opacity, scale }}
           className="space-y-8"
         >
-          <div className="inline-flex items-center justify-center w-40 h-40 rounded-full bg-white shadow-lg mb-6 overflow-hidden">
+          <div className="inline-flex items-center justify-center w-40 h-40 overflow-hidden">
             <motion.img 
               src="/lovable-uploads/f65134f5-3929-4504-9567-104510b21f5d.png"
               alt="RHCA Logo"
-              className="h-40 w-40 object-contain p-2"
+              className="h-40 w-40 object-contain"
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 300 }}
             />
@@ -50,7 +50,7 @@ export const RHCAHeader = () => {
           
           <div className="space-y-4">
             <motion.h1 
-              className="text-4xl sm:text-5xl font-bold text-primary"
+              className="text-4xl sm:text-5xl font-bold text-[#41b06e]"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
@@ -58,7 +58,7 @@ export const RHCAHeader = () => {
               Revue Haïtienne de Chirurgie et d'Anesthésiologie
             </motion.h1>
             <motion.p 
-              className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto"
+              className="text-lg sm:text-xl text-[#41b06e]/80"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
