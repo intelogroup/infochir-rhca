@@ -43,7 +43,8 @@ export const NavLinks = () => {
             )}
             <span className="text-sm font-medium">{item.name}</span>
           </motion.button>
-        ))}
+        );
+      })}
       <motion.button
         onClick={() => navigate('/donate')}
         className={`
