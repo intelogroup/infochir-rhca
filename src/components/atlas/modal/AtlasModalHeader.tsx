@@ -16,7 +16,7 @@ export const AtlasModalHeader = ({ title, coverImage, onImageLoad }: AtlasModalH
   };
 
   return (
-    <div className="relative h-[160px] bg-gray-100 dark:bg-gray-900">
+    <div className="relative h-[200px]">
       {coverImage ? (
         <>
           {!imageLoaded && (
@@ -31,13 +31,14 @@ export const AtlasModalHeader = ({ title, coverImage, onImageLoad }: AtlasModalH
             onLoad={handleImageLoad}
             loading="lazy"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background/90 to-background/20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/20" />
         </>
       ) : (
         <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900" />
       )}
-      <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
-        <h2 className="text-xl sm:text-2xl font-bold text-white drop-shadow-md">
+      
+      <div className="absolute bottom-0 left-0 right-0 p-6 space-y-2">
+        <h2 className="text-2xl font-bold text-white drop-shadow-sm">
           {title}
         </h2>
       </div>
