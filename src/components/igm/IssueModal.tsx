@@ -6,6 +6,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
 import type { Issue } from "./types";
+import { supabase } from "@/integrations/supabase/client";
 
 interface IssueModalProps {
   issue: Issue;
@@ -14,19 +15,48 @@ interface IssueModalProps {
 }
 
 export const IssueModal = ({ issue, isOpen, onClose }: IssueModalProps) => {
-  const handleShare = () => {
+  const handleShare = async () => {
     const shareUrl = `${window.location.origin}/igm/issues/${issue.id}`;
-    navigator.clipboard.writeText(shareUrl);
-    toast.success("Lien copié dans le presse-papier");
+    
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      
+      // Update share count in Supabase
+      const { error } = await supabase
+        .from('articles')
+        .update({ shares: (issue.shares || 0) + 1 })
+        .eq('id', issue.id);
+
+      if (error) throw error;
+      
+      toast.success("Lien copié dans le presse-papier");
+    } catch (error) {
+      console.error('Error sharing:', error);
+      toast.error("Erreur lors du partage");
+    }
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!issue.pdfUrl) {
       toast.error("Le PDF n'est pas encore disponible pour ce numéro");
       return;
     }
-    window.open(issue.pdfUrl, '_blank');
-    toast.success("Téléchargement du PDF en cours...");
+
+    try {
+      // Update download count in Supabase
+      const { error } = await supabase
+        .from('articles')
+        .update({ downloads: (issue.downloads || 0) + 1 })
+        .eq('id', issue.id);
+
+      if (error) throw error;
+
+      window.open(issue.pdfUrl, '_blank');
+      toast.success("Téléchargement du PDF en cours...");
+    } catch (error) {
+      console.error('Error downloading:', error);
+      toast.error("Erreur lors du téléchargement");
+    }
   };
 
   return (

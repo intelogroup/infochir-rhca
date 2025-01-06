@@ -18,8 +18,8 @@ export interface Issue {
   pdfUrl?: string;
   coverImage?: string;
   articleCount: number;
-  downloads?: number;
-  shares?: number;
+  downloads: number;
+  shares: number;
   articles: IgmArticle[];
 }
 
@@ -53,6 +53,8 @@ export const mapDatabaseIssueToIssue = (dbIssue: DatabaseIssue): Issue => {
   return {
     ...dbIssue,
     date: dateString,
+    downloads: dbIssue.downloads || 0,
+    shares: dbIssue.shares || 0,
   };
 };
 

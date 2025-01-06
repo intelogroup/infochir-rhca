@@ -8,6 +8,7 @@ import { IssueModal } from "./IssueModal";
 import { toast } from "sonner";
 import type { Issue } from "./types";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { supabase } from "@/integrations/supabase/client";
 
 interface IssueCardProps {
   issue: Issue;
@@ -16,21 +17,50 @@ interface IssueCardProps {
 export const IssueCard = ({ issue }: IssueCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleShare = (e: React.MouseEvent) => {
+  const handleShare = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const shareUrl = `${window.location.origin}/igm/issues/${issue.id}`;
-    navigator.clipboard.writeText(shareUrl);
-    toast.success("Lien copié dans le presse-papier");
+    
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      
+      // Update share count in Supabase
+      const { error } = await supabase
+        .from('articles')
+        .update({ shares: (issue.shares || 0) + 1 })
+        .eq('id', issue.id);
+
+      if (error) throw error;
+      
+      toast.success("Lien copié dans le presse-papier");
+    } catch (error) {
+      console.error('Error sharing:', error);
+      toast.error("Erreur lors du partage");
+    }
   };
 
-  const handleDownload = (e: React.MouseEvent) => {
+  const handleDownload = async (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!issue.pdfUrl) {
       toast.error("Le PDF n'est pas encore disponible");
       return;
     }
-    window.open(issue.pdfUrl, '_blank');
-    toast.success("Ouverture du PDF...");
+
+    try {
+      // Update download count in Supabase
+      const { error } = await supabase
+        .from('articles')
+        .update({ downloads: (issue.downloads || 0) + 1 })
+        .eq('id', issue.id);
+
+      if (error) throw error;
+
+      window.open(issue.pdfUrl, '_blank');
+      toast.success("Ouverture du PDF...");
+    } catch (error) {
+      console.error('Error downloading:', error);
+      toast.error("Erreur lors du téléchargement");
+    }
   };
 
   return (
