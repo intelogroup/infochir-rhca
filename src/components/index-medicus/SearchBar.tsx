@@ -49,7 +49,13 @@ export const SearchBar = ({
   availableTags,
   articleStats
 }: SearchBarProps) => {
-  const hasActiveFilters = searchTerm || selectedCategory || selectedSource || selectedTags.length > 0 || date;
+  const hasActiveFilters = Boolean(
+    searchTerm || 
+    selectedCategory || 
+    selectedSource || 
+    selectedTags.length > 0 || 
+    date
+  );
 
   const clearFilters = () => {
     setSearchTerm("");
