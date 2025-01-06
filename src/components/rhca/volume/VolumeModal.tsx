@@ -10,9 +10,10 @@ interface VolumeModalProps {
   volume: RhcaVolume;
   open: boolean;
   onClose: () => void;
+  title: string;
 }
 
-export const VolumeModal = ({ volume, open, onClose }: VolumeModalProps) => {
+export const VolumeModal = ({ volume, open, onClose, title }: VolumeModalProps) => {
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent 
@@ -22,7 +23,7 @@ export const VolumeModal = ({ volume, open, onClose }: VolumeModalProps) => {
         <DialogHeader className="p-6 pb-0">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-2xl font-bold text-primary">
-              Volume {volume.volume}
+              {title}
             </DialogTitle>
           </div>
           <DialogDescription id={`volume-${volume.volume}-description`}>

@@ -16,7 +16,6 @@ const PLACEHOLDER_IMAGES = [
 ];
 
 const getPlaceholderImage = (id: string) => {
-  // Use the volume id to consistently get the same placeholder image
   const index = parseInt(id, 36) % PLACEHOLDER_IMAGES.length;
   return `${PLACEHOLDER_IMAGES[index]}?auto=format&fit=crop&w=400&q=80`;
 };
@@ -27,6 +26,7 @@ interface VolumeCardProps {
 
 export const VolumeCard = ({ volume }: VolumeCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const volumeTitle = `Infochir-RHCA Volume ${volume.volume}, No.${volume.volume}`;
 
   return (
     <>
@@ -60,7 +60,7 @@ export const VolumeCard = ({ volume }: VolumeCardProps) => {
                       className="text-primary mb-2 truncate"
                       style={{ fontSize: 'clamp(1rem, 0.85rem + 0.5vw, 1.25rem)' }}
                     >
-                      {`Infochir-RHCA Volume ${volume.volume}, No.${volume.volume}`}
+                      {volumeTitle}
                     </CardTitle>
                     <p 
                       className="text-gray-500"
@@ -118,6 +118,7 @@ export const VolumeCard = ({ volume }: VolumeCardProps) => {
         volume={volume}
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        title={volumeTitle}
       />
     </>
   );
