@@ -18,6 +18,7 @@ export interface RhcaArticle {
 
 export interface RhcaVolume {
   id: string;
+  title?: string;  // Added title property as optional
   volume: number;
   date: string;
   description?: string;
