@@ -21,10 +21,9 @@ export const IssueModal = ({ issue, isOpen, onClose }: IssueModalProps) => {
     try {
       await navigator.clipboard.writeText(shareUrl);
       
-      // Update share count in Supabase
       const { error } = await supabase
         .from('articles')
-        .update({ shares: (issue.shares || 0) + 1 })
+        .update({ shares: issue.shares + 1 })
         .eq('id', issue.id);
 
       if (error) throw error;
@@ -43,10 +42,9 @@ export const IssueModal = ({ issue, isOpen, onClose }: IssueModalProps) => {
     }
 
     try {
-      // Update download count in Supabase
       const { error } = await supabase
         .from('articles')
-        .update({ downloads: (issue.downloads || 0) + 1 })
+        .update({ downloads: issue.downloads + 1 })
         .eq('id', issue.id);
 
       if (error) throw error;

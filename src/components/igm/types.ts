@@ -12,7 +12,7 @@ export interface Issue {
   title: string;
   volume: string;
   issue: string;
-  date: string; // ISO date string
+  date: string;
   abstract: string;
   description?: string;
   pdfUrl?: string;
@@ -27,25 +27,21 @@ export interface DatabaseIssue extends Omit<Issue, 'date'> {
   date: Date | string;
 }
 
-// Utility function to ensure proper date handling
 export const isValidDate = (date: unknown): date is Date => {
   return date instanceof Date && !isNaN(date.getTime());
 };
 
-// Convert database issue to frontend issue with proper date handling
 export const mapDatabaseIssueToIssue = (dbIssue: DatabaseIssue): Issue => {
   let dateString: string;
 
   if (dbIssue.date instanceof Date) {
     dateString = dbIssue.date.toISOString();
   } else {
-    // Try to parse the string date
     const parsedDate = new Date(dbIssue.date);
     if (isValidDate(parsedDate)) {
       dateString = parsedDate.toISOString();
     } else {
       console.error(`Invalid date format for issue ${dbIssue.id}`);
-      // Fallback to current date if invalid
       dateString = new Date().toISOString();
     }
   }
@@ -58,7 +54,6 @@ export const mapDatabaseIssueToIssue = (dbIssue: DatabaseIssue): Issue => {
   };
 };
 
-// Format date for display with proper validation
 export const formatIssueDate = (dateString: string): string => {
   const date = new Date(dateString);
   if (!isValidDate(date)) {
