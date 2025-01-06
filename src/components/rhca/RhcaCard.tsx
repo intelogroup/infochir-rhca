@@ -13,14 +13,14 @@ interface RhcaCardProps {
 export const RhcaCard = ({ article, onCardClick }: RhcaCardProps) => {
   return (
     <Card 
-      className="group hover:shadow-lg transition-shadow cursor-pointer bg-white h-full"
+      className="group hover:shadow-lg transition-all duration-300 cursor-pointer bg-white h-full border-gray-100"
       onClick={onCardClick}
       role="article"
       aria-labelledby={`article-title-${article.id}`}
     >
-      <div className="flex flex-col md:flex-row gap-4 p-3 md:p-4 h-full">
-        <div className="w-full md:w-32 flex-shrink-0">
-          <AspectRatio ratio={3/4} className="overflow-hidden rounded-lg">
+      <div className="flex flex-col md:flex-row gap-6 p-6 h-full">
+        <div className="w-full md:w-36 flex-shrink-0">
+          <AspectRatio ratio={3/4} className="overflow-hidden rounded-lg bg-gray-50 border border-gray-100">
             {article.imageUrl ? (
               <img 
                 src={article.imageUrl} 
@@ -28,8 +28,8 @@ export const RhcaCard = ({ article, onCardClick }: RhcaCardProps) => {
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
             ) : (
-              <div className="w-full h-full bg-secondary/5 flex items-center justify-center">
-                <span className="text-secondary/20 text-xl font-bold">PDF</span>
+              <div className="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+                <span className="text-gray-400 text-xl font-semibold">PDF</span>
               </div>
             )}
           </AspectRatio>

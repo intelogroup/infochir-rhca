@@ -30,25 +30,25 @@ export const RhcaTable = ({ articles }: { articles: RhcaArticle[] }) => {
       {articles.map((article) => (
         <div 
           key={article.id}
-          className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+          className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300"
           role="article"
           aria-labelledby={`article-title-${article.id}`}
         >
-          <div className="flex flex-col md:flex-row justify-between items-start gap-4">
-            <div className="flex-1">
+          <div className="flex flex-col md:flex-row justify-between items-start gap-6">
+            <div className="flex-1 min-w-0">
               <h3 
                 id={`article-title-${article.id}`}
-                className="text-lg font-semibold text-gray-900 mb-2"
+                className="text-xl font-semibold text-gray-900 mb-3"
               >
                 {article.title}
               </h3>
               <p 
-                className="text-sm text-gray-600 mb-4"
+                className="text-base text-gray-600 mb-4"
                 aria-label={`Auteurs: ${article.authors.join(", ")}`}
               >
                 {article.authors.join(", ")}
               </p>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-3">
                 <div 
                   className="flex flex-wrap items-center gap-4"
                   aria-label="Informations de publication"
@@ -77,7 +77,7 @@ export const RhcaTable = ({ articles }: { articles: RhcaArticle[] }) => {
                     {article.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="px-2 py-1 bg-primary/5 text-primary text-sm rounded-full"
+                        className="px-3 py-1 bg-primary/5 text-primary text-sm rounded-full"
                         role="listitem"
                       >
                         {tag}
@@ -87,11 +87,11 @@ export const RhcaTable = ({ articles }: { articles: RhcaArticle[] }) => {
                 )}
               </div>
             </div>
-            <div className="flex gap-2 w-full md:w-auto justify-end">
+            <div className="flex gap-3 w-full md:w-auto justify-end">
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-2 flex-1 md:flex-none"
+                className="gap-2 flex-1 md:flex-none bg-white hover:bg-gray-50"
                 onClick={() => handleShare(article.id)}
                 aria-label="Partager l'article"
               >
@@ -101,7 +101,7 @@ export const RhcaTable = ({ articles }: { articles: RhcaArticle[] }) => {
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-2 flex-1 md:flex-none"
+                className="gap-2 flex-1 md:flex-none bg-white hover:bg-gray-50"
                 onClick={() => handleDownload(article.pdfUrl)}
                 aria-label={article.pdfUrl ? "Télécharger le PDF" : "PDF non disponible"}
               >

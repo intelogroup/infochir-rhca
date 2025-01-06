@@ -23,8 +23,8 @@ export const RhcaGrid = () => {
   );
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between bg-white p-6 rounded-xl shadow-sm border border-gray-100">
         <SearchAndSort
           searchTerm={searchTerm}
           sortBy={sortBy}
@@ -38,19 +38,19 @@ export const RhcaGrid = () => {
           type="single" 
           value={viewMode} 
           onValueChange={(value) => value && setViewMode(value as "grid" | "table")}
-          className="self-end sm:self-auto bg-gray-50 p-1 rounded-md border border-gray-200"
+          className="self-end sm:self-auto bg-gray-50/80 p-1.5 rounded-lg border border-gray-200"
         >
           <ToggleGroupItem 
             value="grid" 
             size="sm"
-            className="data-[state=on]:bg-white data-[state=on]:text-primary data-[state=on]:shadow-sm"
+            className="data-[state=on]:bg-white data-[state=on]:text-primary data-[state=on]:shadow-sm px-3 py-2"
           >
             <LayoutGrid className="h-4 w-4" />
           </ToggleGroupItem>
           <ToggleGroupItem 
             value="table" 
             size="sm"
-            className="data-[state=on]:bg-white data-[state=on]:text-primary data-[state=on]:shadow-sm"
+            className="data-[state=on]:bg-white data-[state=on]:text-primary data-[state=on]:shadow-sm px-3 py-2"
           >
             <List className="h-4 w-4" />
           </ToggleGroupItem>
