@@ -33,68 +33,62 @@ const IndexMedicus = () => {
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-[1fr,400px] gap-4 sm:gap-6 lg:gap-8">
-            <div>
-              <Tabs defaultValue="articles" className="mb-6">
-                <TabsList className="w-full justify-start border-b rounded-none p-0 h-auto">
-                  <TabsTrigger 
-                    value="articles" 
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3"
-                  >
-                    Articles
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="titre" 
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3"
-                  >
-                    Titre
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="authors" 
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3"
-                  >
-                    Auteurs
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="institutions" 
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3"
-                  >
-                    Institutions
-                  </TabsTrigger>
-                </TabsList>
-                <TabsContent value="articles" className="mt-6">
-                  <div className="bg-white rounded-lg p-3 sm:p-4 lg:p-6 shadow-sm">
-                    <ArticleGrid viewMode="table" />
-                  </div>
-                </TabsContent>
-                <TabsContent value="titre" className="mt-6">
-                  <div className="bg-white rounded-lg p-6 shadow-sm">
-                    <p className="text-gray-600">Liste des titres à venir...</p>
-                  </div>
-                </TabsContent>
-                <TabsContent value="authors" className="mt-6">
-                  <div className="bg-white rounded-lg p-6 shadow-sm">
-                    <p className="text-gray-600">Liste des auteurs à venir...</p>
-                  </div>
-                </TabsContent>
-                <TabsContent value="institutions" className="mt-6">
-                  <div className="bg-white rounded-lg p-6 shadow-sm">
-                    <p className="text-gray-600">Liste des institutions à venir...</p>
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </div>
-            
-            <div className="grid grid-cols-1 gap-4 sm:gap-6 content-start">
-              <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
-                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-primary mb-3 sm:mb-4">
-                  À propos de l'Index Medicus
-                </h2>
-                <p className="text-sm sm:text-base text-gray-600">
-                  L'Index Medicus est une base de données bibliographique qui recense la littérature médicale haïtienne. Elle permet aux professionnels de santé d'accéder facilement aux publications médicales locales.
-                </p>
+          <Tabs defaultValue="articles" className="mb-6">
+            <TabsList className="w-full justify-start border-b rounded-none p-0 h-auto">
+              <TabsTrigger 
+                value="articles" 
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3"
+              >
+                Articles
+              </TabsTrigger>
+              <TabsTrigger 
+                value="titre" 
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3"
+              >
+                Titre
+              </TabsTrigger>
+              <TabsTrigger 
+                value="authors" 
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3"
+              >
+                Auteurs
+              </TabsTrigger>
+              <TabsTrigger 
+                value="institutions" 
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-6 py-3"
+              >
+                Institutions
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="articles" className="mt-6">
+              <div className="bg-white rounded-lg p-3 sm:p-4 lg:p-6 shadow-sm">
+                <ArticleGrid viewMode="table" />
               </div>
-            </div>
+            </TabsContent>
+            <TabsContent value="titre" className="mt-6">
+              <div className="bg-white rounded-lg p-6 shadow-sm">
+                <p className="text-gray-600">Liste des titres à venir...</p>
+              </div>
+            </TabsContent>
+            <TabsContent value="authors" className="mt-6">
+              <div className="bg-white rounded-lg p-6 shadow-sm">
+                <p className="text-gray-600">Liste des auteurs à venir...</p>
+              </div>
+            </TabsContent>
+            <TabsContent value="institutions" className="mt-6">
+              <div className="bg-white rounded-lg p-6 shadow-sm">
+                <p className="text-gray-600">Liste des institutions à venir...</p>
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 shadow-md border border-gray-100 hover:shadow-lg transition-shadow mt-6">
+            <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-primary mb-3 sm:mb-4">
+              À propos de l'Index Medicus
+            </h2>
+            <p className="text-sm sm:text-base text-gray-600">
+              L'Index Medicus est une base de données bibliographique qui recense la littérature médicale haïtienne. Elle permet aux professionnels de santé d'accéder facilement aux publications médicales locales.
+            </p>
           </div>
         </div>
       </div>
