@@ -26,8 +26,10 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
       
       const { error } = await supabase
         .from('articles')
-        .update({ shares: issue.shares + 1 })
-        .eq('id', issue.id);
+        .update({ shares: (issue.shares || 0) + 1 })
+        .eq('id', issue.id)
+        .select()
+        .single();
 
       if (error) throw error;
       
@@ -48,8 +50,10 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
     try {
       const { error } = await supabase
         .from('articles')
-        .update({ downloads: issue.downloads + 1 })
-        .eq('id', issue.id);
+        .update({ downloads: (issue.downloads || 0) + 1 })
+        .eq('id', issue.id)
+        .select()
+        .single();
 
       if (error) throw error;
 

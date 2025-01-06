@@ -1,5 +1,4 @@
-// Base types
-type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -7,127 +6,304 @@ type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-// Article related types
-interface ArticleBase {
-  id: string;
-  title: string;
-  abstract: string;
-  authors: string[];
-  publication_date: string | null;
-  source: string;
-  category: string;
-  tags: string[] | null;
-  pdf_url: string | null;
-  image_url: string | null;
-}
-
-interface ArticleMetrics {
-  views: number | null;
-  citations: number | null;
-  downloads: number | null;
-  shares: number | null;
-}
-
-interface ArticleTimestamps {
-  created_at: string | null;
-  updated_at: string | null;
-}
-
-export interface Article extends ArticleBase, ArticleMetrics, ArticleTimestamps {}
-
-// Article submission types
-interface SubmissionBase {
-  id: number;
-  publication_type: string;
-  title: string;
-  authors: string;
-  institution: string;
-  keywords: string;
-  abstract: string;
-}
-
-interface SubmissionContact {
-  corresponding_author_name: string;
-  corresponding_author_email: string;
-  corresponding_author_phone: string;
-  corresponding_author_address: string;
-}
-
-interface SubmissionDeclarations {
-  ethics_approval: boolean;
-  no_conflict: boolean;
-  original_work: boolean;
-}
-
-interface SubmissionStatus {
-  status: string;
-  pdf_url: string | null;
-  article_files_urls: string[] | null;
-  image_annexes_urls: string[] | null;
-}
-
-interface SubmissionTimestamps {
-  created_at: string;
-  updated_at: string;
-}
-
-export interface ArticleSubmission extends 
-  SubmissionBase, 
-  SubmissionContact, 
-  SubmissionDeclarations, 
-  SubmissionStatus,
-  SubmissionTimestamps {}
-
-// Member types
-export interface Member {
-  id: number;
-  name: string;
-  phone: string | null;
-  email: string | null;
-  created_at: string;
-  updated_at: string;
-  avatar_url: string | null;
-  titre: string | null;
-}
-
-// Newsletter subscription types
-export interface NewsletterSubscription {
-  id: number;
-  name: string;
-  email: string;
-  phone: string | null;
-  subscribed_at: string;
-  is_active: boolean;
-}
-
-// Database schema type
-export interface Database {
+export type Database = {
   public: {
     Tables: {
-      articles: {
-        Row: Article;
-        Insert: Partial<Article>;
-        Update: Partial<Article>;
-      };
       article_submissions: {
-        Row: ArticleSubmission;
-        Insert: Partial<ArticleSubmission>;
-        Update: Partial<ArticleSubmission>;
-      };
+        Row: {
+          abstract: string
+          article_files_urls: string[] | null
+          authors: string
+          corresponding_author_address: string
+          corresponding_author_email: string
+          corresponding_author_name: string
+          corresponding_author_phone: string
+          created_at: string
+          ethics_approval: boolean
+          id: number
+          image_annexes_urls: string[] | null
+          institution: string
+          keywords: string
+          no_conflict: boolean
+          original_work: boolean
+          pdf_url: string | null
+          publication_type: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          abstract: string
+          article_files_urls?: string[] | null
+          authors: string
+          corresponding_author_address: string
+          corresponding_author_email: string
+          corresponding_author_name: string
+          corresponding_author_phone: string
+          created_at?: string
+          ethics_approval?: boolean
+          id?: number
+          image_annexes_urls?: string[] | null
+          institution: string
+          keywords: string
+          no_conflict?: boolean
+          original_work?: boolean
+          pdf_url?: string | null
+          publication_type: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          abstract?: string
+          article_files_urls?: string[] | null
+          authors?: string
+          corresponding_author_address?: string
+          corresponding_author_email?: string
+          corresponding_author_name?: string
+          corresponding_author_phone?: string
+          created_at?: string
+          ethics_approval?: boolean
+          id?: number
+          image_annexes_urls?: string[] | null
+          institution?: string
+          keywords?: string
+          no_conflict?: boolean
+          original_work?: boolean
+          pdf_url?: string | null
+          publication_type?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      articles: {
+        Row: {
+          abstract: string
+          authors: string[]
+          category: string
+          citations: number | null
+          created_at: string | null
+          downloads: number | null
+          id: string
+          image_url: string | null
+          pdf_url: string | null
+          publication_date: string | null
+          shares: number | null
+          source: string
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+          views: number | null
+        }
+        Insert: {
+          abstract: string
+          authors?: string[]
+          category: string
+          citations?: number | null
+          created_at?: string | null
+          downloads?: number | null
+          id?: string
+          image_url?: string | null
+          pdf_url?: string | null
+          publication_date?: string | null
+          shares?: number | null
+          source: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+          views?: number | null
+        }
+        Update: {
+          abstract?: string
+          authors?: string[]
+          category?: string
+          citations?: number | null
+          created_at?: string | null
+          downloads?: number | null
+          id?: string
+          image_url?: string | null
+          pdf_url?: string | null
+          publication_date?: string | null
+          shares?: number | null
+          source?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+          views?: number | null
+        }
+        Relationships: []
+      }
       members: {
-        Row: Member;
-        Insert: Partial<Member>;
-        Update: Partial<Member>;
-      };
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          id: number
+          name: string
+          phone: string | null
+          titre: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          id?: number
+          name: string
+          phone?: string | null
+          titre?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          id?: number
+          name?: string
+          phone?: string | null
+          titre?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       newsletter_subscriptions: {
-        Row: NewsletterSubscription;
-        Insert: Omit<NewsletterSubscription, 'id'>;
-        Update: Partial<NewsletterSubscription>;
-      };
-    };
-    Views: Record<string, never>;
-    Functions: Record<string, never>;
-    Enums: Record<string, never>;
-    CompositeTypes: Record<string, never>;
-  };
+        Row: {
+          email: string
+          id: number
+          is_active: boolean
+          name: string
+          phone: string | null
+          subscribed_at: string
+        }
+        Insert: {
+          email: string
+          id?: never
+          is_active?: boolean
+          name: string
+          phone?: string | null
+          subscribed_at?: string
+        }
+        Update: {
+          email?: string
+          id?: never
+          is_active?: boolean
+          name?: string
+          phone?: string | null
+          subscribed_at?: string
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
 }
+
+type PublicSchema = Database[Extract<keyof Database, "public">]
+
+export type Tables<
+  PublicTableNameOrOptions extends
+    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+        Database[PublicTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
+        PublicSchema["Views"])
+    ? (PublicSchema["Tables"] &
+        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  PublicTableNameOrOptions extends
+    | keyof PublicSchema["Tables"]
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  PublicTableNameOrOptions extends
+    | keyof PublicSchema["Tables"]
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  PublicEnumNameOrOptions extends
+    | keyof PublicSchema["Enums"]
+    | { schema: keyof Database },
+  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = PublicEnumNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
+    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof PublicSchema["CompositeTypes"]
+    | { schema: keyof Database },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
+    ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
