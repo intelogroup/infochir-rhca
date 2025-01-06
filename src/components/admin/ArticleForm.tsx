@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { PublicationTypeSelector } from "./article-form/PublicationTypeSelector";
 import { ArticleDetails } from "./article-form/ArticleDetails";
 import { FileUploaders } from "./article-form/FileUploaders";
+import { DraftPreview } from "./article-form/DraftPreview";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface ArticleFormProps {
@@ -69,6 +70,20 @@ export const ArticleForm = ({ initialData, onSubmit, isLoading }: ArticleFormPro
     }
   };
 
+  const handleSaveDraft = () => {
+    // Save draft to localStorage
+    const draft = {
+      title,
+      abstract,
+      publicationType,
+      articleFilesUrls,
+      imageAnnexesUrls,
+      lastSaved: new Date().toISOString()
+    };
+    localStorage.setItem('article-draft', JSON.stringify(draft));
+    toast.success("Brouillon sauvegardé");
+  };
+
   return (
     <motion.form 
       onSubmit={handleSubmit} 
@@ -100,6 +115,12 @@ export const ArticleForm = ({ initialData, onSubmit, isLoading }: ArticleFormPro
           setArticleFilesUrls={setArticleFilesUrls}
           setImageAnnexesUrls={setImageAnnexesUrls}
           errors={errors}
+        />
+
+        <DraftPreview
+          title={title}
+          abstract={abstract}
+          onSaveDraft={handleSaveDraft}
         />
       </motion.div>
 

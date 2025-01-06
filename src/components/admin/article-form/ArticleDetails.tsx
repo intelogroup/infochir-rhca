@@ -6,13 +6,15 @@ interface ArticleDetailsProps {
   setTitle: (title: string) => void;
   abstract: string;
   setAbstract: (abstract: string) => void;
+  errors?: { [key: string]: string };
 }
 
 export const ArticleDetails = ({
   title,
   setTitle,
   abstract,
-  setAbstract
+  setAbstract,
+  errors
 }: ArticleDetailsProps) => {
   return (
     <div className="space-y-6">
@@ -24,10 +26,13 @@ export const ArticleDetails = ({
           id="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full"
+          className={`w-full ${errors?.title ? 'border-red-500' : ''}`}
           placeholder="Entrez le titre de votre article"
           required
         />
+        {errors?.title && (
+          <p className="mt-1 text-sm text-red-500">{errors.title}</p>
+        )}
       </div>
 
       <div>
@@ -38,10 +43,13 @@ export const ArticleDetails = ({
           id="abstract"
           value={abstract}
           onChange={(e) => setAbstract(e.target.value)}
-          className="w-full min-h-[150px]"
+          className={`w-full min-h-[150px] ${errors?.abstract ? 'border-red-500' : ''}`}
           placeholder="Entrez le résumé de votre article"
           required
         />
+        {errors?.abstract && (
+          <p className="mt-1 text-sm text-red-500">{errors.abstract}</p>
+        )}
       </div>
     </div>
   );

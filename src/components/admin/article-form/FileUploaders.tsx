@@ -1,49 +1,48 @@
-import { MultiFileUploader } from "@/components/pdf/MultiFileUploader";
+import { FileUploader } from "@/components/pdf/MultiFileUploader";
 
 interface FileUploadersProps {
   setArticleFilesUrls: (urls: string[]) => void;
   setImageAnnexesUrls: (urls: string[]) => void;
+  errors?: { [key: string]: string };
 }
 
 export const FileUploaders = ({
   setArticleFilesUrls,
-  setImageAnnexesUrls
+  setImageAnnexesUrls,
+  errors
 }: FileUploadersProps) => {
   return (
     <div className="space-y-6">
       <div>
-        <label className="block text-sm font-medium mb-2 text-gray-700">
-          Fichiers de l'article (Word, PDF)
-        </label>
-        <MultiFileUploader
+        <h3 className="text-lg font-semibold mb-2">Fichiers de l'article</h3>
+        <FileUploader
           bucket="article_files"
           acceptedFileTypes={{
             'application/pdf': ['.pdf'],
             'application/msword': ['.doc'],
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
           }}
-          maxFileSize={50}
-          maxFiles={5}
+          maxFileSize={10}
+          maxFiles={3}
           onUploadComplete={setArticleFilesUrls}
-          helperText="Formats acceptés: .doc, .docx, .pdf (max 50MB par fichier)"
-          type="document"
+          helperText="Formats acceptés: DOC, DOCX, PDF. Taille max: 10MB"
         />
+        {errors?.files && (
+          <p className="mt-1 text-sm text-red-500">{errors.files}</p>
+        )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-2 text-gray-700">
-          Images et annexes
-        </label>
-        <MultiFileUploader
+        <h3 className="text-lg font-semibold mb-2">Images et annexes</h3>
+        <FileUploader
           bucket="article_annexes"
           acceptedFileTypes={{
             'image/*': ['.png', '.jpg', '.jpeg', '.gif']
           }}
-          maxFileSize={50}
-          maxFiles={10}
+          maxFileSize={5}
+          maxFiles={5}
           onUploadComplete={setImageAnnexesUrls}
-          helperText="Formats acceptés: PNG, JPEG, GIF (max 50MB par image)"
-          type="image"
+          helperText="Formats acceptés: PNG, JPEG, GIF. Taille max: 5MB"
         />
       </div>
     </div>
