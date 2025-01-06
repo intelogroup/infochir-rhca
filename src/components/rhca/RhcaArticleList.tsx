@@ -12,8 +12,10 @@ export const RhcaArticleList = ({ articles = [], viewMode }: RhcaArticleListProp
   
   if (!articles?.length) {
     return (
-      <div className="text-center py-8 text-gray-500">
-        Aucun article trouvé
+      <div className="w-full flex items-center justify-center py-8">
+        <p className="text-gray-500 text-center">
+          Aucun article trouvé
+        </p>
       </div>
     );
   }
@@ -21,13 +23,17 @@ export const RhcaArticleList = ({ articles = [], viewMode }: RhcaArticleListProp
   return (
     <div className="w-full">
       {viewMode === "grid" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {articles.map((article) => (
-            <RhcaCard key={article.id} article={article} />
+            <div key={article.id} className="w-full animate-fade-up">
+              <RhcaCard article={article} />
+            </div>
           ))}
         </div>
       ) : (
-        <RhcaTable articles={articles} />
+        <div className="space-y-4 sm:space-y-6">
+          <RhcaTable articles={articles} />
+        </div>
       )}
     </div>
   );
