@@ -5,6 +5,7 @@ import { mockIssues } from "../data/mockIssues";
 import { SORT_OPTIONS, type SortOption } from "../constants/sortOptions";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
+import { motion } from "framer-motion";
 
 interface IssuesGridLayoutProps {
   viewMode?: "grid" | "table";
@@ -34,7 +35,12 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-t-xl border-b border-gray-100 p-4 shadow-sm">
+      <motion.div 
+        className="bg-white rounded-t-xl border-b border-gray-100 p-6 shadow-sm"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
         <SearchAndSort
           searchTerm={searchTerm}
           sortBy={sortBy}
@@ -48,7 +54,7 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
           availableCategories={availableCategories}
           disabled={isLoading}
         />
-      </div>
+      </motion.div>
       
       <div className="px-4">
         <IssuesGridContent
