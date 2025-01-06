@@ -3,13 +3,15 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Article, DatabaseArticle, ArticleSource } from "../types/article";
 
 const mapDatabaseArticleToArticle = (dbArticle: DatabaseArticle): Article => {
+  console.log('Mapping database article:', dbArticle);
+  
   // Validate source type
   const validSources: ArticleSource[] = ["RHCA", "IGM", "ADC"];
   const source = validSources.includes(dbArticle.source as ArticleSource) 
     ? dbArticle.source as ArticleSource 
     : "RHCA"; // Default to RHCA if invalid source
 
-  return {
+  const mappedArticle = {
     ...dbArticle,
     date: dbArticle.publication_date,
     source,
@@ -21,12 +23,17 @@ const mapDatabaseArticleToArticle = (dbArticle: DatabaseArticle): Article => {
     pdfUrl: dbArticle.pdf_url || undefined,
     downloads: dbArticle.downloads || 0,
   };
+
+  console.log('Mapped article:', mappedArticle);
+  return mappedArticle;
 };
 
 export const useArticlesQuery = () => {
   return useQuery({
     queryKey: ["articles"],
     queryFn: async () => {
+      console.log('Fetching articles...');
+      
       const { data, error } = await supabase
         .from("articles")
         .select("*")
@@ -38,11 +45,19 @@ export const useArticlesQuery = () => {
       }
 
       if (!data) {
+        console.log('No data returned from query');
         return [];
       }
 
+      console.log('Raw data from Supabase:', data);
+
       // Map database response to match Article type
-      return data.map((article) => mapDatabaseArticleToArticle(article as DatabaseArticle));
+      const mappedArticles = data.map((article) => 
+        mapDatabaseArticleToArticle(article as DatabaseArticle)
+      );
+
+      console.log('Final mapped articles:', mappedArticles);
+      return mappedArticles;
     },
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
     gcTime: 30 * 60 * 1000, // Cache for 30 minutes
