@@ -12,7 +12,7 @@ export const NavLinks = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.2
+        staggerChildren: 0.1 // Made faster
       }
     }
   };
@@ -25,12 +25,12 @@ export const NavLinks = () => {
     },
     visible: {
       opacity: [0, 1, 0],
-      y: -20,
-      scale: [0.5, 1, 0.5],
+      y: -30, // Increased travel distance
+      scale: [0.5, 1.2, 0.5], // Increased scale
       transition: {
-        duration: 1,
+        duration: 0.8, // Made animation faster
         repeat: Infinity,
-        repeatDelay: Math.random() * 2
+        repeatDelay: Math.random() * 1 // Reduced delay
       }
     }
   };
@@ -104,11 +104,11 @@ export const NavLinks = () => {
           />
           <motion.div
             initial="hidden"
-            whileHover="visible"
+            animate="visible" // Changed from whileHover to animate
             variants={heartBubbles}
             className="absolute -top-2 -left-2 w-8 h-8 pointer-events-none"
           >
-            {[...Array(5)].map((_, i) => (
+            {[...Array(8)].map((_, i) => ( // Increased number of hearts
               <motion.div
                 key={i}
                 variants={bubble}
@@ -119,7 +119,7 @@ export const NavLinks = () => {
                 }}
               >
                 <Heart 
-                  className="h-2 w-2 text-[#ea384c] fill-[#ea384c]" 
+                  className="h-3 w-3 text-[#ea384c] fill-[#ea384c]" // Increased heart size
                   aria-hidden="true"
                 />
               </motion.div>
