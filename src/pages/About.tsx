@@ -9,8 +9,8 @@ import { Link } from "react-router-dom";
 const About = () => {
   return (
     <MainLayout>
-      <div className="min-h-screen bg-gradient-to-br from-white to-gray-50 pt-[50px]">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="min-h-screen bg-gradient-to-br from-white to-gray-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-[30px]">
           <Link to="/">
             <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary-light">
               <ArrowLeft className="h-4 w-4" />
