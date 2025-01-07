@@ -17,7 +17,7 @@ export const SponsorsSection = () => {
 
   if (isLoading) {
     return (
-      <section className="py-12 bg-gray-50" aria-label="Partenaires">
+      <section className="py-12 bg-gray-50" aria-label="Partenaires et Sponsors">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <Skeleton className="h-8 w-64 mx-auto mb-4" />
@@ -41,7 +41,7 @@ export const SponsorsSection = () => {
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>Erreur</AlertTitle>
             <AlertDescription>
-              Une erreur est survenue lors du chargement des partenaires. Veuillez réessayer plus tard.
+              Une erreur est survenue lors du chargement des partenaires et sponsors. Veuillez réessayer plus tard.
             </AlertDescription>
           </Alert>
         </div>
@@ -49,27 +49,57 @@ export const SponsorsSection = () => {
     );
   }
 
+  // Split sponsors into partners and sponsors based on their type
+  const partners = sponsorsData?.filter(s => s.type === 'partner') || [];
+  const sponsorsOnly = sponsorsData?.filter(s => s.type === 'sponsor') || [];
+
   return (
-    <section className="py-12 bg-gray-50" aria-label="Partenaires">
+    <section className="py-12 bg-gray-50" aria-label="Partenaires et Sponsors">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Nos Partenaires
-          </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Découvrez les organisations qui soutiennent notre mission et contribuent à notre succès.
-          </p>
+        {/* Partners Section */}
+        <div className="mb-16">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Nos Partenaires
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Découvrez les organisations qui soutiennent notre mission et contribuent à notre succès.
+            </p>
+          </div>
+          <div 
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
+            role="list"
+            aria-label="Liste des partenaires"
+          >
+            {partners.map((sponsor, index) => (
+              <div key={index} role="listitem">
+                <SponsorCard sponsor={sponsor} index={index} />
+              </div>
+            ))}
+          </div>
         </div>
-        <div 
-          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
-          role="list"
-          aria-label="Liste des partenaires"
-        >
-          {sponsorsData.map((sponsor, index) => (
-            <div key={index} role="listitem">
-              <SponsorCard sponsor={sponsor} index={index} />
-            </div>
-          ))}
+
+        {/* Sponsors Section */}
+        <div>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Nos Sponsors
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Découvrez les entreprises qui nous font confiance et nous accompagnent dans notre développement.
+            </p>
+          </div>
+          <div 
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
+            role="list"
+            aria-label="Liste des sponsors"
+          >
+            {sponsorsOnly.map((sponsor, index) => (
+              <div key={index} role="listitem">
+                <SponsorCard sponsor={sponsor} index={index} />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
