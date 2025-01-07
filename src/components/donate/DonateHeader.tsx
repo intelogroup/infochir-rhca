@@ -1,9 +1,11 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export const DonateHeader = () => {
   const [animationKey, setAnimationKey] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const isMobile = useIsMobile();
 
   const heartBubbles = {
     hidden: { opacity: 0 },
@@ -32,13 +34,24 @@ export const DonateHeader = () => {
     }
   };
 
-  const handleClick = () => {
-    setAnimationKey(prev => prev + 1); // Increment key to force animation restart
+  const triggerAnimation = () => {
+    setAnimationKey(prev => prev + 1);
     setIsAnimating(true);
     setTimeout(() => {
       setIsAnimating(false);
     }, 5000);
   };
+
+  const handleClick = () => {
+    triggerAnimation();
+  };
+
+  // Trigger animation on page load for mobile
+  useEffect(() => {
+    if (isMobile) {
+      triggerAnimation();
+    }
+  }, [isMobile]);
 
   return (
     <div className="text-center mb-12 space-y-6 px-4 sm:px-6 relative">
