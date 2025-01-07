@@ -62,15 +62,15 @@ export const ProductCard = ({
   };
 
   const CardComponent = () => (
-    <div className="h-full perspective-1000">
-      <Card className="group h-full relative overflow-hidden border-0 transition-all duration-500 transform-gpu hover:scale-[1.02]">
+    <div className="h-[420px] perspective-1000">
+      <Card className="group h-full relative overflow-hidden border-0 transition-all duration-500 transform-gpu hover:scale-[1.02] flex flex-col">
         {/* Gradient background overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF]/80 via-[#41b06e]/70 to-[#41b06e]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         
         {/* Glass effect background */}
         <div className="absolute inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-[2px] group-hover:backdrop-blur-[4px] transition-all duration-500" />
         
-        <div className="relative z-10">
+        <div className="relative z-10 flex flex-col flex-grow">
           <CardHeader className="space-y-4">
             {shouldShowBadge(title) && (
               <div className="absolute top-0 right-0 p-4">
@@ -91,14 +91,14 @@ export const ProductCard = ({
             <CardTitle className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#1E40AF] via-[#41b06e] to-[#41b06e] text-center">
               {title}
             </CardTitle>
-            <CardDescription className="text-gray-600 dark:text-gray-300 text-center leading-relaxed line-clamp-2 h-12">
+            <CardDescription className="text-gray-600 dark:text-gray-300 text-center leading-relaxed line-clamp-2">
               {description}
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="flex-grow">
             <ProductFeatures features={getProductFeatures(title)} />
           </CardContent>
-          <CardFooter className="pt-4">
+          <CardFooter className="mt-auto pb-6">
             <Button 
               variant="ghost" 
               className={`w-full group/button relative overflow-hidden bg-gradient-to-r from-[#1E40AF] via-[#41b06e] to-[#41b06e] text-white opacity-90 hover:opacity-100 ${getHoverColor(title)}`}
