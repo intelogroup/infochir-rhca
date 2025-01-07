@@ -70,7 +70,7 @@ export const ProductCard = ({
         {/* Glass effect background */}
         <div className="absolute inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-[2px] group-hover:backdrop-blur-[4px] transition-all duration-500" />
         
-        <div className="relative z-10 flex flex-col h-full justify-center">
+        <div className="relative z-10 flex flex-col h-full justify-center pt-8">
           <CardHeader className="space-y-3 flex-shrink-0 pb-2">
             {shouldShowBadge(title) && (
               <div className="absolute top-0 right-0 p-4">
