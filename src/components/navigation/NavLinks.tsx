@@ -1,18 +1,20 @@
-import { motion } from "framer-motion";
+import { motion, useAnimation } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
 import { navItems } from "@/config/navigation";
 import { Heart } from "lucide-react";
+import { useState } from "react";
 
 export const NavLinks = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const heartBubbles = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1 // Made faster
+        staggerChildren: 0.1
       }
     }
   };
@@ -25,14 +27,21 @@ export const NavLinks = () => {
     },
     visible: {
       opacity: [0, 1, 0],
-      y: -30, // Increased travel distance
-      scale: [0.5, 1.2, 0.5], // Increased scale
+      y: -30,
+      scale: [0.5, 1.2, 0.5],
       transition: {
-        duration: 0.8, // Made animation faster
-        repeat: Infinity,
-        repeatDelay: Math.random() * 1 // Reduced delay
+        duration: 0.8,
+        repeat: 0,
       }
     }
+  };
+
+  const handleDonateClick = () => {
+    setIsAnimating(true);
+    navigate('/donate');
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 5000);
   };
 
   return (
@@ -74,7 +83,7 @@ export const NavLinks = () => {
         );
       })}
       <motion.button
-        onClick={() => navigate('/donate')}
+        onClick={handleDonateClick}
         className={`
           group relative
           flex h-9 px-4 items-center justify-center rounded-full
@@ -104,11 +113,11 @@ export const NavLinks = () => {
           />
           <motion.div
             initial="hidden"
-            animate="visible" // Changed from whileHover to animate
+            animate={isAnimating ? "visible" : "hidden"}
             variants={heartBubbles}
             className="absolute -top-2 -left-2 w-8 h-8 pointer-events-none"
           >
-            {[...Array(8)].map((_, i) => ( // Increased number of hearts
+            {[...Array(8)].map((_, i) => (
               <motion.div
                 key={i}
                 variants={bubble}
@@ -119,7 +128,7 @@ export const NavLinks = () => {
                 }}
               >
                 <Heart 
-                  className="h-3 w-3 text-[#ea384c] fill-[#ea384c]" // Increased heart size
+                  className="h-3 w-3 text-[#ea384c] fill-[#ea384c]"
                   aria-hidden="true"
                 />
               </motion.div>
