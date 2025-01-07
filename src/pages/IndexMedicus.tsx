@@ -10,10 +10,10 @@ const IndexMedicus = () => {
     <MainLayout>
       <div className="min-h-screen bg-[#F1F0FB]">
         <div className="container max-w-[1920px] mx-auto px-3 sm:px-6 lg:px-8 py-4 lg:py-8 pt-16 sm:pt-20">
-          <div className="flex items-center mb-4 sm:mb-6">
-            <Link to="/" className="inline-block">
-              <Button variant="ghost" size="sm" className="gap-1.5 sm:gap-2 text-primary hover:text-primary-light">
-                <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+          <div className="absolute left-4 top-[30px] z-10">
+            <Link to="/">
+              <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary-light">
+                <ArrowLeft className="h-5 w-5" />
                 Retour
               </Button>
             </Link>
