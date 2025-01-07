@@ -51,6 +51,16 @@ export const ProductCard = ({
     return title !== "Index Medicus";
   };
 
+  const getLogoSize = (title: string) => {
+    if (title === "Index Medicus") {
+      return "h-14 w-14"; // Smaller size for Index Medicus
+    }
+    if (title === "RHCA") {
+      return "h-20 w-20"; // Larger size for RHCA
+    }
+    return "h-16 w-16"; // Default size for other logos
+  };
+
   const CardComponent = () => (
     <div className="h-full perspective-1000">
       <Card className="group h-full relative overflow-hidden border-0 transition-all duration-500 transform-gpu hover:scale-[1.02]">
@@ -68,7 +78,15 @@ export const ProductCard = ({
               </div>
             )}
             <div className="flex justify-center pt-6 transform-gpu group-hover:scale-105 transition-transform duration-500">
-              <ProductIcon icon={icon} logo={logo} title={title} />
+              {logo ? (
+                <img 
+                  src={logo} 
+                  alt={`${title} logo`} 
+                  className={`object-contain ${getLogoSize(title)}`}
+                />
+              ) : (
+                <ProductIcon icon={icon} logo={logo} title={title} />
+              )}
             </div>
             <CardTitle className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#1E40AF] via-[#41b06e] to-[#41b06e] text-center">
               {title}
