@@ -71,13 +71,13 @@ export const ProductCard = ({
         <div className="absolute inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-[2px] group-hover:backdrop-blur-[4px] transition-all duration-500" />
         
         <div className="relative z-10 flex flex-col h-full">
-          <CardHeader className="space-y-4 flex-shrink-0">
+          <CardHeader className="space-y-3 flex-shrink-0 pt-3 pb-2">
             {shouldShowBadge(title) && (
               <div className="absolute top-0 right-0 p-4">
                 <ProductBadge />
               </div>
             )}
-            <div className="flex justify-center pt-4 transform-gpu group-hover:scale-105 transition-transform duration-500">
+            <div className="flex justify-center transform-gpu group-hover:scale-105 transition-transform duration-500">
               {logo ? (
                 <img 
                   src={logo} 
@@ -88,17 +88,17 @@ export const ProductCard = ({
                 <ProductIcon icon={icon} logo={logo} title={title} />
               )}
             </div>
-            <CardTitle className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#1E40AF] via-[#41b06e] to-[#41b06e] text-center">
+            <CardTitle className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#1E40AF] via-[#41b06e] to-[#41b06e] text-center">
               {title}
             </CardTitle>
-            <CardDescription className="text-gray-600 dark:text-gray-300 text-center leading-relaxed line-clamp-2 min-h-[3rem]">
+            <CardDescription className="text-gray-600 dark:text-gray-300 text-center text-sm leading-tight line-clamp-2 min-h-[2.5rem]">
               {description}
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex-grow overflow-hidden">
+          <CardContent className="flex-grow overflow-hidden py-2">
             <ProductFeatures features={getProductFeatures(title)} />
           </CardContent>
-          <CardFooter className="flex-shrink-0 pb-6">
+          <CardFooter className="flex-shrink-0 pb-4 pt-2">
             <Button 
               variant="ghost" 
               className={`w-full group/button relative overflow-hidden bg-gradient-to-r from-[#1E40AF] via-[#41b06e] to-[#41b06e] text-white opacity-90 hover:opacity-100 ${getHoverColor(title)}`}
