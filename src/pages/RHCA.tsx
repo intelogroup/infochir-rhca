@@ -7,7 +7,7 @@ import { RHCASidebar } from "@/components/rhca/components/RHCASidebar";
 const RHCA = () => {
   return (
     <MainLayout>
-      <div className="min-h-screen bg-gray-50/50">
+      <div className="min-h-screen bg-gray-50/50 pt-[50px]">
         <RHCAHeader />
         
         <div className="container mx-auto px-4 py-8 md:py-12">
