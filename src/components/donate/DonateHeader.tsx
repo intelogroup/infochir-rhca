@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 
 export const DonateHeader = () => {
+  const [animationKey, setAnimationKey] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
   const heartBubbles = {
@@ -32,6 +33,7 @@ export const DonateHeader = () => {
   };
 
   const handleClick = () => {
+    setAnimationKey(prev => prev + 1); // Increment key to force animation restart
     setIsAnimating(true);
     setTimeout(() => {
       setIsAnimating(false);
@@ -48,6 +50,7 @@ export const DonateHeader = () => {
       >
         Soutenez INFOCHIR/RHCA
         <motion.div
+          key={animationKey}
           initial="hidden"
           animate={isAnimating ? "visible" : "hidden"}
           variants={heartBubbles}

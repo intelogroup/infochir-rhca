@@ -7,6 +7,7 @@ import { useState } from "react";
 export const NavLinks = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [animationKey, setAnimationKey] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
   const heartBubbles = {
@@ -37,6 +38,7 @@ export const NavLinks = () => {
   };
 
   const handleDonateClick = () => {
+    setAnimationKey(prev => prev + 1); // Increment key to force animation restart
     setIsAnimating(true);
     navigate('/donate');
     setTimeout(() => {
@@ -112,6 +114,7 @@ export const NavLinks = () => {
             aria-hidden="true" 
           />
           <motion.div
+            key={animationKey}
             initial="hidden"
             animate={isAnimating ? "visible" : "hidden"}
             variants={heartBubbles}
