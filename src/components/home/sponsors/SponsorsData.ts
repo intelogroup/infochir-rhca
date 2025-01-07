@@ -9,7 +9,8 @@ export const sponsors: Sponsor[] = [
   {
     name: "UMREP",
     logo: "/lovable-uploads/043dcc02-cb0f-4bb1-acb1-ae247158b63c.png",
-    type: "partner"
+    type: "partner",
+    url: "https://www.facebook.com/umrep.haiti/"
   },
   {
     name: "ASHAC",
