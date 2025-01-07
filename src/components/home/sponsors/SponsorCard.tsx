@@ -7,11 +7,18 @@ interface SponsorCardProps {
 }
 
 export const SponsorCard = ({ sponsor, index }: SponsorCardProps) => {
+  const handleClick = () => {
+    if (sponsor.url) {
+      window.open(sponsor.url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 1, y: 0 }}
       whileHover={{ scale: 1.05 }}
-      className="relative group"
+      className={`relative group ${sponsor.url ? 'cursor-pointer' : ''}`}
+      onClick={handleClick}
     >
       <div className="relative aspect-[3/2] w-full flex items-center justify-center p-6">
         <img
