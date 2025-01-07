@@ -1,11 +1,20 @@
 import { motion } from "framer-motion";
-import { BookText, Search, Users } from "lucide-react";
+import { BookText, Search, Users, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 export const ADCHeader = () => {
   return (
     <div className="relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-secondary/10 via-transparent to-transparent" />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+        <Link to="/" className="absolute left-4 top-4">
+          <Button variant="ghost" size="sm" className="gap-2">
+            <ArrowLeft className="h-5 w-5" />
+            Retour
+          </Button>
+        </Link>
+        
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -15,7 +24,7 @@ export const ADCHeader = () => {
             <img 
               src="/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png"
               alt="Atlas ADC Logo"
-              className="h-20 w-20 object-contain"
+              className="h-32 w-32 object-contain"
             />
           </div>
           

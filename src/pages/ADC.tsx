@@ -58,7 +58,7 @@ const ADC = () => {
 
   return (
     <MainLayout>
-      <div className="min-h-screen bg-gradient-to-br from-white to-gray-50 pt-[50px]">
+      <div className="min-h-screen bg-gradient-to-br from-white to-gray-50 pt-[100px]">
         <Routes>
           <Route
             path="/"
