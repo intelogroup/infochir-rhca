@@ -2,12 +2,23 @@ import { MainLayout } from "@/components/layouts/MainLayout";
 import { FoundersSection } from "@/components/home/FoundersSection";
 import { SponsorsSection } from "@/components/home/SponsorsSection";
 import { motion } from "framer-motion";
-import { BookOpen, Target, Users, Award } from "lucide-react";
+import { BookOpen, Target, Users, Award, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const About = () => {
   return (
     <MainLayout>
       <div className="min-h-screen bg-gradient-to-br from-white to-gray-50 pt-[50px]">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <Link to="/">
+            <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary-light">
+              <ArrowLeft className="h-4 w-4" />
+              Retour
+            </Button>
+          </Link>
+        </div>
+
         <section 
           className="relative overflow-hidden py-8 sm:py-12 md:py-16 lg:py-24"
           aria-label="Introduction"

@@ -6,6 +6,9 @@ import { DonationSummary } from "@/components/donate/DonationSummary";
 import { DonateForm } from "@/components/donate/DonateForm";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { Toaster } from "sonner";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Donate = () => {
   useScrollToTop();
@@ -31,6 +34,13 @@ const Donate = () => {
         <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_70%,transparent_100%)]" />
         
         <div className="relative max-w-4xl mx-auto px-4 py-12">
+          <Link to="/">
+            <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary-light mb-6">
+              <ArrowLeft className="h-4 w-4" />
+              Retour
+            </Button>
+          </Link>
+
           <DonateHeader />
           
           <div className="grid md:grid-cols-3 gap-8">

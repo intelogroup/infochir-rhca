@@ -2,39 +2,20 @@ import { MainLayout } from "@/components/layouts/MainLayout";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Briefcase, GraduationCap, Users, Globe } from "lucide-react";
+import { Briefcase, GraduationCap, Users, Globe, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Opportunities = () => {
-  const opportunities = [
-    {
-      title: "Postes Médicaux",
-      description: "Explorez les opportunités de carrière dans nos établissements partenaires.",
-      icon: Briefcase,
-      categories: ["Chirurgie", "Anesthésie", "Médecine générale"]
-    },
-    {
-      title: "Programmes de Formation",
-      description: "Découvrez nos programmes de formation continue et de spécialisation.",
-      icon: GraduationCap,
-      categories: ["Résidence", "Fellowship", "Formations spécialisées"]
-    },
-    {
-      title: "Collaborations",
-      description: "Participez à des projets de recherche et des collaborations internationales.",
-      icon: Users,
-      categories: ["Recherche", "Enseignement", "Projets cliniques"]
-    },
-    {
-      title: "Missions Humanitaires",
-      description: "Engagez-vous dans des missions médicales humanitaires à travers le monde.",
-      icon: Globe,
-      categories: ["Missions d'urgence", "Projets de développement", "Support médical"]
-    }
-  ];
-
   return (
     <MainLayout>
       <div className="container mx-auto px-4 py-8 pt-[50px]">
+        <Link to="/">
+          <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary-light mb-6">
+            <ArrowLeft className="h-4 w-4" />
+            Retour
+          </Button>
+        </Link>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -50,7 +31,32 @@ const Opportunities = () => {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {opportunities.map((opportunity, index) => (
+          {[
+            {
+              title: "Postes Médicaux",
+              description: "Explorez les opportunités de carrière dans nos établissements partenaires.",
+              icon: Briefcase,
+              categories: ["Chirurgie", "Anesthésie", "Médecine générale"]
+            },
+            {
+              title: "Programmes de Formation",
+              description: "Découvrez nos programmes de formation continue et de spécialisation.",
+              icon: GraduationCap,
+              categories: ["Résidence", "Fellowship", "Formations spécialisées"]
+            },
+            {
+              title: "Collaborations",
+              description: "Participez à des projets de recherche et des collaborations internationales.",
+              icon: Users,
+              categories: ["Recherche", "Enseignement", "Projets cliniques"]
+            },
+            {
+              title: "Missions Humanitaires",
+              description: "Engagez-vous dans des missions médicales humanitaires à travers le monde.",
+              icon: Globe,
+              categories: ["Missions d'urgence", "Projets de développement", "Support médical"]
+            }
+          ].map((opportunity, index) => (
             <motion.div
               key={opportunity.title}
               initial={{ opacity: 0, y: 20 }}
