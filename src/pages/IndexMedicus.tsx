@@ -9,7 +9,7 @@ const IndexMedicus = () => {
   return (
     <MainLayout>
       <div className="min-h-screen bg-[#F1F0FB]">
-        <div className="container max-w-[1920px] mx-auto px-3 sm:px-6 lg:px-8 py-4 lg:py-8 pt-[60px]">
+        <div className="container max-w-[1920px] mx-auto px-3 sm:px-6 lg:px-8 py-4 lg:py-8 pt-[120px]">
           <div className="mb-4">
             <Link to="/">
               <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary-light">
