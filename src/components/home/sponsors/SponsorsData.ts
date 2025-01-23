@@ -7,6 +7,12 @@ export interface Sponsor {
 
 export const sponsors: Sponsor[] = [
   {
+    name: "Laboratoires 4C",
+    logo: "/lovable-uploads/6510c61e-6913-49cc-9450-a8a4e676937d.png",
+    type: "sponsor",
+    url: "https://laboratoires4c.com/en/home/"
+  },
+  {
     name: "UMREP",
     logo: "/lovable-uploads/043dcc02-cb0f-4bb1-acb1-ae247158b63c.png",
     type: "partner",
