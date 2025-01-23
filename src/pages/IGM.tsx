@@ -6,7 +6,6 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { IssuesGrid } from "@/components/igm/IssuesGrid";
 import { BackToTop } from "@/components/navigation/BackToTop";
-import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
 import { YearNavigation } from "@/components/igm/components/YearNavigation";
 import { IGMHeader } from "@/components/igm/components/IGMHeader";
 import { IGMSidebar } from "@/components/igm/components/IGMSidebar";
@@ -20,16 +19,6 @@ const IGM = () => {
   return (
     <MainLayout>
       <div className="min-h-screen bg-[#F1F0FB]">
-        {/* Breadcrumbs */}
-        <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 pt-16 sm:pt-20">
-          <Breadcrumbs
-            items={[
-              { label: "IGM", href: "/igm" },
-              { label: "Publications" },
-            ]}
-          />
-        </div>
-
         {/* Header Section */}
         <IGMHeader />
 
