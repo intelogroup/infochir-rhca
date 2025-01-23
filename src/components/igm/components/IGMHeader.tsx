@@ -24,7 +24,21 @@ export const IGMHeader = () => {
       />
       
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-        <div className="space-y-8">
+        <Link to="/" className="inline-block mb-8">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="gap-1.5 sm:gap-2 text-primary hover:text-primary-light transition-colors duration-200"
+          >
+            <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+            Retour
+          </Button>
+        </Link>
+
+        <motion.div 
+          style={{ y, opacity, scale }}
+          className="space-y-8"
+        >
           <div className="inline-flex items-center justify-center w-32 h-32 rounded-full bg-white shadow-lg mb-6 overflow-hidden">
             <motion.img 
               src="/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png"
@@ -35,10 +49,7 @@ export const IGMHeader = () => {
             />
           </div>
           
-          <motion.div 
-            style={{ y, opacity, scale }}
-            className="space-y-4"
-          >
+          <div className="space-y-4">
             <motion.h1 
               className="text-4xl sm:text-5xl font-bold text-primary"
               initial={{ opacity: 0, y: 20 }}
@@ -55,19 +66,8 @@ export const IGMHeader = () => {
             >
               Votre source d'information médicale de référence en Haïti.
             </motion.p>
-          </motion.div>
-
-          <Link to="/" className="inline-block">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="gap-1.5 sm:gap-2 text-primary hover:text-primary-light transition-colors duration-200"
-            >
-              <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
-              Retour
-            </Button>
-          </Link>
-        </div>
+          </div>
+        </motion.div>
       </div>
     </div>
   );
