@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Download, Share2 } from "lucide-react";
+import { Download, Eye } from "lucide-react";
 import { toast } from "sonner";
 
 interface ArticleActionsProps {
@@ -9,13 +9,6 @@ interface ArticleActionsProps {
 }
 
 export const ArticleActions = ({ id, pdfUrl, onCardClick }: ArticleActionsProps) => {
-  const handleShare = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const shareUrl = `${window.location.origin}/rhca/articles/${id}`;
-    navigator.clipboard.writeText(shareUrl);
-    toast.success("Lien copié dans le presse-papier");
-  };
-
   const handleDownload = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!pdfUrl) {
@@ -23,30 +16,35 @@ export const ArticleActions = ({ id, pdfUrl, onCardClick }: ArticleActionsProps)
       return;
     }
     window.open(pdfUrl, '_blank');
-    toast.success("Ouverture du PDF...");
+    toast.success("Téléchargement du PDF en cours...");
+  };
+
+  const handleView = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onCardClick) {
+      onCardClick();
+    }
   };
 
   return (
-    <div className="flex gap-3 w-full sm:w-auto">
+    <div className="flex flex-wrap gap-2">
       <Button
         variant="outline"
         size="sm"
-        className="flex-1 sm:flex-none gap-2 bg-white hover:bg-gray-50"
-        onClick={handleShare}
-        aria-label="Partager l'article"
+        className="gap-2 text-emerald-600 border-emerald-200 hover:bg-emerald-50"
+        onClick={handleView}
       >
-        <Share2 className="h-4 w-4" aria-hidden="true" />
-        <span className="whitespace-nowrap">Partager</span>
+        <Eye className="h-4 w-4" />
+        <span className="hidden sm:inline">Voir</span>
       </Button>
       <Button
         variant="outline"
         size="sm"
-        className="flex-1 sm:flex-none gap-2 bg-white hover:bg-gray-50"
+        className="gap-2 text-emerald-600 border-emerald-200 hover:bg-emerald-50"
         onClick={handleDownload}
-        aria-label={pdfUrl ? "Télécharger le PDF" : "PDF non disponible"}
       >
-        <Download className="h-4 w-4" aria-hidden="true" />
-        <span className="whitespace-nowrap">PDF</span>
+        <Download className="h-4 w-4" />
+        <span className="hidden sm:inline">PDF</span>
       </Button>
     </div>
   );

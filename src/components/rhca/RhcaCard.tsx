@@ -3,7 +3,7 @@ import type { RhcaArticle } from "./types";
 import { ArticleHeader } from "./article/ArticleHeader";
 import { ArticleContent } from "./article/ArticleContent";
 import { ArticleActions } from "./article/ArticleActions";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { motion } from "framer-motion";
 import { useState } from "react";
 import { ArticleModal } from "./article/ArticleModal";
 
@@ -26,41 +26,55 @@ export const RhcaCard = ({ article, onCardClick, className }: RhcaCardProps) => 
 
   return (
     <>
-      <Card 
-        className={`group hover:shadow-lg transition-all duration-300 cursor-pointer bg-white h-full border-gray-100 overflow-hidden ${className ?? ''}`}
-        onClick={handleClick}
-        role="article"
-        aria-labelledby={`article-title-${article.id}`}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="h-full w-full"
       >
-        <div className="flex flex-col md:flex-row gap-4 p-4 sm:p-6 h-full">
-          <div className="w-full md:w-36 flex-shrink-0">
-            <AspectRatio ratio={3/4} className="overflow-hidden rounded-lg bg-gray-50 border border-gray-100">
+        <Card 
+          className="group hover:shadow-md transition-all duration-300 cursor-pointer h-full transform hover:-translate-y-1 bg-white border border-gray-200"
+          onClick={handleClick}
+        >
+          <div className="flex gap-4 p-4">
+            <div className="w-20 flex-shrink-0">
               {article.imageUrl ? (
-                <img 
-                  src={article.imageUrl} 
-                  alt={`Image pour ${article.title}`}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
+                <div className="aspect-[3/4] relative overflow-hidden rounded-lg border border-gray-100">
+                  <img 
+                    src={article.imageUrl} 
+                    alt={article.title}
+                    className="object-cover w-full h-full"
+                  />
+                </div>
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-                  <span className="text-gray-400 text-xl font-semibold">PDF</span>
+                <div className="aspect-[3/4] bg-emerald-50/50 rounded-lg border border-emerald-100/50 flex items-center justify-center">
+                  <span className="text-emerald-600/30 text-lg font-semibold">PDF</span>
                 </div>
               )}
-            </AspectRatio>
-          </div>
-          <div className="flex-1 min-w-0 flex flex-col h-full">
-            <ArticleHeader article={article} />
-            <ArticleContent article={article} />
-            <div className="mt-auto pt-4">
-              <ArticleActions 
-                id={article.id}
-                pdfUrl={article.pdfUrl}
-                onCardClick={onCardClick}
-              />
+            </div>
+            
+            <div className="flex flex-col flex-1 min-w-0">
+              <div className="flex justify-between items-start gap-4">
+                <ArticleContent article={article} />
+                <div className="hidden sm:block">
+                  <ArticleActions 
+                    id={article.id}
+                    pdfUrl={article.pdfUrl}
+                    onCardClick={onCardClick}
+                  />
+                </div>
+              </div>
+              <div className="mt-3 sm:hidden">
+                <ArticleActions 
+                  id={article.id}
+                  pdfUrl={article.pdfUrl}
+                  onCardClick={onCardClick}
+                />
+              </div>
             </div>
           </div>
-        </div>
-      </Card>
+        </Card>
+      </motion.div>
 
       <ArticleModal
         article={article}
