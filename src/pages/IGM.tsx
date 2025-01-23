@@ -18,7 +18,7 @@ const IGM = () => {
 
   return (
     <MainLayout>
-      <div className="min-h-screen bg-[#F1F0FB]">
+      <div className="min-h-screen bg-[#F1F0FB] pt-[15px]">
         {/* Header Section */}
         <IGMHeader />
 
