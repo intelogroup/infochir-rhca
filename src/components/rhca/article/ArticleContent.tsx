@@ -29,10 +29,10 @@ export const ArticleContent = ({ article }: ArticleContentProps) => {
       </p>
       <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
         <span className="bg-emerald-50 px-3 py-1 rounded-full font-medium text-emerald-600">
-          {article.articles?.length || 0} articles
+          {article.specialty}
         </span>
-        <span>{article.downloads} téléchargements</span>
-        <span>{article.shares} partages</span>
+        {article.downloads && <span>{article.downloads} téléchargements</span>}
+        {article.shares && <span>{article.shares} partages</span>}
       </div>
     </div>
   );
