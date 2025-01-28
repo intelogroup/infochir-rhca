@@ -18,6 +18,8 @@ const LoadingSkeleton = () => (
 const DirectoryList = memo(() => {
   console.time('DirectoryList Render');
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortField, setSortField] = useState<'id' | 'name' | 'email'>('name');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   const { data: members, isLoading } = useQuery({
     queryKey: ['members'],
@@ -51,9 +53,34 @@ const DirectoryList = memo(() => {
     return filtered;
   }, [members, searchTerm]);
 
+  const sortedMembers = useMemo(() => {
+    console.time('Sort Members');
+    const sorted = [...filteredMembers].sort((a, b) => {
+      const aValue = a[sortField]?.toLowerCase() ?? '';
+      const bValue = b[sortField]?.toLowerCase() ?? '';
+      
+      if (sortDirection === 'asc') {
+        return aValue.localeCompare(bValue);
+      }
+      return bValue.localeCompare(aValue);
+    });
+    
+    console.timeEnd('Sort Members');
+    return sorted;
+  }, [filteredMembers, sortField, sortDirection]);
+
   const handleSearch = useCallback((term: string) => {
     setSearchTerm(term);
   }, []);
+
+  const handleSort = useCallback((field: 'id' | 'name' | 'email') => {
+    if (field === sortField) {
+      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  }, [sortField]);
 
   console.timeEnd('DirectoryList Render');
 
@@ -67,9 +94,13 @@ const DirectoryList = memo(() => {
       
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
         <Table>
-          <TableHeader />
+          <TableHeader 
+            sortField={sortField}
+            sortDirection={sortDirection}
+            onSort={handleSort}
+          />
           <TableBody>
-            {filteredMembers.map((member) => (
+            {sortedMembers.map((member) => (
               <MemberRow key={member.id} member={member} />
             ))}
           </TableBody>
