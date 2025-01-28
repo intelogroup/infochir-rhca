@@ -9,13 +9,14 @@ import { useInView } from "framer-motion";
 import { useRef, useEffect, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Memoize the loading state component
+// Memoize the loading state component for better performance
 const LoadingState = memo(() => (
   <motion.div 
     className="space-y-8"
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     exit={{ opacity: 0 }}
+    transition={{ duration: 0.2 }} // Reduced animation duration
   >
     {[1, 2].map((year) => (
       <div key={year} className="space-y-6">
@@ -38,13 +39,15 @@ const LoadingState = memo(() => (
   </motion.div>
 ));
 
+LoadingState.displayName = 'LoadingState';
+
 // Memoize the empty state component
 const EmptyState = memo(() => (
   <motion.div 
     className="flex flex-col items-center justify-center p-8 sm:p-12 bg-white rounded-xl border border-gray-100 text-center"
     initial={{ opacity: 0, scale: 0.95 }}
     animate={{ opacity: 1, scale: 1 }}
-    transition={{ duration: 0.3 }}
+    transition={{ duration: 0.2 }}
     role="status"
     aria-live="polite"
   >
@@ -58,6 +61,8 @@ const EmptyState = memo(() => (
     </p>
   </motion.div>
 ));
+
+EmptyState.displayName = 'EmptyState';
 
 interface IssuesGridContentProps {
   viewMode: "grid" | "table";
@@ -78,14 +83,23 @@ export const IssuesGridContent = memo(({
   onLoadMore,
   hasMore,
 }: IssuesGridContentProps) => {
+  console.time('IssuesGridContent render');
+  
   const loadMoreRef = useRef(null);
-  const isInView = useInView(loadMoreRef);
+  const isInView = useInView(loadMoreRef, {
+    once: false,
+    amount: 0.5,
+  });
 
   useEffect(() => {
     if (isInView && hasMore && !isLoading) {
       onLoadMore();
     }
   }, [isInView, hasMore, isLoading, onLoadMore]);
+
+  useEffect(() => {
+    console.timeEnd('IssuesGridContent render');
+  });
 
   if (isLoading) {
     return <LoadingState />;
@@ -102,7 +116,7 @@ export const IssuesGridContent = memo(({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.2 }}
           className="w-full"
         >
           <YearGroupList

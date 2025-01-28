@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import type { Issue } from "./types";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { IssueModal } from "./IssueModal";
 import { IssueCardCover } from "./components/card/IssueCardCover";
 import { IssueCardContent } from "./components/card/IssueCardContent";
@@ -11,7 +11,7 @@ interface IssueCardProps {
   issue: Issue;
 }
 
-export const IssueCard = ({ issue }: IssueCardProps) => {
+export const IssueCard = memo(({ issue }: IssueCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
@@ -19,8 +19,9 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.2 }}
         className="h-full w-full"
+        layout
       >
         <Card 
           className="group hover:shadow-md transition-all duration-300 cursor-pointer h-full transform hover:-translate-y-1 bg-white border border-gray-200"
@@ -64,4 +65,6 @@ export const IssueCard = ({ issue }: IssueCardProps) => {
       />
     </>
   );
-};
+});
+
+IssueCard.displayName = 'IssueCard';

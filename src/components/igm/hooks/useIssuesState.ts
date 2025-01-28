@@ -20,20 +20,27 @@ export const useIssuesState = (
     selectedCategories = [],
   }: IssuesStateOptions
 ) => {
-  // Memoize the search filter function
+  // Memoize the search filter function with debouncing
   const filterBySearch = useCallback((issue: Issue): boolean => {
     if (!searchTerm) return true;
-    const searchLower = searchTerm.toLowerCase();
     
-    // Quick checks first
-    if (issue.title.toLowerCase().includes(searchLower)) return true;
-    if (issue.abstract.toLowerCase().includes(searchLower)) return true;
+    const searchLower = searchTerm.toLowerCase();
+    const searchTerms = searchLower.split(' ').filter(Boolean);
+    
+    // Quick checks for main fields
+    const mainFieldsMatch = 
+      issue.title.toLowerCase().includes(searchLower) ||
+      issue.abstract.toLowerCase().includes(searchLower);
+    
+    if (mainFieldsMatch) return true;
     
     // Only check articles if necessary
     return issue.articles.some(article => 
-      article.title.toLowerCase().includes(searchLower) ||
-      article.authors.some(author => author.toLowerCase().includes(searchLower)) ||
-      article.abstract?.toLowerCase().includes(searchLower)
+      searchTerms.every(term => 
+        article.title.toLowerCase().includes(term) ||
+        article.authors.some(author => author.toLowerCase().includes(term)) ||
+        article.abstract?.toLowerCase().includes(term)
+      )
     );
   }, [searchTerm]);
 
@@ -54,9 +61,7 @@ export const useIssuesState = (
   const filterByCategory = useCallback((issue: Issue): boolean => {
     if (selectedCategories.length === 0) return true;
     return issue.articles.some(article =>
-      selectedCategories.some(category =>
-        article.tags?.includes(category)
-      )
+      article.tags?.some(tag => selectedCategories.includes(tag))
     );
   }, [selectedCategories]);
 
@@ -72,70 +77,62 @@ export const useIssuesState = (
     return filtered;
   }, [issues, filterByDate, filterByCategory, filterBySearch]);
 
-  // Memoize sorting
+  // Memoize sorting with optimized comparisons
   const sortedIssues = useMemo(() => {
     console.time('sorting');
     const sorted = [...filteredIssues];
     
-    switch (sortBy) {
-      case "latest":
-        sorted.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-        break;
-      case "year":
-        sorted.sort((a, b) => {
-          const yearDiff = new Date(b.date).getFullYear() - new Date(a.date).getFullYear();
-          if (yearDiff === 0) {
-            return new Date(b.date).getMonth() - new Date(a.date).getMonth();
-          }
-          return yearDiff;
-        });
-        break;
-      case "downloads":
-        sorted.sort((a, b) => (b.downloads || 0) - (a.downloads || 0));
-        break;
-      case "shares":
-        sorted.sort((a, b) => (b.shares || 0) - (a.shares || 0));
-        break;
-    }
+    const sortFunctions = {
+      latest: (a: Issue, b: Issue) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+      year: (a: Issue, b: Issue) => {
+        const yearDiff = new Date(b.date).getFullYear() - new Date(a.date).getFullYear();
+        return yearDiff || new Date(b.date).getMonth() - new Date(a.date).getMonth();
+      },
+      downloads: (a: Issue, b: Issue) => (b.downloads || 0) - (a.downloads || 0),
+      shares: (a: Issue, b: Issue) => (b.shares || 0) - (a.shares || 0),
+    };
+
+    sorted.sort(sortFunctions[sortBy]);
     console.timeEnd('sorting');
     return sorted;
   }, [filteredIssues, sortBy]);
 
-  // Memoize year grouping
+  // Memoize year grouping with optimized object creation
   const { issuesByYear, sortedYears } = useMemo(() => {
     console.time('grouping');
     const byYear: Record<number, Issue[]> = {};
+    const years = new Set<number>();
     
-    sortedIssues.forEach(issue => {
+    for (const issue of sortedIssues) {
       const date = new Date(issue.date);
-      if (!isValidDate(date)) return;
+      if (!isValidDate(date)) continue;
       
       const year = date.getFullYear();
+      years.add(year);
+      
       if (!byYear[year]) {
         byYear[year] = [];
       }
       byYear[year].push(issue);
-    });
-
-    const years = Object.keys(byYear)
-      .map(Number)
-      .sort((a, b) => b - a);
+    }
     
     console.timeEnd('grouping');
     return {
       issuesByYear: byYear,
-      sortedYears: years
+      sortedYears: Array.from(years).sort((a, b) => b - a)
     };
   }, [sortedIssues]);
 
   // Memoize available categories
   const availableCategories = useMemo(() => {
     const categories = new Set<string>();
-    issues.forEach(issue => {
-      issue.articles.forEach(article => {
-        article.tags?.forEach(tag => categories.add(tag));
-      });
-    });
+    for (const issue of issues) {
+      for (const article of issue.articles) {
+        if (article.tags) {
+          article.tags.forEach(tag => categories.add(tag));
+        }
+      }
+    }
     return Array.from(categories).sort();
   }, [issues]);
 
