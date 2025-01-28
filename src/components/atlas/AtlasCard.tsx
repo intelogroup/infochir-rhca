@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, User, Eye, Share2, Download, BookOpen } from "lucide-react";
 import { AtlasChapter } from "./types";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { AtlasModal } from "./AtlasModal";
 import { motion } from "framer-motion";
 import { AtlasCategory } from "./data/atlasCategories";
@@ -15,7 +15,7 @@ interface AtlasCardProps {
   category?: AtlasCategory;
 }
 
-export const AtlasCard = ({ chapter, category }: AtlasCardProps) => {
+const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
   const [showModal, setShowModal] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
 
@@ -42,7 +42,9 @@ export const AtlasCard = ({ chapter, category }: AtlasCardProps) => {
   return (
     <>
       <motion.div
-        whileHover={{ y: -4, transition: { duration: 0.2 } }}
+        initial={false}
+        whileHover={{ y: -4 }}
+        transition={{ duration: 0.2 }}
         className="h-full"
       >
         <Card className="group h-full flex flex-col overflow-hidden border-transparent hover:border-secondary/30 transition-all duration-300">
@@ -53,7 +55,7 @@ export const AtlasCard = ({ chapter, category }: AtlasCardProps) => {
             <img
               src={coverImage}
               alt={chapter.title}
-              className={`w-full h-full object-cover transition-all duration-500 group-hover:scale-105 ${
+              className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${
                 !imageLoaded ? 'opacity-0' : 'opacity-100'
               }`}
               onLoad={() => setImageLoaded(true)}
@@ -139,4 +141,8 @@ export const AtlasCard = ({ chapter, category }: AtlasCardProps) => {
       />
     </>
   );
-};
+});
+
+AtlasCard.displayName = 'AtlasCard';
+
+export { AtlasCard };
