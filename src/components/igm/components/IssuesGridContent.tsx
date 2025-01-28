@@ -6,8 +6,58 @@ import { IssueCardSkeleton } from "./IssueCardSkeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useInView } from "framer-motion";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+
+// Memoize the loading state component
+const LoadingState = memo(() => (
+  <motion.div 
+    className="space-y-8"
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+  >
+    {[1, 2].map((year) => (
+      <div key={year} className="space-y-6">
+        <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="bg-primary/5 p-2 rounded-lg">
+              <FileText className="h-5 w-5 text-primary" />
+            </div>
+            <Skeleton className="h-8 w-24" />
+          </div>
+          <Skeleton className="h-8 w-32" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3].map((i) => (
+            <IssueCardSkeleton key={i} />
+          ))}
+        </div>
+      </div>
+    ))}
+  </motion.div>
+));
+
+// Memoize the empty state component
+const EmptyState = memo(() => (
+  <motion.div 
+    className="flex flex-col items-center justify-center p-8 sm:p-12 bg-white rounded-xl border border-gray-100 text-center"
+    initial={{ opacity: 0, scale: 0.95 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ duration: 0.3 }}
+    role="status"
+    aria-live="polite"
+  >
+    <div className="bg-secondary/10 p-4 rounded-full mb-4">
+      <Search className="h-8 w-8 text-secondary-foreground/70" aria-hidden="true" />
+    </div>
+    <h3 className="text-lg font-semibold text-gray-900 mb-2">Aucun numéro trouvé</h3>
+    <p className="text-sm text-gray-500 max-w-md">
+      Nous n'avons trouvé aucun numéro correspondant à vos critères de recherche. 
+      Essayez de modifier vos filtres ou d'effectuer une nouvelle recherche.
+    </p>
+  </motion.div>
+));
 
 interface IssuesGridContentProps {
   viewMode: "grid" | "table";
@@ -19,7 +69,7 @@ interface IssuesGridContentProps {
   hasMore: boolean;
 }
 
-export const IssuesGridContent = ({
+export const IssuesGridContent = memo(({
   viewMode,
   sortedIssues,
   issuesByYear,
@@ -38,55 +88,11 @@ export const IssuesGridContent = ({
   }, [isInView, hasMore, isLoading, onLoadMore]);
 
   if (isLoading) {
-    return (
-      <motion.div 
-        className="space-y-8"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-      >
-        {[1, 2].map((year) => (
-          <div key={year} className="space-y-6">
-            <div className="flex items-center justify-between border-b border-gray-200 pb-4">
-              <div className="flex items-center gap-3">
-                <div className="bg-primary/5 p-2 rounded-lg">
-                  <FileText className="h-5 w-5 text-primary" />
-                </div>
-                <Skeleton className="h-8 w-24" />
-              </div>
-              <Skeleton className="h-8 w-32" />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3].map((i) => (
-                <IssueCardSkeleton key={i} />
-              ))}
-            </div>
-          </div>
-        ))}
-      </motion.div>
-    );
+    return <LoadingState />;
   }
 
   if (sortedIssues.length === 0) {
-    return (
-      <motion.div 
-        className="flex flex-col items-center justify-center p-8 sm:p-12 bg-white rounded-xl border border-gray-100 text-center"
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
-        role="status"
-        aria-live="polite"
-      >
-        <div className="bg-secondary/10 p-4 rounded-full mb-4">
-          <Search className="h-8 w-8 text-secondary-foreground/70" aria-hidden="true" />
-        </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Aucun numéro trouvé</h3>
-        <p className="text-sm text-gray-500 max-w-md">
-          Nous n'avons trouvé aucun numéro correspondant à vos critères de recherche. 
-          Essayez de modifier vos filtres ou d'effectuer une nouvelle recherche.
-        </p>
-      </motion.div>
-    );
+    return <EmptyState />;
   }
 
   if (viewMode === "grid") {
@@ -120,4 +126,6 @@ export const IssuesGridContent = ({
   }
 
   return <IssuesTable issues={sortedIssues} />;
-};
+});
+
+IssuesGridContent.displayName = 'IssuesGridContent';

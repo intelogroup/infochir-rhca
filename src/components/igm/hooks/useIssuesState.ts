@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import type { Issue } from "../types";
 import type { SortOption } from "../constants/sortOptions";
 import { isValidDate } from "../types";
@@ -20,109 +20,115 @@ export const useIssuesState = (
     selectedCategories = [],
   }: IssuesStateOptions
 ) => {
+  // Memoize the search filter function
+  const filterBySearch = useCallback((issue: Issue): boolean => {
+    if (!searchTerm) return true;
+    const searchLower = searchTerm.toLowerCase();
+    
+    // Quick checks first
+    if (issue.title.toLowerCase().includes(searchLower)) return true;
+    if (issue.abstract.toLowerCase().includes(searchLower)) return true;
+    
+    // Only check articles if necessary
+    return issue.articles.some(article => 
+      article.title.toLowerCase().includes(searchLower) ||
+      article.authors.some(author => author.toLowerCase().includes(searchLower)) ||
+      article.abstract?.toLowerCase().includes(searchLower)
+    );
+  }, [searchTerm]);
+
+  // Memoize date filtering
+  const filterByDate = useCallback((issue: Issue): boolean => {
+    if (!dateRange?.from && !dateRange?.to) return true;
+    
+    const issueDate = new Date(issue.date);
+    if (!isValidDate(issueDate)) return false;
+
+    const isAfterStart = !dateRange.from || issueDate >= dateRange.from;
+    const isBeforeEnd = !dateRange.to || issueDate <= dateRange.to;
+    
+    return isAfterStart && isBeforeEnd;
+  }, [dateRange]);
+
+  // Memoize category filtering
+  const filterByCategory = useCallback((issue: Issue): boolean => {
+    if (selectedCategories.length === 0) return true;
+    return issue.articles.some(article =>
+      selectedCategories.some(category =>
+        article.tags?.includes(category)
+      )
+    );
+  }, [selectedCategories]);
+
+  // Apply filters in sequence, from fastest to most expensive
   const filteredIssues = useMemo(() => {
-    let filtered = issues;
-
-    // Apply search filter
-    if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
-      filtered = filtered.filter((issue) => 
-        issue.title.toLowerCase().includes(searchLower) ||
-        issue.abstract.toLowerCase().includes(searchLower) ||
-        issue.articles.some(article => 
-          article.title.toLowerCase().includes(searchLower) ||
-          article.authors.some(author => author.toLowerCase().includes(searchLower)) ||
-          article.abstract?.toLowerCase().includes(searchLower)
-        )
-      );
-    }
-
-    // Apply date range filter
-    if (dateRange?.from || dateRange?.to) {
-      filtered = filtered.filter(issue => {
-        const issueDate = new Date(issue.date);
-        if (!isValidDate(issueDate)) return false;
-
-        const isAfterStart = !dateRange.from || issueDate >= dateRange.from;
-        const isBeforeEnd = !dateRange.to || issueDate <= dateRange.to;
-        
-        return isAfterStart && isBeforeEnd;
-      });
-    }
-
-    // Apply category filter
-    if (selectedCategories.length > 0) {
-      filtered = filtered.filter(issue =>
-        issue.articles.some(article =>
-          selectedCategories.some(category =>
-            article.tags?.includes(category)
-          )
-        )
-      );
-    }
-
+    console.time('filtering');
+    const filtered = issues.filter(issue => 
+      filterByDate(issue) && 
+      filterByCategory(issue) && 
+      filterBySearch(issue)
+    );
+    console.timeEnd('filtering');
     return filtered;
-  }, [issues, searchTerm, dateRange, selectedCategories]);
+  }, [issues, filterByDate, filterByCategory, filterBySearch]);
 
+  // Memoize sorting
   const sortedIssues = useMemo(() => {
+    console.time('sorting');
     const sorted = [...filteredIssues];
+    
     switch (sortBy) {
       case "latest":
-        return sorted.sort((a, b) => {
-          const dateA = new Date(a.date);
-          const dateB = new Date(b.date);
-          if (!isValidDate(dateA) || !isValidDate(dateB)) {
-            console.error('Invalid date encountered while sorting');
-            return 0;
-          }
-          return dateB.getTime() - dateA.getTime();
-        });
+        sorted.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        break;
       case "year":
-        return sorted.sort((a, b) => {
-          const dateA = new Date(a.date);
-          const dateB = new Date(b.date);
-          if (!isValidDate(dateA) || !isValidDate(dateB)) {
-            console.error('Invalid date encountered while sorting by year');
-            return 0;
-          }
-          const yearDiff = dateB.getFullYear() - dateA.getFullYear();
+        sorted.sort((a, b) => {
+          const yearDiff = new Date(b.date).getFullYear() - new Date(a.date).getFullYear();
           if (yearDiff === 0) {
-            // If same year, sort by month (newest first)
-            return dateB.getMonth() - dateA.getMonth();
+            return new Date(b.date).getMonth() - new Date(a.date).getMonth();
           }
           return yearDiff;
         });
+        break;
       case "downloads":
-        return sorted.sort((a, b) => (b.downloads || 0) - (a.downloads || 0));
+        sorted.sort((a, b) => (b.downloads || 0) - (a.downloads || 0));
+        break;
       case "shares":
-        return sorted.sort((a, b) => (b.shares || 0) - (a.shares || 0));
-      default:
-        return sorted;
+        sorted.sort((a, b) => (b.shares || 0) - (a.shares || 0));
+        break;
     }
+    console.timeEnd('sorting');
+    return sorted;
   }, [filteredIssues, sortBy]);
 
-  const issuesByYear = useMemo(() => {
-    return sortedIssues.reduce((acc, issue) => {
+  // Memoize year grouping
+  const { issuesByYear, sortedYears } = useMemo(() => {
+    console.time('grouping');
+    const byYear: Record<number, Issue[]> = {};
+    
+    sortedIssues.forEach(issue => {
       const date = new Date(issue.date);
-      if (!isValidDate(date)) {
-        console.error(`Invalid date for issue ${issue.id}`);
-        return acc;
-      }
+      if (!isValidDate(date)) return;
+      
       const year = date.getFullYear();
-      if (!acc[year]) {
-        acc[year] = [];
+      if (!byYear[year]) {
+        byYear[year] = [];
       }
-      acc[year].push(issue);
-      return acc;
-    }, {} as Record<number, Issue[]>);
-  }, [sortedIssues]);
+      byYear[year].push(issue);
+    });
 
-  const sortedYears = useMemo(() => {
-    return Object.keys(issuesByYear)
+    const years = Object.keys(byYear)
       .map(Number)
       .sort((a, b) => b - a);
-  }, [issuesByYear]);
+    
+    console.timeEnd('grouping');
+    return {
+      issuesByYear: byYear,
+      sortedYears: years
+    };
+  }, [sortedIssues]);
 
+  // Memoize available categories
   const availableCategories = useMemo(() => {
     const categories = new Set<string>();
     issues.forEach(issue => {
