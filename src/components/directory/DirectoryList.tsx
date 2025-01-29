@@ -56,13 +56,20 @@ const DirectoryList = memo(() => {
   const sortedMembers = useMemo(() => {
     console.time('Sort Members');
     const sorted = [...filteredMembers].sort((a, b) => {
-      const aValue = a[sortField]?.toLowerCase() ?? '';
-      const bValue = b[sortField]?.toLowerCase() ?? '';
-      
-      if (sortDirection === 'asc') {
-        return aValue.localeCompare(bValue);
+      // Handle sorting differently for id (number) vs string fields
+      if (sortField === 'id') {
+        const aValue = a[sortField] || 0;
+        const bValue = b[sortField] || 0;
+        return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
       }
-      return bValue.localeCompare(aValue);
+      
+      // Handle string fields (name and email)
+      const aValue = String(a[sortField] || '').toLowerCase();
+      const bValue = String(b[sortField] || '').toLowerCase();
+      
+      return sortDirection === 'asc' 
+        ? aValue.localeCompare(bValue)
+        : bValue.localeCompare(aValue);
     });
     
     console.timeEnd('Sort Members');
