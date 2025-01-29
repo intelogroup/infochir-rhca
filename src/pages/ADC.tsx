@@ -1,12 +1,27 @@
 import { Routes, Route } from "react-router-dom";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { ADCHeader } from "@/components/adc/ADCHeader";
-import { ADCMission } from "@/components/adc/ADCMission";
-import { ADCSubmission } from "@/components/adc/ADCSubmission";
+import { Suspense, lazy } from "react";
 import { useAtlasArticles } from "@/components/atlas/hooks/useAtlasArticles";
 import { AtlasCard } from "@/components/atlas/AtlasCard";
 import { AtlasTableOfContents } from "@/components/atlas/AtlasTableOfContents";
 import { motion } from "framer-motion";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Lazy load components
+const ADCMission = lazy(() => import("@/components/adc/ADCMission").then(module => ({ default: module.ADCMission })));
+const ADCSubmission = lazy(() => import("@/components/adc/ADCSubmission").then(module => ({ default: module.ADCSubmission })));
+
+const LoadingSkeleton = () => (
+  <div className="space-y-8">
+    <Skeleton className="h-64 w-full" />
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {[1, 2, 3].map((i) => (
+        <Skeleton key={i} className="h-[300px]" />
+      ))}
+    </div>
+  </div>
+);
 
 const ADC = () => {
   const { data: chapters, isLoading } = useAtlasArticles();
@@ -29,11 +44,7 @@ const ADC = () => {
                   </div>
                   
                   {isLoading ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {[1, 2, 3].map((i) => (
-                        <div key={i} className="h-[300px] bg-gray-100 animate-pulse rounded-xl" />
-                      ))}
-                    </div>
+                    <LoadingSkeleton />
                   ) : chapters && chapters.length > 0 ? (
                     <motion.div 
                       className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
@@ -51,8 +62,14 @@ const ADC = () => {
                     </div>
                   )}
                 </div>
-                <ADCMission />
-                <ADCSubmission />
+
+                <Suspense fallback={<LoadingSkeleton />}>
+                  <ADCMission />
+                </Suspense>
+                
+                <Suspense fallback={<LoadingSkeleton />}>
+                  <ADCSubmission />
+                </Suspense>
               </>
             }
           />
