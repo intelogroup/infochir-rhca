@@ -2,10 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Article } from "../types";
 
+const PAGE_SIZE = 10;
+
 const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
   console.log('Mapping database article:', dbArticle);
   
-  // Extract author names from the joined data
   const authorNames = dbArticle.article_authors?.map((author: any) => author.member.name) || [];
 
   const mappedArticle = {
@@ -28,13 +29,16 @@ const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
   return mappedArticle;
 };
 
-export const useArticlesQuery = () => {
+export const useArticlesQuery = (page = 0) => {
   return useQuery({
-    queryKey: ["articles"],
+    queryKey: ["articles", page],
     queryFn: async () => {
-      console.log('Fetching articles...');
+      console.log('Fetching articles for page:', page);
       
-      const { data, error } = await supabase
+      const start = page * PAGE_SIZE;
+      const end = start + PAGE_SIZE - 1;
+
+      const { data, error, count } = await supabase
         .from("articles")
         .select(`
           *,
@@ -43,7 +47,8 @@ export const useArticlesQuery = () => {
               name
             )
           )
-        `)
+        `, { count: 'exact' })
+        .range(start, end)
         .order("publication_date", { ascending: false });
 
       if (error) {
@@ -53,18 +58,17 @@ export const useArticlesQuery = () => {
 
       if (!data) {
         console.log('No data returned from query');
-        return [];
+        return { articles: [], totalPages: 0 };
       }
 
       console.log('Raw data from Supabase:', data);
-
-      // Map database response to match Article type
       const mappedArticles = data.map((article) => mapDatabaseArticleToArticle(article));
+      const totalPages = Math.ceil((count || 0) / PAGE_SIZE);
 
       console.log('Final mapped articles:', mappedArticles);
-      return mappedArticles;
+      return { articles: mappedArticles, totalPages };
     },
-    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-    gcTime: 30 * 60 * 1000, // Cache for 30 minutes
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 };
