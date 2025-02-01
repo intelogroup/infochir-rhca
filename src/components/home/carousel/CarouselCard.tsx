@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { X, Calendar, Users } from "lucide-react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import type { Highlight } from "./carouselData";
