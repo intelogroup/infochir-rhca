@@ -1,69 +1,228 @@
-# Welcome to your Lovable project
+# Info CHIR Web Application Documentation
 
-## Project info
+## Overview
+Info CHIR is a comprehensive medical platform designed to serve the healthcare community in Haiti. The application provides access to medical publications, research articles, and professional resources through multiple specialized sections including RHCA (Revue Haïtienne de Chirurgie et d'Anesthésiologie), IGM (Info CHIR Gazette Médicale), and ADC (Atlas de Chirurgie).
 
-**URL**: https://lovable.dev/projects/98302c75-5b27-41c7-9acd-28b42d26b339
+## Technical Stack
 
-## How can I edit this code?
+### Frontend
+- React 18.3.1 with TypeScript
+- Vite 5.4.1 for build tooling
+- Tailwind CSS for styling
+- Shadcn/UI for component library
+- Framer Motion for animations
+- React Router DOM for routing
+- React Query for data management
+- React Hook Form for form handling
+- Sonner for toast notifications
 
-There are several ways of editing your application.
+### Backend (Supabase)
+- PostgreSQL database
+- Row Level Security (RLS) policies
+- Storage buckets for file management
+- Edge Functions capability
 
-**Use Lovable**
+## Database Schema
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/98302c75-5b27-41c7-9acd-28b42d26b339) and start prompting.
+### Tables
 
-Changes made via Lovable will be committed automatically to this repo.
+1. **articles**
+   - Primary content storage
+   - Stores academic articles, research papers
+   - Includes metadata like views, citations, downloads
+   - Supports multiple authors and tags
 
-**Use your preferred IDE**
+2. **article_authors**
+   - Junction table linking articles to members
+   - Manages author relationships
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+3. **article_submissions**
+   - Handles new article submissions
+   - Includes submission metadata and status tracking
+   - Stores file URLs for submissions
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+4. **members**
+   - Stores member information
+   - Includes contact details and roles
+   - Supports profile pictures
 
-Follow these steps:
+5. **newsletter_subscriptions**
+   - Manages newsletter subscriptions
+   - Tracks subscription status
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## Storage Buckets
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- `Annuaire_Pics`: Public bucket for directory pictures
+- `annuaire_profile_pics`: Public bucket for profile pictures
+- `article_annexes`: Private bucket for article attachments
+- `article_files`: Private bucket for article files
+- `article_pdfs`: Private bucket for PDF documents
+- `article_submissions`: Private bucket for submission files
+- `avatars`: Public bucket for user avatars
 
-# Step 3: Install the necessary dependencies.
-npm i
+## Key Features
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+### Home Page
+- Hero section with dynamic content rotation
+- Products showcase
+- Latest articles carousel
+- Founders section
+- Sponsors section
+- Statistics display
+- Newsletter subscription
+
+### Article Management
+- Article submission system
+- PDF file uploads
+- Article viewing and downloading
+- Citation generation
+- View tracking
+- Search functionality
+
+### User Features
+- Newsletter subscription
+- Article submissions
+- Profile management
+- Directory access
+
+## Components Structure
+
+### Layout Components
+- MainLayout
+- FooterSection
+- Navbar
+
+### Feature Components
+1. Home
+   - HeroSection
+   - ProductsSection
+   - CarouselSection
+   - FoundersSection
+   - SponsorsSection
+   - StatsSection
+   - NewsletterSection
+
+2. Articles
+   - ArticleGrid
+   - ArticleCard
+   - SearchBar
+   - FilterAccordion
+
+3. Submissions
+   - SubmissionForm
+   - FileUploader
+   - FormValidation
+
+## Current State
+
+### Implemented Features
+- ✅ Complete home page with all sections
+- ✅ Article viewing system
+- ✅ Newsletter subscription
+- ✅ Basic search functionality
+- ✅ File upload system
+- ✅ Responsive design
+- ✅ Article submission system
+
+### Pending Features
+- 🔄 Advanced search filters
+- 🔄 User authentication
+- 🔄 Admin dashboard
+- 🔄 Article analytics
+- 🔄 Comment system
+
+## Development Guidelines
+
+### Code Style
+- Use TypeScript for all new components
+- Follow React functional component patterns
+- Implement responsive design using Tailwind CSS
+- Use Shadcn/UI components when possible
+- Implement proper error handling
+- Use React Query for data fetching
+- Implement proper loading states
+
+### Database Access
+- Always use RLS policies for security
+- Implement proper error handling for database operations
+- Use appropriate indexes for performance
+- Follow the established schema for new features
+
+### File Structure
+```
+src/
+├── components/
+│   ├── home/
+│   ├── articles/
+│   ├── submissions/
+│   └── shared/
+├── pages/
+├── hooks/
+├── utils/
+├── types/
+└── integrations/
+    └── supabase/
 ```
 
-**Edit a file directly in GitHub**
+### Performance Considerations
+- Implement lazy loading for images
+- Use code splitting with React.lazy
+- Optimize database queries
+- Implement proper caching strategies
+- Use proper indexing for database tables
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Security Measures
 
-**Use GitHub Codespaces**
+### Database Security
+- RLS policies implemented for all tables
+- Public read access for articles and members
+- Restricted write access based on authentication
+- Protected file storage for sensitive documents
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### File Upload Security
+- Restricted file types
+- Size limitations
+- Secure URL generation
+- Private bucket access control
 
-## What technologies are used for this project?
+## Deployment
 
-This project is built with .
+The application is designed to be deployed on:
+- Frontend: Netlify/Vercel
+- Backend: Supabase Platform
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Getting Started
 
-## How can I deploy this project?
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Set up environment variables
+4. Run development server: `npm run dev`
 
-Simply open [Lovable](https://lovable.dev/projects/98302c75-5b27-41c7-9acd-28b42d26b339) and click on Share -> Publish.
+### Required Environment Variables
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-## I want to use a custom domain - is that possible?
+## Contributing
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+1. Follow the established code style
+2. Write meaningful commit messages
+3. Test thoroughly before submitting PRs
+4. Document new features and changes
+
+## Support
+
+For technical support or questions:
+- Create an issue in the repository
+- Contact the development team
+- Refer to the documentation
+
+## License
+
+This project is proprietary and confidential. All rights reserved.
+
+---
+
+Last Updated: [Current Date]
+Version: 1.0.0
