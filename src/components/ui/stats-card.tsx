@@ -1,6 +1,6 @@
 import { LucideIcon } from "lucide-react";
 
-interface StatsCardProps {
+export interface StatsCardProps {
   icon: LucideIcon;
   title: string;
   value: string;

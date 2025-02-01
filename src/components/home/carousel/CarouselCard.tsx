@@ -15,7 +15,9 @@ export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const renderContent = () => {
-    switch (highlight.category.toLowerCase()) {
+    const category = (highlight.category || '').toLowerCase();
+    
+    switch (category) {
       case 'événement':
         return (
           <div className="space-y-4">
@@ -163,7 +165,7 @@ export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
             <Badge className="absolute top-4 left-4 bg-white/90 text-primary hover:bg-white">
-              {highlight.category}
+              {highlight.category || 'Article'}
             </Badge>
           </div>
           
@@ -214,7 +216,7 @@ export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
                   className="w-full h-full object-cover"
                 />
                 <Badge className="absolute top-4 left-4 bg-white/90 text-primary hover:bg-white">
-                  {highlight.category}
+                  {highlight.category || 'Article'}
                 </Badge>
               </div>
 
