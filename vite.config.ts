@@ -13,6 +13,9 @@ export default defineConfig(({ mode }) => ({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  optimizeDeps: {
+    include: ['framer-motion']
+  },
   server: {
     host: "::",
     port: 8080,

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { X, Calendar, Users } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import type { Highlight } from "./carouselData";
@@ -33,7 +33,7 @@ export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
 
   return (
     <>
-      <motion.div 
+      <Motion.div 
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -64,7 +64,7 @@ export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
             />
           </div>
         </div>
-      </motion.div>
+      </Motion.div>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="max-w-2xl h-[80vh] overflow-y-auto">

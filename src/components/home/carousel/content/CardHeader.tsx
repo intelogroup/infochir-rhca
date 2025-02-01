@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 
 interface CardHeaderProps {
   image: string;
@@ -10,7 +10,7 @@ interface CardHeaderProps {
 export const CardHeader = ({ image, title, category }: CardHeaderProps) => {
   return (
     <div className="relative aspect-[4/3] overflow-hidden">
-      <motion.img
+      <Motion.img
         src={image}
         alt={title}
         className="w-full h-full object-cover"
