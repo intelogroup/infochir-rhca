@@ -3,6 +3,21 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from './App.tsx';
 import './index.css';
 
+// Register Service Worker
+const registerServiceWorker = () => {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(registration => {
+          console.log('ServiceWorker registration successful:', registration.scope);
+        })
+        .catch(error => {
+          console.log('ServiceWorker registration failed:', error);
+        });
+    });
+  }
+};
+
 // Preload critical images
 const preloadImages = () => {
   const images = [
@@ -46,6 +61,7 @@ const initApp = () => {
 };
 
 // Start preloading and initialization
+registerServiceWorker();
 preloadImages();
 initApp();
 
