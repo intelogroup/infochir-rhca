@@ -4,16 +4,30 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 export const SponsorsSection = () => {
-  const { data: sponsorsData, isLoading, error } = useQuery({
+  const { data: sponsorsData, isLoading, error, refetch } = useQuery({
     queryKey: ['sponsors'],
     queryFn: async () => {
+      console.log('Fetching sponsors data');
       // Simulating a network request for demonstration
-      await new Promise(resolve => setTimeout(resolve, 500)); // Reduced timeout for faster loading
+      await new Promise(resolve => setTimeout(resolve, 500));
       return sponsors;
-    }
+    },
+    staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
+    gcTime: 10 * 60 * 1000, // Keep unused data in cache for 10 minutes
+    retry: 2,
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
+
+  // Prefetch data when component mounts
+  useEffect(() => {
+    const prefetchData = async () => {
+      await refetch();
+    };
+    prefetchData();
+  }, [refetch]);
 
   if (isLoading) {
     return (
@@ -34,6 +48,7 @@ export const SponsorsSection = () => {
   }
 
   if (error) {
+    console.error('Error fetching sponsors:', error);
     return (
       <section className="py-12 bg-gray-50" aria-label="Erreur de chargement">
         <div className="container mx-auto px-4">
@@ -41,7 +56,13 @@ export const SponsorsSection = () => {
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>Erreur</AlertTitle>
             <AlertDescription>
-              Une erreur est survenue lors du chargement des partenaires et sponsors. Veuillez réessayer plus tard.
+              Une erreur est survenue lors du chargement des partenaires et sponsors. 
+              <button 
+                onClick={() => refetch()} 
+                className="ml-2 underline hover:text-primary"
+              >
+                Réessayer
+              </button>
             </AlertDescription>
           </Alert>
         </div>

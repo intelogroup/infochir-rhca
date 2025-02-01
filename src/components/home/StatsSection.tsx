@@ -4,16 +4,30 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 export const StatsSection = () => {
-  const { data: statsData, isLoading, error } = useQuery({
+  const { data: statsData, isLoading, error, refetch } = useQuery({
     queryKey: ['stats'],
     queryFn: async () => {
+      console.log('Fetching stats data');
       // Simulating a network request for demonstration
       await new Promise(resolve => setTimeout(resolve, 1000));
       return stats;
-    }
+    },
+    staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
+    gcTime: 10 * 60 * 1000, // Keep unused data in cache for 10 minutes
+    retry: 2, // Only retry failed requests twice
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
   });
+
+  // Prefetch data when component mounts
+  useEffect(() => {
+    const prefetchData = async () => {
+      await refetch();
+    };
+    prefetchData();
+  }, [refetch]);
 
   if (isLoading) {
     return (
@@ -34,6 +48,7 @@ export const StatsSection = () => {
   }
 
   if (error) {
+    console.error('Error fetching stats:', error);
     return (
       <section className="py-12 bg-white" aria-label="Erreur de chargement">
         <div className="container mx-auto px-4">
@@ -41,7 +56,13 @@ export const StatsSection = () => {
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>Erreur</AlertTitle>
             <AlertDescription>
-              Une erreur est survenue lors du chargement des statistiques. Veuillez réessayer plus tard.
+              Une erreur est survenue lors du chargement des statistiques. 
+              <button 
+                onClick={() => refetch()} 
+                className="ml-2 underline hover:text-primary"
+              >
+                Réessayer
+              </button>
             </AlertDescription>
           </Alert>
         </div>
@@ -57,7 +78,7 @@ export const StatsSection = () => {
           role="list"
           aria-label="Liste des statistiques"
         >
-          {statsData.map((stat, index) => (
+          {statsData?.map((stat, index) => (
             <div key={index} role="listitem">
               <StatsCard {...stat} />
             </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FounderCard } from "./FounderCard";
 import { FounderModal } from "./FounderModal";
 import { founders } from "./FoundersData";
@@ -6,20 +6,32 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import type { Founder } from "./types";
 
 export const FoundersSection = () => {
   const [selectedFounder, setSelectedFounder] = useState<Founder | null>(null);
 
-  const { data: foundersData, isLoading, error } = useQuery({
+  const { data: foundersData, isLoading, error, refetch } = useQuery({
     queryKey: ['founders'],
     queryFn: async () => {
+      console.log('Fetching founders data');
       // Simulating a network request for demonstration
       await new Promise(resolve => setTimeout(resolve, 1000));
       return founders;
-    }
+    },
+    staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
+    gcTime: 10 * 60 * 1000, // Keep unused data in cache for 10 minutes
+    retry: 2,
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
+
+  // Prefetch data when component mounts
+  useEffect(() => {
+    const prefetchData = async () => {
+      await refetch();
+    };
+    prefetchData();
+  }, [refetch]);
 
   if (isLoading) {
     return (
@@ -40,6 +52,7 @@ export const FoundersSection = () => {
   }
 
   if (error) {
+    console.error('Error fetching founders:', error);
     return (
       <section className="py-12 bg-gray-50" aria-label="Erreur de chargement">
         <div className="container mx-auto px-4">
@@ -47,7 +60,13 @@ export const FoundersSection = () => {
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>Erreur</AlertTitle>
             <AlertDescription>
-              Une erreur est survenue lors du chargement des données. Veuillez réessayer plus tard.
+              Une erreur est survenue lors du chargement des données. 
+              <button 
+                onClick={() => refetch()} 
+                className="ml-2 underline hover:text-primary"
+              >
+                Réessayer
+              </button>
             </AlertDescription>
           </Alert>
         </div>
@@ -71,7 +90,7 @@ export const FoundersSection = () => {
           role="list"
           aria-label="Liste des fondateurs"
         >
-          {foundersData.map((founder) => (
+          {foundersData?.map((founder) => (
             <div key={founder.name} role="listitem">
               <FounderCard
                 founder={founder}
