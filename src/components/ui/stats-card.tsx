@@ -4,10 +4,11 @@ export interface StatsCardProps {
   icon: LucideIcon;
   title: string;
   value: string;
+  description: string;
   iconClassName?: string;
 }
 
-export const StatsCard = ({ icon: Icon, title, value, iconClassName }: StatsCardProps) => {
+export const StatsCard = ({ icon: Icon, title, value, description, iconClassName }: StatsCardProps) => {
   return (
     <div className="flex flex-col items-center text-center space-y-2">
       <div className="p-2 rounded-xl bg-secondary/10 backdrop-blur-sm transform transition-transform group-hover:scale-110">
@@ -18,6 +19,7 @@ export const StatsCard = ({ icon: Icon, title, value, iconClassName }: StatsCard
           {value}
         </p>
         <p className="text-xs font-medium text-gray-600">{title}</p>
+        <p className="text-xs text-gray-500">{description}</p>
       </div>
     </div>
   );
