@@ -5,6 +5,7 @@ import { ArticleTags } from "./article/ArticleTags";
 import { ArticleCategories } from "./article/ArticleCategories";
 import { ArticleMetadata } from "./article/ArticleMetadata";
 import { ArticleActions } from "./article/ArticleActions";
+import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
 import { toast } from "@/hooks/use-toast";
 
 interface ArticleCardProps {
@@ -56,11 +57,12 @@ export const ArticleCard = ({ article, onTagClick, selectedTags }: ArticleCardPr
       <div className="flex flex-col md:flex-row">
         {article.imageUrl ? (
           <div className="md:w-48 h-48 md:h-auto relative overflow-hidden">
-            <img 
-              src={article.imageUrl} 
+            <ImageOptimizer 
+              src={article.imageUrl}
               alt={article.title}
               className="w-full h-full object-cover"
-              loading="lazy"
+              width={192}
+              height={192}
             />
           </div>
         ) : (

@@ -1,6 +1,7 @@
 import { TableCell, TableRow as TableRowBase } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { TableActions } from "./TableActions";
+import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
 import type { Article } from "../types";
 import { User } from "lucide-react";
 
@@ -20,6 +21,17 @@ export const ArticleTableRow = ({ article }: ArticleTableRowProps) => {
     <TableRowBase className="hover:bg-muted/50">
       <TableCell className="font-medium">
         <div className="flex items-start space-x-2">
+          {article.imageUrl && (
+            <div className="flex-shrink-0 w-12 h-12 rounded overflow-hidden">
+              <ImageOptimizer
+                src={article.imageUrl}
+                alt={article.title}
+                className="w-full h-full object-cover"
+                width={48}
+                height={48}
+              />
+            </div>
+          )}
           <div className="flex-1">
             <div className="font-medium text-primary hover:text-primary-light cursor-pointer">
               {article.title || 'Untitled'}
