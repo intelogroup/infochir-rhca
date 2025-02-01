@@ -2,19 +2,32 @@ import { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Preload critical routes
-const Home = lazy(() => import("@/pages/Home"));
-const RHCA = lazy(() => import("@/pages/RHCA"));
-const IGM = lazy(() => import("@/pages/IGM"));
+// Preload critical routes with priority loading
+const Home = lazy(() => import("@/pages/Home" /* webpackPrefetch: true */));
+const RHCA = lazy(() => import("@/pages/RHCA" /* webpackPrefetch: true */));
+const IGM = lazy(() => import("@/pages/IGM" /* webpackPrefetch: true */));
 
-// Lazy load less frequently accessed routes with delay
+// Lazy load less frequently accessed routes with delay and lower priority
 const ADC = lazy(() => 
   new Promise(resolve => 
     setTimeout(() => resolve(import("@/pages/ADC")), 100)
   ) as Promise<typeof import("@/pages/ADC")>
 );
 
-const IndexMedicus = lazy(() => import("@/pages/IndexMedicus"));
+const IndexMedicus = lazy(() => 
+  import("@/pages/IndexMedicus").then(module => {
+    // Preload related components after main chunk loads
+    const preloadComponents = async () => {
+      const [ArticleGrid, SearchBar] = await Promise.all([
+        import("@/components/index-medicus/ArticleGrid"),
+        import("@/components/index-medicus/SearchBar")
+      ]);
+      return module;
+    };
+    return preloadComponents();
+  })
+);
+
 const About = lazy(() => import("@/pages/About"));
 const EditorialCommittee = lazy(() => import("@/pages/EditorialCommittee"));
 const Submission = lazy(() => import("@/pages/Submission"));
