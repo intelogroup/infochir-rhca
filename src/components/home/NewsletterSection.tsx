@@ -20,31 +20,40 @@ export const NewsletterSection = () => {
     }
 
     setIsSubmitting(true);
+    const toastId = toast.loading("Inscription en cours...");
 
     try {
       const { error } = await supabase
         .from('newsletter_subscriptions')
         .insert([
           { name, email, phone }
-        ] as any); // Using type assertion here as a temporary fix
+        ]);
 
       if (error) {
         if (error.code === '23505') {
-          toast.error("Cette adresse email est déjà inscrite à notre newsletter");
+          toast.error("Cette adresse email est déjà inscrite à notre newsletter", {
+            id: toastId
+          });
         } else {
-          toast.error("Une erreur est survenue lors de l'inscription");
           console.error("Newsletter subscription error:", error);
+          toast.error("Une erreur est survenue lors de l'inscription", {
+            id: toastId
+          });
         }
         return;
       }
 
-      toast.success("Merci de votre inscription à notre newsletter!");
+      toast.success("Merci de votre inscription à notre newsletter!", {
+        id: toastId
+      });
       setEmail("");
       setName("");
       setPhone("");
     } catch (error) {
       console.error("Newsletter submission error:", error);
-      toast.error("Une erreur est survenue lors de l'inscription");
+      toast.error("Une erreur est survenue lors de l'inscription", {
+        id: toastId
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -52,7 +61,6 @@ export const NewsletterSection = () => {
 
   return (
     <section className="relative py-24 overflow-hidden">
-      {/* Gradient background with pattern overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-primary-light opacity-95" />
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
       
@@ -62,7 +70,6 @@ export const NewsletterSection = () => {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        {/* Icon with glass effect */}
         <div className="mb-8 inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 shadow-lg">
           <Mail className="h-10 w-10 text-white" />
         </div>

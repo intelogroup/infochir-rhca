@@ -1,33 +1,54 @@
-import { stats } from "./stats/StatsData";
+import { defaultStats } from "./stats/StatsData";
 import { StatsCard } from "@/components/ui/stats-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, RefreshCcw } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 
 export const StatsSection = () => {
   const { data: statsData, isLoading, error, refetch } = useQuery({
-    queryKey: ['stats'],
+    queryKey: ['home-stats'],
     queryFn: async () => {
-      console.log('Fetching stats data');
-      // Simulating a network request for demonstration
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('Fetching home stats...');
+      
+      const { data: articles, error: articlesError } = await supabase
+        .from('articles')
+        .select('id, views, citations');
+      
+      if (articlesError) throw articlesError;
+
+      const { data: members, error: membersError } = await supabase
+        .from('members')
+        .select('id');
+      
+      if (membersError) throw membersError;
+
+      const stats = [...defaultStats];
+      
+      // Update Publications count
+      stats[0].value = articles?.length?.toString() || "0";
+      
+      // Update Members count
+      stats[1].value = members?.length?.toString() || "0";
+      
+      // Update Views count
+      const totalViews = articles?.reduce((sum, article) => sum + (article.views || 0), 0);
+      stats[2].value = totalViews?.toString() || "0";
+      
+      // Update Citations count
+      const totalCitations = articles?.reduce((sum, article) => sum + (article.citations || 0), 0);
+      stats[3].value = totalCitations?.toString() || "0";
+
+      console.log('Processed stats:', stats);
       return stats;
     },
     staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
     gcTime: 10 * 60 * 1000, // Keep unused data in cache for 10 minutes
-    retry: 2, // Only retry failed requests twice
-    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
+    retry: 2,
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
-
-  // Prefetch data when component mounts
-  useEffect(() => {
-    const prefetchData = async () => {
-      await refetch();
-    };
-    prefetchData();
-  }, [refetch]);
 
   if (isLoading) {
     return (
@@ -52,18 +73,25 @@ export const StatsSection = () => {
     return (
       <section className="py-12 bg-white" aria-label="Erreur de chargement">
         <div className="container mx-auto px-4">
-          <Alert variant="destructive">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>Erreur</AlertTitle>
-            <AlertDescription>
-              Une erreur est survenue lors du chargement des statistiques. 
-              <button 
-                onClick={() => refetch()} 
-                className="ml-2 underline hover:text-primary"
-              >
-                Réessayer
-              </button>
-            </AlertDescription>
+          <Alert variant="destructive" className="flex items-center justify-between">
+            <div className="flex items-start gap-2">
+              <AlertTriangle className="h-5 w-5" />
+              <div>
+                <AlertTitle>Erreur</AlertTitle>
+                <AlertDescription>
+                  Une erreur est survenue lors du chargement des statistiques.
+                </AlertDescription>
+              </div>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => refetch()}
+              className="gap-2"
+            >
+              <RefreshCcw className="h-4 w-4" />
+              Réessayer
+            </Button>
           </Alert>
         </div>
       </section>
@@ -78,7 +106,7 @@ export const StatsSection = () => {
           role="list"
           aria-label="Liste des statistiques"
         >
-          {statsData?.map((stat, index) => (
+          {(statsData || defaultStats).map((stat, index) => (
             <div key={index} role="listitem">
               <StatsCard {...stat} />
             </div>
