@@ -28,6 +28,7 @@ export const StatCard = ({ title, value, description, icon, iconClassName, index
           icon={icon}
           title={title}
           value={value}
+          description={description}
           iconClassName={iconClassName}
         />
       </div>
