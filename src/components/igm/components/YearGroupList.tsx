@@ -57,6 +57,7 @@ export const YearGroupList = memo(({ issuesByYear, sortedYears }: YearGroupListP
           <motion.div 
             key={year}
             className="space-y-4 sm:space-y-6 bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-300"
+            layout
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}

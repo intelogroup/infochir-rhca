@@ -6,8 +6,9 @@ import { IssueCardSkeleton } from "./IssueCardSkeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useInView } from "framer-motion";
-import { useRef, useEffect, memo } from "react";
+import { useRef, useEffect, memo, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useVirtualizer } from "@tanstack/react-virtual";
 
 // Memoize the loading state component for better performance
 const LoadingState = memo(() => (
@@ -85,10 +86,18 @@ export const IssuesGridContent = memo(({
 }: IssuesGridContentProps) => {
   console.time('IssuesGridContent render');
   
+  const parentRef = useRef<HTMLDivElement>(null);
   const loadMoreRef = useRef(null);
   const isInView = useInView(loadMoreRef, {
     once: false,
     amount: 0.5,
+  });
+
+  const rowVirtualizer = useVirtualizer({
+    count: sortedYears.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 400, // Estimate height for each year group
+    overscan: 2,
   });
 
   useEffect(() => {
@@ -118,11 +127,43 @@ export const IssuesGridContent = memo(({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           className="w-full"
+          ref={parentRef}
+          style={{
+            height: '800px',
+            overflow: 'auto',
+          }}
         >
-          <YearGroupList
-            issuesByYear={issuesByYear}
-            sortedYears={sortedYears}
-          />
+          <div
+            style={{
+              height: `${rowVirtualizer.getTotalSize()}px`,
+              width: '100%',
+              position: 'relative',
+            }}
+          >
+            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+              const year = sortedYears[virtualRow.index];
+              const issues = issuesByYear[year];
+
+              return (
+                <div
+                  key={year}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    transform: `translateY(${virtualRow.start}px)`,
+                  }}
+                >
+                  <YearGroupList
+                    issuesByYear={{ [year]: issues }}
+                    sortedYears={[year]}
+                  />
+                </div>
+              );
+            })}
+          </div>
+          
           {hasMore && (
             <div ref={loadMoreRef} className="flex justify-center mt-8">
               <Button
