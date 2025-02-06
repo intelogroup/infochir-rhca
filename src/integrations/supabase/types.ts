@@ -168,33 +168,45 @@ export type Database = {
       donations: {
         Row: {
           amount: number
+          checkout_session_id: string | null
+          completed_at: string | null
           created_at: string
           currency: string
           customer_email: string | null
           customer_name: string | null
           id: string
+          is_anonymous: boolean | null
+          message: string | null
           payment_intent_id: string | null
           status: string
           updated_at: string
         }
         Insert: {
           amount: number
+          checkout_session_id?: string | null
+          completed_at?: string | null
           created_at?: string
           currency?: string
           customer_email?: string | null
           customer_name?: string | null
           id?: string
+          is_anonymous?: boolean | null
+          message?: string | null
           payment_intent_id?: string | null
           status: string
           updated_at?: string
         }
         Update: {
           amount?: number
+          checkout_session_id?: string | null
+          completed_at?: string | null
           created_at?: string
           currency?: string
           customer_email?: string | null
           customer_name?: string | null
           id?: string
+          is_anonymous?: boolean | null
+          message?: string | null
           payment_intent_id?: string | null
           status?: string
           updated_at?: string

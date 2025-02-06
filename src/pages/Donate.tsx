@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { motion } from "framer-motion";
@@ -51,7 +52,7 @@ const Donate = () => {
   };
 
   const handleDonation = async (paymentMethod: string) => {
-    console.log("[Donate] Processing donation:", { paymentMethod, amount: customAmount || selectedAmount });
+    console.log("[Donate] Processing donation with Stripe Checkout");
     try {
       setIsProcessing(true);
       const amount = customAmount ? parseFloat(customAmount) : selectedAmount;
@@ -64,39 +65,27 @@ const Donate = () => {
         throw new Error("Please provide your email address");
       }
 
-      console.log("[Donate] Creating payment intent");
-      const { data: stripeData, error: stripeError } = await supabase.functions.invoke('create-payment-intent', {
-        body: { amount, currency: 'usd' }
-      });
-
-      if (stripeError) {
-        console.error("[Donate] Stripe error:", stripeError);
-        throw stripeError;
-      }
-
-      console.log("[Donate] Creating donation record");
-      const { error: donationError } = await supabase
-        .from('donations')
-        .insert([
-          {
-            amount,
-            currency: 'usd',
-            status: 'pending',
-            payment_intent_id: stripeData.id,
-            donor_name: isAnonymous ? null : donorName,
-            donor_email: donorEmail,
-            message: message || null,
+      // Create Stripe Checkout session
+      const { data: sessionData, error: sessionError } = await supabase.functions.invoke('stripe-checkout', {
+        body: {
+          amount,
+          currency: 'usd',
+          donor_info: {
+            name: isAnonymous ? null : donorName,
+            email: donorEmail,
+            message,
             is_anonymous: isAnonymous
           }
-        ]);
+        }
+      });
 
-      if (donationError) {
-        console.error("[Donate] Database error:", donationError);
-        throw donationError;
+      if (sessionError) {
+        console.error("[Donate] Session creation error:", sessionError);
+        throw sessionError;
       }
 
-      console.log("[Donate] Redirecting to Stripe checkout:", stripeData.url);
-      window.location.href = stripeData.url;
+      console.log("[Donate] Redirecting to Stripe Checkout:", sessionData?.url);
+      window.location.href = sessionData.url;
 
     } catch (error: any) {
       console.error('[Donate] Payment error:', error);
