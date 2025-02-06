@@ -1,3 +1,4 @@
+
 import { Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DateRange } from "react-day-picker";
@@ -86,12 +87,14 @@ export const SearchBar = ({
         <AccordionItem value="search-filters">
           <div className="flex items-center justify-between gap-4">
             <SearchInput value={searchTerm} onChange={setSearchTerm} />
-            <AccordionTrigger className="flex-none">
-              <Button variant="outline" size="sm" className="gap-2">
-                <Filter className="h-4 w-4" />
-                Filtres avancés
-              </Button>
-            </AccordionTrigger>
+            <div className="flex-none">
+              <AccordionTrigger>
+                <span className="flex items-center gap-2 px-3 py-2 text-sm font-medium border rounded-md hover:bg-accent hover:text-accent-foreground">
+                  <Filter className="h-4 w-4" />
+                  Filtres avancés
+                </span>
+              </AccordionTrigger>
+            </div>
           </div>
 
           <AccordionContent>
