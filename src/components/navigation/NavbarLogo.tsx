@@ -1,12 +1,14 @@
-import { Link, useLocation } from "react-router-dom";
+
 import { motion } from "framer-motion";
 
 export const NavbarLogo = () => {
-  const location = useLocation();
+  const handleLogoClick = () => {
+    window.location.href = '/';
+  };
   
   return (
-    <Link 
-      to="/" 
+    <button 
+      onClick={handleLogoClick}
       className="flex items-center space-x-3 sm:space-x-4 transition-all duration-300 hover:scale-[0.98] active:scale-[0.95] touch-manipulation"
       aria-label="Return to homepage"
     >
@@ -21,6 +23,6 @@ export const NavbarLogo = () => {
       <span className="bg-gradient-to-r from-primary via-primary-light to-secondary bg-clip-text text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-transparent whitespace-nowrap transition-all duration-300">
         INFOCHIR/RHCA
       </span>
-    </Link>
+    </button>
   );
 };

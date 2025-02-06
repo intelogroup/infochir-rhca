@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { motion } from "framer-motion";
@@ -10,35 +9,21 @@ import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { Toaster } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const BackButton = () => {
-  try {
-    console.log("[BackButton] Attempting to render back button with router Link");
-    return (
-      <Link to="/">
-        <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary-light mb-6">
-          <ArrowLeft className="h-4 w-4" />
-          Retour
-        </Button>
-      </Link>
-    );
-  } catch (error) {
-    console.error("[BackButton] Failed to render router Link:", error);
-    return (
-      <Button 
-        variant="ghost" 
-        size="sm" 
-        className="gap-2 text-primary hover:text-primary-light mb-6"
-        onClick={() => window.history.back()}
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Retour
-      </Button>
-    );
-  }
+  return (
+    <Button 
+      variant="ghost" 
+      size="sm" 
+      className="gap-2 text-primary hover:text-primary-light mb-6"
+      onClick={() => window.history.back()}
+    >
+      <ArrowLeft className="h-4 w-4" />
+      Retour
+    </Button>
+  );
 };
 
 const Donate = () => {
