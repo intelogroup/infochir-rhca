@@ -2,22 +2,12 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
 import { visualizer } from 'rollup-plugin-visualizer';
+import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
   plugins: [
-    react({
-      // Add better error reporting and development features
-      swcOptions: {
-        jsc: {
-          transform: {
-            react: {
-              development: mode === 'development',
-              refresh: true,
-            },
-          },
-        },
-      },
-    }),
+    react(),
+    mode === 'development' && componentTagger(),
     mode === 'development' && visualizer({
       template: "treemap",
       open: true,
