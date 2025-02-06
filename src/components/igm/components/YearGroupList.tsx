@@ -1,6 +1,6 @@
 
 import { IssueCard } from "@/components/igm/IssueCard";
-import { Calendar, FileText } from "lucide-react";
+import { Calendar, FileText, ChevronDown } from "lucide-react";
 import type { Issue } from "@/components/igm/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { memo } from "react";
@@ -17,7 +17,7 @@ interface YearGroupListProps {
 }
 
 const YearHeader = memo(({ year, issueCount, articleCount }: { year: number; issueCount: number; articleCount: number }) => (
-  <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 gap-3">
+  <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 gap-3 w-full">
     <div className="flex items-center gap-3">
       <div className="bg-primary/10 p-2.5 rounded-lg">
         <Calendar className="h-5 w-5 text-primary" aria-hidden="true" />
@@ -55,7 +55,7 @@ YearHeader.displayName = 'YearHeader';
 
 export const YearGroupList = memo(({ issuesByYear, sortedYears }: YearGroupListProps) => {
   return (
-    <Accordion type="multiple" className="space-y-6">
+    <Accordion type="multiple" defaultValue={[sortedYears[0]?.toString()]} className="space-y-6">
       <AnimatePresence>
         {sortedYears.map((year) => {
           const issues = issuesByYear[year];
@@ -65,19 +65,20 @@ export const YearGroupList = memo(({ issuesByYear, sortedYears }: YearGroupListP
             <AccordionItem
               key={year}
               value={year.toString()}
-              className="bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-300 data-[state=open]:shadow-md"
+              className="border-0 bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-300 data-[state=open]:shadow-md [&[data-state=open]>button]:border-b [&[data-state=open]>button]:border-gray-200"
             >
-              <AccordionTrigger className="hover:no-underline">
+              <AccordionTrigger className="hover:no-underline py-0 [&[data-state=open]>div>.chevron]:rotate-180">
                 <YearHeader 
                   year={year} 
                   issueCount={issues.length}
                   articleCount={articleCount}
                 />
+                <ChevronDown className="h-5 w-5 text-gray-500 transition-transform duration-200 chevron shrink-0" />
               </AccordionTrigger>
               
               <AccordionContent>
                 <motion.div 
-                  className="grid grid-cols-1 gap-4 pt-4"
+                  className="grid grid-cols-1 gap-4 pt-6"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
