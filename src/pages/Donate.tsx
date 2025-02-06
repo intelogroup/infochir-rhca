@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { motion } from "framer-motion";
@@ -9,11 +10,13 @@ import { Toaster } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const Donate = () => {
   useScrollToTop();
   const [selectedAmount, setSelectedAmount] = useState<number>(0);
   const [customAmount, setCustomAmount] = useState<string>("");
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleAmountSelect = (amount: number) => {
     setSelectedAmount(amount);
@@ -23,6 +26,46 @@ const Donate = () => {
   const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCustomAmount(e.target.value);
     setSelectedAmount(0);
+  };
+
+  const handleDonation = async (paymentMethod: string) => {
+    try {
+      setIsProcessing(true);
+      const amount = customAmount ? parseFloat(customAmount) : selectedAmount;
+      
+      if (!amount || amount <= 0) {
+        throw new Error("Please select a valid donation amount");
+      }
+
+      const { data: stripeData, error: stripeError } = await supabase.functions.invoke('create-payment-intent', {
+        body: { amount, currency: 'usd' }
+      });
+
+      if (stripeError) throw stripeError;
+
+      // Create donation record
+      const { error: donationError } = await supabase
+        .from('donations')
+        .insert([
+          {
+            amount,
+            currency: 'usd',
+            status: 'pending',
+            payment_intent_id: stripeData.id
+          }
+        ]);
+
+      if (donationError) throw donationError;
+
+      // Redirect to Stripe Checkout
+      window.location.href = stripeData.url;
+
+    } catch (error: any) {
+      console.error('Payment error:', error);
+      toast.error(error.message || "Failed to process donation");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const currentAmount = customAmount ? parseFloat(customAmount) : selectedAmount;
@@ -55,6 +98,8 @@ const Donate = () => {
                 selectedAmount={selectedAmount}
                 customAmount={customAmount}
                 onCustomAmountChange={handleCustomAmountChange}
+                onSubmit={handleDonation}
+                isProcessing={isProcessing}
               />
             </motion.div>
 

@@ -1,3 +1,4 @@
+
 import { useState, type ChangeEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,15 +14,18 @@ interface DonateFormProps {
   selectedAmount: number;
   customAmount: string;
   onCustomAmountChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onSubmit: (paymentMethod: string) => Promise<void>;
+  isProcessing: boolean;
 }
 
 export const DonateForm = ({
   onAmountChange,
   selectedAmount,
   customAmount,
-  onCustomAmountChange
+  onCustomAmountChange,
+  onSubmit,
+  isProcessing
 }: DonateFormProps) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("card");
   const [showAmountDialog, setShowAmountDialog] = useState(false);
   const [animationKey, setAnimationKey] = useState(0);
@@ -65,23 +69,7 @@ export const DonateForm = ({
       return false;
     }
 
-    if (selectedPaymentMethod === "card" && !validateCardFields()) {
-      return false;
-    }
-
     return true;
-  };
-
-  const validateCardFields = () => {
-    const cardInputs = document.querySelectorAll('input');
-    let isValid = true;
-    cardInputs.forEach(input => {
-      if (!input.value && input.placeholder !== "0") {
-        toast.error(`Please enter ${input.placeholder}`);
-        isValid = false;
-      }
-    });
-    return isValid;
   };
 
   const triggerAnimation = () => {
@@ -94,17 +82,12 @@ export const DonateForm = ({
 
   const handleSubmit = async () => {
     if (!validateDonation()) return;
-
-    setIsSubmitting(true);
-    triggerAnimation();
+    
     try {
-      // Placeholder for Stripe integration
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast.success("Thank you for your donation!");
-    } catch (error) {
-      toast.error("Failed to process donation. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+      triggerAnimation();
+      await onSubmit(selectedPaymentMethod);
+    } catch (error: any) {
+      toast.error(error.message || "Failed to process donation");
     }
   };
 
@@ -152,10 +135,10 @@ export const DonateForm = ({
         <CardFooter className="relative">
           <Button 
             className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white relative overflow-hidden group" 
-            disabled={(!selectedAmount && !customAmount) || isSubmitting}
+            disabled={(!selectedAmount && !customAmount) || isProcessing}
             onClick={(!selectedAmount && !customAmount) ? handleInactiveButtonClick : handleSubmit}
           >
-            {isSubmitting ? (
+            {isProcessing ? (
               <span className="flex items-center gap-2">
                 <motion.div
                   className="h-4 w-4 border-2 border-white border-t-transparent rounded-full"
