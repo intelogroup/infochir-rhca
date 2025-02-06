@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Article } from "../types";
@@ -68,7 +69,7 @@ export const useArticlesQuery = (page = 0) => {
       console.log('Final mapped articles:', mappedArticles);
       return { articles: mappedArticles, totalPages };
     },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    gcTime: 30 * 60 * 1000, // Keep inactive data for 30 minutes
   });
 };
