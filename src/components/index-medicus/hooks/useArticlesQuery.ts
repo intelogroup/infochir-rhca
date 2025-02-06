@@ -12,6 +12,9 @@ const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
   const authorNames = dbArticle.article_authors?.map((author: any) => author.member.name) || [];
   console.log('Extracted author names:', authorNames);
 
+  // Handle PDF URL properly - ensure it's either a string or undefined
+  const pdfUrl = typeof dbArticle.pdf_url === 'string' ? dbArticle.pdf_url : undefined;
+
   const mappedArticle = {
     id: dbArticle.id,
     title: dbArticle.title,
@@ -24,7 +27,7 @@ const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
     imageUrl: dbArticle.image_url || undefined,
     views: dbArticle.views || 0,
     citations: dbArticle.citations || 0,
-    pdfUrl: dbArticle.pdf_url || undefined,
+    pdfUrl: pdfUrl,
     downloads: dbArticle.downloads || 0,
   };
 
