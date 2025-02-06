@@ -38,7 +38,7 @@ export const NavLinks = () => {
   };
 
   const handleDonateClick = () => {
-    setAnimationKey(prev => prev + 1); // Increment key to force animation restart
+    setAnimationKey(prev => prev + 1);
     setIsAnimating(true);
     navigate('/donate');
     setTimeout(() => {
@@ -47,7 +47,7 @@ export const NavLinks = () => {
   };
 
   return (
-    <div className="flex items-center gap-2 lg:gap-3" role="menubar">
+    <div className="flex items-center gap-1 md:gap-1.5 lg:gap-3" role="menubar">
       {navItems.map((item) => {
         const isActive = location.pathname === item.href;
         return (
@@ -55,7 +55,8 @@ export const NavLinks = () => {
             key={item.name}
             onClick={() => navigate(item.href)}
             className={`
-              flex h-9 w-auto px-3 items-center justify-center rounded-full
+              flex h-8 md:h-9 w-auto px-2 md:px-3 items-center justify-center rounded-full
+              text-[0.8125rem] md:text-sm
               transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50
               ${isActive 
                 ? 'bg-primary text-white shadow-md hover:bg-primary-light' 
@@ -76,22 +77,23 @@ export const NavLinks = () => {
           >
             {item.icon && (
               <item.icon 
-                className={`h-4 w-4 mr-2 ${isActive ? 'text-white' : 'text-primary/80'}`} 
+                className={`h-3.5 md:h-4 w-3.5 md:w-4 mr-1.5 md:mr-2 ${isActive ? 'text-white' : 'text-primary/80'}`} 
                 aria-hidden="true" 
               />
             )}
-            <span className="text-sm font-medium">{item.name}</span>
+            <span className="text-[0.8125rem] md:text-sm font-medium">{item.name}</span>
           </motion.button>
         );
       })}
+
       <motion.button
         onClick={handleDonateClick}
         className={`
           group relative
-          flex h-9 px-4 items-center justify-center rounded-full
+          flex h-8 md:h-9 px-3 md:px-4 items-center justify-center rounded-full
           bg-gradient-to-r from-secondary to-secondary-light
           text-white hover:opacity-90 transition-all duration-300
-          ml-2 space-x-2 focus:outline-none focus:ring-2
+          ml-1 md:ml-2 space-x-1.5 md:space-x-2 focus:outline-none focus:ring-2
           focus:ring-secondary/50 shadow-md hover:shadow-lg
           ${location.pathname === '/donate' ? 'opacity-90 ring-2 ring-secondary' : ''}
         `}
@@ -100,17 +102,11 @@ export const NavLinks = () => {
         role="menuitem"
         aria-label="Faire un don"
         aria-current={location.pathname === '/donate' ? 'page' : undefined}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            navigate('/donate');
-          }
-        }}
       >
-        <span className="text-sm font-medium whitespace-nowrap">Faire un don</span>
+        <span className="text-[0.8125rem] md:text-sm font-medium whitespace-nowrap">Faire un don</span>
         <div className="relative">
           <Heart 
-            className="h-4 w-4 text-white fill-white transition-all duration-300 group-hover:fill-[#ea384c] group-hover:text-[#ea384c] group-hover:animate-[shake_0.5s_ease-in-out_infinite]" 
+            className="h-3.5 md:h-4 w-3.5 md:w-4 text-white fill-white transition-all duration-300 group-hover:fill-[#ea384c] group-hover:text-[#ea384c] group-hover:animate-[shake_0.5s_ease-in-out_infinite]" 
             aria-hidden="true" 
           />
           <motion.div

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { NavLinks } from "./navigation/NavLinks";
@@ -84,17 +85,24 @@ export const Navbar = () => {
       >
         <div className="w-full border-b border-gray-200/50 bg-white/85 backdrop-blur-md shadow-lg">
           <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-12">
-            <div className="flex h-16 md:h-20 items-center justify-between">
-              <NavbarLogo />
+            <div className="flex h-16 md:h-[4.5rem] lg:h-20 items-center justify-between">
+              {/* Logo section with adjusted margins */}
+              <div className="flex-shrink-0">
+                <NavbarLogo />
+              </div>
 
-              <div className="hidden md:flex md:items-center md:justify-center space-x-2 lg:space-x-4">
+              {/* Navigation links with improved tablet spacing */}
+              <div className="hidden md:flex md:items-center md:justify-center md:space-x-1.5 lg:space-x-4">
                 <NavLinks />
               </div>
 
-              <MobileMenuButton 
-                isOpen={isOpen}
-                onClick={() => setIsOpen(!isOpen)}
-              />
+              {/* Mobile menu button with adjusted positioning */}
+              <div className="flex md:hidden">
+                <MobileMenuButton 
+                  isOpen={isOpen}
+                  onClick={() => setIsOpen(!isOpen)}
+                />
+              </div>
             </div>
           </div>
 
