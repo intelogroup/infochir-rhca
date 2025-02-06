@@ -12,7 +12,12 @@ const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
   // Extract author names from the members relationship
   const authorNames = dbArticle.article_authors?.map((authorRel: any) => {
     console.log('Processing author relation:', authorRel);
-    return authorRel.member?.name;
+    // Add null check for member object
+    if (!authorRel.member) {
+      console.warn('Author relation exists but member is null:', authorRel);
+      return null;
+    }
+    return authorRel.member.name;
   }).filter(Boolean) || [];
   
   console.log('Extracted author names:', authorNames);
@@ -57,8 +62,8 @@ export const useArticlesQuery = (page = 0) => {
           .from("articles")
           .select(`
             *,
-            article_authors (
-              member:members (
+            article_authors!inner (
+              member:members!inner (
                 name
               )
             )
