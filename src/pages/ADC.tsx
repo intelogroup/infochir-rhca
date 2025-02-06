@@ -1,14 +1,13 @@
 
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { ADCHeader } from "@/components/adc/ADCHeader";
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useRef } from "react";
 import { useAtlasArticles } from "@/components/atlas/hooks/useAtlasArticles";
 import { AtlasCard } from "@/components/atlas/AtlasCard";
 import { AtlasTableOfContents } from "@/components/atlas/AtlasTableOfContents";
 import { motion } from "framer-motion";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useRef } from "react";
 
 // Lazy load components
 const ADCMission = lazy(() => import("@/components/adc/ADCMission").then(module => ({ default: module.ADCMission })));
@@ -34,7 +33,7 @@ const VirtualizedAtlasGrid = ({ chapters }: { chapters: any[] }) => {
   const rowVirtualizer = useVirtualizer({
     count: rowCount,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 400, // Estimated row height
+    estimateSize: () => 400,
     overscan: 3,
   });
 
