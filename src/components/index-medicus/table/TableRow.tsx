@@ -37,7 +37,7 @@ export const ArticleTableRow = ({ article }: ArticleTableRowProps) => {
             <div className="font-semibold text-lg text-primary hover:text-primary/80 cursor-pointer">
               {article.title || 'Untitled'}
             </div>
-            <div className="flex items-center gap-1.5 mt-2 text-sm italic text-[#8B5CF6]">
+            <div className="flex items-center gap-1.5 mt-2 text-sm italic text-[#41b06e]">
               <User className="h-3.5 w-3.5" />
               {safeAuthors.length > 0 ? safeAuthors.join(", ") : 'No authors listed'}
             </div>
