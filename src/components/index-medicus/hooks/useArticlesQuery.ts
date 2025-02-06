@@ -8,22 +8,15 @@ const PAGE_SIZE = 10;
 const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
   console.log('Mapping database article:', dbArticle);
   
-  // Add more detailed logging for authors relationship
-  console.log('Article authors relationship:', dbArticle.article_authors);
-  console.log('Raw article data:', {
-    authors: dbArticle.authors,
-    article_authors: dbArticle.article_authors,
-  });
-  
-  // Extract author names from the article_authors relationship
-  const authorNames = dbArticle.article_authors?.map((author: any) => {
-    console.log('Processing author:', author);
-    return author.member?.name;
+  // Extract author names from the members relationship
+  const authorNames = dbArticle.article_authors?.map((authorRel: any) => {
+    console.log('Processing author relation:', authorRel);
+    return authorRel.member?.name;
   }).filter(Boolean) || [];
   
-  console.log('Final extracted author names:', authorNames);
+  console.log('Extracted author names:', authorNames);
 
-  // Handle PDF URL properly - ensure it's either a string or undefined
+  // Handle PDF URL properly
   const pdfUrl = typeof dbArticle.pdf_url === 'string' ? dbArticle.pdf_url : undefined;
 
   const mappedArticle = {
@@ -33,7 +26,7 @@ const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
     date: dbArticle.publication_date,
     source: dbArticle.source,
     category: dbArticle.category,
-    authors: authorNames.length > 0 ? authorNames : dbArticle.authors || [],
+    authors: authorNames.length > 0 ? authorNames : [],
     tags: dbArticle.tags || [],
     imageUrl: dbArticle.image_url || undefined,
     views: dbArticle.views || 0,
@@ -42,7 +35,7 @@ const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
     downloads: dbArticle.downloads || 0,
   };
 
-  console.log('Mapped article:', mappedArticle);
+  console.log('Final mapped article:', mappedArticle);
   return mappedArticle;
 };
 
@@ -55,13 +48,13 @@ export const useArticlesQuery = (page = 0) => {
       const start = page * PAGE_SIZE;
       const end = start + PAGE_SIZE - 1;
 
-      // Update the query to properly fetch the article_authors relationship
+      // Updated query to properly join with members table through article_authors
       const { data, error, count } = await supabase
         .from("articles")
         .select(`
           *,
-          article_authors (
-            member (
+          article_authors!inner (
+            member:members!inner (
               name
             )
           )
