@@ -2,40 +2,20 @@
 import { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "./lib/react-query";
+import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
+import { Toaster } from "sonner";
 
-// Preload critical routes with priority loading
+// Preload critical routes
 const Home = lazy(() => import("@/pages/Home" /* webpackPrefetch: true */));
 const RHCA = lazy(() => import("@/pages/RHCA" /* webpackPrefetch: true */));
 const IGM = lazy(() => import("@/pages/IGM" /* webpackPrefetch: true */));
+const Donate = lazy(() => import("@/pages/Donate" /* webpackPrefetch: true */));
 
-// Lazy load less frequently accessed routes with delay and lower priority
-const ADC = lazy(() => 
-  new Promise(resolve => 
-    setTimeout(() => resolve(import("@/pages/ADC")), 100)
-  ) as Promise<typeof import("@/pages/ADC")>
-);
-
-const IndexMedicus = lazy(() => 
-  import("@/pages/IndexMedicus").then(module => {
-    // Preload related components after main chunk loads
-    const preloadComponents = async () => {
-      const [ArticleGrid, SearchBar] = await Promise.all([
-        import("@/components/index-medicus/ArticleGrid"),
-        import("@/components/index-medicus/SearchBar")
-      ]);
-      return module;
-    };
-    return preloadComponents();
-  })
-);
-
+// Lazy load less frequently accessed routes
 const About = lazy(() => import("@/pages/About"));
 const EditorialCommittee = lazy(() => import("@/pages/EditorialCommittee"));
 const Submission = lazy(() => import("@/pages/Submission"));
 const Annuaire = lazy(() => import("@/pages/Annuaire"));
-const Donate = lazy(() => import("@/pages/Donate"));
 const Opportunities = lazy(() => import("@/pages/Opportunities"));
 const RHCADirectives = lazy(() => import("@/pages/rhca/Directives"));
 const IGMDirectives = lazy(() => import("@/pages/igm/Directives")); 
@@ -44,7 +24,7 @@ function App() {
   console.log("[App] Rendering with React Router context");
   
   return (
-    <QueryClientProvider client={queryClient}>
+    <ErrorBoundary>
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -52,9 +32,7 @@ function App() {
           <Route path="/rhca/directives" element={<RHCADirectives />} />
           <Route path="/igm" element={<IGM />} />
           <Route path="/igm/directives" element={<IGMDirectives />} />
-          <Route path="/adc/*" element={<ADC />} />
           <Route path="/igm/editorial-committee" element={<EditorialCommittee />} />
-          <Route path="/index-medicus" element={<IndexMedicus />} />
           <Route path="/about" element={<About />} />
           <Route path="/submission" element={<Submission />} />
           <Route path="/annuaire" element={<Annuaire />} />
@@ -62,7 +40,8 @@ function App() {
           <Route path="/jobs" element={<Opportunities />} />
         </Routes>
       </Suspense>
-    </QueryClientProvider>
+      <Toaster position="top-center" />
+    </ErrorBoundary>
   );
 }
 

@@ -18,59 +18,24 @@ const queryClient = new QueryClient({
   },
 });
 
-// Register Service Worker
-const registerServiceWorker = () => {
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then(registration => {
-          console.log('ServiceWorker registration successful:', registration.scope);
-        })
-        .catch(error => {
-          console.log('ServiceWorker registration failed:', error);
-        });
-    });
-  }
-};
-
-// Preload critical images
-const preloadImages = () => {
-  const images = [
-    '/lovable-uploads/75589792-dc14-4d53-9aae-5796c76a3b39.png',
-    '/lovable-uploads/4e3c1f79-c9cc-4d01-8520-1af84d350a2a.png',
-    '/lovable-uploads/745435b6-9abc-4051-b168-cf77c96ed9a0.png'
-  ];
-
-  images.forEach(src => {
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.as = 'image';
-    link.href = src;
-    document.head.appendChild(link);
-  });
-};
-
-// Initialize app with performance monitoring
+// Initialize app with error boundary and performance monitoring
 const initApp = () => {
-  console.time('App Mount');
   console.log('[App] Initializing with React Router and Query Client');
   
   const root = createRoot(document.getElementById("root")!);
   
   root.render(
     <React.StrictMode>
-      <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
           <App />
-      </BrowserRouter>
+        </BrowserRouter>
+      </QueryClientProvider>
     </React.StrictMode>
   );
-
-  console.timeEnd('App Mount');
 };
 
-// Start preloading and initialization
-registerServiceWorker();
-preloadImages();
+// Start initialization
 initApp();
 
 // Report performance metrics
