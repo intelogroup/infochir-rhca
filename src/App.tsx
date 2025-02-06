@@ -11,6 +11,7 @@ const RHCA = lazy(() => import("@/pages/RHCA" /* webpackPrefetch: true */));
 const IGM = lazy(() => import("@/pages/IGM" /* webpackPrefetch: true */));
 const Donate = lazy(() => import("@/pages/Donate" /* webpackPrefetch: true */));
 const ADC = lazy(() => import("@/pages/ADC" /* webpackPrefetch: true */));
+const IndexMedicus = lazy(() => import("@/pages/IndexMedicus" /* webpackPrefetch: true */));
 
 // Lazy load less frequently accessed routes
 const About = lazy(() => import("@/pages/About"));
@@ -40,6 +41,7 @@ function App() {
           <Route path="/donate" element={<Donate />} />
           <Route path="/jobs" element={<Opportunities />} />
           <Route path="/adc/*" element={<ADC />} />
+          <Route path="/index-medicus" element={<IndexMedicus />} />
         </Routes>
       </Suspense>
       <Toaster position="top-center" />
