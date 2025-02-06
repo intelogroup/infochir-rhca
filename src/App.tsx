@@ -41,6 +41,8 @@ const RHCADirectives = lazy(() => import("@/pages/rhca/Directives"));
 const IGMDirectives = lazy(() => import("@/pages/igm/Directives")); 
 
 function App() {
+  console.log("[App] Rendering with React Router context");
+  
   return (
     <QueryClientProvider client={queryClient}>
       <Suspense fallback={<LoadingSpinner />}>
