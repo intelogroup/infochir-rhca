@@ -39,7 +39,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Only cache GET requests and skip caching API calls
+// Skip caching for API calls and handle static assets
 self.addEventListener('fetch', (event) => {
   // Skip caching for API requests and auth endpoints
   if (event.request.url.includes('/api/') || 

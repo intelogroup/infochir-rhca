@@ -16,15 +16,16 @@ supabase.auth.onAuthStateChange((event, session) => {
   });
 });
 
-// Add debug logging for network requests
+// Add debug logging for fetch requests in development
 if (process.env.NODE_ENV === 'development') {
-  const originalFetch = supabase.rest.headers;
-  supabase.rest.headers = (...args) => {
-    console.debug('[Supabase Request]:', {
-      url: args[0],
-      method: args[1]?.method,
-      headers: args[1]?.headers,
-    });
-    return originalFetch.apply(supabase.rest, args);
+  const originalFetch = window.fetch;
+  window.fetch = async (...args) => {
+    if (typeof args[0] === 'string' && args[0].includes('supabase')) {
+      console.debug('[Supabase Request]:', {
+        url: args[0],
+        options: args[1]
+      });
+    }
+    return originalFetch.apply(window, args);
   };
 }
