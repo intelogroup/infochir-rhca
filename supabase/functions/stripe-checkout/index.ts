@@ -8,7 +8,11 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') as string);
+// Initialize Stripe with the secret key from environment variables
+const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') as string, {
+  apiVersion: '2023-10-16', // Specify API version
+});
+
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL') as string,
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') as string
@@ -23,6 +27,11 @@ serve(async (req) => {
   try {
     const { amount, currency, donor_info } = await req.json();
     console.log('Creating checkout session with:', { amount, currency, donor_info });
+
+    // Validate amount
+    if (!amount || amount <= 0) {
+      throw new Error('Invalid donation amount');
+    }
 
     // Create Stripe Checkout session
     const session = await stripe.checkout.sessions.create({
