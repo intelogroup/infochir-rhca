@@ -22,7 +22,7 @@ const YearHeader = memo(({ year, issueCount, articleCount }: { year: number; iss
       <div className="bg-primary/10 p-2.5 rounded-lg">
         <Calendar className="h-5 w-5 text-primary" aria-hidden="true" />
       </div>
-      <div>
+      <div className="flex items-center gap-3">
         <motion.h2 
           id={`year-heading-${year}`}
           className="text-xl sm:text-2xl font-semibold text-gray-900 tracking-tight"
@@ -32,10 +32,13 @@ const YearHeader = memo(({ year, issueCount, articleCount }: { year: number; iss
         >
           {year}
         </motion.h2>
-        <p className="text-sm text-gray-600 mt-0.5">
-          {issueCount} numéro{issueCount !== 1 ? 's' : ''}
-        </p>
+        <div className="bg-primary rounded-full p-1.5 transition-transform duration-200">
+          <ChevronDown className="h-4 w-4 text-white" />
+        </div>
       </div>
+      <p className="text-sm text-gray-600 mt-0.5">
+        {issueCount} numéro{issueCount !== 1 ? 's' : ''}
+      </p>
     </div>
     <motion.div 
       className="flex items-center gap-2 bg-secondary/15 px-4 py-2 rounded-full"
@@ -67,13 +70,12 @@ export const YearGroupList = memo(({ issuesByYear, sortedYears }: YearGroupListP
               value={year.toString()}
               className="border-0 bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-300 data-[state=open]:shadow-md [&[data-state=open]>button]:border-b [&[data-state=open]>button]:border-gray-200"
             >
-              <AccordionTrigger className="hover:no-underline py-0 [&[data-state=open]>div>.chevron]:rotate-180">
+              <AccordionTrigger className="hover:no-underline py-0">
                 <YearHeader 
                   year={year} 
                   issueCount={issues.length}
                   articleCount={articleCount}
                 />
-                <ChevronDown className="h-5 w-5 text-gray-500 transition-transform duration-200 chevron shrink-0" />
               </AccordionTrigger>
               
               <AccordionContent>
