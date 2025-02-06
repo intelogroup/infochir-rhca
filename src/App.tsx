@@ -1,5 +1,6 @@
+
 import { Suspense, lazy } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/react-query";
@@ -42,25 +43,23 @@ const IGMDirectives = lazy(() => import("@/pages/igm/Directives"));
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Router>
-        <Suspense fallback={<LoadingSpinner />}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/rhca" element={<RHCA />} />
-            <Route path="/rhca/directives" element={<RHCADirectives />} />
-            <Route path="/igm" element={<IGM />} />
-            <Route path="/igm/directives" element={<IGMDirectives />} />
-            <Route path="/adc/*" element={<ADC />} />
-            <Route path="/igm/editorial-committee" element={<EditorialCommittee />} />
-            <Route path="/index-medicus" element={<IndexMedicus />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/submission" element={<Submission />} />
-            <Route path="/annuaire" element={<Annuaire />} />
-            <Route path="/donate" element={<Donate />} />
-            <Route path="/jobs" element={<Opportunities />} />
-          </Routes>
-        </Suspense>
-      </Router>
+      <Suspense fallback={<LoadingSpinner />}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/rhca" element={<RHCA />} />
+          <Route path="/rhca/directives" element={<RHCADirectives />} />
+          <Route path="/igm" element={<IGM />} />
+          <Route path="/igm/directives" element={<IGMDirectives />} />
+          <Route path="/adc/*" element={<ADC />} />
+          <Route path="/igm/editorial-committee" element={<EditorialCommittee />} />
+          <Route path="/index-medicus" element={<IndexMedicus />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/submission" element={<Submission />} />
+          <Route path="/annuaire" element={<Annuaire />} />
+          <Route path="/donate" element={<Donate />} />
+          <Route path="/jobs" element={<Opportunities />} />
+        </Routes>
+      </Suspense>
     </QueryClientProvider>
   );
 }
