@@ -8,7 +8,9 @@ const PAGE_SIZE = 10;
 const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
   console.log('Mapping database article:', dbArticle);
   
+  // Extract author names from the article_authors relationship
   const authorNames = dbArticle.article_authors?.map((author: any) => author.member.name) || [];
+  console.log('Extracted author names:', authorNames);
 
   const mappedArticle = {
     id: dbArticle.id,
