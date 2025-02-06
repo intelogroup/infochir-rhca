@@ -15,6 +15,7 @@ import { toast } from "sonner";
 
 const BackButton = () => {
   try {
+    console.log("[BackButton] Attempting to render back button with router Link");
     return (
       <Link to="/">
         <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary-light mb-6">
@@ -24,27 +25,52 @@ const BackButton = () => {
       </Link>
     );
   } catch (error) {
-    return null;
+    console.error("[BackButton] Failed to render router Link:", error);
+    // Fallback to regular button that uses window.history
+    return (
+      <Button 
+        variant="ghost" 
+        size="sm" 
+        className="gap-2 text-primary hover:text-primary-light mb-6"
+        onClick={() => {
+          console.log("[BackButton] Using fallback navigation");
+          window.history.back();
+        }}
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Retour
+      </Button>
+    );
   }
 };
 
 const Donate = () => {
-  useScrollToTop();
+  console.log("[Donate] Component mounting");
+  
+  try {
+    useScrollToTop();
+  } catch (error) {
+    console.error("[Donate] Error in useScrollToTop:", error);
+  }
+
   const [selectedAmount, setSelectedAmount] = useState<number>(0);
   const [customAmount, setCustomAmount] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleAmountSelect = (amount: number) => {
+    console.log("[Donate] Amount selected:", amount);
     setSelectedAmount(amount);
     setCustomAmount("");
   };
 
   const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("[Donate] Custom amount changed:", e.target.value);
     setCustomAmount(e.target.value);
     setSelectedAmount(0);
   };
 
   const handleDonation = async (paymentMethod: string) => {
+    console.log("[Donate] Processing donation:", { paymentMethod, amount: customAmount || selectedAmount });
     try {
       setIsProcessing(true);
       const amount = customAmount ? parseFloat(customAmount) : selectedAmount;
@@ -53,13 +79,17 @@ const Donate = () => {
         throw new Error("Please select a valid donation amount");
       }
 
+      console.log("[Donate] Creating payment intent");
       const { data: stripeData, error: stripeError } = await supabase.functions.invoke('create-payment-intent', {
         body: { amount, currency: 'usd' }
       });
 
-      if (stripeError) throw stripeError;
+      if (stripeError) {
+        console.error("[Donate] Stripe error:", stripeError);
+        throw stripeError;
+      }
 
-      // Create donation record
+      console.log("[Donate] Creating donation record");
       const { error: donationError } = await supabase
         .from('donations')
         .insert([
@@ -71,13 +101,16 @@ const Donate = () => {
           }
         ]);
 
-      if (donationError) throw donationError;
+      if (donationError) {
+        console.error("[Donate] Database error:", donationError);
+        throw donationError;
+      }
 
-      // Redirect to Stripe Checkout
+      console.log("[Donate] Redirecting to Stripe checkout:", stripeData.url);
       window.location.href = stripeData.url;
 
     } catch (error: any) {
-      console.error('Payment error:', error);
+      console.error('[Donate] Payment error:', error);
       toast.error(error.message || "Failed to process donation");
     } finally {
       setIsProcessing(false);
@@ -129,3 +162,4 @@ const Donate = () => {
 };
 
 export default Donate;
+
