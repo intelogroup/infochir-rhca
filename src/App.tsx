@@ -1,6 +1,7 @@
 import { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 // Preload critical routes with priority loading
 const Home = lazy(() => import("@/pages/Home" /* webpackPrefetch: true */));
@@ -48,7 +49,7 @@ const PageSkeleton = () => (
 function App() {
   return (
     <Router>
-      <Suspense fallback={<PageSkeleton />}>
+      <Suspense fallback={<LoadingSpinner />}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/rhca" element={<RHCA />} />
