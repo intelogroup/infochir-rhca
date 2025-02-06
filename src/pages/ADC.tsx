@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { ADCHeader } from "@/components/adc/ADCHeader";
 import { Suspense, lazy } from "react";
@@ -94,42 +94,33 @@ const ADC = () => {
   return (
     <MainLayout>
       <div className="min-h-screen bg-gradient-to-br from-white to-gray-50 pt-[70px]">
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <ADCHeader />
-                <div className="container mx-auto px-4 py-8">
-                  <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-gray-900">
-                      Atlas de Diagnostic Chirurgical
-                    </h2>
-                    <AtlasTableOfContents />
-                  </div>
-                  
-                  {isLoading ? (
-                    <LoadingSkeleton />
-                  ) : chapters && chapters.length > 0 ? (
-                    <VirtualizedAtlasGrid chapters={chapters} />
-                  ) : (
-                    <div className="text-center py-12 text-gray-500">
-                      Aucun chapitre disponible pour le moment
-                    </div>
-                  )}
-                </div>
+        <ADCHeader />
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">
+              Atlas de Diagnostic Chirurgical
+            </h2>
+            <AtlasTableOfContents />
+          </div>
+          
+          {isLoading ? (
+            <LoadingSkeleton />
+          ) : chapters && chapters.length > 0 ? (
+            <VirtualizedAtlasGrid chapters={chapters} />
+          ) : (
+            <div className="text-center py-12 text-gray-500">
+              Aucun chapitre disponible pour le moment
+            </div>
+          )}
+        </div>
 
-                <Suspense fallback={<LoadingSkeleton />}>
-                  <ADCMission />
-                </Suspense>
-                
-                <Suspense fallback={<LoadingSkeleton />}>
-                  <ADCSubmission />
-                </Suspense>
-              </>
-            }
-          />
-        </Routes>
+        <Suspense fallback={<LoadingSkeleton />}>
+          <ADCMission />
+        </Suspense>
+        
+        <Suspense fallback={<LoadingSkeleton />}>
+          <ADCSubmission />
+        </Suspense>
       </div>
     </MainLayout>
   );
