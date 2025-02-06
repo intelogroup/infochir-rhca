@@ -1,4 +1,5 @@
-const CACHE_NAME = 'info-chir-cache-v1';
+
+const CACHE_NAME = 'info-chir-cache-v2'; // Increment version to force update
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -8,43 +9,65 @@ const STATIC_ASSETS = [
   '/lovable-uploads/745435b6-9abc-4051-b168-cf77c96ed9a0.png'
 ];
 
-// Install Service Worker
+// Log service worker lifecycle events
 self.addEventListener('install', (event) => {
+  console.debug('[Service Worker] Installing new cache:', CACHE_NAME);
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Opened cache');
+        console.debug('[Service Worker] Caching static assets');
         return cache.addAll(STATIC_ASSETS);
       })
   );
 });
 
-// Cache and return requests
+// Clean up old caches and log operations
+self.addEventListener('activate', (event) => {
+  console.debug('[Service Worker] Activating new service worker');
+  const cacheWhitelist = [CACHE_NAME];
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            console.debug('[Service Worker] Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
+
+// Only cache GET requests and skip caching API calls
 self.addEventListener('fetch', (event) => {
+  // Skip caching for API requests and auth endpoints
+  if (event.request.url.includes('/api/') || 
+      event.request.url.includes('/auth/') ||
+      event.request.url.includes('supabase.co')) {
+    console.debug('[Service Worker] Skipping cache for:', event.request.url);
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
-        // Cache hit - return response
         if (response) {
+          console.debug('[Service Worker] Serving from cache:', event.request.url);
           return response;
         }
 
         return fetch(event.request).then(
           (response) => {
-            // Check if we received a valid response
             if(!response || response.status !== 200 || response.type !== 'basic') {
               return response;
             }
 
-            // Clone the response as it can only be consumed once
             const responseToCache = response.clone();
-
             caches.open(CACHE_NAME)
               .then((cache) => {
-                // Don't cache API requests
-                if (!event.request.url.includes('/api/')) {
-                  cache.put(event.request, responseToCache);
-                }
+                console.debug('[Service Worker] Caching new resource:', event.request.url);
+                cache.put(event.request, responseToCache);
               });
 
             return response;
@@ -54,18 +77,7 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Update Service Worker
-self.addEventListener('activate', (event) => {
-  const cacheWhitelist = [CACHE_NAME];
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
+// Handle errors gracefully
+self.addEventListener('error', (event) => {
+  console.error('[Service Worker] Error:', event.error);
 });
