@@ -1,22 +1,28 @@
+
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { FoundersSection } from "@/components/home/FoundersSection";
 import { SponsorsSection } from "@/components/home/SponsorsSection";
 import { motion } from "framer-motion";
 import { BookOpen, Target, Users, Award, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const About = () => {
+  const navigate = useNavigate();
+  
   return (
     <MainLayout>
       <div className="min-h-screen bg-gradient-to-br from-white to-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-[30px]">
-          <Link to="/">
-            <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary-light">
-              <ArrowLeft className="h-4 w-4" />
-              Retour
-            </Button>
-          </Link>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="gap-2 text-primary hover:text-primary-light"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Retour
+          </Button>
         </div>
 
         <section 

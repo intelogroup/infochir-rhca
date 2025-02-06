@@ -1,6 +1,5 @@
 import { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Skeleton } from "@/components/ui/skeleton";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 // Preload critical routes with priority loading
@@ -37,14 +36,6 @@ const Donate = lazy(() => import("@/pages/Donate"));
 const Opportunities = lazy(() => import("@/pages/Opportunities"));
 const RHCADirectives = lazy(() => import("@/pages/rhca/Directives"));
 const IGMDirectives = lazy(() => import("@/pages/igm/Directives")); 
-
-// Optimized loading skeleton with reduced complexity
-const PageSkeleton = () => (
-  <div className="min-h-screen bg-gray-50/50 p-4 animate-pulse">
-    <Skeleton className="h-[100px] w-full rounded-lg mb-4" />
-    <Skeleton className="h-[200px] w-full rounded-lg" />
-  </div>
-);
 
 function App() {
   return (
