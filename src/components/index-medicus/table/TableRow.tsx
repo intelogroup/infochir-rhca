@@ -1,3 +1,4 @@
+
 import { TableCell, TableRow as TableRowBase } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { TableActions } from "./TableActions";
@@ -33,10 +34,10 @@ export const ArticleTableRow = ({ article }: ArticleTableRowProps) => {
             </div>
           )}
           <div className="flex-1">
-            <div className="font-medium text-primary hover:text-primary-light cursor-pointer">
+            <div className="font-semibold text-lg text-primary hover:text-primary/80 cursor-pointer">
               {article.title || 'Untitled'}
             </div>
-            <div className="flex items-center gap-1.5 mt-1.5 text-sm text-muted-foreground">
+            <div className="flex items-center gap-1.5 mt-2 text-sm italic text-[#8B5CF6]">
               <User className="h-3.5 w-3.5" />
               {safeAuthors.length > 0 ? safeAuthors.join(", ") : 'No authors listed'}
             </div>
