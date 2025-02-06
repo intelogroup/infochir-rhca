@@ -1,54 +1,49 @@
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import App from "./App";
+import "./index.css";
+import { Toaster } from "@/components/ui/toaster";
+import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter } from 'react-router-dom';
-import App from './App.tsx';
-import './index.css';
-
-// Configure React Query for optimal performance
+// Configure React Query client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000, // 5 minutes
       retry: 1,
-      networkMode: 'offlineFirst'
     },
   },
 });
 
-// Initialize app with error boundary and performance monitoring
-const initApp = () => {
-  console.log('[App] Initializing with React Router and Query Client');
-  
-  const root = createRoot(document.getElementById("root")!);
-  
-  root.render(
-    <React.StrictMode>
+console.info("[App] Initializing with React Router and Query Client");
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <App />
+          <Toaster />
         </BrowserRouter>
       </QueryClientProvider>
-    </React.StrictMode>
-  );
-};
+    </ErrorBoundary>
+  </React.StrictMode>
+);
 
-// Start initialization
-initApp();
+// Only log performance metrics in development
+if (process.env.NODE_ENV === 'development') {
+  window.addEventListener('load', () => {
+    const timing = performance.timing;
+    const interactive = timing.domInteractive - timing.navigationStart;
+    const complete = timing.domComplete - timing.navigationStart;
+    const total = timing.loadEventEnd - timing.navigationStart;
 
-// Report performance metrics
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-    const paint = performance.getEntriesByType('paint');
-    
-    console.group('Performance Metrics');
-    console.log('First Contentful Paint:', paint.find(p => p.name === 'first-contentful-paint')?.startTime);
-    console.log('DOM Interactive:', navigation.domInteractive);
-    console.log('DOM Complete:', navigation.domComplete);
-    console.log('Load Total:', navigation.loadEventEnd - navigation.startTime);
-    console.groupEnd();
-  }, 0);
-});
+    console.info('Performance Metrics', {
+      'DOM Interactive': `${interactive}ms`,
+      'DOM Complete': `${complete}ms`,
+      'Load Total': `${total}ms`
+    });
+  });
+}
