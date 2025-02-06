@@ -4,6 +4,7 @@ import { IssuesTable } from "@/components/issues/IssuesTable";
 import { FileText, Search, Loader2 } from "lucide-react";
 import type { Issue } from "../types";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 interface IssuesGridContentProps {
   viewMode: "grid" | "table";
@@ -55,7 +56,12 @@ export const IssuesGridContent = ({
 
   if (viewMode === "grid") {
     return (
-      <div className="space-y-8">
+      <motion.div 
+        className="space-y-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
         <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-lg border border-gray-100 shadow-sm">
           <FileText className="h-5 w-5 text-primary/70" aria-hidden="true" />
           <span className="text-sm text-gray-600">
@@ -67,9 +73,22 @@ export const IssuesGridContent = ({
           issuesByYear={issuesByYear}
           sortedYears={sortedYears}
         />
-      </div>
+
+        {hasMore && (
+          <div className="flex justify-center mt-8">
+            <Button 
+              variant="outline"
+              onClick={onLoadMore}
+              className="gap-2"
+            >
+              Charger plus
+            </Button>
+          </div>
+        )}
+      </motion.div>
     );
   }
 
   return <IssuesTable issues={sortedIssues} />;
 };
+

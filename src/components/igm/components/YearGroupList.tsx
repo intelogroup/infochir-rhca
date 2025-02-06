@@ -2,8 +2,14 @@
 import { IssueCard } from "@/components/igm/IssueCard";
 import { Calendar, FileText } from "lucide-react";
 import type { Issue } from "@/components/igm/types";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { memo } from "react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 interface YearGroupListProps {
   issuesByYear: Record<number, Issue[]>;
@@ -11,7 +17,7 @@ interface YearGroupListProps {
 }
 
 const YearHeader = memo(({ year, issueCount, articleCount }: { year: number; issueCount: number; articleCount: number }) => (
-  <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-200 pb-4 gap-3">
+  <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 gap-3">
     <div className="flex items-center gap-3">
       <div className="bg-primary/10 p-2.5 rounded-lg">
         <Calendar className="h-5 w-5 text-primary" aria-hidden="true" />
@@ -49,49 +55,56 @@ YearHeader.displayName = 'YearHeader';
 
 export const YearGroupList = memo(({ issuesByYear, sortedYears }: YearGroupListProps) => {
   return (
-    <div className="space-y-6 sm:space-y-8">
-      {sortedYears.map((year) => {
-        const issues = issuesByYear[year];
-        const articleCount = issues.reduce((acc, issue) => acc + (issue.articles?.length || 0), 0);
-        
-        return (
-          <motion.div 
-            key={year}
-            className="space-y-4 sm:space-y-6 bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-300"
-            layout
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            role="region"
-            aria-labelledby={`year-heading-${year}`}
-          >
-            <YearHeader 
-              year={year} 
-              issueCount={issues.length}
-              articleCount={articleCount}
-            />
-            
-            <div 
-              className="grid grid-cols-1 gap-4"
-              role="list"
-              aria-label={`Issues de ${year}`}
+    <Accordion type="multiple" className="space-y-6">
+      <AnimatePresence>
+        {sortedYears.map((year) => {
+          const issues = issuesByYear[year];
+          const articleCount = issues.reduce((acc, issue) => acc + (issue.articles?.length || 0), 0);
+          
+          return (
+            <AccordionItem
+              key={year}
+              value={year.toString()}
+              className="bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-300 data-[state=open]:shadow-md"
             >
-              {issues.map((issue, index) => (
-                <motion.div
-                  key={`${year}-${issue.id}`}
-                  initial={{ opacity: 0, y: 20 }}
+              <AccordionTrigger className="hover:no-underline">
+                <YearHeader 
+                  year={year} 
+                  issueCount={issues.length}
+                  articleCount={articleCount}
+                />
+              </AccordionTrigger>
+              
+              <AccordionContent>
+                <motion.div 
+                  className="grid grid-cols-1 gap-4 pt-4"
+                  initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="h-full"
+                  transition={{ duration: 0.3 }}
+                  role="list"
+                  aria-label={`Issues de ${year}`}
                 >
-                  <IssueCard issue={issue} />
+                  <AnimatePresence>
+                    {issues.map((issue, index) => (
+                      <motion.div
+                        key={`${year}-${issue.id}`}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="h-full"
+                      >
+                        <IssueCard issue={issue} />
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
                 </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        );
-      })}
-    </div>
+              </AccordionContent>
+            </AccordionItem>
+          );
+        })}
+      </AnimatePresence>
+    </Accordion>
   );
 });
 
