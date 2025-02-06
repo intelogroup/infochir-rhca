@@ -1,10 +1,10 @@
+
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { DirectivesHeader } from "@/components/directives/DirectivesHeader";
 import { ManuscriptPreparation } from "@/components/directives/ManuscriptPreparation";
 import { ManuscriptStructure } from "@/components/directives/ManuscriptStructure";
 import { DirectiveSection, ChecklistItem } from "@/components/directives/DirectiveSection";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 
 const RHCADirectives = () => {
   return (
@@ -78,11 +78,12 @@ const RHCADirectives = () => {
           </DirectiveSection>
 
           <div className="flex justify-center pt-8">
-            <Link to="/submission">
-              <Button className="bg-secondary hover:bg-secondary-light">
-                Soumettre un manuscrit
-              </Button>
-            </Link>
+            <Button 
+              className="bg-secondary hover:bg-secondary-light"
+              onClick={() => window.location.href = '/submission'}
+            >
+              Soumettre un manuscrit
+            </Button>
           </div>
         </div>
       </div>

@@ -1,8 +1,8 @@
+
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { DirectivesHeader } from "@/components/directives/DirectivesHeader";
 import { DirectiveSection, ChecklistItem } from "@/components/directives/DirectiveSection";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 
 const IGMDirectives = () => {
   return (
@@ -81,11 +81,12 @@ const IGMDirectives = () => {
           </DirectiveSection>
 
           <div className="flex justify-center pt-8">
-            <Link to="/submission">
-              <Button className="bg-secondary hover:bg-secondary-light">
-                Soumettre un article
-              </Button>
-            </Link>
+            <Button 
+              className="bg-secondary hover:bg-secondary-light"
+              onClick={() => window.location.href = '/submission'}
+            >
+              Soumettre un article
+            </Button>
           </div>
         </div>
       </div>

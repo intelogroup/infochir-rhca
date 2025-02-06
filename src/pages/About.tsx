@@ -1,11 +1,10 @@
-
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { FoundersSection } from "@/components/home/FoundersSection";
 import { SponsorsSection } from "@/components/home/SponsorsSection";
 import { motion } from "framer-motion";
 import { BookOpen, Target, Users, Award, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const About = () => {
   const navigate = useNavigate();
