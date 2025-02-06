@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { DonateHeader } from "@/components/donate/DonateHeader";
 import { DonationSummary } from "@/components/donate/DonationSummary";
 import { DonateForm } from "@/components/donate/DonateForm";
+import { DonorInformation } from "@/components/donate/DonorInformation";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { Toaster } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -26,16 +27,12 @@ const BackButton = () => {
     );
   } catch (error) {
     console.error("[BackButton] Failed to render router Link:", error);
-    // Fallback to regular button that uses window.history
     return (
       <Button 
         variant="ghost" 
         size="sm" 
         className="gap-2 text-primary hover:text-primary-light mb-6"
-        onClick={() => {
-          console.log("[BackButton] Using fallback navigation");
-          window.history.back();
-        }}
+        onClick={() => window.history.back()}
       >
         <ArrowLeft className="h-4 w-4" />
         Retour
@@ -46,16 +43,15 @@ const BackButton = () => {
 
 const Donate = () => {
   console.log("[Donate] Component mounting");
-  
-  try {
-    useScrollToTop();
-  } catch (error) {
-    console.error("[Donate] Error in useScrollToTop:", error);
-  }
+  useScrollToTop();
 
   const [selectedAmount, setSelectedAmount] = useState<number>(0);
   const [customAmount, setCustomAmount] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [donorName, setDonorName] = useState("");
+  const [donorEmail, setDonorEmail] = useState("");
+  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [message, setMessage] = useState("");
 
   const handleAmountSelect = (amount: number) => {
     console.log("[Donate] Amount selected:", amount);
@@ -79,6 +75,10 @@ const Donate = () => {
         throw new Error("Please select a valid donation amount");
       }
 
+      if (!donorEmail) {
+        throw new Error("Please provide your email address");
+      }
+
       console.log("[Donate] Creating payment intent");
       const { data: stripeData, error: stripeError } = await supabase.functions.invoke('create-payment-intent', {
         body: { amount, currency: 'usd' }
@@ -97,7 +97,11 @@ const Donate = () => {
             amount,
             currency: 'usd',
             status: 'pending',
-            payment_intent_id: stripeData.id
+            payment_intent_id: stripeData.id,
+            donor_name: isAnonymous ? null : donorName,
+            donor_email: donorEmail,
+            message: message || null,
+            is_anonymous: isAnonymous
           }
         ]);
 
@@ -134,7 +138,7 @@ const Donate = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
-              className="md:col-span-2"
+              className="md:col-span-2 space-y-6"
             >
               <DonateForm
                 onAmountChange={handleAmountSelect}
@@ -143,6 +147,17 @@ const Donate = () => {
                 onCustomAmountChange={handleCustomAmountChange}
                 onSubmit={handleDonation}
                 isProcessing={isProcessing}
+              />
+              
+              <DonorInformation
+                donorName={donorName}
+                donorEmail={donorEmail}
+                isAnonymous={isAnonymous}
+                message={message}
+                onNameChange={setDonorName}
+                onEmailChange={setDonorEmail}
+                onAnonymousChange={setIsAnonymous}
+                onMessageChange={setMessage}
               />
             </motion.div>
 
@@ -162,4 +177,3 @@ const Donate = () => {
 };
 
 export default Donate;
-

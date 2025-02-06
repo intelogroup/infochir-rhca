@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface DonationSummaryProps {
@@ -5,6 +6,9 @@ interface DonationSummaryProps {
 }
 
 export const DonationSummary = ({ amount }: DonationSummaryProps) => {
+  const processingFee = amount * 0.029 + 0.30; // Stripe's standard fee
+  const total = amount + processingFee;
+
   return (
     <Card className="shadow-lg sticky top-24 backdrop-blur-sm bg-white/80 border-gray-100/20">
       <CardHeader>
@@ -14,29 +18,32 @@ export const DonationSummary = ({ amount }: DonationSummaryProps) => {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex justify-between">
-          <span className="text-gray-600">Donation</span>
-          <span className="font-medium">${amount}</span>
+          <span className="text-gray-600">Donation Amount</span>
+          <span className="font-medium">${amount.toFixed(2)}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-gray-600">Processing Fee</span>
-          <span className="font-medium">${(amount * 0.029).toFixed(2)}</span>
+          <span className="font-medium">${processingFee.toFixed(2)}</span>
         </div>
         <div className="border-t pt-4">
           <div className="flex justify-between font-semibold">
             <span>Total</span>
-            <span>${(amount * 1.029).toFixed(2)}</span>
+            <span>${total.toFixed(2)}</span>
           </div>
         </div>
       </CardContent>
       <CardFooter className="text-sm text-gray-500 bg-gradient-to-b from-secondary/5 to-primary/5 rounded-b-lg">
         <div className="space-y-2 w-full">
-          <p className="font-medium text-primary">Why donate?</p>
+          <p className="font-medium text-primary">Your Impact</p>
           <ul className="list-disc list-inside space-y-1">
             <li>Support medical research in Haiti</li>
             <li>Improve healthcare quality</li>
             <li>Train the next generation of doctors</li>
             <li>Contribute to medical innovation</li>
           </ul>
+          <p className="text-xs mt-4">
+            Your donation may be tax-deductible. You will receive a receipt via email.
+          </p>
         </div>
       </CardFooter>
     </Card>
