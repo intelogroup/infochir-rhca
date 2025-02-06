@@ -1,30 +1,40 @@
 
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
 
 export const useScrollToTop = () => {
-  const location = useLocation();
-  
   useEffect(() => {
-    try {
-      console.log("[useScrollToTop] Current path:", location.pathname);
-      console.log("[useScrollToTop] Attempting to scroll to top");
-      
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-      
-      console.log("[useScrollToTop] Successfully scrolled to top");
-    } catch (error) {
-      console.error("[useScrollToTop] Error occurred:", error);
-      // Fallback to simpler scroll if smooth scroll fails
+    const performScroll = () => {
       try {
-        window.scrollTo(0, 0);
-        console.log("[useScrollToTop] Used fallback scroll");
-      } catch (fallbackError) {
-        console.error("[useScrollToTop] Fallback scroll failed:", fallbackError);
+        console.log("[useScrollToTop] Attempting to scroll to top");
+        
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+        
+        console.log("[useScrollToTop] Successfully scrolled to top");
+      } catch (error) {
+        console.error("[useScrollToTop] Smooth scroll failed:", error);
+        // Fallback to instant scroll
+        try {
+          window.scrollTo(0, 0);
+          console.log("[useScrollToTop] Used fallback scroll");
+        } catch (fallbackError) {
+          console.error("[useScrollToTop] Fallback scroll failed:", fallbackError);
+        }
       }
-    }
-  }, [location.pathname]); // Re-run on route change
+    };
+
+    // Execute scroll on mount
+    performScroll();
+
+    // Listen for route changes via URL
+    const handleRouteChange = () => {
+      console.log("[useScrollToTop] Route change detected");
+      performScroll();
+    };
+
+    window.addEventListener('popstate', handleRouteChange);
+    return () => window.removeEventListener('popstate', handleRouteChange);
+  }, []);
 };
