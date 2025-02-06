@@ -2,6 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Article } from "../types";
+import { toast } from "sonner";
 
 const PAGE_SIZE = 10;
 
@@ -43,43 +44,57 @@ export const useArticlesQuery = (page = 0) => {
   return useQuery({
     queryKey: ["articles", page],
     queryFn: async () => {
-      console.log('Fetching articles for page:', page);
+      console.log('Starting articles fetch for page:', page);
       
       const start = page * PAGE_SIZE;
       const end = start + PAGE_SIZE - 1;
 
-      // Updated query to properly join with members table through article_authors
-      const { data, error, count } = await supabase
-        .from("articles")
-        .select(`
-          *,
-          article_authors!inner (
-            member:members!inner (
-              name
+      console.log('Executing Supabase query with range:', { start, end });
+
+      try {
+        // Updated query to properly join with members table through article_authors
+        const { data, error, count } = await supabase
+          .from("articles")
+          .select(`
+            *,
+            article_authors (
+              member:members (
+                name
+              )
             )
-          )
-        `, { count: 'exact' })
-        .range(start, end)
-        .order("publication_date", { ascending: false });
+          `, { count: 'exact' })
+          .range(start, end)
+          .order("publication_date", { ascending: false });
 
-      if (error) {
-        console.error("Error fetching articles:", error);
-        throw error;
+        console.log('Supabase response:', { data, error, count });
+
+        if (error) {
+          console.error("Supabase query error:", error);
+          toast.error("Erreur lors du chargement des articles");
+          throw error;
+        }
+
+        if (!data) {
+          console.log('No data returned from query');
+          return { articles: [], totalPages: 0 };
+        }
+
+        console.log('Raw data from Supabase:', data);
+        const mappedArticles = data.map((article) => mapDatabaseArticleToArticle(article));
+        const totalPages = Math.ceil((count || 0) / PAGE_SIZE);
+
+        console.log('Final mapped articles:', mappedArticles);
+        console.log('Total pages calculated:', totalPages);
+
+        return { articles: mappedArticles, totalPages };
+      } catch (err) {
+        console.error("Error in useArticlesQuery:", err);
+        toast.error("Une erreur est survenue lors du chargement des articles");
+        throw err;
       }
-
-      if (!data) {
-        console.log('No data returned from query');
-        return { articles: [], totalPages: 0 };
-      }
-
-      console.log('Raw data from Supabase:', data);
-      const mappedArticles = data.map((article) => mapDatabaseArticleToArticle(article));
-      const totalPages = Math.ceil((count || 0) / PAGE_SIZE);
-
-      console.log('Final mapped articles:', mappedArticles);
-      return { articles: mappedArticles, totalPages };
     },
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
     gcTime: 30 * 60 * 1000, // Keep inactive data for 30 minutes
+    retry: 2, // Retry failed requests twice
   });
 };

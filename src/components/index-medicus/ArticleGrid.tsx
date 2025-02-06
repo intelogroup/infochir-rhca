@@ -1,3 +1,4 @@
+
 import { SearchBar } from "./SearchBar";
 import { ArticleContent } from "./ArticleContent";
 import { useArticlesState } from "./hooks/useArticlesState";
@@ -6,7 +7,8 @@ import { VirtualizedArticleList } from "./VirtualizedArticleList";
 import { memo, useState, Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, AlertCircle, Loader2 } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface ArticleGridProps {
   viewMode?: "grid" | "table";
@@ -20,9 +22,25 @@ const LoadingSkeleton = () => (
   </div>
 );
 
+const ErrorDisplay = ({ error }: { error: Error }) => (
+  <Alert variant="destructive">
+    <AlertCircle className="h-4 w-4" />
+    <AlertTitle>Erreur</AlertTitle>
+    <AlertDescription>
+      Une erreur est survenue lors du chargement des articles. 
+      {error.message}
+    </AlertDescription>
+  </Alert>
+);
+
 const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
+  console.log('ArticleGrid rendering with viewMode:', viewMode);
+  
   const [currentPage, setCurrentPage] = useState(0);
-  const { data, isLoading } = useArticlesQuery(currentPage);
+  const { data, isLoading, error } = useArticlesQuery(currentPage);
+  
+  console.log('ArticleGrid query state:', { isLoading, error, hasData: !!data });
+  
   const articles = data?.articles || [];
   const totalPages = data?.totalPages || 0;
 
@@ -72,8 +90,31 @@ const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
     setCurrentPage((prev) => Math.min(totalPages - 1, prev + 1));
   };
 
+  if (error) {
+    return (
+      <div className="space-y-4">
+        <ErrorDisplay error={error as Error} />
+        <Button 
+          onClick={() => window.location.reload()}
+          variant="outline"
+          className="mx-auto block"
+        >
+          Réessayer
+        </Button>
+      </div>
+    );
+  }
+
   if (isLoading) {
-    return <LoadingSkeleton />;
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-center gap-2 text-primary">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          <span>Chargement des articles...</span>
+        </div>
+        <LoadingSkeleton />
+      </div>
+    );
   }
 
   return (
