@@ -6,9 +6,7 @@ import { visualizer } from 'rollup-plugin-visualizer';
 export default defineConfig(({ mode }) => ({
   plugins: [
     react({
-      // Enable better error overlay in development
-      devTools: true,
-      // Add better error reporting
+      // Add better error reporting and development features
       swcOptions: {
         jsc: {
           transform: {
