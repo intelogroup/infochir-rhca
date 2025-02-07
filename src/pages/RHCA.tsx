@@ -1,3 +1,5 @@
+
+import React from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { RhcaGrid } from "@/components/rhca/RhcaGrid";
 import { BackToTop } from "@/components/navigation/BackToTop";
