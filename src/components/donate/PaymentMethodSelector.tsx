@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { DollarSign } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -15,6 +15,11 @@ export const PaymentMethodSelector = ({
   isProcessing
 }: PaymentMethodSelectorProps) => {
   const [amount, setAmount] = useState("");
+
+  // Reset amount when component mounts
+  useEffect(() => {
+    setAmount("");
+  }, []);
 
   const handleSubmit = () => {
     onSubmit();

@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { PaymentMethodSelector } from "./PaymentMethodSelector";
@@ -23,6 +23,14 @@ export const DonateForm = ({
   const [donorEmail, setDonorEmail] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [message, setMessage] = useState("");
+
+  // Reset form state when component mounts
+  useEffect(() => {
+    setDonorName("");
+    setDonorEmail("");
+    setIsAnonymous(false);
+    setMessage("");
+  }, []);
 
   const handleSubmit = async () => {
     try {
