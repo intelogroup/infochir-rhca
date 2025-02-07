@@ -1,10 +1,13 @@
+
+export type ArticleSource = "RHCA" | "IGM" | "ADC";
+
 export interface Article {
   id: string;
   title: string;
   authors: string[];
   date: string;
   category: string;
-  source: "RHCA" | "IGM" | "ADC";
+  source: ArticleSource;
   abstract: string;
   tags: string[];
   imageUrl?: string;
@@ -12,6 +15,7 @@ export interface Article {
   citations?: number;
   pdfUrl?: string;
   downloads?: number;
+  shares?: number;
 }
 
 export interface SearchFilters {
