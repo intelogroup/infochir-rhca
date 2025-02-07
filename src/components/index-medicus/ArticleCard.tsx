@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from "lucide-react";
 import { Article } from "./types";
@@ -7,6 +8,8 @@ import { ArticleMetadata } from "./article/ArticleMetadata";
 import { ArticleActions } from "./article/ArticleActions";
 import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
 import { toast } from "@/hooks/use-toast";
+import { useState } from "react";
+import { ArticleModal } from "./article/ArticleModal";
 
 interface ArticleCardProps {
   article: Article;
@@ -15,6 +18,8 @@ interface ArticleCardProps {
 }
 
 export const ArticleCard = ({ article, onTagClick, selectedTags }: ArticleCardProps) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const generateCitation = (format: 'APA' | 'MLA' | 'Chicago' | 'Harvard') => {
     const year = new Date(article.date).getFullYear();
     const authors = article.authors.join(", ");
@@ -53,63 +58,74 @@ export const ArticleCard = ({ article, onTagClick, selectedTags }: ArticleCardPr
   };
 
   return (
-    <Card className="hover:shadow-lg transition-shadow overflow-hidden group rounded-3xl">
-      <div className="flex flex-col md:flex-row">
-        {article.imageUrl ? (
-          <div className="md:w-48 h-48 md:h-auto relative overflow-hidden">
-            <ImageOptimizer 
-              src={article.imageUrl}
-              alt={article.title}
-              className="w-full h-full object-cover"
-              width={192}
-              height={192}
-            />
-          </div>
-        ) : (
-          <div className="md:w-48 h-48 md:h-auto bg-gradient-to-br from-primary/5 to-secondary/5 flex items-center justify-center">
-            <User className="h-12 w-12 text-primary/20" />
-          </div>
-        )}
-        <div className="flex-1">
-          <CardHeader>
-            <div className="flex justify-between items-start gap-4">
-              <div>
-                <CardTitle className="text-xl mb-2 hover:text-primary transition-colors">
-                  {article.title}
-                </CardTitle>
-                <ArticleMetadata 
-                  authors={article.authors}
-                  date={article.date}
-                  views={article.views}
-                  citations={article.citations}
+    <>
+      <Card 
+        className="hover:shadow-lg transition-shadow overflow-hidden group rounded-3xl cursor-pointer"
+        onClick={() => setIsModalOpen(true)}
+      >
+        <div className="flex flex-col md:flex-row">
+          {article.imageUrl ? (
+            <div className="md:w-48 h-48 md:h-auto relative overflow-hidden">
+              <ImageOptimizer 
+                src={article.imageUrl}
+                alt={article.title}
+                className="w-full h-full object-cover"
+                width={192}
+                height={192}
+              />
+            </div>
+          ) : (
+            <div className="md:w-48 h-48 md:h-auto bg-gradient-to-br from-primary/5 to-secondary/5 flex items-center justify-center">
+              <User className="h-12 w-12 text-primary/20" />
+            </div>
+          )}
+          <div className="flex-1">
+            <CardHeader>
+              <div className="flex justify-between items-start gap-4">
+                <div>
+                  <CardTitle className="text-xl mb-2 hover:text-primary transition-colors">
+                    {article.title}
+                  </CardTitle>
+                  <ArticleMetadata 
+                    authors={article.authors}
+                    date={article.date}
+                    views={article.views}
+                    citations={article.citations}
+                  />
+                </div>
+                <ArticleCategories 
+                  source={article.source}
+                  category={article.category}
                 />
               </div>
-              <ArticleCategories 
-                source={article.source}
-                category={article.category}
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600 mb-4 line-clamp-2">
+                {article.abstract}
+              </p>
+              <div className="mb-4">
+                <ArticleTags 
+                  tags={article.tags}
+                  onTagClick={onTagClick}
+                  selectedTags={selectedTags}
+                />
+              </div>
+              <ArticleActions 
+                title={article.title}
+                pdfUrl={article.pdfUrl}
+                onCitation={generateCitation}
+                onShare={handleShare}
               />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-600 mb-4 line-clamp-2">
-              {article.abstract}
-            </p>
-            <div className="mb-4">
-              <ArticleTags 
-                tags={article.tags}
-                onTagClick={onTagClick}
-                selectedTags={selectedTags}
-              />
-            </div>
-            <ArticleActions 
-              title={article.title}
-              pdfUrl={article.pdfUrl}
-              onCitation={generateCitation}
-              onShare={handleShare}
-            />
-          </CardContent>
+            </CardContent>
+          </div>
         </div>
-      </div>
-    </Card>
+      </Card>
+
+      <ArticleModal
+        article={article}
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+    </>
   );
 };
