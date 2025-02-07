@@ -1,7 +1,8 @@
+
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { LayoutGrid, List, BookOpen, MessageCircle, Users, Check } from "lucide-react";
+import { LayoutGrid, List } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { IssuesGrid } from "@/components/igm/IssuesGrid";
