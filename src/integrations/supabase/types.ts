@@ -273,6 +273,116 @@ export type Database = {
         }
         Relationships: []
       }
+      rhca_articles: {
+        Row: {
+          abstract: string
+          authors: string[] | null
+          category: string | null
+          citations: number | null
+          created_at: string | null
+          downloads: number | null
+          id: string
+          image_url: string | null
+          page_number: string | null
+          pdf_url: string | null
+          publication_date: string | null
+          shares: number | null
+          specialty: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+          views: number | null
+          volume_id: string | null
+        }
+        Insert: {
+          abstract: string
+          authors?: string[] | null
+          category?: string | null
+          citations?: number | null
+          created_at?: string | null
+          downloads?: number | null
+          id?: string
+          image_url?: string | null
+          page_number?: string | null
+          pdf_url?: string | null
+          publication_date?: string | null
+          shares?: number | null
+          specialty?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+          views?: number | null
+          volume_id?: string | null
+        }
+        Update: {
+          abstract?: string
+          authors?: string[] | null
+          category?: string | null
+          citations?: number | null
+          created_at?: string | null
+          downloads?: number | null
+          id?: string
+          image_url?: string | null
+          page_number?: string | null
+          pdf_url?: string | null
+          publication_date?: string | null
+          shares?: number | null
+          specialty?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+          views?: number | null
+          volume_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rhca_articles_volume_id_fkey"
+            columns: ["volume_id"]
+            isOneToOne: false
+            referencedRelation: "rhca_volumes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rhca_volumes: {
+        Row: {
+          article_count: number | null
+          cover_image: string | null
+          created_at: string | null
+          date: string
+          description: string | null
+          download_count: number | null
+          id: string
+          share_count: number | null
+          updated_at: string | null
+          volume: number
+        }
+        Insert: {
+          article_count?: number | null
+          cover_image?: string | null
+          created_at?: string | null
+          date?: string
+          description?: string | null
+          download_count?: number | null
+          id?: string
+          share_count?: number | null
+          updated_at?: string | null
+          volume: number
+        }
+        Update: {
+          article_count?: number | null
+          cover_image?: string | null
+          created_at?: string | null
+          date?: string
+          description?: string | null
+          download_count?: number | null
+          id?: string
+          share_count?: number | null
+          updated_at?: string | null
+          volume?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
