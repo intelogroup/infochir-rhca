@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import { DonationAmountSelector } from "./DonationAmountSelector";
 import { PaymentMethodSelector } from "./PaymentMethodSelector";
 import { AmountDialog } from "./form/AmountDialog";
-import { SubmitButton } from "./form/SubmitButton";
 
 interface DonateFormProps {
   onAmountChange: (amount: number) => void;
@@ -25,10 +24,7 @@ export const DonateForm = ({
   onSubmit,
   isProcessing
 }: DonateFormProps) => {
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("card");
   const [showAmountDialog, setShowAmountDialog] = useState(false);
-  const [animationKey, setAnimationKey] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
 
   const validateDonation = () => {
     if (!selectedAmount && !customAmount) {
@@ -44,28 +40,13 @@ export const DonateForm = ({
     return true;
   };
 
-  const triggerAnimation = () => {
-    setAnimationKey(prev => prev + 1);
-    setIsAnimating(true);
-    setTimeout(() => {
-      setIsAnimating(false);
-    }, 5000);
-  };
-
   const handleSubmit = async () => {
     if (!validateDonation()) return;
     
     try {
-      triggerAnimation();
-      await onSubmit(selectedPaymentMethod);
+      await onSubmit('card');
     } catch (error: any) {
       toast.error(error.message || "Failed to process donation");
-    }
-  };
-
-  const handleInactiveButtonClick = () => {
-    if (!selectedAmount && !customAmount) {
-      setShowAmountDialog(true);
     }
   };
 
@@ -94,27 +75,16 @@ export const DonateForm = ({
       <Card className="shadow-lg backdrop-blur-sm bg-white/80 border-gray-100/20 hover:shadow-xl transition-shadow duration-300">
         <CardHeader>
           <CardTitle className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
-            Payment Method
+            Complete Donation
           </CardTitle>
-          <CardDescription>Choose your preferred payment method</CardDescription>
+          <CardDescription>You will be redirected to our secure payment provider</CardDescription>
         </CardHeader>
         <CardContent>
           <PaymentMethodSelector
-            selectedPaymentMethod={selectedPaymentMethod}
-            onPaymentMethodChange={setSelectedPaymentMethod}
+            onSubmit={handleSubmit}
+            isProcessing={isProcessing}
           />
         </CardContent>
-        <CardFooter className="relative">
-          <SubmitButton
-            isProcessing={isProcessing}
-            selectedAmount={selectedAmount}
-            customAmount={customAmount}
-            handleInactiveButtonClick={handleInactiveButtonClick}
-            handleSubmit={handleSubmit}
-            animationKey={animationKey}
-            isAnimating={isAnimating}
-          />
-        </CardFooter>
       </Card>
 
       <AmountDialog 
