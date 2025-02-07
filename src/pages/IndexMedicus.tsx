@@ -1,3 +1,4 @@
+
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { ArticleGrid } from "@/components/index-medicus/ArticleGrid";
 import { Button } from "@/components/ui/button";
