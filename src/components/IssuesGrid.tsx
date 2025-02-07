@@ -1,4 +1,4 @@
-import { SearchAndSort } from "./issues/SearchAndSort";
+
 import { IssuesContent } from "./issues/IssuesContent";
 import { useIssuesState } from "./issues/hooks/useIssuesState";
 import { mockIssues } from "./igm/data/mockIssues";
@@ -11,8 +11,6 @@ interface IssuesGridProps {
 
 export const IssuesGrid = ({ viewMode = "grid" }: IssuesGridProps) => {
   const {
-    searchTerm,
-    setSearchTerm,
     sortBy,
     setSortBy,
     isLoading,
@@ -26,15 +24,7 @@ export const IssuesGrid = ({ viewMode = "grid" }: IssuesGridProps) => {
   };
 
   return (
-    <div className="space-y-4 px-4">
-      <SearchAndSort
-        searchTerm={searchTerm}
-        sortBy={sortBy}
-        onSearch={setSearchTerm}
-        onSort={handleSortChange}
-        sortOptions={SORT_OPTIONS}
-      />
-      
+    <div className="space-y-4 px-4">      
       <IssuesContent
         viewMode={viewMode}
         sortedIssues={sortedIssues}
