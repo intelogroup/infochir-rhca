@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 interface PaymentMethodSelectorProps {
-  onSubmit: () => void;
+  onSubmit: (amount: number) => void;
   isProcessing: boolean;
 }
 
@@ -22,7 +22,10 @@ export const PaymentMethodSelector = ({
   }, []);
 
   const handleSubmit = () => {
-    onSubmit();
+    const numericAmount = parseFloat(amount);
+    if (numericAmount > 0) {
+      onSubmit(numericAmount);
+    }
   };
 
   return (

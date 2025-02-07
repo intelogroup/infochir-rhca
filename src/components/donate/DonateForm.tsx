@@ -11,7 +11,7 @@ interface DonateFormProps {
     email: string;
     isAnonymous: boolean;
     message: string;
-  }) => Promise<void>;
+  }, amount: number) => Promise<void>;
   isProcessing: boolean;
 }
 
@@ -32,7 +32,7 @@ export const DonateForm = ({
     setMessage("");
   }, []);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (amount: number) => {
     try {
       if (!donorEmail) {
         toast.error("Please provide your email address");
@@ -44,7 +44,7 @@ export const DonateForm = ({
         email: donorEmail,
         isAnonymous,
         message
-      });
+      }, amount);
     } catch (error: any) {
       toast.error(error.message || "Failed to process donation");
     }

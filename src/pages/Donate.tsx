@@ -37,7 +37,8 @@ const Donate = () => {
       email: string;
       isAnonymous: boolean;
       message: string;
-    }
+    },
+    amount: number
   ) => {
     console.log("[Donate] Processing donation with Stripe Checkout");
     try {
@@ -46,7 +47,7 @@ const Donate = () => {
       // Create Stripe Checkout session
       const { data: sessionData, error: sessionError } = await supabase.functions.invoke('stripe-checkout', {
         body: {
-          amount: 0, // Let Stripe Checkout handle amount selection
+          amount,
           currency: 'usd',
           donor_info: {
             name: donorInfo.isAnonymous ? null : donorInfo.name,
