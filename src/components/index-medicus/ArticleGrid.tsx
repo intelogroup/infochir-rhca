@@ -5,33 +5,13 @@ import { useArticlesState } from "./hooks/useArticlesState";
 import { useArticlesQuery } from "./hooks/useArticlesQuery";
 import { VirtualizedArticleList } from "./VirtualizedArticleList";
 import { memo, useState, Suspense } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, AlertCircle, Loader2 } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { LoadingSpinner, LoadingSkeleton } from "./components/LoadingState";
+import { ErrorDisplay } from "./components/ErrorDisplay";
+import { Pagination } from "./components/Pagination";
 
 interface ArticleGridProps {
   viewMode?: "grid" | "table";
 }
-
-const LoadingSkeleton = () => (
-  <div className="space-y-4">
-    {Array.from({ length: 5 }).map((_, i) => (
-      <Skeleton key={i} className="w-full h-32" />
-    ))}
-  </div>
-);
-
-const ErrorDisplay = ({ error }: { error: Error }) => (
-  <Alert variant="destructive">
-    <AlertCircle className="h-4 w-4" />
-    <AlertTitle>Erreur</AlertTitle>
-    <AlertDescription>
-      Une erreur est survenue lors du chargement des articles. 
-      {error.message}
-    </AlertDescription>
-  </Alert>
-);
 
 const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
   console.log('ArticleGrid rendering with viewMode:', viewMode);
@@ -83,30 +63,11 @@ const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
   };
 
   if (error) {
-    return (
-      <div className="space-y-4">
-        <ErrorDisplay error={error as Error} />
-        <Button 
-          onClick={() => window.location.reload()}
-          variant="outline"
-          className="mx-auto block"
-        >
-          Réessayer
-        </Button>
-      </div>
-    );
+    return <ErrorDisplay error={error as Error} />;
   }
 
   if (isLoading) {
-    return (
-      <div className="space-y-4">
-        <div className="flex items-center justify-center gap-2 text-primary">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          <span>Chargement des articles...</span>
-        </div>
-        <LoadingSkeleton />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
@@ -160,31 +121,11 @@ const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
         )}
       </Suspense>
 
-      {totalPages > 1 && (
-        <div className="flex justify-center gap-4 mt-6">
-          <Button
-            variant="outline"
-            onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
-            disabled={currentPage === 0}
-            className="gap-2"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Previous
-          </Button>
-          <span className="flex items-center">
-            Page {currentPage + 1} of {totalPages}
-          </span>
-          <Button
-            variant="outline"
-            onClick={() => setCurrentPage((prev) => Math.min(totalPages - 1, prev + 1))}
-            disabled={currentPage >= totalPages - 1}
-            className="gap-2"
-          >
-            Next
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-      )}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 });
