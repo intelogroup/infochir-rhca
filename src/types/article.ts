@@ -1,3 +1,4 @@
+
 export interface Article {
   id: string;
   title: string;
@@ -6,6 +7,7 @@ export interface Article {
   publicationDate: Date;
   category: string;
   tags: string[];
+  shares?: number;  // Added shares as optional property
 }
 
 export type SortOption = "latest" | "title" | "author" | "category";

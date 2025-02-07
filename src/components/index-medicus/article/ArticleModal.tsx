@@ -61,8 +61,8 @@ export const ArticleModal = ({ article, open, onClose }: ArticleModalProps) => {
         title: article.title,
         date: article.date,
         abstract: article.abstract,
-        downloads: article.downloads,
-        shares: 0,
+        downloads: article.downloads || 0,
+        shares: article.shares || 0,
         pdfUrl: article.pdfUrl,
         coverImage: article.imageUrl,
       }}
