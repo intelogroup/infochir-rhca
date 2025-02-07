@@ -54,41 +54,36 @@ export const IssuesGridContent = ({
     );
   }
 
-  if (viewMode === "grid") {
-    return (
-      <motion.div 
-        className="space-y-8"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.3 }}
-      >
-        <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-lg border border-gray-100 shadow-sm">
-          <FileText className="h-5 w-5 text-primary/70" aria-hidden="true" />
-          <span className="text-sm text-gray-600">
-            {sortedIssues.length} numéro{sortedIssues.length !== 1 ? 's' : ''} trouvé{sortedIssues.length !== 1 ? 's' : ''}
-          </span>
+  return (
+    <motion.div 
+      className="space-y-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-lg border border-gray-100 shadow-sm">
+        <FileText className="h-5 w-5 text-primary/70" aria-hidden="true" />
+        <span className="text-sm text-gray-600">
+          {sortedIssues.length} numéro{sortedIssues.length !== 1 ? 's' : ''} trouvé{sortedIssues.length !== 1 ? 's' : ''}
+        </span>
+      </div>
+      
+      <YearGroupList 
+        issuesByYear={issuesByYear}
+        sortedYears={sortedYears}
+      />
+
+      {hasMore && (
+        <div className="flex justify-center mt-8">
+          <Button 
+            variant="outline"
+            onClick={onLoadMore}
+            className="gap-2"
+          >
+            Charger plus
+          </Button>
         </div>
-        
-        <YearGroupList 
-          issuesByYear={issuesByYear}
-          sortedYears={sortedYears}
-        />
-
-        {hasMore && (
-          <div className="flex justify-center mt-8">
-            <Button 
-              variant="outline"
-              onClick={onLoadMore}
-              className="gap-2"
-            >
-              Charger plus
-            </Button>
-          </div>
-        )}
-      </motion.div>
-    );
-  }
-
-  return <IssuesTable issues={sortedIssues} />;
+      )}
+    </motion.div>
+  );
 };
-

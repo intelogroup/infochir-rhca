@@ -7,7 +7,12 @@ export interface Article {
   publicationDate: Date;
   category: string;
   tags: string[];
-  shares?: number;  // Added shares as optional property
+  shares?: number;
+  downloads?: number;
+  date?: Date;
+  source?: string;
+  pdfUrl?: string;
+  imageUrl?: string;
 }
 
 export type SortOption = "latest" | "title" | "author" | "category";

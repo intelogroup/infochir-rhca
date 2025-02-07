@@ -1,3 +1,4 @@
+
 import { SearchAndSort } from "@/components/issues/SearchAndSort";
 import { IssuesGridContent } from "@/components/igm/components/IssuesGridContent";
 import { useIssuesState } from "../../hooks/useIssuesState";
@@ -40,27 +41,6 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <motion.div 
-        className="bg-white rounded-lg sm:rounded-xl border border-gray-200 p-4 sm:p-6 shadow-sm"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <SearchAndSort
-          searchTerm={searchTerm}
-          sortBy={sortBy}
-          onSearch={setSearchTerm}
-          onSort={setSortBy}
-          sortOptions={SORT_OPTIONS}
-          dateRange={dateRange}
-          onDateRangeChange={setDateRange}
-          selectedCategories={selectedCategories}
-          onCategoryChange={setSelectedCategories}
-          availableCategories={availableCategories}
-          disabled={isLoading}
-        />
-      </motion.div>
-      
       <div className="px-2 sm:px-4">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
