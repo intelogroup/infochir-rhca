@@ -3,7 +3,6 @@ import { useState } from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { motion } from "framer-motion";
 import { DonateHeader } from "@/components/donate/DonateHeader";
-import { DonationSummary } from "@/components/donate/DonationSummary";
 import { DonateForm } from "@/components/donate/DonateForm";
 import { DonorInformation } from "@/components/donate/DonorInformation";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
@@ -30,36 +29,17 @@ const BackButton = () => {
 const Donate = () => {
   console.log("[Donate] Component mounting");
   useScrollToTop();
-
-  const [selectedAmount, setSelectedAmount] = useState<number>(0);
-  const [customAmount, setCustomAmount] = useState<string>("");
+  
   const [isProcessing, setIsProcessing] = useState(false);
   const [donorName, setDonorName] = useState("");
   const [donorEmail, setDonorEmail] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [message, setMessage] = useState("");
 
-  const handleAmountSelect = (amount: number) => {
-    console.log("[Donate] Amount selected:", amount);
-    setSelectedAmount(amount);
-    setCustomAmount("");
-  };
-
-  const handleCustomAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("[Donate] Custom amount changed:", e.target.value);
-    setCustomAmount(e.target.value);
-    setSelectedAmount(0);
-  };
-
   const handleDonation = async (paymentMethod: string) => {
     console.log("[Donate] Processing donation with Stripe Checkout");
     try {
       setIsProcessing(true);
-      const amount = customAmount ? parseFloat(customAmount) : selectedAmount;
-      
-      if (!amount || amount <= 0) {
-        throw new Error("Please select a valid donation amount");
-      }
 
       if (!donorEmail) {
         throw new Error("Please provide your email address");
@@ -68,7 +48,7 @@ const Donate = () => {
       // Create Stripe Checkout session
       const { data: sessionData, error: sessionError } = await supabase.functions.invoke('stripe-checkout', {
         body: {
-          amount,
+          amount: 0, // Let Stripe Checkout handle amount selection
           currency: 'usd',
           donor_info: {
             name: isAnonymous ? null : donorName,
@@ -95,8 +75,6 @@ const Donate = () => {
     }
   };
 
-  const currentAmount = customAmount ? parseFloat(customAmount) : selectedAmount;
-
   return (
     <MainLayout>
       <div className="relative min-h-screen bg-gradient-to-b from-gray-50 to-white pt-[50px]">
@@ -107,18 +85,14 @@ const Donate = () => {
           <BackButton />
           <DonateHeader />
           
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid gap-8">
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
-              className="md:col-span-2 space-y-6"
+              className="space-y-6"
             >
               <DonateForm
-                onAmountChange={handleAmountSelect}
-                selectedAmount={selectedAmount}
-                customAmount={customAmount}
-                onCustomAmountChange={handleCustomAmountChange}
                 onSubmit={handleDonation}
                 isProcessing={isProcessing}
               />
@@ -133,14 +107,6 @@ const Donate = () => {
                 onAnonymousChange={setIsAnonymous}
                 onMessageChange={setMessage}
               />
-            </motion.div>
-
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <DonationSummary amount={currentAmount} />
             </motion.div>
           </div>
         </div>
