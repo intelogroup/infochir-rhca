@@ -26,12 +26,15 @@ serve(async (req) => {
 
   try {
     const { amount, currency, donor_info } = await req.json();
-    console.log('Creating checkout session with:', { amount, currency, donor_info });
+    console.log('[Stripe Checkout] Request received:', { amount, currency });
+    console.log('[Stripe Checkout] Donor info:', donor_info);
 
     // Validate amount
     if (!amount || amount <= 0) {
       throw new Error('Invalid donation amount');
     }
+
+    console.log('[Stripe Checkout] Creating Stripe session with amount:', amount);
 
     // Create Stripe Checkout session
     const session = await stripe.checkout.sessions.create({
@@ -58,33 +61,39 @@ serve(async (req) => {
       }],
     });
 
-    console.log('Checkout session created:', session.id);
+    console.log('[Stripe Checkout] Session created:', session.id);
 
-    // Create pending donation record
+    // Create donation record - log the exact data being inserted
+    const donationData = {
+      amount,
+      currency,
+      status: 'pending',
+      checkout_session_id: session.id,
+      donor_name: donor_info.is_anonymous ? null : donor_info.name,
+      donor_email: donor_info.email,
+      message: donor_info.message,
+      is_anonymous: donor_info.is_anonymous
+    };
+
+    console.log('[Stripe Checkout] Creating donation record:', donationData);
+
     const { error: dbError } = await supabase
       .from('donations')
-      .insert([{
-        amount,
-        currency,
-        status: 'pending',
-        checkout_session_id: session.id,
-        donor_name: donor_info.is_anonymous ? null : donor_info.name,
-        donor_email: donor_info.email,
-        message: donor_info.message,
-        is_anonymous: donor_info.is_anonymous
-      }]);
+      .insert([donationData]);
 
     if (dbError) {
-      console.error('Database error:', dbError);
+      console.error('[Stripe Checkout] Database error:', dbError);
       throw dbError;
     }
+
+    console.log('[Stripe Checkout] Donation record created successfully');
 
     return new Response(
       JSON.stringify({ url: session.url }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error('Error:', error);
+    console.error('[Stripe Checkout] Error:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
