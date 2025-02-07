@@ -172,8 +172,8 @@ export type Database = {
           completed_at: string | null
           created_at: string
           currency: string
-          customer_email: string | null
-          customer_name: string | null
+          donor_email: string | null
+          donor_name: string | null
           id: string
           is_anonymous: boolean | null
           message: string | null
@@ -187,8 +187,8 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           currency?: string
-          customer_email?: string | null
-          customer_name?: string | null
+          donor_email?: string | null
+          donor_name?: string | null
           id?: string
           is_anonymous?: boolean | null
           message?: string | null
@@ -202,8 +202,8 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           currency?: string
-          customer_email?: string | null
-          customer_name?: string | null
+          donor_email?: string | null
+          donor_name?: string | null
           id?: string
           is_anonymous?: boolean | null
           message?: string | null
