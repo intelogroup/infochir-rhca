@@ -4,13 +4,11 @@ import { MainLayout } from "@/components/layouts/MainLayout";
 import { motion } from "framer-motion";
 import { DonateHeader } from "@/components/donate/DonateHeader";
 import { DonateForm } from "@/components/donate/DonateForm";
-import { DonorInformation } from "@/components/donate/DonorInformation";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { Toaster } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
 
 const BackButton = () => {
   return (
@@ -31,19 +29,19 @@ const Donate = () => {
   useScrollToTop();
   
   const [isProcessing, setIsProcessing] = useState(false);
-  const [donorName, setDonorName] = useState("");
-  const [donorEmail, setDonorEmail] = useState("");
-  const [isAnonymous, setIsAnonymous] = useState(false);
-  const [message, setMessage] = useState("");
 
-  const handleDonation = async (paymentMethod: string) => {
+  const handleDonation = async (
+    paymentMethod: string, 
+    donorInfo: {
+      name: string;
+      email: string;
+      isAnonymous: boolean;
+      message: string;
+    }
+  ) => {
     console.log("[Donate] Processing donation with Stripe Checkout");
     try {
       setIsProcessing(true);
-
-      if (!donorEmail) {
-        throw new Error("Please provide your email address");
-      }
 
       // Create Stripe Checkout session
       const { data: sessionData, error: sessionError } = await supabase.functions.invoke('stripe-checkout', {
@@ -51,10 +49,10 @@ const Donate = () => {
           amount: 0, // Let Stripe Checkout handle amount selection
           currency: 'usd',
           donor_info: {
-            name: isAnonymous ? null : donorName,
-            email: donorEmail,
-            message,
-            is_anonymous: isAnonymous
+            name: donorInfo.isAnonymous ? null : donorInfo.name,
+            email: donorInfo.email,
+            message: donorInfo.message,
+            is_anonymous: donorInfo.isAnonymous
           }
         }
       });
@@ -69,7 +67,7 @@ const Donate = () => {
 
     } catch (error: any) {
       console.error('[Donate] Payment error:', error);
-      toast.error(error.message || "Failed to process donation");
+      throw error;
     } finally {
       setIsProcessing(false);
     }
@@ -95,17 +93,6 @@ const Donate = () => {
               <DonateForm
                 onSubmit={handleDonation}
                 isProcessing={isProcessing}
-              />
-              
-              <DonorInformation
-                donorName={donorName}
-                donorEmail={donorEmail}
-                isAnonymous={isAnonymous}
-                message={message}
-                onNameChange={setDonorName}
-                onEmailChange={setDonorEmail}
-                onAnonymousChange={setIsAnonymous}
-                onMessageChange={setMessage}
               />
             </motion.div>
           </div>

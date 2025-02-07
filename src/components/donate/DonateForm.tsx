@@ -3,9 +3,15 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { PaymentMethodSelector } from "./PaymentMethodSelector";
+import { DonorInformation } from "./DonorInformation";
 
 interface DonateFormProps {
-  onSubmit: (paymentMethod: string) => Promise<void>;
+  onSubmit: (paymentMethod: string, donorInfo: {
+    name: string;
+    email: string;
+    isAnonymous: boolean;
+    message: string;
+  }) => Promise<void>;
   isProcessing: boolean;
 }
 
@@ -13,9 +19,24 @@ export const DonateForm = ({
   onSubmit,
   isProcessing
 }: DonateFormProps) => {
+  const [donorName, setDonorName] = useState("");
+  const [donorEmail, setDonorEmail] = useState("");
+  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [message, setMessage] = useState("");
+
   const handleSubmit = async () => {
     try {
-      await onSubmit('card');
+      if (!donorEmail) {
+        toast.error("Please provide your email address");
+        return;
+      }
+
+      await onSubmit('card', {
+        name: donorName,
+        email: donorEmail,
+        isAnonymous,
+        message
+      });
     } catch (error: any) {
       toast.error(error.message || "Failed to process donation");
     }
@@ -29,7 +50,18 @@ export const DonateForm = ({
             Support Our Mission
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
+          <DonorInformation
+            donorName={donorName}
+            donorEmail={donorEmail}
+            isAnonymous={isAnonymous}
+            message={message}
+            onNameChange={setDonorName}
+            onEmailChange={setDonorEmail}
+            onAnonymousChange={setIsAnonymous}
+            onMessageChange={setMessage}
+          />
+          
           <PaymentMethodSelector
             onSubmit={handleSubmit}
             isProcessing={isProcessing}
