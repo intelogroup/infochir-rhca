@@ -82,7 +82,7 @@ serve(async (req) => {
     console.log('[Stripe Checkout] Donation record created successfully');
 
     return new Response(
-      JSON.stringify({ url: session.url }),
+      JSON.stringify({ session_id: session.id }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {

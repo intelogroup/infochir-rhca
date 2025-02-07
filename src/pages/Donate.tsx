@@ -9,6 +9,7 @@ import { Toaster } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { stripePromise } from "@/lib/stripe";
 
 const BackButton = () => {
   return (
@@ -63,10 +64,20 @@ const Donate = () => {
         throw sessionError;
       }
 
-      // Use top-level redirect for Stripe Checkout
-      console.log("[Donate] Redirecting to Stripe Checkout:", sessionData?.url);
-      if (sessionData?.url) {
-        window.top.location.href = sessionData.url;
+      // Get Stripe instance
+      const stripe = await stripePromise;
+      if (!stripe) {
+        throw new Error("Stripe failed to initialize");
+      }
+
+      // Redirect to Stripe Checkout using the Stripe instance
+      const { error: redirectError } = await stripe.redirectToCheckout({
+        sessionId: sessionData.session_id
+      });
+
+      if (redirectError) {
+        console.error("[Donate] Redirect error:", redirectError);
+        throw redirectError;
       }
 
     } catch (error: any) {
