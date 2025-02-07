@@ -1,5 +1,6 @@
+
+import React, { useState } from "react";
 import { SearchAndSort } from "@/components/issues/SearchAndSort";
-import { useState } from "react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { LayoutGrid, List } from "lucide-react";
 import { SORT_OPTIONS } from "@/types/sortOptions";
