@@ -29,13 +29,6 @@ serve(async (req) => {
     console.log('[Stripe Checkout] Request received:', { amount, currency });
     console.log('[Stripe Checkout] Donor info:', donor_info);
 
-    // Validate amount
-    if (!amount || amount <= 0) {
-      throw new Error('Invalid donation amount');
-    }
-
-    console.log('[Stripe Checkout] Creating Stripe session with amount:', amount);
-
     // Create Stripe Checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],

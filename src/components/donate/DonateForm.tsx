@@ -1,16 +1,10 @@
 
-import { useState, type ChangeEvent } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign } from "lucide-react";
 import { toast } from "sonner";
 import { PaymentMethodSelector } from "./PaymentMethodSelector";
-import { AmountDialog } from "./form/AmountDialog";
 
 interface DonateFormProps {
-  onAmountChange: (amount: number) => void;
-  selectedAmount: number;
-  customAmount: string;
-  onCustomAmountChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (paymentMethod: string) => Promise<void>;
   isProcessing: boolean;
 }
@@ -19,8 +13,6 @@ export const DonateForm = ({
   onSubmit,
   isProcessing
 }: DonateFormProps) => {
-  const [showAmountDialog, setShowAmountDialog] = useState(false);
-
   const handleSubmit = async () => {
     try {
       await onSubmit('card');
@@ -44,11 +36,6 @@ export const DonateForm = ({
           />
         </CardContent>
       </Card>
-
-      <AmountDialog 
-        open={showAmountDialog} 
-        onOpenChange={setShowAmountDialog}
-      />
     </div>
   );
 };
