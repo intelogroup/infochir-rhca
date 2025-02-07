@@ -10,6 +10,7 @@ const Home = lazy(() => import("@/pages/Home" /* webpackPrefetch: true */));
 const RHCA = lazy(() => import("@/pages/RHCA" /* webpackPrefetch: true */));
 const IGM = lazy(() => import("@/pages/IGM" /* webpackPrefetch: true */));
 const Donate = lazy(() => import("@/pages/Donate" /* webpackPrefetch: true */));
+const DonateSuccess = lazy(() => import("@/pages/donate/DonateSuccess" /* webpackPrefetch: true */));
 const ADC = lazy(() => import("@/pages/ADC" /* webpackPrefetch: true */));
 const IndexMedicus = lazy(() => import("@/pages/IndexMedicus" /* webpackPrefetch: true */));
 
@@ -39,6 +40,7 @@ function App() {
           <Route path="/submission" element={<Submission />} />
           <Route path="/annuaire" element={<Annuaire />} />
           <Route path="/donate" element={<Donate />} />
+          <Route path="/donate/success" element={<DonateSuccess />} />
           <Route path="/jobs" element={<Opportunities />} />
           <Route path="/adc/*" element={<ADC />} />
           <Route path="/index-medicus" element={<IndexMedicus />} />
