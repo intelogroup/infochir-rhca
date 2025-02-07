@@ -63,8 +63,11 @@ const Donate = () => {
         throw sessionError;
       }
 
+      // Use top-level redirect for Stripe Checkout
       console.log("[Donate] Redirecting to Stripe Checkout:", sessionData?.url);
-      window.location.href = sessionData.url;
+      if (sessionData?.url) {
+        window.top.location.href = sessionData.url;
+      }
 
     } catch (error: any) {
       console.error('[Donate] Payment error:', error);
