@@ -82,14 +82,6 @@ const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
     console.timeEnd('Search Operation');
   };
 
-  const handlePreviousPage = () => {
-    setCurrentPage((prev) => Math.max(0, prev - 1));
-  };
-
-  const handleNextPage = () => {
-    setCurrentPage((prev) => Math.min(totalPages - 1, prev + 1));
-  };
-
   if (error) {
     return (
       <div className="space-y-4">
@@ -172,7 +164,7 @@ const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
         <div className="flex justify-center gap-4 mt-6">
           <Button
             variant="outline"
-            onClick={handlePreviousPage}
+            onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
             disabled={currentPage === 0}
             className="gap-2"
           >
@@ -184,7 +176,7 @@ const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
           </span>
           <Button
             variant="outline"
-            onClick={handleNextPage}
+            onClick={() => setCurrentPage((prev) => Math.min(totalPages - 1, prev + 1))}
             disabled={currentPage >= totalPages - 1}
             className="gap-2"
           >
