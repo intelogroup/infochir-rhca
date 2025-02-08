@@ -28,18 +28,18 @@ console.info("[App] Initializing with React Router and Query Client");
 
 root.render(
   <React.StrictMode>
-    <LazyMotion features={domAnimation}>
-      <BrowserRouter>
-        <QueryClientProvider client={queryClient}>
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <LazyMotion features={domAnimation}>
           <AnimatePresence mode="wait">
             <ErrorBoundary>
               <App />
               <Toaster />
             </ErrorBoundary>
           </AnimatePresence>
-        </QueryClientProvider>
-      </BrowserRouter>
-    </LazyMotion>
+        </LazyMotion>
+      </QueryClientProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );
 
