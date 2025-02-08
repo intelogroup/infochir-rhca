@@ -24,7 +24,7 @@ const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
     publicationDate,
     source: dbArticle.source,
     category: dbArticle.category,
-    authors: authorNames,
+    authors: dbArticle.co_authors || [],
     tags: dbArticle.tags || [],
     imageUrl: dbArticle.image_url || undefined,
     views: dbArticle.views || 0,
@@ -66,6 +66,7 @@ export const useArticlesQuery = (page = 0) => {
               author_names
             )
           `, { count: 'exact' })
+          .in('source', ['IGM', 'RHCA', 'ADC'])
           .range(start, end)
           .order("publication_date", { ascending: false });
 
@@ -101,3 +102,4 @@ export const useArticlesQuery = (page = 0) => {
     retry: 2,
   });
 };
+
