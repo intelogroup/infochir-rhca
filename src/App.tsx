@@ -1,4 +1,3 @@
-
 import { Suspense, lazy } from "react";
 import { Routes, Route, useLocation, BrowserRouter } from "react-router-dom";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -8,6 +7,7 @@ import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 import { ToastProvider } from "@/hooks/use-toast";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/react-query";
+import { Toaster } from "@/components/ui/toaster";
 
 // Preload critical routes
 const Home = lazy(() => import("@/pages/Home" /* webpackPrefetch: true */));
@@ -64,6 +64,7 @@ function App() {
           <Suspense fallback={<LoadingSpinner />}>
             <AppRoutes />
           </Suspense>
+          <Toaster />
         </ToastProvider>
       </QueryClientProvider>
     </BrowserRouter>

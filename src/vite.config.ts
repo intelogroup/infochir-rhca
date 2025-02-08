@@ -29,7 +29,9 @@ export default defineConfig(({ mode }) => ({
       '@tanstack/react-query',
       'sonner',
       '@radix-ui/react-dialog',
-      '@radix-ui/react-slot'
+      '@radix-ui/react-slot',
+      '@radix-ui/react-tabs',
+      '@radix-ui/react-toast'
     ]
   },
   optimizeDeps: {
@@ -74,7 +76,6 @@ export default defineConfig(({ mode }) => ({
       overlay: false
     }
   },
-  // Add better error reporting
   esbuild: {
     logOverride: { 'this-is-undefined-in-esm': 'silent' }
   }
