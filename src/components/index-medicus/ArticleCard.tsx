@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from "lucide-react";
-import { Article } from "./types";
+import { Article } from "@/types/article";
 import { ArticleTags } from "./article/ArticleTags";
 import { ArticleCategories } from "./article/ArticleCategories";
 import { ArticleMetadata } from "./article/ArticleMetadata";
@@ -21,7 +21,7 @@ export const ArticleCard = ({ article, onTagClick, selectedTags }: ArticleCardPr
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const generateCitation = (format: 'APA' | 'MLA' | 'Chicago' | 'Harvard') => {
-    const year = new Date(article.date).getFullYear();
+    const year = article.publicationDate.getFullYear();
     const authors = article.authors.join(", ");
     let citation = '';
 
@@ -88,7 +88,7 @@ export const ArticleCard = ({ article, onTagClick, selectedTags }: ArticleCardPr
                   </CardTitle>
                   <ArticleMetadata 
                     authors={article.authors}
-                    date={article.date}
+                    date={article.publicationDate.toISOString()}
                     views={article.views}
                     citations={article.citations}
                   />

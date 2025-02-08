@@ -1,7 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import type { Article } from "../types";
+import type { Article } from "@/types/article";
 import { toast } from "sonner";
 
 const PAGE_SIZE = 10;
@@ -21,13 +21,14 @@ const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
   console.log('Extracted author names:', authorNames);
 
   const pdfUrl = typeof dbArticle.pdf_url === 'string' ? dbArticle.pdf_url : undefined;
+  const publicationDate = new Date(dbArticle.publication_date);
 
   const mappedArticle: Article = {
     id: dbArticle.id,
     title: dbArticle.title,
     abstract: dbArticle.abstract,
     date: dbArticle.publication_date,
-    publicationDate: new Date(dbArticle.publication_date), // Convert to Date object
+    publicationDate,
     source: dbArticle.source,
     category: dbArticle.category,
     authors: authorNames.length > 0 ? authorNames : [],
