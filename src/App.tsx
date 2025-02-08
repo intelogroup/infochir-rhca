@@ -2,7 +2,7 @@
 import { Suspense, lazy } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, domMax, LazyMotion } from "framer-motion";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 
@@ -28,33 +28,35 @@ function App() {
   const location = useLocation();
   
   return (
-    <ErrorBoundary>
-      <MainLayout>
-        <AnimatePresence mode="wait" initial={false}>
-          <Suspense 
-            key={location.pathname}
-            fallback={<LoadingSpinner />}
-          >
-            <Routes location={location}>
-              <Route path="/" element={<Home />} />
-              <Route path="/rhca" element={<RHCA />} />
-              <Route path="/rhca/directives" element={<RHCADirectives />} />
-              <Route path="/igm" element={<IGM />} />
-              <Route path="/igm/directives" element={<IGMDirectives />} />
-              <Route path="/igm/editorial-committee" element={<EditorialCommittee />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/submission" element={<Submission />} />
-              <Route path="/annuaire" element={<Annuaire />} />
-              <Route path="/donate" element={<Donate />} />
-              <Route path="/donate/success" element={<DonateSuccess />} />
-              <Route path="/jobs" element={<Opportunities />} />
-              <Route path="/adc/*" element={<ADC />} />
-              <Route path="/index-medicus" element={<IndexMedicus />} />
-            </Routes>
-          </Suspense>
-        </AnimatePresence>
-      </MainLayout>
-    </ErrorBoundary>
+    <LazyMotion features={domMax}>
+      <ErrorBoundary>
+        <MainLayout>
+          <AnimatePresence mode="wait" initial={false}>
+            <Suspense 
+              key={location.pathname}
+              fallback={<LoadingSpinner />}
+            >
+              <Routes location={location}>
+                <Route path="/" element={<Home />} />
+                <Route path="/rhca" element={<RHCA />} />
+                <Route path="/rhca/directives" element={<RHCADirectives />} />
+                <Route path="/igm" element={<IGM />} />
+                <Route path="/igm/directives" element={<IGMDirectives />} />
+                <Route path="/igm/editorial-committee" element={<EditorialCommittee />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/submission" element={<Submission />} />
+                <Route path="/annuaire" element={<Annuaire />} />
+                <Route path="/donate" element={<Donate />} />
+                <Route path="/donate/success" element={<DonateSuccess />} />
+                <Route path="/jobs" element={<Opportunities />} />
+                <Route path="/adc/*" element={<ADC />} />
+                <Route path="/index-medicus" element={<IndexMedicus />} />
+              </Routes>
+            </Suspense>
+          </AnimatePresence>
+        </MainLayout>
+      </ErrorBoundary>
+    </LazyMotion>
   );
 }
 
