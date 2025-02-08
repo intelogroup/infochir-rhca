@@ -32,47 +32,44 @@ function AppRoutes() {
   const location = useLocation();
   
   return (
-    <LazyMotion features={domMax}>
-      <ErrorBoundary>
-        <MainLayout>
-          <AnimatePresence mode="wait" initial={false}>
-            <Suspense 
-              key={location.pathname}
-              fallback={<LoadingSpinner />}
-            >
-              <Routes location={location}>
-                <Route path="/" element={<Home />} />
-                <Route path="/rhca" element={<RHCA />} />
-                <Route path="/rhca/directives" element={<RHCADirectives />} />
-                <Route path="/igm" element={<IGM />} />
-                <Route path="/igm/directives" element={<IGMDirectives />} />
-                <Route path="/igm/editorial-committee" element={<EditorialCommittee />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/submission" element={<Submission />} />
-                <Route path="/annuaire" element={<Annuaire />} />
-                <Route path="/donate" element={<Donate />} />
-                <Route path="/donate/success" element={<DonateSuccess />} />
-                <Route path="/jobs" element={<Opportunities />} />
-                <Route path="/adc/*" element={<ADC />} />
-                <Route path="/index-medicus" element={<IndexMedicus />} />
-              </Routes>
-            </Suspense>
-          </AnimatePresence>
-        </MainLayout>
-      </ErrorBoundary>
-    </LazyMotion>
+    <MainLayout>
+      <AnimatePresence mode="wait" initial={false}>
+        <Routes location={location}>
+          <Route path="/" element={<Home />} />
+          <Route path="/rhca" element={<RHCA />} />
+          <Route path="/rhca/directives" element={<RHCADirectives />} />
+          <Route path="/igm" element={<IGM />} />
+          <Route path="/igm/directives" element={<IGMDirectives />} />
+          <Route path="/igm/editorial-committee" element={<EditorialCommittee />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/submission" element={<Submission />} />
+          <Route path="/annuaire" element={<Annuaire />} />
+          <Route path="/donate" element={<Donate />} />
+          <Route path="/donate/success" element={<DonateSuccess />} />
+          <Route path="/jobs" element={<Opportunities />} />
+          <Route path="/adc/*" element={<ADC />} />
+          <Route path="/index-medicus" element={<IndexMedicus />} />
+        </Routes>
+      </AnimatePresence>
+    </MainLayout>
   );
 }
 
 function App() {
   return (
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <ToastProvider>
-          <AppRoutes />
-        </ToastProvider>
-      </QueryClientProvider>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <QueryClientProvider client={queryClient}>
+          <LazyMotion features={domMax}>
+            <ToastProvider>
+              <Suspense fallback={<LoadingSpinner />}>
+                <AppRoutes />
+              </Suspense>
+            </ToastProvider>
+          </LazyMotion>
+        </QueryClientProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }
 
