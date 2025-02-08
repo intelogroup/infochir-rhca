@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { SortOption } from "@/types/sortOptions";
 import { DateRange } from "react-day-picker";
+import type { Issue } from "../../types";
 
 interface IssuesGridLayoutProps {
   viewMode?: "grid" | "table";
@@ -18,14 +19,21 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("latest");
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [displayCount, setDisplayCount] = useState(6);
   const isMobile = useIsMobile();
 
-  const { sortedIssues, issuesByYear, sortedYears } = useIssuesState(mockIssues, {
+  const { 
+    sortedIssues, 
+    issuesByYear, 
+    sortedYears,
+    availableCategories 
+  } = useIssuesState(mockIssues, {
     searchTerm,
     sortBy,
     dateRange,
+    selectedCategories,
   });
 
   const loadMore = () => {
@@ -46,7 +54,10 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
           setSortBy={setSortBy}
           dateRange={dateRange}
           setDateRange={setDateRange}
-          sortOptions={SORT_OPTIONS}
+          sortOptions={[...SORT_OPTIONS]}
+          selectedCategories={selectedCategories}
+          onCategoryChange={setSelectedCategories}
+          availableCategories={availableCategories}
         />
       </motion.div>
       

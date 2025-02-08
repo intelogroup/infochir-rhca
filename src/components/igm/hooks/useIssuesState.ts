@@ -1,24 +1,33 @@
 
 import { useMemo, useCallback } from "react";
-import type { Issue } from "../types";
-import type { SortOption } from "../constants/sortOptions";
-import { isValidDate } from "../types";
+import type { Issue, IssuesStateOptions } from "../types";
 import { DateRange } from "react-day-picker";
+import { isValidDate } from "../types";
 
-interface IssuesStateOptions {
-  searchTerm: string;
-  sortBy: SortOption;
-  dateRange?: DateRange;
+interface IssuesStateResult {
+  sortedIssues: Issue[];
+  issuesByYear: Record<number, Issue[]>;
+  sortedYears: number[];
+  availableCategories: string[];
 }
 
 export const useIssuesState = (
   issues: Issue[],
-  {
-    searchTerm,
-    sortBy,
-    dateRange,
-  }: IssuesStateOptions
-) => {
+  options: IssuesStateOptions
+): IssuesStateResult => {
+  const { searchTerm, sortBy, dateRange, selectedCategories } = options;
+
+  // Extract all unique categories
+  const availableCategories = useMemo(() => {
+    const categories = new Set<string>();
+    issues.forEach(issue => {
+      issue.categories?.forEach(category => {
+        categories.add(category);
+      });
+    });
+    return Array.from(categories).sort();
+  }, [issues]);
+
   // Memoize the search filter function
   const filterBySearch = useCallback((issue: Issue): boolean => {
     if (!searchTerm) return true;
@@ -26,14 +35,12 @@ export const useIssuesState = (
     const searchLower = searchTerm.toLowerCase();
     const searchTerms = searchLower.split(' ').filter(Boolean);
     
-    // Quick checks for main fields
     const mainFieldsMatch = 
       issue.title.toLowerCase().includes(searchLower) ||
       issue.abstract.toLowerCase().includes(searchLower);
     
     if (mainFieldsMatch) return true;
     
-    // Check articles if necessary
     return issue.articles.some(article => 
       searchTerms.every(term => 
         article.title.toLowerCase().includes(term) ||
@@ -56,20 +63,25 @@ export const useIssuesState = (
     return isAfterStart && isBeforeEnd;
   }, [dateRange]);
 
+  // Filter by categories
+  const filterByCategories = useCallback((issue: Issue): boolean => {
+    if (!selectedCategories?.length) return true;
+    return selectedCategories.every(category => 
+      issue.categories?.includes(category)
+    );
+  }, [selectedCategories]);
+
   // Apply filters in sequence
   const filteredIssues = useMemo(() => {
-    console.time('filtering');
-    const filtered = issues.filter(issue => 
+    return issues.filter(issue => 
       filterByDate(issue) && 
-      filterBySearch(issue)
+      filterBySearch(issue) &&
+      filterByCategories(issue)
     );
-    console.timeEnd('filtering');
-    return filtered;
-  }, [issues, filterByDate, filterBySearch]);
+  }, [issues, filterByDate, filterBySearch, filterByCategories]);
 
   // Memoize sorting
   const sortedIssues = useMemo(() => {
-    console.time('sorting');
     const sorted = [...filteredIssues];
     
     const sortFunctions = {
@@ -83,13 +95,11 @@ export const useIssuesState = (
     };
 
     sorted.sort(sortFunctions[sortBy]);
-    console.timeEnd('sorting');
     return sorted;
   }, [filteredIssues, sortBy]);
 
   // Group by year with optimization
   const { issuesByYear, sortedYears } = useMemo(() => {
-    console.time('grouping');
     const byYear: Record<number, Issue[]> = {};
     const years = new Set<number>();
     
@@ -106,7 +116,6 @@ export const useIssuesState = (
       byYear[year].push(issue);
     }
     
-    console.timeEnd('grouping');
     return {
       issuesByYear: byYear,
       sortedYears: Array.from(years).sort((a, b) => b - a)
@@ -117,5 +126,6 @@ export const useIssuesState = (
     sortedIssues,
     issuesByYear,
     sortedYears,
+    availableCategories,
   };
 };

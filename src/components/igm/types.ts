@@ -1,3 +1,4 @@
+
 export interface IgmArticle {
   id: string;
   title: string;
@@ -20,11 +21,21 @@ export interface Issue {
   downloads: number;
   shares: number;
   articles: IgmArticle[];
+  categories?: string[];
 }
 
 export interface DatabaseIssue extends Omit<Issue, 'date'> {
   date: Date | string;
 }
+
+export interface IssuesStateOptions {
+  searchTerm: string;
+  sortBy: SortOption;
+  dateRange?: DateRange;
+  selectedCategories?: string[];
+}
+
+export type SortOption = "latest" | "year" | "downloads" | "shares";
 
 export const isValidDate = (date: unknown): date is Date => {
   return date instanceof Date && !isNaN(date.getTime());
