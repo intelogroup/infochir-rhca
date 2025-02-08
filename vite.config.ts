@@ -7,9 +7,7 @@ import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
   plugins: [
-    react({
-      jsxRuntime: 'automatic'
-    }),
+    react(),
     mode === 'development' && componentTagger(),
     mode === 'development' && visualizer({
       template: "treemap",
