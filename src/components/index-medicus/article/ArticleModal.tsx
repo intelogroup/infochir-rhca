@@ -56,7 +56,7 @@ export const ArticleModal = ({ article, open, onClose }: ArticleModalProps) => {
       document={{
         id: article.id,
         title: `Infochir/RHCA Volume`,
-        date: article.date || new Date().toISOString(),
+        date: article.publicationDate || new Date().toISOString(), // Use publicationDate instead of date
         description: article.title,
         downloadCount: article.downloads || 0,
         shareCount: article.shares || 0,

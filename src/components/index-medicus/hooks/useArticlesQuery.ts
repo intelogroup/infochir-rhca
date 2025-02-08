@@ -12,7 +12,6 @@ const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
   // Extract author names from the members relationship
   const authorNames = dbArticle.article_authors?.map((authorRel: any) => {
     console.log('Processing author relation:', authorRel);
-    // Add null check for member object
     if (!authorRel.member) {
       console.warn('Author relation exists but member is null:', authorRel);
       return null;
@@ -25,11 +24,12 @@ const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
   // Handle PDF URL properly
   const pdfUrl = typeof dbArticle.pdf_url === 'string' ? dbArticle.pdf_url : undefined;
 
-  const mappedArticle = {
+  const mappedArticle: Article = {
     id: dbArticle.id,
     title: dbArticle.title,
     abstract: dbArticle.abstract,
     date: dbArticle.publication_date,
+    publicationDate: dbArticle.publication_date, // Added to match the required type
     source: dbArticle.source,
     category: dbArticle.category,
     authors: authorNames.length > 0 ? authorNames : [],
@@ -41,7 +41,8 @@ const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
     downloads: dbArticle.downloads || 0,
     institution: dbArticle.institution,
     status: dbArticle.status,
-    userId: dbArticle.user_id
+    userId: dbArticle.user_id,
+    shares: dbArticle.shares || 0
   };
 
   console.log('Final mapped article:', mappedArticle);

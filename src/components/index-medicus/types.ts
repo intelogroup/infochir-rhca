@@ -6,6 +6,7 @@ export interface Article {
   title: string;
   authors: string[];
   date: string;
+  publicationDate: string; // Added to match the required type
   category: string;
   source: ArticleSource;
   abstract: string;
@@ -16,6 +17,9 @@ export interface Article {
   pdfUrl?: string;
   downloads?: number;
   shares?: number;
+  status?: string;
+  institution?: string;
+  userId?: string;
 }
 
 export interface SearchFilters {
