@@ -1,3 +1,4 @@
+
 import { Suspense, lazy } from "react";
 import { Routes, Route, useLocation, BrowserRouter } from "react-router-dom";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -29,12 +30,12 @@ const IGMDirectives = lazy(() => import("@/pages/igm/Directives"));
 
 function AppRoutes() {
   const location = useLocation();
-  
+
   return (
     <ErrorBoundary>
       <MainLayout>
-        <AnimatePresence mode="wait" initial={false}>
-          <Routes location={location}>
+        <AnimatePresence mode="wait" initial={false} onExitComplete={() => window.scrollTo(0, 0)}>
+          <Routes location={location} key={location.pathname}>
             <Route path="/" element={<Home />} />
             <Route path="/rhca" element={<RHCA />} />
             <Route path="/rhca/directives" element={<RHCADirectives />} />

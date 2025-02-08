@@ -7,7 +7,10 @@ import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
   plugins: [
-    react(),
+    react({
+      fastRefresh: true,
+      swcPlugins: mode === 'development' ? [] : [['swc-plugin-transform-remove-console', {}]],
+    }),
     mode === 'development' && componentTagger(),
     mode === 'development' && visualizer({
       template: "treemap",
@@ -31,7 +34,10 @@ export default defineConfig(({ mode }) => ({
       '@radix-ui/react-dialog',
       '@radix-ui/react-slot',
       '@radix-ui/react-tabs',
-      '@radix-ui/react-toast'
+      '@radix-ui/react-toast',
+      '@radix-ui/react-popover',
+      '@radix-ui/react-navigation-menu',
+      '@radix-ui/react-scroll-area'
     ]
   },
   optimizeDeps: {
@@ -43,10 +49,12 @@ export default defineConfig(({ mode }) => ({
       '@tanstack/react-query',
       'sonner'
     ],
+    exclude: ['@radix-ui/react-use-callback-ref'],
     esbuildOptions: {
       define: {
         global: 'globalThis'
-      }
+      },
+      plugins: []
     }
   },
   build: {
@@ -63,7 +71,9 @@ export default defineConfig(({ mode }) => ({
     sourcemap: true,
     commonjsOptions: {
       transformMixedEsModules: true
-    }
+    },
+    chunkSizeWarningLimit: 1000,
+    cssCodeSplit: true
   },
   server: {
     host: "::",

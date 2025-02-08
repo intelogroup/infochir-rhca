@@ -57,7 +57,7 @@ const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>()
 
 const addToRemoveQueue = (toastId: string) => {
   if (toastTimeouts.has(toastId)) {
-    return
+    clearTimeout(toastTimeouts.get(toastId));
   }
 
   const timeout = setTimeout(() => {
@@ -77,6 +77,19 @@ const clearToasts = () => {
   })
   toastTimeouts.clear()
 }
+
+export const dispatch = (action: Action) => {
+  switch (action.type) {
+    case "ADD_TOAST":
+    case "UPDATE_TOAST":
+    case "DISMISS_TOAST":
+    case "REMOVE_TOAST":
+      dispatchToast(action)
+      break
+  }
+}
+
+let dispatchToast: (action: Action) => void;
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -137,10 +150,11 @@ const ToastContext = React.createContext<{
   dismiss: (toastId?: string) => void
 } | null>(null)
 
-export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = React.useReducer(reducer, { toasts: [] })
 
   React.useEffect(() => {
+    dispatchToast = dispatch
     return () => {
       clearToasts()
     }
