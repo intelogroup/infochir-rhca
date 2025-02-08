@@ -1,16 +1,16 @@
 
-import * as React from "react"
-import type { ToastActionElement, ToastProps } from "@/components/ui/toast"
+import * as React from "react";
+import type { ToastActionElement, ToastProps } from "@/components/ui/toast";
 
 export type ToasterToast = ToastProps & {
-  id: string
-  title?: React.ReactNode
-  description?: React.ReactNode
-  action?: ToastActionElement
-}
+  id: string;
+  title?: React.ReactNode;
+  description?: React.ReactNode;
+  action?: ToastActionElement;
+};
 
 export interface State {
-  toasts: ToasterToast[]
+  toasts: ToasterToast[];
 }
 
 export const actionTypes = {
@@ -18,34 +18,34 @@ export const actionTypes = {
   UPDATE_TOAST: "UPDATE_TOAST",
   DISMISS_TOAST: "DISMISS_TOAST",
   REMOVE_TOAST: "REMOVE_TOAST",
-} as const
+} as const;
 
-export type ActionType = typeof actionTypes
+export type ActionType = typeof actionTypes;
 
 export type Action =
   | {
-      type: ActionType["ADD_TOAST"]
-      toast: ToasterToast
+      type: ActionType["ADD_TOAST"];
+      toast: ToasterToast;
     }
   | {
-      type: ActionType["UPDATE_TOAST"]
-      toast: Partial<ToasterToast>
+      type: ActionType["UPDATE_TOAST"];
+      toast: Partial<ToasterToast>;
     }
   | {
-      type: ActionType["DISMISS_TOAST"]
-      toastId?: ToasterToast["id"]
+      type: ActionType["DISMISS_TOAST"];
+      toastId?: ToasterToast["id"];
     }
   | {
-      type: ActionType["REMOVE_TOAST"]
-      toastId?: ToasterToast["id"]
-    }
+      type: ActionType["REMOVE_TOAST"];
+      toastId?: ToasterToast["id"];
+    };
 
 export interface ToastContextValue {
-  toasts: ToasterToast[]
+  toasts: ToasterToast[];
   toast: (props: Omit<ToasterToast, "id">) => {
-    id: string
-    dismiss: () => void
-    update: (props: ToasterToast) => void
-  }
-  dismiss: (toastId?: string) => void
+    id: string;
+    dismiss: () => void;
+    update: (props: ToasterToast) => void;
+  };
+  dismiss: (toastId?: string) => void;
 }

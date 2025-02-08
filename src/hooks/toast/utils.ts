@@ -1,41 +1,41 @@
 
-import { Action } from "./types"
+import { Action } from "./types";
 
-let count = 0
-export const TOAST_REMOVE_DELAY = 1000000
+let count = 0;
+export const TOAST_REMOVE_DELAY = 1000000;
 
-export const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>()
+export const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
 
 export function genId() {
-  count = (count + 1) % Number.MAX_SAFE_INTEGER
-  return count.toString()
+  count = (count + 1) % Number.MAX_SAFE_INTEGER;
+  return count.toString();
 }
 
 export const addToRemoveQueue = (toastId: string) => {
   if (toastTimeouts.has(toastId)) {
-    clearTimeout(toastTimeouts.get(toastId))
+    clearTimeout(toastTimeouts.get(toastId));
   }
 
   const timeout = setTimeout(() => {
-    toastTimeouts.delete(toastId)
+    toastTimeouts.delete(toastId);
     dispatch({
       type: "REMOVE_TOAST",
       toastId: toastId,
-    })
-  }, TOAST_REMOVE_DELAY)
+    });
+  }, TOAST_REMOVE_DELAY);
 
-  toastTimeouts.set(toastId, timeout)
-}
+  toastTimeouts.set(toastId, timeout);
+};
 
 export const clearToasts = () => {
   toastTimeouts.forEach((timeout) => {
-    clearTimeout(timeout)
-  })
-  toastTimeouts.clear()
-}
+    clearTimeout(timeout);
+  });
+  toastTimeouts.clear();
+};
 
-export let dispatch: (action: Action) => void = () => {}
+export let dispatch: (action: Action) => void = () => {};
 
 export const setDispatch = (newDispatch: (action: Action) => void) => {
-  dispatch = newDispatch
-}
+  dispatch = newDispatch;
+};
