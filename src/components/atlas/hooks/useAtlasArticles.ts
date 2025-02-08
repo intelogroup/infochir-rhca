@@ -12,17 +12,10 @@ export const useAtlasArticles = () => {
       
       try {
         const { data, error } = await supabase
-          .from("articles")
-          .select(`
-            *,
-            article_authors (
-              member:members (
-                name
-              )
-            )
-          `)
+          .from("adc_articles_view")
+          .select('*')
           .eq('source', 'ADC')
-          .order('publication_date', { ascending: false });
+          .order('created_at', { ascending: false });
 
         if (error) {
           console.error("Error fetching Atlas articles:", error);
@@ -42,10 +35,10 @@ export const useAtlasArticles = () => {
           id: article.id,
           title: article.title,
           description: article.abstract,
-          lastUpdate: new Date(article.publication_date).toLocaleDateString('fr-FR'),
-          author: article.article_authors?.map((a: any) => a.member.name).join(', '),
+          lastUpdate: new Date(article.publication_date || article.created_at).toLocaleDateString('fr-FR'),
+          author: article.primary_author,
           status: "available",
-          coverImage: article.image_url,
+          coverImage: article.image_url || undefined,
           stats: {
             views: article.views || 0,
             downloads: article.downloads || 0,
