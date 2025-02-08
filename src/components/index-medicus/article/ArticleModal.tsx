@@ -1,9 +1,8 @@
 
 import { DocumentModal } from "@/components/shared/DocumentModal";
-import type { Article } from "../types";
 import { Tag } from "lucide-react";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import type { Article } from "@/types/article";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ArticleModalProps {
   article: Article;
@@ -15,41 +14,39 @@ export const ArticleModal = ({ article, open, onClose }: ArticleModalProps) => {
   const renderContent = (document: Article) => (
     <div className="space-y-6">
       <div className="prose prose-sm dark:prose-invert max-w-none">
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <span>{format(new Date(document.date), 'dd MMMM yyyy', { locale: fr })}</span>
-            <span>•</span>
-            <span>{document.source}</span>
-            {document.category && (
-              <>
-                <span>•</span>
-                <span>{document.category}</span>
-              </>
-            )}
-          </div>
-          
-          {document.authors && document.authors.length > 0 && (
-            <div className="text-gray-700 font-medium">
-              {document.authors.join(", ")}
-            </div>
-          )}
-          
-          <p className="text-gray-600">{document.abstract}</p>
-          
-          {document.tags && document.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 pt-4">
-              {document.tags.map((tag, index) => (
-                <span
-                  key={index}
-                  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary"
-                >
-                  <Tag className="w-3 h-3 mr-1" />
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
+        <p className="text-lg font-semibold text-gray-900 mb-4">{document.title}</p>
+        <h3 className="text-lg font-semibold text-primary">Résumé</h3>
+        <p className="text-gray-600 dark:text-gray-300">{document.abstract}</p>
+      </div>
+
+      {document.tags && document.tags.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {document.tags.map((tag, index) => (
+            <span
+              key={index}
+              className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary"
+            >
+              <Tag className="w-3 h-3 mr-1" />
+              {tag}
+            </span>
+          ))}
         </div>
+      )}
+
+      <div>
+        <h3 className="text-lg font-semibold text-primary mb-3">Articles</h3>
+        <ScrollArea className="h-[200px] w-full rounded-md border p-4">
+          <div className="space-y-2">
+            {mockArticleTitles.map((title, index) => (
+              <div 
+                key={index}
+                className="p-2 hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
+              >
+                <p className="text-sm text-gray-700">{title}</p>
+              </div>
+            ))}
+          </div>
+        </ScrollArea>
       </div>
     </div>
   );
@@ -58,17 +55,33 @@ export const ArticleModal = ({ article, open, onClose }: ArticleModalProps) => {
     <DocumentModal
       document={{
         id: article.id,
-        title: article.title,
-        date: article.date,
-        abstract: article.abstract,
-        downloads: article.downloads || 0,
-        shares: article.shares || 0,
+        title: `Infochir/RHCA Volume`,
+        date: article.date || new Date().toISOString(),
+        description: article.title,
+        downloadCount: article.downloads || 0,
+        shareCount: article.shares || 0,
         pdfUrl: article.pdfUrl,
-        coverImage: article.imageUrl,
+        imageUrl: article.imageUrl,
       }}
       open={open}
       onClose={onClose}
-      renderContent={renderContent}
+      renderContent={() => renderContent(article)}
     />
   );
 };
+
+// Temporary mock data for demonstration
+const mockArticleTitles = [
+  "Martin et al. - L'impact des nouvelles technologies en chirurgie cardiaque",
+  "Dubois et al. - Évolution des techniques de transplantation hépatique",
+  "Bernard et al. - Innovations en chirurgie mini-invasive",
+  "Lambert et al. - Approches modernes en chirurgie pédiatrique",
+  "Robert et al. - Techniques avancées en neurochirurgie",
+  "Dupont et al. - Les progrès en chirurgie robotique",
+  "Claire et al. - Nouvelles perspectives en chirurgie plastique",
+  "Pierre et al. - Développements récents en chirurgie orthopédique",
+  "Sophie et al. - Avancées en chirurgie vasculaire",
+  "Jean et al. - La chirurgie assistée par ordinateur : état des lieux",
+  "Marie et al. - Techniques émergentes en microchirurgie",
+  "Paul et al. - L'intelligence artificielle en chirurgie",
+];

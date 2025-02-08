@@ -17,6 +17,9 @@ export interface Article {
   status?: string;
   institution?: string;
   userId?: string;
+  views?: number;
+  citations?: number;
 }
 
 export type SortOption = "latest" | "title" | "author" | "category";
+
