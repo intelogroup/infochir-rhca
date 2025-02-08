@@ -26,7 +26,8 @@ export const volumes2024: RhcaVolume[] = [
         tags: ["Chirurgie plastique", "Reconstruction", "Innovation"],
         publicationDate: "2024-06-15",
         specialty: "Chirurgie plastique",
-        imageUrl: "https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?w=800&auto=format"
+        imageUrl: "https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?w=800&auto=format",
+        source: "RHCA"
       }
     ],
     coverImage: "https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?w=800&auto=format"
@@ -55,7 +56,8 @@ export const volumes2024: RhcaVolume[] = [
         tags: ["Pédiatrie", "Mini-invasif"],
         publicationDate: "2024-05-15",
         specialty: "Pédiatrie",
-        imageUrl: "https://images.pexels.com/photos/4226264/pexels-photo-4226264.jpeg?auto=format"
+        imageUrl: "https://images.pexels.com/photos/4226264/pexels-photo-4226264.jpeg?auto=format",
+        source: "RHCA"
       }
     ],
     coverImage: "https://images.pexels.com/photos/4226264/pexels-photo-4226264.jpeg?auto=format"
@@ -84,7 +86,8 @@ export const volumes2024: RhcaVolume[] = [
         tags: ["Orthopédie", "Innovation", "Prothèses"],
         publicationDate: "2024-04-15",
         specialty: "Orthopédie",
-        imageUrl: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&auto=format"
+        imageUrl: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&auto=format",
+        source: "RHCA"
       }
     ],
     coverImage: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&auto=format"
@@ -113,7 +116,8 @@ export const volumes2024: RhcaVolume[] = [
         tags: ["Robotique", "Innovation", "Chirurgie"],
         publicationDate: "2024-03-15",
         specialty: "Chirurgie robotique",
-        imageUrl: "https://images.pexels.com/photos/3825586/pexels-photo-3825586.jpeg?auto=format"
+        imageUrl: "https://images.pexels.com/photos/3825586/pexels-photo-3825586.jpeg?auto=format",
+        source: "RHCA"
       }
     ],
     coverImage: "https://images.pexels.com/photos/3825586/pexels-photo-3825586.jpeg?auto=format"
@@ -142,7 +146,8 @@ export const volumes2024: RhcaVolume[] = [
         tags: ["Anesthésie", "Protocoles", "Personnalisation"],
         publicationDate: "2024-02-15",
         specialty: "Anesthésiologie",
-        imageUrl: "https://images.unsplash.com/photo-1551076805-e1869033e561?w=800&auto=format"
+        imageUrl: "https://images.unsplash.com/photo-1551076805-e1869033e561?w=800&auto=format",
+        source: "RHCA"
       }
     ],
     coverImage: "https://images.unsplash.com/photo-1551076805-e1869033e561?w=800&auto=format"

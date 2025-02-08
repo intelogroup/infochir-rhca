@@ -26,7 +26,8 @@ export const volumes2023: RhcaVolume[] = [
         tags: ["Rétrospective", "Innovation"],
         publicationDate: "2023-12-15",
         specialty: "Chirurgie générale",
-        imageUrl: "https://images.pexels.com/photos/3259624/pexels-photo-3259624.jpeg?auto=format"
+        imageUrl: "https://images.pexels.com/photos/3259624/pexels-photo-3259624.jpeg?auto=format",
+        source: "RHCA"
       }
     ],
     coverImage: "https://images.pexels.com/photos/3259624/pexels-photo-3259624.jpeg?auto=format"
@@ -55,7 +56,8 @@ export const volumes2023: RhcaVolume[] = [
         tags: ["Neurochirurgie", "Innovation", "Imagerie"],
         publicationDate: "2023-09-15",
         specialty: "Neurochirurgie",
-        imageUrl: "https://images.unsplash.com/photo-1516549655169-df83a0774514?w=800&auto=format"
+        imageUrl: "https://images.unsplash.com/photo-1516549655169-df83a0774514?w=800&auto=format",
+        source: "RHCA"
       }
     ],
     coverImage: "https://images.unsplash.com/photo-1516549655169-df83a0774514?w=800&auto=format"
@@ -84,7 +86,8 @@ export const volumes2023: RhcaVolume[] = [
         tags: ["Vasculaire", "Endovasculaire", "Anévrisme"],
         publicationDate: "2023-06-15",
         specialty: "Chirurgie vasculaire",
-        imageUrl: "https://images.pexels.com/photos/4226769/pexels-photo-4226769.jpeg?auto=format"
+        imageUrl: "https://images.pexels.com/photos/4226769/pexels-photo-4226769.jpeg?auto=format",
+        source: "RHCA"
       }
     ],
     coverImage: "https://images.pexels.com/photos/4226769/pexels-photo-4226769.jpeg?auto=format"
@@ -113,7 +116,8 @@ export const volumes2023: RhcaVolume[] = [
         tags: ["Thoracique", "Mini-invasif", "Oncologie"],
         publicationDate: "2023-03-15",
         specialty: "Chirurgie thoracique",
-        imageUrl: "https://images.unsplash.com/photo-1527613426441-4da17471b66d?w=800&auto=format"
+        imageUrl: "https://images.unsplash.com/photo-1527613426441-4da17471b66d?w=800&auto=format",
+        source: "RHCA"
       }
     ],
     coverImage: "https://images.unsplash.com/photo-1527613426441-4da17471b66d?w=800&auto=format"
