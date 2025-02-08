@@ -1,3 +1,4 @@
+
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
@@ -21,14 +22,14 @@ console.info("[App] Initializing with React Router and Query Client");
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <ErrorBoundary>
           <App />
           <Toaster />
-        </BrowserRouter>
-      </QueryClientProvider>
-    </ErrorBoundary>
+        </ErrorBoundary>
+      </BrowserRouter>
+    </QueryClientProvider>
   </React.StrictMode>
 );
 
