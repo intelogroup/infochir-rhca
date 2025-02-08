@@ -26,7 +26,8 @@ export const pediatricVolumes: RhcaVolume[] = [
         pdfUrl: "/path/to/pdf17.pdf",
         tags: ["Pédiatrie", "Mini-invasif", "Étude de cas"],
         publicationDate: "2024-01-01",
-        specialty: "Pédiatrie"
+        specialty: "Pédiatrie",
+        source: "RHCA"
       },
       {
         id: "18",
@@ -43,7 +44,8 @@ export const pediatricVolumes: RhcaVolume[] = [
         pdfUrl: "/path/to/pdf18.pdf",
         tags: ["Néonatalogie", "Innovation", "Chirurgie"],
         publicationDate: "2024-01-01",
-        specialty: "Pédiatrie"
+        specialty: "Pédiatrie",
+        source: "RHCA"
       }
     ],
     coverImage: "/placeholder.svg"

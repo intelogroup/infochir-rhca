@@ -1,12 +1,12 @@
 
-import React, { useRef } from "react";
+import React from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export const RHCAHeader = () => {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = React.useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll();
   
   const y = useTransform(scrollY, [0, 300], [0, -50]);

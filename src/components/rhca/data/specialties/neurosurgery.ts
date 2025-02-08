@@ -26,7 +26,8 @@ export const neurosurgeryVolumes: RhcaVolume[] = [
         pdfUrl: "/path/to/pdf15.pdf",
         tags: ["Neurochirurgie", "Tumeurs cérébrales", "Innovation"],
         publicationDate: "2024-01-15",
-        specialty: "Neurochirurgie"
+        specialty: "Neurochirurgie",
+        source: "RHCA"
       },
       {
         id: "16",
@@ -43,7 +44,8 @@ export const neurosurgeryVolumes: RhcaVolume[] = [
         pdfUrl: "/path/to/pdf16.pdf",
         tags: ["Neurochirurgie", "Navigation", "Rachis"],
         publicationDate: "2024-01-15",
-        specialty: "Neurochirurgie"
+        specialty: "Neurochirurgie",
+        source: "RHCA"
       }
     ],
     coverImage: "/placeholder.svg"

@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { SearchAndSort } from "@/components/issues/SearchAndSort";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { LayoutGrid, List } from "lucide-react";
@@ -10,9 +10,9 @@ import { RhcaArticleList } from "./RhcaArticleList";
 import { motion } from "framer-motion";
 
 export const RhcaGrid = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState<SortOption>("latest");
-  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const [sortBy, setSortBy] = React.useState<SortOption>("latest");
+  const [viewMode, setViewMode] = React.useState<"grid" | "table">("grid");
 
   const handleSortChange = (value: SortOption) => {
     setSortBy(value);

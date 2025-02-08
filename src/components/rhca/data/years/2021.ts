@@ -25,7 +25,8 @@ export const volumes2021: RhcaVolume[] = [
         volume: "12",
         tags: ["Rétrospective", "Bilan"],
         publicationDate: "2021-12-15",
-        specialty: "Chirurgie générale"
+        specialty: "Chirurgie générale",
+        source: "RHCA"
       }
     ],
     coverImage: "/placeholder.svg"
@@ -53,7 +54,8 @@ export const volumes2021: RhcaVolume[] = [
         volume: "1",
         tags: ["Urgence", "Protocoles"],
         publicationDate: "2021-01-15",
-        specialty: "Chirurgie d'urgence"
+        specialty: "Chirurgie d'urgence",
+        source: "RHCA"
       }
     ],
     coverImage: "/placeholder.svg"
