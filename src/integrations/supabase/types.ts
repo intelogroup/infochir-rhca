@@ -409,7 +409,21 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      article_authors_view: {
+        Row: {
+          article_id: string | null
+          author_names: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "article_authors_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "articles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       create_payment_intent: {

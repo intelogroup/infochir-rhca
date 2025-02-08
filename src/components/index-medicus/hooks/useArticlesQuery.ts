@@ -9,14 +9,8 @@ const PAGE_SIZE = 10;
 const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
   console.log('Mapping database article:', dbArticle);
   
-  const authorNames = dbArticle.article_authors?.map((authorRel: any) => {
-    console.log('Processing author relation:', authorRel);
-    if (!authorRel.members) {
-      console.warn('Author relation exists but members is null:', authorRel);
-      return null;
-    }
-    return authorRel.members.name;
-  }).filter(Boolean) || [];
+  // Get author names from the view result
+  const authorNames = dbArticle.article_authors_view?.author_names || [];
   
   console.log('Extracted author names:', authorNames);
 
@@ -30,7 +24,7 @@ const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
     publicationDate,
     source: dbArticle.source,
     category: dbArticle.category,
-    authors: authorNames.length > 0 ? authorNames : [],
+    authors: authorNames,
     tags: dbArticle.tags || [],
     imageUrl: dbArticle.image_url || undefined,
     views: dbArticle.views || 0,
@@ -68,10 +62,8 @@ export const useArticlesQuery = (page = 0) => {
           .from("articles")
           .select(`
             *,
-            article_authors (
-              members (
-                name
-              )
+            article_authors_view (
+              author_names
             )
           `, { count: 'exact' })
           .range(start, end)
