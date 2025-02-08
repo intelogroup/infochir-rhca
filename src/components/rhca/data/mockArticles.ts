@@ -1,3 +1,4 @@
+
 import { RhcaArticle } from "../types";
 import { volumes2024 } from "./years/2024";
 import { volumes2023 } from "./years/2023";
@@ -39,6 +40,7 @@ export const mockArticles: RhcaArticle[] = [
     date: "2024-02-10",
     specialty: "Innovation",
     category: "Technologie",
+    source: "RHCA",
     volume: "12",
     pageNumber: "31-40",
     views: 189,
@@ -57,6 +59,7 @@ export const mockArticles: RhcaArticle[] = [
     date: "2023-12-20",
     specialty: "Anesthésie",
     category: "Recherche",
+    source: "RHCA",
     volume: "12",
     pageNumber: "41-50",
     views: 210,
@@ -75,6 +78,7 @@ export const mockArticles: RhcaArticle[] = [
     date: "2023-12-15",
     specialty: "Chirurgie",
     category: "Rétrospective",
+    source: "RHCA",
     volume: "12",
     pageNumber: "51-60",
     views: 245,
@@ -93,6 +97,7 @@ export const mockArticles: RhcaArticle[] = [
     date: "2023-01-15",
     specialty: "Cardiologie",
     category: "Innovation",
+    source: "RHCA",
     volume: "1",
     pageNumber: "1-10",
     views: 280,
@@ -111,6 +116,7 @@ export const mockArticles: RhcaArticle[] = [
     date: "2022-11-15",
     specialty: "Pédiatrie",
     category: "Innovation",
+    source: "RHCA",
     volume: "11",
     pageNumber: "1-8",
     views: 230,

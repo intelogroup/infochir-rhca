@@ -1,3 +1,4 @@
+
 import type { RhcaVolume } from "../../types";
 
 export const cardiologyVolumes: RhcaVolume[] = [
@@ -43,7 +44,8 @@ export const cardiologyVolumes: RhcaVolume[] = [
         pdfUrl: "/path/to/pdf14.pdf",
         tags: ["Assistance circulatoire", "Technologie", "Cardiologie"],
         publicationDate: "2024-02-01",
-        specialty: "Cardiologie"
+        specialty: "Cardiologie",
+        source: "RHCA"
       }
     ]
   }

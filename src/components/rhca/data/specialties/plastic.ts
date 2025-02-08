@@ -1,3 +1,4 @@
+
 import type { RhcaVolume } from "../../types";
 
 export const plasticVolumes: RhcaVolume[] = [
@@ -16,15 +17,16 @@ export const plasticVolumes: RhcaVolume[] = [
         abstract: "Nouvelles approches en reconstruction...",
         authors: ["Dr. Claire Martin", "Dr. Paul Dubois"],
         date: "2024-02-15",
-        views: "245",
-        citations: "28",
-        downloads: "82",
-        shares: "42",
+        views: 245,
+        citations: 28,
+        downloads: 82,
+        shares: 42,
         pageNumber: "1",
         volume: "11",
         tags: ["Chirurgie plastique", "Reconstruction", "Trauma"],
         publicationDate: "2024-02-15",
-        specialty: "Chirurgie plastique"
+        specialty: "Chirurgie plastique",
+        source: "RHCA"
       }
     ],
     coverImage: "/placeholder.svg"

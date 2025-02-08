@@ -1,3 +1,4 @@
+
 import type { RhcaVolume } from "../../types";
 
 export const orthopedicsVolumes: RhcaVolume[] = [
@@ -16,15 +17,16 @@ export const orthopedicsVolumes: RhcaVolume[] = [
         abstract: "Applications actuelles et perspectives...",
         authors: ["Dr. Michel Blanc", "Dr. Sarah Noir"],
         date: "2024-03-01",
-        views: "265",
-        citations: "30",
-        downloads: "88",
-        shares: "46",
+        views: 265,
+        citations: 30,
+        downloads: 88,
+        shares: 46,
         pageNumber: "1",
         volume: "10",
         tags: ["Orthopédie", "Robotique", "Innovation"],
         publicationDate: "2024-03-01",
-        specialty: "Orthopédie"
+        specialty: "Orthopédie",
+        source: "RHCA"
       }
     ],
     coverImage: "/placeholder.svg"

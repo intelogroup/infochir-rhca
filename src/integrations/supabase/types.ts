@@ -27,6 +27,13 @@ export type Database = {
             foreignKeyName: "article_authors_article_id_fkey"
             columns: ["article_id"]
             isOneToOne: false
+            referencedRelation: "adc_articles_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "article_authors_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
             referencedRelation: "articles"
             referencedColumns: ["id"]
           },
@@ -376,6 +383,111 @@ export type Database = {
       }
     }
     Views: {
+      adc_articles_view: {
+        Row: {
+          abstract: string | null
+          article_files: string[] | null
+          article_type: string | null
+          author_affiliations: string[] | null
+          authors: string[] | null
+          category: string | null
+          citations: number | null
+          co_authors: string[] | null
+          created_at: string | null
+          doi: string | null
+          downloads: number | null
+          funding_source: string | null
+          id: string | null
+          image_url: string | null
+          institution: string | null
+          issue: string | null
+          keywords: string[] | null
+          page_number: string | null
+          pdf_url: string | null
+          primary_author: string | null
+          publication_date: string | null
+          shares: number | null
+          source: string | null
+          specialty: string | null
+          status: string | null
+          supplementary_files: string[] | null
+          tags: string[] | null
+          title: string | null
+          updated_at: string | null
+          user_id: string | null
+          views: number | null
+          volume: string | null
+        }
+        Insert: {
+          abstract?: string | null
+          article_files?: string[] | null
+          article_type?: string | null
+          author_affiliations?: string[] | null
+          authors?: string[] | null
+          category?: string | null
+          citations?: number | null
+          co_authors?: string[] | null
+          created_at?: string | null
+          doi?: string | null
+          downloads?: number | null
+          funding_source?: string | null
+          id?: string | null
+          image_url?: string | null
+          institution?: string | null
+          issue?: string | null
+          keywords?: string[] | null
+          page_number?: string | null
+          pdf_url?: string | null
+          primary_author?: string | null
+          publication_date?: string | null
+          shares?: number | null
+          source?: string | null
+          specialty?: string | null
+          status?: string | null
+          supplementary_files?: string[] | null
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          views?: number | null
+          volume?: string | null
+        }
+        Update: {
+          abstract?: string | null
+          article_files?: string[] | null
+          article_type?: string | null
+          author_affiliations?: string[] | null
+          authors?: string[] | null
+          category?: string | null
+          citations?: number | null
+          co_authors?: string[] | null
+          created_at?: string | null
+          doi?: string | null
+          downloads?: number | null
+          funding_source?: string | null
+          id?: string | null
+          image_url?: string | null
+          institution?: string | null
+          issue?: string | null
+          keywords?: string[] | null
+          page_number?: string | null
+          pdf_url?: string | null
+          primary_author?: string | null
+          publication_date?: string | null
+          shares?: number | null
+          source?: string | null
+          specialty?: string | null
+          status?: string | null
+          supplementary_files?: string[] | null
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          views?: number | null
+          volume?: string | null
+        }
+        Relationships: []
+      }
       igm_articles_view: {
         Row: {
           abstract: string | null
