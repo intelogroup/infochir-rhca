@@ -1,3 +1,4 @@
+
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Suspense } from "react";
@@ -12,7 +13,7 @@ export const MainLayout = ({ children, className = "" }: MainLayoutProps) => {
     <div className={`min-h-screen bg-[#f8fafc] ${className}`}>
       <Navbar />
       <Suspense fallback={<div className="min-h-screen bg-gray-50 animate-pulse" />}>
-        <main className="relative">
+        <main className="relative pt-24 md:pt-28 lg:pt-32">
           {children}
         </main>
       </Suspense>
