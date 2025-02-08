@@ -26,16 +26,16 @@ const root = ReactDOM.createRoot(rootElement);
 console.info("[App] Initializing with React Router and Query Client");
 
 root.render(
-  <React.StrictMode>
-    <BrowserRouter>
+  <BrowserRouter>
+    <React.StrictMode>
       <QueryClientProvider client={queryClient}>
         <ErrorBoundary>
           <App />
           <Toaster />
         </ErrorBoundary>
       </QueryClientProvider>
-    </BrowserRouter>
-  </React.StrictMode>
+    </React.StrictMode>
+  </BrowserRouter>
 );
 
 // Only log performance metrics in development
@@ -53,4 +53,3 @@ if (process.env.NODE_ENV === 'development') {
     });
   });
 }
-
