@@ -7,6 +7,7 @@ import { LazyMotion, domMax } from "framer-motion";
 import App from "./App";
 import "./index.css";
 import { Toaster } from "sonner";
+import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 
 // Configure React Query client
 const queryClient = new QueryClient({
@@ -23,13 +24,15 @@ if (!rootElement) throw new Error('Root element not found');
 
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <LazyMotion features={domMax}>
+    <ErrorBoundary>
       <BrowserRouter>
         <QueryClientProvider client={queryClient}>
-          <App />
-          <Toaster position="top-center" />
+          <LazyMotion features={domMax} strict>
+            <App />
+            <Toaster position="top-center" richColors />
+          </LazyMotion>
         </QueryClientProvider>
       </BrowserRouter>
-    </LazyMotion>
+    </ErrorBoundary>
   </React.StrictMode>
 );
