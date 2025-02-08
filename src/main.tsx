@@ -18,9 +18,14 @@ const queryClient = new QueryClient({
   },
 });
 
+const rootElement = document.getElementById("root");
+if (!rootElement) throw new Error('Root element not found');
+
+const root = ReactDOM.createRoot(rootElement);
+
 console.info("[App] Initializing with React Router and Query Client");
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
@@ -48,3 +53,4 @@ if (process.env.NODE_ENV === 'development') {
     });
   });
 }
+
