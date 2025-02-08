@@ -1,3 +1,4 @@
+
 import { Suspense, lazy } from "react";
 import { Routes, Route, useLocation, BrowserRouter } from "react-router-dom";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -60,16 +61,18 @@ function AppRoutes() {
 function App() {
   return (
     <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <ToastProvider>
-          <LazyMotion features={domMax} strict>
-            <Suspense fallback={<LoadingSpinner />}>
-              <AppRoutes />
-            </Suspense>
-            <Toaster />
-          </LazyMotion>
-        </ToastProvider>
-      </QueryClientProvider>
+      <ErrorBoundary>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <LazyMotion features={domMax} strict>
+              <Suspense fallback={<LoadingSpinner />}>
+                <AppRoutes />
+              </Suspense>
+              <Toaster />
+            </LazyMotion>
+          </ToastProvider>
+        </QueryClientProvider>
+      </ErrorBoundary>
     </BrowserRouter>
   );
 }

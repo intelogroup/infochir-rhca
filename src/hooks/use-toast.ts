@@ -146,7 +146,11 @@ const reducer = (state: State, action: Action): State => {
 
 const ToastContext = React.createContext<{
   toasts: ToasterToast[]
-  toast: (props: Omit<ToasterToast, "id">) => void
+  toast: (props: Omit<ToasterToast, "id">) => { 
+    id: string
+    dismiss: () => void
+    update: (props: ToasterToast) => void 
+  }
   dismiss: (toastId?: string) => void
 } | null>(null)
 
