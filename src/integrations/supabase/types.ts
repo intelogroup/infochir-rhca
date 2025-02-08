@@ -118,13 +118,16 @@ export type Database = {
           downloads: number | null
           id: string
           image_url: string | null
+          institution: string | null
           pdf_url: string | null
           publication_date: string | null
           shares: number | null
           source: string
+          status: string
           tags: string[] | null
           title: string
           updated_at: string | null
+          user_id: string | null
           views: number | null
         }
         Insert: {
@@ -136,13 +139,16 @@ export type Database = {
           downloads?: number | null
           id?: string
           image_url?: string | null
+          institution?: string | null
           pdf_url?: string | null
           publication_date?: string | null
           shares?: number | null
           source: string
+          status?: string
           tags?: string[] | null
           title: string
           updated_at?: string | null
+          user_id?: string | null
           views?: number | null
         }
         Update: {
@@ -154,13 +160,16 @@ export type Database = {
           downloads?: number | null
           id?: string
           image_url?: string | null
+          institution?: string | null
           pdf_url?: string | null
           publication_date?: string | null
           shares?: number | null
           source?: string
+          status?: string
           tags?: string[] | null
           title?: string
           updated_at?: string | null
+          user_id?: string | null
           views?: number | null
         }
         Relationships: []

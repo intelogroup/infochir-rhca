@@ -13,8 +13,10 @@ export interface Article {
   source?: string;
   pdfUrl?: string;
   imageUrl?: string;
-  coverImage?: string; // Added this field to fix ArticleModal error
+  coverImage?: string;
+  status?: string;
+  institution?: string;
+  userId?: string;
 }
 
 export type SortOption = "latest" | "title" | "author" | "category";
-

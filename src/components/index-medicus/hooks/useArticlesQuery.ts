@@ -39,6 +39,9 @@ const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
     citations: dbArticle.citations || 0,
     pdfUrl: pdfUrl,
     downloads: dbArticle.downloads || 0,
+    institution: dbArticle.institution,
+    status: dbArticle.status,
+    userId: dbArticle.user_id
   };
 
   console.log('Final mapped article:', mappedArticle);

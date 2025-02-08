@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Suspense } from "react";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const IndexMedicus = () => {
   return (
@@ -62,26 +64,28 @@ const IndexMedicus = () => {
               </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="articles" className="mt-3 sm:mt-6">
-              <div className="bg-white rounded-lg p-2 sm:p-4 lg:p-6 shadow-sm">
-                <ArticleGrid viewMode="table" />
-              </div>
-            </TabsContent>
-            <TabsContent value="titre" className="mt-3 sm:mt-6">
-              <div className="bg-white rounded-lg p-3 sm:p-6 shadow-sm">
-                <p className="text-gray-600 text-sm sm:text-base">Liste des titres à venir...</p>
-              </div>
-            </TabsContent>
-            <TabsContent value="authors" className="mt-3 sm:mt-6">
-              <div className="bg-white rounded-lg p-3 sm:p-6 shadow-sm">
-                <p className="text-gray-600 text-sm sm:text-base">Liste des auteurs à venir...</p>
-              </div>
-            </TabsContent>
-            <TabsContent value="institutions" className="mt-3 sm:mt-6">
-              <div className="bg-white rounded-lg p-3 sm:p-6 shadow-sm">
-                <p className="text-gray-600 text-sm sm:text-base">Liste des institutions à venir...</p>
-              </div>
-            </TabsContent>
+            <Suspense fallback={<LoadingSpinner />}>
+              <TabsContent value="articles" className="mt-3 sm:mt-6">
+                <div className="bg-white rounded-lg p-2 sm:p-4 lg:p-6 shadow-sm">
+                  <ArticleGrid viewMode="table" />
+                </div>
+              </TabsContent>
+              <TabsContent value="titre" className="mt-3 sm:mt-6">
+                <div className="bg-white rounded-lg p-3 sm:p-6 shadow-sm">
+                  <p className="text-gray-600 text-sm sm:text-base">Liste des titres à venir...</p>
+                </div>
+              </TabsContent>
+              <TabsContent value="authors" className="mt-3 sm:mt-6">
+                <div className="bg-white rounded-lg p-3 sm:p-6 shadow-sm">
+                  <p className="text-gray-600 text-sm sm:text-base">Liste des auteurs à venir...</p>
+                </div>
+              </TabsContent>
+              <TabsContent value="institutions" className="mt-3 sm:mt-6">
+                <div className="bg-white rounded-lg p-3 sm:p-6 shadow-sm">
+                  <p className="text-gray-600 text-sm sm:text-base">Liste des institutions à venir...</p>
+                </div>
+              </TabsContent>
+            </Suspense>
           </Tabs>
 
           <div className="bg-white rounded-lg sm:rounded-xl p-3 sm:p-6 lg:p-8 shadow-md border border-gray-100 hover:shadow-lg transition-shadow mt-4 sm:mt-6">
