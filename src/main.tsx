@@ -3,7 +3,6 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { LazyMotion, domAnimation } from "framer-motion";
 import App from "./App";
 import "./index.css";
 import { Toaster } from "sonner";
@@ -29,10 +28,8 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
-        <LazyMotion features={domAnimation} strict>
-          <App />
-          <Toaster position="top-center" />
-        </LazyMotion>
+        <App />
+        <Toaster position="top-center" />
       </QueryClientProvider>
     </BrowserRouter>
   </React.StrictMode>
