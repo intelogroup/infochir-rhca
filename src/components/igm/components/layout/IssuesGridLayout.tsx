@@ -1,10 +1,10 @@
 
-import { SearchAndSort } from "@/components/issues/SearchAndSort";
+import { IssuesSearch } from "../IssuesSearch";
 import { IssuesGridContent } from "@/components/igm/components/IssuesGridContent";
 import { useIssuesState } from "../../hooks/useIssuesState";
 import { mockIssues } from "../../data/mockIssues";
 import { SORT_OPTIONS } from "../../constants/sortOptions";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { SortOption } from "@/types/sortOptions";
@@ -18,22 +18,15 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("latest");
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [displayCount, setDisplayCount] = useState(6);
   const isMobile = useIsMobile();
 
-  const { sortedIssues, issuesByYear, sortedYears, availableCategories } = useIssuesState(mockIssues, {
+  const { sortedIssues, issuesByYear, sortedYears } = useIssuesState(mockIssues, {
     searchTerm,
     sortBy,
     dateRange,
-    selectedCategories,
   });
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1000);
-    return () => clearTimeout(timer);
-  }, []);
 
   const loadMore = () => {
     setDisplayCount(prev => prev + (isMobile ? 3 : 6));
@@ -41,6 +34,22 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
 
   return (
     <div className="space-y-4 sm:space-y-6">
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <IssuesSearch
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          dateRange={dateRange}
+          setDateRange={setDateRange}
+          sortOptions={SORT_OPTIONS}
+        />
+      </motion.div>
+      
       <div className="px-2 sm:px-4">
         <motion.div
           initial={{ opacity: 0, y: 10 }}

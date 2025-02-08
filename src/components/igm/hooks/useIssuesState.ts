@@ -1,3 +1,4 @@
+
 import { useMemo, useCallback } from "react";
 import type { Issue } from "../types";
 import type { SortOption } from "../constants/sortOptions";
@@ -8,7 +9,6 @@ interface IssuesStateOptions {
   searchTerm: string;
   sortBy: SortOption;
   dateRange?: DateRange;
-  selectedCategories?: string[];
 }
 
 export const useIssuesState = (
@@ -17,10 +17,9 @@ export const useIssuesState = (
     searchTerm,
     sortBy,
     dateRange,
-    selectedCategories = [],
   }: IssuesStateOptions
 ) => {
-  // Memoize the search filter function with debouncing
+  // Memoize the search filter function
   const filterBySearch = useCallback((issue: Issue): boolean => {
     if (!searchTerm) return true;
     
@@ -34,7 +33,7 @@ export const useIssuesState = (
     
     if (mainFieldsMatch) return true;
     
-    // Only check articles if necessary
+    // Check articles if necessary
     return issue.articles.some(article => 
       searchTerms.every(term => 
         article.title.toLowerCase().includes(term) ||
@@ -57,27 +56,18 @@ export const useIssuesState = (
     return isAfterStart && isBeforeEnd;
   }, [dateRange]);
 
-  // Memoize category filtering
-  const filterByCategory = useCallback((issue: Issue): boolean => {
-    if (selectedCategories.length === 0) return true;
-    return issue.articles.some(article =>
-      article.tags?.some(tag => selectedCategories.includes(tag))
-    );
-  }, [selectedCategories]);
-
-  // Apply filters in sequence, from fastest to most expensive
+  // Apply filters in sequence
   const filteredIssues = useMemo(() => {
     console.time('filtering');
     const filtered = issues.filter(issue => 
       filterByDate(issue) && 
-      filterByCategory(issue) && 
       filterBySearch(issue)
     );
     console.timeEnd('filtering');
     return filtered;
-  }, [issues, filterByDate, filterByCategory, filterBySearch]);
+  }, [issues, filterByDate, filterBySearch]);
 
-  // Memoize sorting with optimized comparisons
+  // Memoize sorting
   const sortedIssues = useMemo(() => {
     console.time('sorting');
     const sorted = [...filteredIssues];
@@ -97,7 +87,7 @@ export const useIssuesState = (
     return sorted;
   }, [filteredIssues, sortBy]);
 
-  // Memoize year grouping with optimized object creation
+  // Group by year with optimization
   const { issuesByYear, sortedYears } = useMemo(() => {
     console.time('grouping');
     const byYear: Record<number, Issue[]> = {};
@@ -123,23 +113,9 @@ export const useIssuesState = (
     };
   }, [sortedIssues]);
 
-  // Memoize available categories
-  const availableCategories = useMemo(() => {
-    const categories = new Set<string>();
-    for (const issue of issues) {
-      for (const article of issue.articles) {
-        if (article.tags) {
-          article.tags.forEach(tag => categories.add(tag));
-        }
-      }
-    }
-    return Array.from(categories).sort();
-  }, [issues]);
-
   return {
     sortedIssues,
     issuesByYear,
     sortedYears,
-    availableCategories,
   };
 };
