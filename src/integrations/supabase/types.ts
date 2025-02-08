@@ -31,6 +31,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "article_authors_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "rhca_articles_view"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "article_authors_member_id_fkey"
             columns: ["member_id"]
             isOneToOne: false
@@ -422,7 +429,95 @@ export type Database = {
             referencedRelation: "articles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "article_authors_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
+            referencedRelation: "rhca_articles_view"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      rhca_articles_view: {
+        Row: {
+          abstract: string | null
+          article_type: string | null
+          authors: string[] | null
+          category: string | null
+          citations: number | null
+          created_at: string | null
+          downloads: number | null
+          id: string | null
+          image_url: string | null
+          institution: string | null
+          issue: string | null
+          page_number: string | null
+          pdf_url: string | null
+          publication_date: string | null
+          shares: number | null
+          source: string | null
+          specialty: string | null
+          status: string | null
+          tags: string[] | null
+          title: string | null
+          updated_at: string | null
+          user_id: string | null
+          views: number | null
+          volume: string | null
+        }
+        Insert: {
+          abstract?: string | null
+          article_type?: string | null
+          authors?: string[] | null
+          category?: string | null
+          citations?: number | null
+          created_at?: string | null
+          downloads?: number | null
+          id?: string | null
+          image_url?: string | null
+          institution?: string | null
+          issue?: string | null
+          page_number?: string | null
+          pdf_url?: string | null
+          publication_date?: string | null
+          shares?: number | null
+          source?: string | null
+          specialty?: string | null
+          status?: string | null
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          views?: number | null
+          volume?: string | null
+        }
+        Update: {
+          abstract?: string | null
+          article_type?: string | null
+          authors?: string[] | null
+          category?: string | null
+          citations?: number | null
+          created_at?: string | null
+          downloads?: number | null
+          id?: string | null
+          image_url?: string | null
+          institution?: string | null
+          issue?: string | null
+          page_number?: string | null
+          pdf_url?: string | null
+          publication_date?: string | null
+          shares?: number | null
+          source?: string | null
+          specialty?: string | null
+          status?: string | null
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          views?: number | null
+          volume?: string | null
+        }
+        Relationships: []
       }
     }
     Functions: {
