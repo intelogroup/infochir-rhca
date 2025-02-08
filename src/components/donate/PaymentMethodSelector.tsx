@@ -4,6 +4,7 @@ import { DollarSign } from "lucide-react";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { motion } from "framer-motion";
 
 interface PaymentMethodSelectorProps {
   onSubmit: (amount: number) => void;
@@ -15,12 +16,24 @@ export const PaymentMethodSelector = ({
   isProcessing
 }: PaymentMethodSelectorProps) => {
   const [amount, setAmount] = useState("");
+  const [error, setError] = useState("");
+
+  const handleAmountChange = (value: string) => {
+    setAmount(value);
+    setError("");
+  };
 
   const handleSubmit = () => {
     const numericAmount = parseFloat(amount);
-    if (numericAmount > 0) {
-      onSubmit(numericAmount);
+    if (!amount || numericAmount <= 0) {
+      setError("Please enter a valid amount");
+      return;
     }
+    if (numericAmount > 10000) {
+      setError("Maximum donation amount is $10,000");
+      return;
+    }
+    onSubmit(numericAmount);
   };
 
   return (
@@ -35,13 +48,23 @@ export const PaymentMethodSelector = ({
             id="amount"
             type="number"
             min="1"
+            max="10000"
             step="1"
             placeholder="Enter amount"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="pl-10"
+            onChange={(e) => handleAmountChange(e.target.value)}
+            className={`pl-10 ${error ? 'border-red-500' : ''}`}
           />
         </div>
+        {error && (
+          <motion.p
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-sm text-red-500 mt-1"
+          >
+            {error}
+          </motion.p>
+        )}
       </div>
 
       <Button 

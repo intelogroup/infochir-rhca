@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { stripePromise } from "@/lib/stripe";
+import { useNavigate } from "react-router-dom";
 
 const BackButton = () => {
   return (
@@ -26,7 +27,7 @@ const BackButton = () => {
 };
 
 const Donate = () => {
-  console.log("[Donate] Component mounting");
+  const navigate = useNavigate();
   useScrollToTop();
   
   const [isProcessing, setIsProcessing] = useState(false);
@@ -45,7 +46,6 @@ const Donate = () => {
     try {
       setIsProcessing(true);
 
-      // Create Stripe Checkout session
       const { data: sessionData, error: sessionError } = await supabase.functions.invoke('stripe-checkout', {
         body: {
           amount,
@@ -61,7 +61,11 @@ const Donate = () => {
 
       if (sessionError) {
         console.error("[Donate] Session creation error:", sessionError);
-        throw sessionError;
+        throw new Error(sessionError.message || "Failed to create checkout session");
+      }
+
+      if (!sessionData?.session_id) {
+        throw new Error("No session ID returned from server");
       }
 
       // Get Stripe instance
@@ -70,7 +74,7 @@ const Donate = () => {
         throw new Error("Stripe failed to initialize");
       }
 
-      // Redirect to Stripe Checkout using the Stripe instance
+      // Redirect to Stripe Checkout
       const { error: redirectError } = await stripe.redirectToCheckout({
         sessionId: sessionData.session_id
       });
@@ -94,23 +98,21 @@ const Donate = () => {
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_70%,transparent_100%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_70%,transparent_100%)]" />
         
-        <div className="relative max-w-4xl mx-auto px-4 py-12">
+        <div className="relative max-w-7xl mx-auto px-4 py-12">
           <BackButton />
           <DonateHeader />
           
-          <div className="grid gap-8">
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              className="space-y-6"
-            >
-              <DonateForm
-                onSubmit={handleDonation}
-                isProcessing={isProcessing}
-              />
-            </motion.div>
-          </div>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mt-12"
+          >
+            <DonateForm
+              onSubmit={handleDonation}
+              isProcessing={isProcessing}
+            />
+          </motion.div>
         </div>
       </div>
       <Toaster position="top-center" />
