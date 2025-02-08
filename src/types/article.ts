@@ -13,7 +13,6 @@ export interface Article {
   source?: string;
   pdfUrl?: string;
   imageUrl?: string;
-  coverImage?: string;
 }
 
 export type SortOption = "latest" | "title" | "author" | "category";
