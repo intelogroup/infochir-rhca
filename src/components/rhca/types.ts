@@ -1,21 +1,28 @@
+
 export interface RhcaArticle {
   id: string;
   title: string;
   abstract: string;
   authors: string[];
-  publicationDate: string;
+  publicationDate: Date;
+  date: string;
   specialty: string;
   category?: string;
+  source: ArticleSource;
   volume: string;
+  issue?: string;
   pageNumber: string;
-  date: string;
-  views?: string;
-  downloads?: string;
-  shares?: string;
-  citations?: string;
-  tags?: string[];
+  views?: number;
+  downloads?: number;
+  shares?: number;
+  citations?: number;
+  tags: string[];
   imageUrl?: string;
   pdfUrl?: string;
+  status?: string;
+  institution?: string;
+  userId?: string;
+  articleType?: ArticleSource;
 }
 
 export interface RhcaVolume {

@@ -1,3 +1,4 @@
+
 export type ArticleSource = "RHCA" | "IGM" | "ADC";
 
 export interface Article {
@@ -5,6 +6,7 @@ export interface Article {
   title: string;
   authors: string[];
   date: string;
+  publicationDate: Date;
   category: string;
   source: ArticleSource;
   abstract: string;
@@ -14,6 +16,15 @@ export interface Article {
   citations?: number;
   pdfUrl?: string;
   downloads?: number;
+  shares?: number;
+  status?: string;
+  institution?: string;
+  userId?: string;
+  volume?: string;
+  issue?: string;
+  pageNumber?: string;
+  specialty?: string;
+  articleType?: ArticleSource;
 }
 
 export interface DatabaseArticle {
@@ -33,4 +44,12 @@ export interface DatabaseArticle {
   downloads: number | null;
   created_at: string | null;
   updated_at: string | null;
+  status?: string;
+  institution?: string;
+  user_id?: string;
+  volume?: string;
+  issue?: string;
+  page_number?: string;
+  specialty?: string;
+  article_type?: string;
 }
