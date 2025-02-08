@@ -11,11 +11,11 @@ const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
   
   const authorNames = dbArticle.article_authors?.map((authorRel: any) => {
     console.log('Processing author relation:', authorRel);
-    if (!authorRel.member) {
-      console.warn('Author relation exists but member is null:', authorRel);
+    if (!authorRel.members) {
+      console.warn('Author relation exists but members is null:', authorRel);
       return null;
     }
-    return authorRel.member.name;
+    return authorRel.members.name;
   }).filter(Boolean) || [];
   
   console.log('Extracted author names:', authorNames);
@@ -69,7 +69,7 @@ export const useArticlesQuery = (page = 0) => {
           .select(`
             *,
             article_authors (
-              member (
+              members (
                 name
               )
             )
