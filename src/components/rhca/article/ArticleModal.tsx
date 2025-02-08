@@ -1,3 +1,4 @@
+
 import { DocumentModal } from "@/components/shared/DocumentModal";
 import { Tag } from "lucide-react";
 import type { RhcaArticle } from "../types";
@@ -57,8 +58,8 @@ export const ArticleModal = ({ article, open, onClose }: ArticleModalProps) => {
         title: `Infochir/RHCA Volume ${article.volume} No 1`,
         date: article.date,
         description: article.title,
-        downloadCount: parseInt(article.downloads || "0"),
-        shareCount: parseInt(article.shares || "0"),
+        downloadCount: Number(article.downloads) || 0,
+        shareCount: Number(article.shares) || 0,
         pdfUrl: article.pdfUrl,
         coverImage: article.imageUrl,
       }}

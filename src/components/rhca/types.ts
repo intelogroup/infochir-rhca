@@ -1,10 +1,12 @@
 
+import { ArticleSource } from "@/components/index-medicus/types/article";
+
 export interface RhcaArticle {
   id: string;
   title: string;
   abstract: string;
   authors: string[];
-  publicationDate: Date;
+  publicationDate: string;
   date: string;
   specialty: string;
   category?: string;
