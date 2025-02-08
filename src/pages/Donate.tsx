@@ -6,11 +6,12 @@ import { DonateHeader } from "@/components/donate/DonateHeader";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { Toaster } from "sonner";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, DollarSign } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { stripePromise } from "@/lib/stripe";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { DonationAmountSelector } from "@/components/donate/form/DonationAmountSelector";
 
 const BackButton = () => {
   return (
@@ -27,20 +28,36 @@ const BackButton = () => {
 };
 
 const Donate = () => {
-  const navigate = useNavigate();
   useScrollToTop();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [selectedAmount, setSelectedAmount] = useState(0);
+  const [customAmount, setCustomAmount] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
 
   const handleDonation = async () => {
     try {
+      if (!email) {
+        toast.error("Please enter your email address");
+        return;
+      }
+
+      const amount = customAmount ? Number(customAmount) : selectedAmount;
+      if (!amount) {
+        toast.error("Please select or enter a donation amount");
+        return;
+      }
+
       setIsProcessing(true);
 
       const { data: sessionData, error: sessionError } = await supabase.functions.invoke('stripe-checkout', {
         body: {
-          amount: 100, // Default amount that will be adjustable in Stripe Checkout
+          amount,
           currency: 'usd',
           donor_info: {
-            is_anonymous: false
+            name,
+            email,
+            is_anonymous: !name,
           }
         }
       });
@@ -89,19 +106,57 @@ const Donate = () => {
             <BackButton />
           </div>
           
-          <div className="max-w-2xl mx-auto text-center">
+          <div className="max-w-2xl mx-auto">
             <DonateHeader />
             
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="mt-12"
+              className="mt-12 space-y-8 bg-white p-8 rounded-2xl shadow-lg border border-gray-100"
             >
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Email (required)</label>
+                  <Input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Name (optional)</label>
+                  <Input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Enter your name"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-4 block">Select amount</label>
+                <DonationAmountSelector
+                  selectedAmount={selectedAmount}
+                  customAmount={customAmount}
+                  onAmountChange={(amount) => {
+                    setSelectedAmount(amount);
+                    setCustomAmount("");
+                  }}
+                  onCustomAmountChange={(e) => {
+                    setCustomAmount(e.target.value);
+                    setSelectedAmount(0);
+                  }}
+                />
+              </div>
+
               <Button
                 onClick={handleDonation}
                 disabled={isProcessing}
-                className="w-64 h-14 text-lg bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white relative overflow-hidden group"
+                className="w-full h-14 text-lg bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white relative overflow-hidden group"
               >
                 {isProcessing ? (
                   <span className="flex items-center gap-2">
@@ -109,10 +164,7 @@ const Donate = () => {
                     Processing...
                   </span>
                 ) : (
-                  <>
-                    <DollarSign className="mr-2 h-5 w-5" />
-                    Donate Now
-                  </>
+                  <span>Continue to Payment</span>
                 )}
               </Button>
             </motion.div>
