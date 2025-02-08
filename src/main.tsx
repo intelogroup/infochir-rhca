@@ -20,18 +20,14 @@ const queryClient = new QueryClient({
 const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error('Root element not found');
 
-const root = ReactDOM.createRoot(rootElement);
-
-console.info("[App] Initializing with React Router and Query Client");
-
-root.render(
+ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
         <App />
         <Toaster position="top-center" />
-      </QueryClientProvider>
-    </BrowserRouter>
+      </BrowserRouter>
+    </QueryClientProvider>
   </React.StrictMode>
 );
 
