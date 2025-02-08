@@ -1,3 +1,4 @@
+
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
@@ -6,7 +7,9 @@ import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
   plugins: [
-    react(),
+    react({
+      jsxRuntime: 'automatic'
+    }),
     mode === 'development' && componentTagger(),
     mode === 'development' && visualizer({
       template: "treemap",
@@ -21,6 +24,21 @@ export default defineConfig(({ mode }) => ({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'framer-motion',
+      'react-router-dom',
+      '@tanstack/react-query',
+      'sonner'
+    ],
+    esbuildOptions: {
+      define: {
+        global: 'globalThis'
+      }
+    }
+  },
   build: {
     rollupOptions: {
       output: {
@@ -33,6 +51,9 @@ export default defineConfig(({ mode }) => ({
       }
     },
     sourcemap: true,
+    commonjsOptions: {
+      transformMixedEsModules: true
+    }
   },
   server: {
     host: "::",

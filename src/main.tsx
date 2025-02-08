@@ -31,7 +31,7 @@ root.render(
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <LazyMotion features={domAnimation}>
-          <AnimatePresence>
+          <AnimatePresence mode="wait">
             <ErrorBoundary>
               <App />
               <Toaster />
