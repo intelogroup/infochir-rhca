@@ -1,5 +1,5 @@
 
-import { Calendar, User, Eye, Quote, FileText, Share2, BookOpen } from "lucide-react";
+import { Calendar, User, Eye, Quote, FileText, Share2, BookOpen, Stethoscope } from "lucide-react";
 
 interface ArticleMetadataProps {
   authors: string[];
@@ -11,6 +11,7 @@ interface ArticleMetadataProps {
   volume?: string;
   issue?: string;
   pageNumber?: string;
+  specialty?: string;
 }
 
 export const ArticleMetadata = ({ 
@@ -22,16 +23,31 @@ export const ArticleMetadata = ({
   shares,
   volume,
   issue,
-  pageNumber
+  pageNumber,
+  specialty
 }: ArticleMetadataProps) => {
   return (
     <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500">
-      <User className="h-4 w-4" />
-      {authors.join(", ")}
+      {authors.length > 0 && (
+        <>
+          <User className="h-4 w-4" />
+          <span className="truncate max-w-[200px]">
+            {authors.join(", ")}
+          </span>
+        </>
+      )}
       
       <span className="mx-2">•</span>
       <Calendar className="h-4 w-4" />
       {new Date(date).toLocaleDateString()}
+      
+      {specialty && (
+        <>
+          <span className="mx-2">•</span>
+          <Stethoscope className="h-4 w-4" />
+          {specialty}
+        </>
+      )}
       
       {volume && issue && (
         <>
@@ -53,7 +69,7 @@ export const ArticleMetadata = ({
         <>
           <span className="mx-2">•</span>
           <Eye className="h-4 w-4" />
-          {views} vues
+          {views.toLocaleString()} vues
         </>
       )}
       
@@ -61,7 +77,7 @@ export const ArticleMetadata = ({
         <>
           <span className="mx-2">•</span>
           <Quote className="h-4 w-4" />
-          {citations} citations
+          {citations.toLocaleString()} citations
         </>
       )}
       
@@ -69,7 +85,7 @@ export const ArticleMetadata = ({
         <>
           <span className="mx-2">•</span>
           <FileText className="h-4 w-4" />
-          {downloads} téléchargements
+          {downloads.toLocaleString()} téléchargements
         </>
       )}
       
@@ -77,7 +93,7 @@ export const ArticleMetadata = ({
         <>
           <span className="mx-2">•</span>
           <Share2 className="h-4 w-4" />
-          {shares} partages
+          {shares.toLocaleString()} partages
         </>
       )}
     </div>

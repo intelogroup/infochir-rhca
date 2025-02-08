@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { TableActions } from "./TableActions";
 import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
 import type { Article } from "../types";
-import { User } from "lucide-react";
+import { User, BookOpen, FileText } from "lucide-react";
 
 interface ArticleTableRowProps {
   article: Article;
@@ -37,9 +37,29 @@ export const ArticleTableRow = ({ article }: ArticleTableRowProps) => {
             <div className="font-semibold text-lg text-primary hover:text-primary/80 cursor-pointer">
               {article.title || 'Untitled'}
             </div>
-            <div className="flex items-center gap-1.5 mt-2 text-sm italic text-[#41b06e]">
-              <User className="h-3.5 w-3.5" />
-              {safeAuthors.length > 0 ? safeAuthors.join(", ") : 'No authors listed'}
+            <div className="flex flex-wrap items-center gap-2 mt-2 text-sm">
+              <div className="flex items-center gap-1.5 italic text-[#41b06e]">
+                <User className="h-3.5 w-3.5" />
+                {safeAuthors.length > 0 ? safeAuthors.join(", ") : 'No authors listed'}
+              </div>
+              {article.volume && article.issue && (
+                <>
+                  <span className="text-gray-300">•</span>
+                  <div className="flex items-center gap-1.5 text-gray-500">
+                    <BookOpen className="h-3.5 w-3.5" />
+                    Vol. {article.volume}, No. {article.issue}
+                  </div>
+                </>
+              )}
+              {article.pageNumber && (
+                <>
+                  <span className="text-gray-300">•</span>
+                  <div className="flex items-center gap-1.5 text-gray-500">
+                    <FileText className="h-3.5 w-3.5" />
+                    Page {article.pageNumber}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
