@@ -33,28 +33,26 @@ function AppRoutes() {
   const location = useLocation();
 
   return (
-    <ErrorBoundary>
-      <MainLayout>
-        <AnimatePresence mode="wait" initial={false} onExitComplete={() => window.scrollTo(0, 0)}>
-          <Routes location={location} key={location.pathname}>
-            <Route path="/" element={<Home />} />
-            <Route path="/rhca" element={<RHCA />} />
-            <Route path="/rhca/directives" element={<RHCADirectives />} />
-            <Route path="/igm" element={<IGM />} />
-            <Route path="/igm/directives" element={<IGMDirectives />} />
-            <Route path="/igm/editorial-committee" element={<EditorialCommittee />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/submission" element={<Submission />} />
-            <Route path="/annuaire" element={<Annuaire />} />
-            <Route path="/donate" element={<Donate />} />
-            <Route path="/donate/success" element={<DonateSuccess />} />
-            <Route path="/jobs" element={<Opportunities />} />
-            <Route path="/adc/*" element={<ADC />} />
-            <Route path="/index-medicus" element={<IndexMedicus />} />
-          </Routes>
-        </AnimatePresence>
-      </MainLayout>
-    </ErrorBoundary>
+    <MainLayout>
+      <AnimatePresence mode="wait" initial={false} onExitComplete={() => window.scrollTo(0, 0)}>
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<Home />} />
+          <Route path="/rhca" element={<RHCA />} />
+          <Route path="/rhca/directives" element={<RHCADirectives />} />
+          <Route path="/igm" element={<IGM />} />
+          <Route path="/igm/directives" element={<IGMDirectives />} />
+          <Route path="/igm/editorial-committee" element={<EditorialCommittee />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/submission" element={<Submission />} />
+          <Route path="/annuaire" element={<Annuaire />} />
+          <Route path="/donate" element={<Donate />} />
+          <Route path="/donate/success" element={<DonateSuccess />} />
+          <Route path="/jobs" element={<Opportunities />} />
+          <Route path="/adc/*" element={<ADC />} />
+          <Route path="/index-medicus" element={<IndexMedicus />} />
+        </Routes>
+      </AnimatePresence>
+    </MainLayout>
   );
 }
 

@@ -144,15 +144,17 @@ const reducer = (state: State, action: Action): State => {
   }
 }
 
-const ToastContext = React.createContext<{
+interface ToastContextValue {
   toasts: ToasterToast[]
-  toast: (props: Omit<ToasterToast, "id">) => { 
+  toast: (props: Omit<ToasterToast, "id">) => {
     id: string
     dismiss: () => void
-    update: (props: ToasterToast) => void 
+    update: (props: ToasterToast) => void
   }
   dismiss: (toastId?: string) => void
-} | null>(null)
+}
+
+const ToastContext = React.createContext<ToastContextValue | null>(null)
 
 export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = React.useReducer(reducer, { toasts: [] })
