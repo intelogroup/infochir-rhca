@@ -71,6 +71,13 @@ const addToRemoveQueue = (toastId: string) => {
   toastTimeouts.set(toastId, timeout)
 }
 
+const clearToasts = () => {
+  toastTimeouts.forEach((timeout) => {
+    clearTimeout(timeout);
+  });
+  toastTimeouts.clear();
+};
+
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "ADD_TOAST":
@@ -132,6 +139,12 @@ const ToastContext = React.createContext<{
 
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = React.useReducer(reducer, { toasts: [] });
+
+  React.useEffect(() => {
+    return () => {
+      clearToasts();
+    };
+  }, []);
 
   const toast = React.useCallback((props: Omit<ToasterToast, "id">) => {
     const id = genId();

@@ -21,6 +21,16 @@ export default defineConfig(({ mode }) => ({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+    dedupe: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      'framer-motion',
+      '@tanstack/react-query',
+      'sonner',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-slot'
+    ]
   },
   optimizeDeps: {
     include: [
@@ -59,7 +69,9 @@ export default defineConfig(({ mode }) => ({
     strictPort: true,
     hmr: {
       clientPort: 443,
-      protocol: 'wss'
+      protocol: 'wss',
+      timeout: 120000,
+      overlay: false
     }
   },
   // Add better error reporting
