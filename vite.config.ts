@@ -21,6 +21,7 @@ export default defineConfig(({ mode }) => ({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+    dedupe: ['react', 'react-dom', 'framer-motion']
   },
   optimizeDeps: {
     include: [
@@ -62,7 +63,6 @@ export default defineConfig(({ mode }) => ({
       protocol: 'wss'
     }
   },
-  // Add better error reporting
   esbuild: {
     logOverride: { 'this-is-undefined-in-esm': 'silent' }
   }
