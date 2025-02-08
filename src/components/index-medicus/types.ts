@@ -6,7 +6,7 @@ export interface Article {
   title: string;
   authors: string[];
   date: string;
-  publicationDate: string; // Added to match the required type
+  publicationDate: Date; // Changed to Date to match the application-wide type
   category: string;
   source: ArticleSource;
   abstract: string;

@@ -9,7 +9,6 @@ const PAGE_SIZE = 10;
 const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
   console.log('Mapping database article:', dbArticle);
   
-  // Extract author names from the members relationship
   const authorNames = dbArticle.article_authors?.map((authorRel: any) => {
     console.log('Processing author relation:', authorRel);
     if (!authorRel.member) {
@@ -21,7 +20,6 @@ const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
   
   console.log('Extracted author names:', authorNames);
 
-  // Handle PDF URL properly
   const pdfUrl = typeof dbArticle.pdf_url === 'string' ? dbArticle.pdf_url : undefined;
 
   const mappedArticle: Article = {
@@ -29,7 +27,7 @@ const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
     title: dbArticle.title,
     abstract: dbArticle.abstract,
     date: dbArticle.publication_date,
-    publicationDate: dbArticle.publication_date, // Added to match the required type
+    publicationDate: new Date(dbArticle.publication_date), // Convert to Date object
     source: dbArticle.source,
     category: dbArticle.category,
     authors: authorNames.length > 0 ? authorNames : [],
@@ -61,7 +59,6 @@ export const useArticlesQuery = (page = 0) => {
       console.log('Executing Supabase query with range:', { start, end });
 
       try {
-        // Updated query to properly join with members table through article_authors
         const { data, error, count } = await supabase
           .from("articles")
           .select(`
@@ -102,8 +99,8 @@ export const useArticlesQuery = (page = 0) => {
         throw err;
       }
     },
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    gcTime: 30 * 60 * 1000, // Keep inactive data for 30 minutes
-    retry: 2, // Retry failed requests twice
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    retry: 2,
   });
 };
