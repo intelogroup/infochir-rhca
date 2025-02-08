@@ -1,10 +1,12 @@
 
 import { Suspense, lazy } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, BrowserRouter } from "react-router-dom";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { AnimatePresence, domMax, LazyMotion } from "framer-motion";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
+import { ToastProvider } from "@/hooks/use-toast";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Preload critical routes
 const Home = lazy(() => import("@/pages/Home" /* webpackPrefetch: true */));
@@ -24,7 +26,9 @@ const Opportunities = lazy(() => import("@/pages/Opportunities"));
 const RHCADirectives = lazy(() => import("@/pages/rhca/Directives"));
 const IGMDirectives = lazy(() => import("@/pages/igm/Directives")); 
 
-function App() {
+const queryClient = new QueryClient();
+
+function AppRoutes() {
   const location = useLocation();
   
   return (
@@ -57,6 +61,18 @@ function App() {
         </MainLayout>
       </ErrorBoundary>
     </LazyMotion>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <ToastProvider>
+          <AppRoutes />
+        </ToastProvider>
+      </QueryClientProvider>
+    </BrowserRouter>
   );
 }
 
