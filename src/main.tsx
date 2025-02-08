@@ -3,11 +3,9 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { LazyMotion, domAnimation, AnimatePresence } from "framer-motion";
+import { LazyMotion, domAnimation } from "framer-motion";
 import App from "./App";
 import "./index.css";
-import { Toaster } from "sonner";
-import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 
 // Configure React Query client
 const queryClient = new QueryClient({
@@ -30,13 +28,8 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
-        <LazyMotion features={domAnimation}>
-          <AnimatePresence mode="wait">
-            <ErrorBoundary>
-              <App />
-              <Toaster />
-            </ErrorBoundary>
-          </AnimatePresence>
+        <LazyMotion features={domAnimation} strict>
+          <App />
         </LazyMotion>
       </QueryClientProvider>
     </BrowserRouter>
