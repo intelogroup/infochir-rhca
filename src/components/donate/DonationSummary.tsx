@@ -10,9 +10,9 @@ export const DonationSummary = ({ amount }: DonationSummaryProps) => {
   const total = amount + processingFee;
 
   return (
-    <Card className="shadow-lg sticky top-24 backdrop-blur-sm bg-white/80 border-gray-100/20">
+    <Card className="sticky top-24 bg-white/90 backdrop-blur-sm border border-gray-100/20 shadow-xl">
       <CardHeader>
-        <CardTitle className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+        <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
           Donation Summary
         </CardTitle>
       </CardHeader>
@@ -32,8 +32,8 @@ export const DonationSummary = ({ amount }: DonationSummaryProps) => {
           </div>
         </div>
       </CardContent>
-      <CardFooter className="text-sm text-gray-500 bg-gradient-to-b from-secondary/5 to-primary/5 rounded-b-lg">
-        <div className="space-y-2 w-full">
+      <CardFooter className="text-sm text-gray-600 bg-gradient-to-b from-gray-50/50 to-gray-100/50 rounded-b-lg">
+        <div className="space-y-3 w-full">
           <p className="font-medium text-primary">Your Impact</p>
           <ul className="list-disc list-inside space-y-1">
             <li>Support medical research in Haiti</li>
@@ -41,7 +41,7 @@ export const DonationSummary = ({ amount }: DonationSummaryProps) => {
             <li>Train the next generation of doctors</li>
             <li>Contribute to medical innovation</li>
           </ul>
-          <p className="text-xs mt-4">
+          <p className="text-xs mt-4 text-gray-500">
             Your donation may be tax-deductible. You will receive a receipt via email.
           </p>
         </div>

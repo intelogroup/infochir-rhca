@@ -40,7 +40,7 @@ export const PaymentMethodSelector = ({
     <div className="space-y-4">
       <div>
         <Label htmlFor="amount">Donation Amount (USD)</Label>
-        <div className="relative">
+        <div className="relative mt-1.5">
           <span className="absolute left-3 top-1/2 -translate-y-1/2">
             <DollarSign className="h-4 w-4 text-gray-500" />
           </span>
@@ -53,7 +53,7 @@ export const PaymentMethodSelector = ({
             placeholder="Enter amount"
             value={amount}
             onChange={(e) => handleAmountChange(e.target.value)}
-            className={`pl-10 ${error ? 'border-red-500' : ''}`}
+            className={`pl-10 h-12 text-lg ${error ? 'border-red-500 focus:ring-red-500' : ''}`}
           />
         </div>
         {error && (
@@ -70,7 +70,7 @@ export const PaymentMethodSelector = ({
       <Button 
         onClick={handleSubmit}
         disabled={isProcessing || !amount || parseFloat(amount) <= 0}
-        className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white relative overflow-hidden group"
+        className="w-full h-12 text-lg bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white relative overflow-hidden group"
       >
         {isProcessing ? (
           <span className="flex items-center gap-2">
@@ -79,7 +79,7 @@ export const PaymentMethodSelector = ({
           </span>
         ) : (
           <>
-            <DollarSign className="mr-2 h-4 w-4" />
+            <DollarSign className="mr-2 h-5 w-5" />
             Donate Now
           </>
         )}

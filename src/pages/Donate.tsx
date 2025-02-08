@@ -17,7 +17,7 @@ const BackButton = () => {
     <Button 
       variant="ghost" 
       size="sm" 
-      className="gap-2 text-primary hover:text-primary-light mb-6"
+      className="gap-2 text-primary hover:text-primary-light"
       onClick={() => window.history.back()}
     >
       <ArrowLeft className="h-4 w-4" />
@@ -94,25 +94,32 @@ const Donate = () => {
 
   return (
     <MainLayout>
-      <div className="relative min-h-screen bg-gradient-to-b from-gray-50 to-white pt-[50px]">
+      <div className="relative min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50">
+        {/* Background pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_70%,transparent_100%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_70%,transparent_100%)]" />
         
-        <div className="relative max-w-7xl mx-auto px-4 py-12">
-          <BackButton />
-          <DonateHeader />
+        {/* Content */}
+        <div className="relative max-w-6xl mx-auto px-4 py-12">
+          <div className="mb-8">
+            <BackButton />
+          </div>
           
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mt-12"
-          >
-            <DonateForm
-              onSubmit={handleDonation}
-              isProcessing={isProcessing}
-            />
-          </motion.div>
+          <div className="max-w-4xl mx-auto">
+            <DonateHeader />
+            
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mt-12"
+            >
+              <DonateForm
+                onSubmit={handleDonation}
+                isProcessing={isProcessing}
+              />
+            </motion.div>
+          </div>
         </div>
       </div>
       <Toaster position="top-center" />
