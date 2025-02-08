@@ -1,5 +1,5 @@
 
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -8,6 +8,13 @@ import { Link } from "react-router-dom";
 export const RHCAHeader = () => {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollY } = useScroll();
+  
+  useEffect(() => {
+    console.log("[RHCAHeader] Component mounted, scroll tracking initialized");
+    return () => {
+      console.log("[RHCAHeader] Component unmounted, cleaning up scroll tracking");
+    };
+  }, []);
   
   const y = useTransform(scrollY, [0, 300], [0, -50]);
   const opacity = useTransform(scrollY, [0, 300], [1, 0.3]);
@@ -59,7 +66,7 @@ export const RHCAHeader = () => {
               Revue Haïtienne de Chirurgie et d'Anesthésiologie
             </motion.h1>
             <motion.p 
-              className="text-lg sm:text-xl text-[#41b06e]/80"
+              className="text-xl text-[#41b06e]/80"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}

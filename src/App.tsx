@@ -2,8 +2,6 @@
 import { Suspense, lazy } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
-import { Toaster } from "sonner";
 import { AnimatePresence } from "framer-motion";
 
 // Preload critical routes
@@ -28,32 +26,29 @@ function App() {
   const location = useLocation();
   
   return (
-    <ErrorBoundary>
-      <AnimatePresence mode="wait" initial={false}>
-        <Suspense 
-          key={location.pathname}
-          fallback={<LoadingSpinner />}
-        >
-          <Routes location={location}>
-            <Route path="/" element={<Home />} />
-            <Route path="/rhca" element={<RHCA />} />
-            <Route path="/rhca/directives" element={<RHCADirectives />} />
-            <Route path="/igm" element={<IGM />} />
-            <Route path="/igm/directives" element={<IGMDirectives />} />
-            <Route path="/igm/editorial-committee" element={<EditorialCommittee />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/submission" element={<Submission />} />
-            <Route path="/annuaire" element={<Annuaire />} />
-            <Route path="/donate" element={<Donate />} />
-            <Route path="/donate/success" element={<DonateSuccess />} />
-            <Route path="/jobs" element={<Opportunities />} />
-            <Route path="/adc/*" element={<ADC />} />
-            <Route path="/index-medicus" element={<IndexMedicus />} />
-          </Routes>
-        </Suspense>
-      </AnimatePresence>
-      <Toaster position="top-center" />
-    </ErrorBoundary>
+    <AnimatePresence mode="wait" initial={false}>
+      <Suspense 
+        key={location.pathname}
+        fallback={<LoadingSpinner />}
+      >
+        <Routes location={location}>
+          <Route path="/" element={<Home />} />
+          <Route path="/rhca" element={<RHCA />} />
+          <Route path="/rhca/directives" element={<RHCADirectives />} />
+          <Route path="/igm" element={<IGM />} />
+          <Route path="/igm/directives" element={<IGMDirectives />} />
+          <Route path="/igm/editorial-committee" element={<EditorialCommittee />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/submission" element={<Submission />} />
+          <Route path="/annuaire" element={<Annuaire />} />
+          <Route path="/donate" element={<Donate />} />
+          <Route path="/donate/success" element={<DonateSuccess />} />
+          <Route path="/jobs" element={<Opportunities />} />
+          <Route path="/adc/*" element={<ADC />} />
+          <Route path="/index-medicus" element={<IndexMedicus />} />
+        </Routes>
+      </Suspense>
+    </AnimatePresence>
   );
 }
 
