@@ -40,7 +40,12 @@ const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
     institution: dbArticle.institution,
     status: dbArticle.status,
     userId: dbArticle.user_id,
-    shares: dbArticle.shares || 0
+    shares: dbArticle.shares || 0,
+    volume: dbArticle.volume,
+    issue: dbArticle.issue,
+    pageNumber: dbArticle.page_number,
+    specialty: dbArticle.specialty,
+    articleType: dbArticle.article_type
   };
 
   console.log('Final mapped article:', mappedArticle);

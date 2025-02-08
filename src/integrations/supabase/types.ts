@@ -111,6 +111,7 @@ export type Database = {
       articles: {
         Row: {
           abstract: string
+          article_type: string | null
           authors: string[]
           category: string
           citations: number | null
@@ -119,19 +120,24 @@ export type Database = {
           id: string
           image_url: string | null
           institution: string | null
+          issue: string | null
+          page_number: string | null
           pdf_url: string | null
           publication_date: string | null
           shares: number | null
           source: string
+          specialty: string | null
           status: string
           tags: string[] | null
           title: string
           updated_at: string | null
           user_id: string | null
           views: number | null
+          volume: string | null
         }
         Insert: {
           abstract: string
+          article_type?: string | null
           authors?: string[]
           category: string
           citations?: number | null
@@ -140,19 +146,24 @@ export type Database = {
           id?: string
           image_url?: string | null
           institution?: string | null
+          issue?: string | null
+          page_number?: string | null
           pdf_url?: string | null
           publication_date?: string | null
           shares?: number | null
           source: string
+          specialty?: string | null
           status?: string
           tags?: string[] | null
           title: string
           updated_at?: string | null
           user_id?: string | null
           views?: number | null
+          volume?: string | null
         }
         Update: {
           abstract?: string
+          article_type?: string | null
           authors?: string[]
           category?: string
           citations?: number | null
@@ -161,16 +172,20 @@ export type Database = {
           id?: string
           image_url?: string | null
           institution?: string | null
+          issue?: string | null
+          page_number?: string | null
           pdf_url?: string | null
           publication_date?: string | null
           shares?: number | null
           source?: string
+          specialty?: string | null
           status?: string
           tags?: string[] | null
           title?: string
           updated_at?: string | null
           user_id?: string | null
           views?: number | null
+          volume?: string | null
         }
         Relationships: []
       }

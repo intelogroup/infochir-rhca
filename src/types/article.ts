@@ -20,6 +20,11 @@ export interface Article {
   status?: string;
   institution?: string;
   userId?: string;
+  volume?: string;
+  issue?: string;
+  pageNumber?: string;
+  specialty?: string;
+  articleType?: ArticleSource;
 }
 
 export interface SearchFilters {
