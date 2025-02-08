@@ -22,27 +22,12 @@ if (!rootElement) throw new Error('Root element not found');
 
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
         <App />
         <Toaster position="top-center" />
-      </BrowserRouter>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );
 
-// Only log performance metrics in development
-if (process.env.NODE_ENV === 'development') {
-  window.addEventListener('load', () => {
-    const timing = performance.timing;
-    const interactive = timing.domInteractive - timing.navigationStart;
-    const complete = timing.domComplete - timing.navigationStart;
-    const total = timing.loadEventEnd - timing.navigationStart;
-
-    console.info('Performance Metrics', {
-      'DOM Interactive': `${interactive}ms`,
-      'DOM Complete': `${complete}ms`,
-      'Load Total': `${total}ms`
-    });
-  });
-}

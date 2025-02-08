@@ -9,11 +9,6 @@ const PAGE_SIZE = 10;
 const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
   console.log('Mapping database article:', dbArticle);
   
-  // Get author names from the view result
-  const authorNames = dbArticle.article_authors_view?.author_names || [];
-  
-  console.log('Extracted author names:', authorNames);
-
   const publicationDate = new Date(dbArticle.publication_date);
 
   const mappedArticle: Article = {
@@ -60,12 +55,7 @@ export const useArticlesQuery = (page = 0) => {
       try {
         const { data, error, count } = await supabase
           .from("articles")
-          .select(`
-            *,
-            article_authors_view (
-              author_names
-            )
-          `, { count: 'exact' })
+          .select('*', { count: 'exact' })
           .in('source', ['IGM', 'RHCA', 'ADC'])
           .range(start, end)
           .order("publication_date", { ascending: false });
@@ -102,4 +92,3 @@ export const useArticlesQuery = (page = 0) => {
     retry: 2,
   });
 };
-
