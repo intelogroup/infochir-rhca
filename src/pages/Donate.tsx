@@ -3,14 +3,14 @@ import { useState } from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { motion } from "framer-motion";
 import { DonateHeader } from "@/components/donate/DonateHeader";
-import { DonateForm } from "@/components/donate/DonateForm";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { Toaster } from "sonner";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, DollarSign } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { stripePromise } from "@/lib/stripe";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const BackButton = () => {
   return (
@@ -29,32 +29,18 @@ const BackButton = () => {
 const Donate = () => {
   const navigate = useNavigate();
   useScrollToTop();
-  
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleDonation = async (
-    paymentMethod: string, 
-    donorInfo: {
-      name: string;
-      email: string;
-      isAnonymous: boolean;
-      message: string;
-    },
-    amount: number
-  ) => {
-    console.log("[Donate] Processing donation with Stripe Checkout");
+  const handleDonation = async () => {
     try {
       setIsProcessing(true);
 
       const { data: sessionData, error: sessionError } = await supabase.functions.invoke('stripe-checkout', {
         body: {
-          amount,
+          amount: 100, // Default amount that will be adjustable in Stripe Checkout
           currency: 'usd',
           donor_info: {
-            name: donorInfo.isAnonymous ? null : donorInfo.name,
-            email: donorInfo.email,
-            message: donorInfo.message,
-            is_anonymous: donorInfo.isAnonymous
+            is_anonymous: false
           }
         }
       });
@@ -68,13 +54,11 @@ const Donate = () => {
         throw new Error("No session ID returned from server");
       }
 
-      // Get Stripe instance
       const stripe = await stripePromise;
       if (!stripe) {
         throw new Error("Stripe failed to initialize");
       }
 
-      // Redirect to Stripe Checkout
       const { error: redirectError } = await stripe.redirectToCheckout({
         sessionId: sessionData.session_id
       });
@@ -86,7 +70,7 @@ const Donate = () => {
 
     } catch (error: any) {
       console.error('[Donate] Payment error:', error);
-      throw error;
+      toast.error(error.message || "Failed to process donation");
     } finally {
       setIsProcessing(false);
     }
@@ -105,7 +89,7 @@ const Donate = () => {
             <BackButton />
           </div>
           
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-2xl mx-auto text-center">
             <DonateHeader />
             
             <motion.div 
@@ -114,10 +98,23 @@ const Donate = () => {
               transition={{ duration: 0.5 }}
               className="mt-12"
             >
-              <DonateForm
-                onSubmit={handleDonation}
-                isProcessing={isProcessing}
-              />
+              <Button
+                onClick={handleDonation}
+                disabled={isProcessing}
+                className="w-64 h-14 text-lg bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white relative overflow-hidden group"
+              >
+                {isProcessing ? (
+                  <span className="flex items-center gap-2">
+                    <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Processing...
+                  </span>
+                ) : (
+                  <>
+                    <DollarSign className="mr-2 h-5 w-5" />
+                    Donate Now
+                  </>
+                )}
+              </Button>
             </motion.div>
           </div>
         </div>

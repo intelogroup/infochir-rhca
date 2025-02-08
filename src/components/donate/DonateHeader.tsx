@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -42,26 +43,20 @@ export const DonateHeader = () => {
     }, 5000);
   };
 
-  const handleClick = () => {
-    triggerAnimation();
-  };
-
-  // Trigger animation on page load for mobile
   useEffect(() => {
-    if (isMobile) {
-      triggerAnimation();
-    }
-  }, [isMobile]);
+    // Auto-trigger animation on mount
+    triggerAnimation();
+  }, []);
 
   return (
-    <div className="text-center mb-12 space-y-6 px-4 sm:px-6 relative">
+    <div className="text-center space-y-6 px-4 sm:px-6 relative">
       <motion.h1 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent relative cursor-pointer"
-        onClick={handleClick}
+        className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent relative cursor-pointer"
+        onClick={triggerAnimation}
       >
-        Soutenez INFOCHIR/RHCA
+        Support INFOCHIR/RHCA
         <motion.div
           key={animationKey}
           initial="hidden"
@@ -103,10 +98,9 @@ export const DonateHeader = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="text-base md:text-lg text-gray-600 max-w-2xl mx-auto backdrop-blur-sm bg-white/30 p-4 rounded-xl border border-gray-100/20 shadow-xl"
+        className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto backdrop-blur-sm bg-white/30 p-4 rounded-xl border border-gray-100/20 shadow-xl"
       >
-        Votre don aide à maintenir et améliorer la qualité de la recherche médicale en Haïti. 
-        Ensemble, nous pouvons faire progresser les soins de santé dans notre communauté.
+        Your donation helps advance medical research in Haiti. Together, we can improve healthcare quality and support the next generation of doctors.
       </motion.p>
     </div>
   );
