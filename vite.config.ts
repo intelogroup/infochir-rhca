@@ -2,7 +2,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
-import { visualizer } from 'rollup-plugin-visualizer';
+import { visualizer } from "rollup-plugin-visualizer";
 import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
@@ -30,12 +30,32 @@ export default defineConfig(({ mode }) => ({
       'framer-motion',
       'react-router-dom',
       '@tanstack/react-query',
-      'sonner'
+      'sonner',
+      '@stripe/stripe-js'
     ],
     esbuildOptions: {
       define: {
         global: 'globalThis'
       }
+    }
+  },
+  server: {
+    host: "::",
+    port: 8080,
+    strictPort: true,
+    hmr: {
+      clientPort: 443,
+      protocol: 'wss'
+    },
+    headers: {
+      'Content-Security-Policy': `
+        default-src 'self' https://*.stripe.com;
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.stripe.com;
+        style-src 'self' 'unsafe-inline';
+        img-src 'self' data: https://*.stripe.com;
+        connect-src 'self' https://*.stripe.com https://*.supabase.co wss://*.supabase.co;
+        frame-src 'self' https://*.stripe.com;
+      `.replace(/\s+/g, ' ').trim()
     }
   },
   build: {
@@ -52,15 +72,6 @@ export default defineConfig(({ mode }) => ({
     sourcemap: true,
     commonjsOptions: {
       transformMixedEsModules: true
-    }
-  },
-  server: {
-    host: "::",
-    port: 8080,
-    strictPort: true,
-    hmr: {
-      clientPort: 443,
-      protocol: 'wss'
     }
   },
   esbuild: {
