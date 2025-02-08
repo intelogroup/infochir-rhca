@@ -5,20 +5,8 @@ import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./App";
 import "./index.css";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "sonner";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
-
-// Debug React initialization
-console.info('React version:', React.version);
-console.info('React initialization:', {
-  StrictMode: !!React.StrictMode,
-  createElement: !!React.createElement,
-  hooks: {
-    useState: !!React.useState,
-    useContext: !!React.useContext,
-    useEffect: !!React.useEffect
-  }
-});
 
 // Configure React Query client
 const queryClient = new QueryClient({
@@ -39,14 +27,14 @@ console.info("[App] Initializing with React Router and Query Client");
 
 root.render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
         <ErrorBoundary>
           <App />
           <Toaster />
         </ErrorBoundary>
-      </BrowserRouter>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );
 
