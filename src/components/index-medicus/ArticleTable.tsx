@@ -1,7 +1,8 @@
+
 import { Table, TableBody } from "@/components/ui/table";
 import { TableHeader } from "./table/TableHeader";
 import { ArticleTableRow } from "./table/TableRow";
-import type { Article } from "./types";
+import type { Article } from "@/types/article";
 
 export const ArticleTable = ({ articles }: { articles: Article[] }) => {
   return (

@@ -1,8 +1,9 @@
+
 import { ArticleCard } from "@/components/index-medicus/ArticleCard";
 import { ArticleTable } from "@/components/index-medicus/ArticleTable";
 import { RhcaCard } from "@/components/rhca/RhcaCard";
 import { RhcaTable } from "@/components/rhca/RhcaTable";
-import type { Article } from "@/components/index-medicus/types";
+import type { Article } from "@/types/article";
 import type { RhcaArticle } from "@/components/rhca/types";
 
 type ViewMode = "grid" | "table";
