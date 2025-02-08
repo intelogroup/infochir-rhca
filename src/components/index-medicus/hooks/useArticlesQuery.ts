@@ -20,13 +20,12 @@ const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
   
   console.log('Extracted author names:', authorNames);
 
-  const pdfUrl = typeof dbArticle.pdf_url === 'string' ? dbArticle.pdf_url : undefined;
   const publicationDate = new Date(dbArticle.publication_date);
 
   const mappedArticle: Article = {
     id: dbArticle.id,
     title: dbArticle.title,
-    abstract: dbArticle.abstract,
+    abstract: dbArticle.abstract || '',
     date: dbArticle.publication_date,
     publicationDate,
     source: dbArticle.source,
@@ -36,7 +35,7 @@ const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
     imageUrl: dbArticle.image_url || undefined,
     views: dbArticle.views || 0,
     citations: dbArticle.citations || 0,
-    pdfUrl: pdfUrl,
+    pdfUrl: dbArticle.pdf_url || undefined,
     downloads: dbArticle.downloads || 0,
     institution: dbArticle.institution,
     status: dbArticle.status,
@@ -64,8 +63,8 @@ export const useArticlesQuery = (page = 0) => {
           .from("articles")
           .select(`
             *,
-            article_authors!inner (
-              member:members!inner (
+            article_authors (
+              member (
                 name
               )
             )
