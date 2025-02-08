@@ -6,7 +6,7 @@ export interface Article {
   title: string;
   authors: string[];
   date: string;
-  publicationDate: Date; // Changed to Date to match the application-wide type
+  publicationDate: Date;
   category: string;
   source: ArticleSource;
   abstract: string;
@@ -20,6 +20,11 @@ export interface Article {
   status?: string;
   institution?: string;
   userId?: string;
+  volume?: string;
+  issue?: string;
+  pageNumber?: string;
+  specialty?: string;
+  articleType?: ArticleSource;
 }
 
 export interface SearchFilters {
@@ -32,3 +37,4 @@ export interface SearchFilters {
     to: Date;
   };
 }
+

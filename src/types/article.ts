@@ -39,3 +39,4 @@ export interface SearchFilters {
 }
 
 export type SortOption = "latest" | "title" | "author" | "category";
+
