@@ -1,6 +1,5 @@
-
 import { Suspense, lazy } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, BrowserRouter } from "react-router-dom";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { AnimatePresence } from "framer-motion";
 import { MainLayout } from "@/components/layouts/MainLayout";
@@ -9,6 +8,7 @@ import { ToastProvider } from "@/hooks/use-toast";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/react-query";
 import { Toaster } from "@/components/ui/toaster";
+import { LazyMotion, domMax } from "framer-motion";
 
 // Preload critical routes
 const Home = lazy(() => import("@/pages/Home" /* webpackPrefetch: true */));
@@ -59,14 +59,18 @@ function AppRoutes() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ToastProvider>
-        <Suspense fallback={<LoadingSpinner />}>
-          <AppRoutes />
-        </Suspense>
-        <Toaster />
-      </ToastProvider>
-    </QueryClientProvider>
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <ToastProvider>
+          <LazyMotion features={domMax} strict>
+            <Suspense fallback={<LoadingSpinner />}>
+              <AppRoutes />
+            </Suspense>
+            <Toaster />
+          </LazyMotion>
+        </ToastProvider>
+      </QueryClientProvider>
+    </BrowserRouter>
   );
 }
 
