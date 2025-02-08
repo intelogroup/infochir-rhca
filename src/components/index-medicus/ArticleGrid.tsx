@@ -4,8 +4,8 @@ import { ArticleContent } from "./ArticleContent";
 import { useArticlesState } from "./hooks/useArticlesState";
 import { useArticlesQuery } from "./hooks/useArticlesQuery";
 import { VirtualizedArticleList } from "./VirtualizedArticleList";
-import { memo, useState, Suspense } from "react";
-import { LoadingSpinner, LoadingSkeleton } from "./components/LoadingState";
+import { memo, useState } from "react";
+import { LoadingSpinner } from "./components/LoadingState";
 import { ErrorDisplay } from "./components/ErrorDisplay";
 import { Pagination } from "./components/Pagination";
 
@@ -16,14 +16,17 @@ interface ArticleGridProps {
 const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
   console.log('ArticleGrid rendering with viewMode:', viewMode);
   
+  // 1. Initialize page state
   const [currentPage, setCurrentPage] = useState(0);
-  const { data, isLoading, error } = useArticlesQuery(currentPage);
   
+  // 2. Fetch data
+  const { data, isLoading, error } = useArticlesQuery(currentPage);
   console.log('ArticleGrid query state:', { isLoading, error, hasData: !!data });
   
   const articles = data?.articles || [];
   const totalPages = data?.totalPages || 0;
 
+  // 3. Initialize article state after data is available
   const {
     searchTerm,
     setSearchTerm,
@@ -47,6 +50,16 @@ const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
     articleStats
   } = useArticlesState(articles);
 
+  // 4. Error handling
+  if (error) {
+    return <ErrorDisplay error={error as Error} />;
+  }
+
+  // 5. Loading state
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
   const handleSearch = () => {
     console.time('Search Operation');
     console.log("Searching with filters:", { 
@@ -62,13 +75,11 @@ const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
     console.timeEnd('Search Operation');
   };
 
-  if (error) {
-    return <ErrorDisplay error={error as Error} />;
-  }
-
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
+  const handleTagClick = (tag: string) => {
+    if (!selectedTags.includes(tag)) {
+      setSelectedTags([...selectedTags, tag]);
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -95,31 +106,21 @@ const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
         articleStats={articleStats}
       />
       
-      <Suspense fallback={<LoadingSkeleton />}>
-        {viewMode === "grid" ? (
-          <VirtualizedArticleList
-            articles={filteredArticles}
-            onTagClick={(tag) => {
-              if (!selectedTags.includes(tag)) {
-                setSelectedTags([...selectedTags, tag]);
-              }
-            }}
-            selectedTags={selectedTags}
-          />
-        ) : (
-          <ArticleContent
-            viewMode={viewMode}
-            articles={filteredArticles}
-            isLoading={isLoading}
-            onTagClick={(tag) => {
-              if (!selectedTags.includes(tag)) {
-                setSelectedTags([...selectedTags, tag]);
-              }
-            }}
-            selectedTags={selectedTags}
-          />
-        )}
-      </Suspense>
+      {viewMode === "grid" ? (
+        <VirtualizedArticleList
+          articles={filteredArticles}
+          onTagClick={handleTagClick}
+          selectedTags={selectedTags}
+        />
+      ) : (
+        <ArticleContent
+          viewMode={viewMode}
+          articles={filteredArticles}
+          isLoading={isLoading}
+          onTagClick={handleTagClick}
+          selectedTags={selectedTags}
+        />
+      )}
 
       <Pagination
         currentPage={currentPage}
