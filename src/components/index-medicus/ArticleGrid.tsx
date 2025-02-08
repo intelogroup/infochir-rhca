@@ -4,7 +4,7 @@ import { ArticleContent } from "./ArticleContent";
 import { useArticlesState } from "./hooks/useArticlesState";
 import { useArticlesQuery } from "./hooks/useArticlesQuery";
 import { VirtualizedArticleList } from "./VirtualizedArticleList";
-import { memo, useState } from "react";
+import { memo, useState, useCallback } from "react";
 import { LoadingSpinner } from "./components/LoadingState";
 import { ErrorDisplay } from "./components/ErrorDisplay";
 import { Pagination } from "./components/Pagination";
@@ -60,7 +60,7 @@ const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
     return <LoadingSpinner />;
   }
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     console.time('Search Operation');
     console.log("Searching with filters:", { 
       searchTerm, 
@@ -73,13 +73,21 @@ const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
     });
     setCurrentPage(0); // Reset to first page when searching
     console.timeEnd('Search Operation');
-  };
+  }, [
+    searchTerm, 
+    selectedCategory, 
+    selectedSource, 
+    selectedTags,
+    selectedAuthors,
+    titleFilter,
+    date
+  ]);
 
-  const handleTagClick = (tag: string) => {
+  const handleTagClick = useCallback((tag: string) => {
     if (!selectedTags.includes(tag)) {
       setSelectedTags([...selectedTags, tag]);
     }
-  };
+  }, [selectedTags, setSelectedTags]);
 
   return (
     <div className="space-y-4">
@@ -134,3 +142,4 @@ const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
 ArticleGrid.displayName = 'ArticleGrid';
 
 export { ArticleGrid };
+

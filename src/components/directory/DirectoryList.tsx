@@ -1,3 +1,4 @@
+
 import { Table, TableBody } from "@/components/ui/table";
 import { SearchBar } from "./SearchBar";
 import { TableHeader } from "./TableHeader";
@@ -7,13 +8,15 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const LoadingSkeleton = () => (
+const LoadingSkeleton = memo(() => (
   <div className="space-y-4">
     {Array.from({ length: 5 }).map((_, i) => (
       <Skeleton key={i} className="w-full h-16" />
     ))}
   </div>
-);
+));
+
+LoadingSkeleton.displayName = 'LoadingSkeleton';
 
 const DirectoryList = memo(() => {
   console.time('DirectoryList Render');
@@ -56,14 +59,12 @@ const DirectoryList = memo(() => {
   const sortedMembers = useMemo(() => {
     console.time('Sort Members');
     const sorted = [...filteredMembers].sort((a, b) => {
-      // Handle sorting differently for id (number) vs string fields
       if (sortField === 'id') {
         const aValue = a[sortField] || 0;
         const bValue = b[sortField] || 0;
         return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
       }
       
-      // Handle string fields (name and email)
       const aValue = String(a[sortField] || '').toLowerCase();
       const bValue = String(b[sortField] || '').toLowerCase();
       
@@ -120,3 +121,4 @@ const DirectoryList = memo(() => {
 DirectoryList.displayName = 'DirectoryList';
 
 export { DirectoryList };
+
