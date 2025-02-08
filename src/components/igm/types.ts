@@ -1,4 +1,6 @@
 
+import { DateRange } from "react-day-picker";
+
 export interface IgmArticle {
   id: string;
   title: string;
@@ -75,3 +77,4 @@ export const formatIssueDate = (dateString: string): string => {
     month: 'long',
   });
 };
+

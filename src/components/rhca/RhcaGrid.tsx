@@ -8,24 +8,33 @@ import type { SortOption } from "@/types/sortOptions";
 import { mockArticles } from "./data/mockArticles";
 import { RhcaArticleList } from "./RhcaArticleList";
 import { motion } from "framer-motion";
+import { DateRange } from "react-day-picker";
 
 export const RhcaGrid = () => {
   const [searchTerm, setSearchTerm] = React.useState("");
   const [sortBy, setSortBy] = React.useState<SortOption>("latest");
   const [viewMode, setViewMode] = React.useState<"grid" | "table">("grid");
+  const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
 
   const handleSortChange = (value: SortOption) => {
     setSortBy(value);
   };
 
-  const filteredArticles = mockArticles.filter(article =>
-    article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    article.abstract.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    article.authors.some(author => 
-      typeof author === 'string' && author.toLowerCase().includes(searchTerm.toLowerCase())
-    ) ||
-    article.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredArticles = mockArticles.filter(article => {
+    const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      article.abstract.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      article.authors.some(author => 
+        typeof author === 'string' && author.toLowerCase().includes(searchTerm.toLowerCase())
+      ) ||
+      article.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+
+    // Date range filtering
+    const matchesDateRange = !dateRange?.from && !dateRange?.to ? true :
+      new Date(article.date) >= (dateRange?.from || new Date(0)) &&
+      new Date(article.date) <= (dateRange?.to || new Date());
+
+    return matchesSearch && matchesDateRange;
+  });
 
   // Sort articles by date
   const sortedArticles = [...filteredArticles].sort((a, b) => {
@@ -51,6 +60,8 @@ export const RhcaGrid = () => {
             onSort={handleSortChange}
             sortOptions={SORT_OPTIONS}
             className="flex-1 min-w-0"
+            dateRange={dateRange}
+            onDateRangeChange={setDateRange}
           />
           
           <ToggleGroup 
@@ -94,3 +105,4 @@ export const RhcaGrid = () => {
     </div>
   );
 };
+

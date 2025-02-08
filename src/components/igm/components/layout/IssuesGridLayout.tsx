@@ -81,3 +81,4 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
     </div>
   );
 };
+
