@@ -1,3 +1,4 @@
+
 import type { RhcaVolume } from "../../types";
 
 export const volumes2021: RhcaVolume[] = [
@@ -16,10 +17,10 @@ export const volumes2021: RhcaVolume[] = [
         abstract: "Revue des avancées majeures...",
         authors: ["Dr. Marc Antoine", "Dr. Julie Pierre"],
         date: "2021-12-15",
-        views: "310",
-        citations: "42",
-        downloads: "105",
-        shares: "58",
+        views: 310,
+        citations: 42,
+        downloads: 105,
+        shares: 58,
         pageNumber: "1",
         volume: "12",
         tags: ["Rétrospective", "Bilan"],
@@ -44,10 +45,10 @@ export const volumes2021: RhcaVolume[] = [
         abstract: "Mise à jour des protocoles...",
         authors: ["Dr. Pierre Louis", "Dr. Marie Joseph"],
         date: "2021-01-15",
-        views: "260",
-        citations: "28",
-        downloads: "78",
-        shares: "42",
+        views: 260,
+        citations: 28,
+        downloads: 78,
+        shares: 42,
         pageNumber: "1",
         volume: "1",
         tags: ["Urgence", "Protocoles"],
