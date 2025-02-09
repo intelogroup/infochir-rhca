@@ -16,8 +16,8 @@ const queryClient = new QueryClient({
       staleTime: 60 * 1000,
       retry: 2,
       refetchOnWindowFocus: false,
-      onError: (error) => {
-        console.error('Query error:', error);
+      meta: {
+        errorMessage: "An error occurred while fetching data"
       }
     },
   },
@@ -28,15 +28,15 @@ if (!rootElement) throw new Error('Root element not found');
 
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <ToastProvider>
-          <BrowserRouter>
+    <BrowserRouter>
+      <ErrorBoundary>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
             <App />
             <Toaster />
-          </BrowserRouter>
-        </ToastProvider>
-      </QueryClientProvider>
-    </ErrorBoundary>
+          </ToastProvider>
+        </QueryClientProvider>
+      </ErrorBoundary>
+    </BrowserRouter>
   </React.StrictMode>
 );

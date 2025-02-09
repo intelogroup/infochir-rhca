@@ -60,9 +60,6 @@ export const useAtlasArticles = () => {
         throw err;
       }
     },
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    gcTime: 30 * 60 * 1000, // Keep inactive data for 30 minutes
-    retry: 2,
     meta: {
       errorMessage: "Erreur lors du chargement des articles"
     }
