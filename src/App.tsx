@@ -48,7 +48,7 @@ function AppRoutes() {
           <Route path="/donate" element={<Donate />} />
           <Route path="/donate/success" element={<DonateSuccess />} />
           <Route path="/jobs" element={<Opportunities />} />
-          <Route path="/adc/*" element={<ADC />} />
+          <Route path="/adc" element={<ADC />} />
           <Route path="/index-medicus" element={<IndexMedicus />} />
         </Routes>
       </AnimatePresence>
