@@ -28,9 +28,9 @@ function AppRoutes() {
   const location = useLocation();
 
   return (
-    <AnimatePresence mode="wait" initial={false} onExitComplete={() => window.scrollTo(0, 0)}>
-      <Routes location={location} key={location.pathname}>
-        <Route element={<MainLayout />}>
+    <MainLayout>
+      <AnimatePresence mode="wait" initial={false} onExitComplete={() => window.scrollTo(0, 0)}>
+        <Routes location={location} key={location.pathname}>
           <Route
             path="/"
             element={
@@ -143,9 +143,9 @@ function AppRoutes() {
               </Suspense>
             }
           />
-        </Route>
-      </Routes>
-    </AnimatePresence>
+        </Routes>
+      </AnimatePresence>
+    </MainLayout>
   );
 }
 
