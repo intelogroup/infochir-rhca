@@ -18,8 +18,10 @@ export const useAtlasArticles = () => {
           .order('created_at', { ascending: false });
 
         if (error) {
-          console.error("Error fetching Atlas articles:", error);
-          toast.error("Erreur lors du chargement des articles");
+          console.error("Supabase error fetching Atlas articles:", error);
+          toast.error("Erreur lors du chargement des articles", {
+            description: error.message
+          });
           throw error;
         }
 
@@ -51,7 +53,10 @@ export const useAtlasArticles = () => {
         return atlasChapters;
       } catch (err) {
         console.error("Failed to fetch Atlas articles:", err);
-        toast.error("Erreur lors du chargement des articles");
+        const errorMessage = err instanceof Error ? err.message : "Une erreur inattendue s'est produite";
+        toast.error("Erreur lors du chargement des articles", {
+          description: errorMessage
+        });
         throw err;
       }
     },
