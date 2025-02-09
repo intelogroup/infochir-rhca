@@ -48,6 +48,13 @@ export type Database = {
             foreignKeyName: "article_authors_article_id_fkey"
             columns: ["article_id"]
             isOneToOne: false
+            referencedRelation: "igm_issues_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "article_authors_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
             referencedRelation: "rhca_articles_view"
             referencedColumns: ["id"]
           },
@@ -589,6 +596,63 @@ export type Database = {
           updated_at?: string | null
           user_id?: string | null
           views?: number | null
+          volume?: string | null
+        }
+        Relationships: []
+      }
+      igm_issues_view: {
+        Row: {
+          abstract: string | null
+          article_files: string[] | null
+          category: string | null
+          co_authors: string[] | null
+          cover_image: string | null
+          downloads: number | null
+          id: string | null
+          issue: string | null
+          pdf_url: string | null
+          primary_author: string | null
+          publication_date: string | null
+          shares: number | null
+          status: string | null
+          tags: string[] | null
+          title: string | null
+          volume: string | null
+        }
+        Insert: {
+          abstract?: string | null
+          article_files?: string[] | null
+          category?: string | null
+          co_authors?: string[] | null
+          cover_image?: string | null
+          downloads?: number | null
+          id?: string | null
+          issue?: string | null
+          pdf_url?: string | null
+          primary_author?: string | null
+          publication_date?: string | null
+          shares?: number | null
+          status?: string | null
+          tags?: string[] | null
+          title?: string | null
+          volume?: string | null
+        }
+        Update: {
+          abstract?: string | null
+          article_files?: string[] | null
+          category?: string | null
+          co_authors?: string[] | null
+          cover_image?: string | null
+          downloads?: number | null
+          id?: string | null
+          issue?: string | null
+          pdf_url?: string | null
+          primary_author?: string | null
+          publication_date?: string | null
+          shares?: number | null
+          status?: string | null
+          tags?: string[] | null
+          title?: string | null
           volume?: string | null
         }
         Relationships: []
