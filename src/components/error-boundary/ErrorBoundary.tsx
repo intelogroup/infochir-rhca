@@ -50,13 +50,22 @@ export class ErrorBoundary extends React.Component<Props, State> {
       const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
       const resourceEntries = performance.getEntriesByType('resource')
         .filter(entry => entry.name.includes('.js'))
-        .map(entry => ({
-          name: entry.name,
-          duration: entry.duration,
-          startTime: entry.startTime,
-          transferSize: entry.transferSize,
-          protocol: (entry as PerformanceResourceTiming).nextHopProtocol
-        }));
+        .map(entry => {
+          const resourceTiming = entry as PerformanceResourceTiming;
+          return {
+            name: entry.name,
+            duration: entry.duration,
+            startTime: entry.startTime,
+            size: resourceTiming.decodedBodySize,
+            protocol: resourceTiming.nextHopProtocol,
+            timing: {
+              dns: resourceTiming.domainLookupEnd - resourceTiming.domainLookupStart,
+              tcp: resourceTiming.connectEnd - resourceTiming.connectStart,
+              request: resourceTiming.responseStart - resourceTiming.requestStart,
+              response: resourceTiming.responseEnd - resourceTiming.responseStart
+            }
+          };
+        });
 
       console.error("[ErrorBoundary] Chunk loading diagnostic:", {
         timestamp: new Date().toISOString(),
@@ -89,9 +98,21 @@ export class ErrorBoundary extends React.Component<Props, State> {
         },
         router: {
           historyState: window.history.state,
-          historyLength: window.history.length
+          historyLength: window.history.length,
+          transition: {
+            startTime: performance.now(),
+            lastSuccessfulRoute: sessionStorage.getItem('lastSuccessfulRoute'),
+            transitionCount: sessionStorage.getItem('routeTransitionCount')
+          }
         },
         resources: resourceEntries,
+        modules: {
+          pending: Array.from(document.querySelectorAll('script[type="module"]')).length,
+          loaded: performance.getEntriesByType('resource')
+            .filter(e => e.name.endsWith('.js') && e.responseEnd > 0).length,
+          failed: performance.getEntriesByType('resource')
+            .filter(e => e.name.endsWith('.js') && !e.responseEnd).length
+        },
         performanceMemory: {
           jsHeapSizeLimit: (performance as any).memory?.jsHeapSizeLimit,
           totalJSHeapSize: (performance as any).memory?.totalJSHeapSize,
@@ -148,3 +169,4 @@ export class ErrorBoundary extends React.Component<Props, State> {
     return this.props.children;
   }
 }
+
