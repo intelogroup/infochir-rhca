@@ -2,7 +2,7 @@
 import React from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { RhcaGrid } from "@/components/rhca/RhcaGrid";
-import { BackToTop } from "@/components/navigation/BackToTop";
+import BackToTop from "@/components/navigation/BackToTop";
 import { RHCAHeader } from "@/components/rhca/components/RHCAHeader";
 import { RHCASidebar } from "@/components/rhca/components/RHCASidebar";
 
