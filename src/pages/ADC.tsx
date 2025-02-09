@@ -1,7 +1,7 @@
 
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { ADCHeader } from "@/components/adc/ADCHeader";
-import { Suspense, lazy, useRef } from "react";
+import { Suspense, lazy, useRef, useEffect } from "react";
 import { useAtlasArticles } from "@/components/atlas/hooks/useAtlasArticles";
 import { AtlasCard } from "@/components/atlas/AtlasCard";
 import { AtlasTableOfContents } from "@/components/atlas/AtlasTableOfContents";
@@ -27,7 +27,7 @@ const LoadingSkeleton = () => (
 );
 
 const VirtualizedAtlasGrid = ({ chapters }: { chapters: any[] }) => {
-  console.log("Rendering VirtualizedAtlasGrid with chapters:", chapters);
+  console.log("[VirtualizedAtlasGrid] Rendering with chapters:", chapters);
   const parentRef = useRef<HTMLDivElement>(null);
 
   const columnCount = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1;
@@ -91,10 +91,21 @@ const VirtualizedAtlasGrid = ({ chapters }: { chapters: any[] }) => {
 };
 
 const ADCContent = () => {
+  console.log("[ADCContent] Component mounting");
   const { data: chapters, isLoading, error } = useAtlasArticles();
 
+  useEffect(() => {
+    if (error) {
+      console.error("[ADCContent] Error loading Atlas articles:", error);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    console.log("[ADCContent] Data loading state:", { isLoading, chaptersLength: chapters?.length });
+  }, [isLoading, chapters]);
+
   if (error) {
-    console.error("Error loading Atlas articles:", error);
+    console.error("[ADCContent] Rendering error state:", error);
     toast.error("Une erreur est survenue lors du chargement des articles");
     return (
       <div className="text-center py-12 text-red-500">
@@ -126,8 +137,15 @@ const ADCContent = () => {
 };
 
 const ADC = () => {
-  console.log("Rendering ADC component");
+  console.log("[ADC] Component mounting");
   
+  useEffect(() => {
+    console.log("[ADC] Component mounted");
+    return () => {
+      console.log("[ADC] Component unmounting");
+    };
+  }, []);
+
   return (
     <MainLayout>
       <ErrorBoundary>

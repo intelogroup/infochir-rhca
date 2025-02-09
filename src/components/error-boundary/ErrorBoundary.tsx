@@ -24,15 +24,20 @@ export class ErrorBoundary extends React.Component<Props, State> {
   }
 
   static getDerivedStateFromError(error: Error): State {
+    console.error("[ErrorBoundary] getDerivedStateFromError:", error);
     return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("ErrorBoundary caught an error:", error, errorInfo);
+    console.error("[ErrorBoundary] Error caught:", {
+      error,
+      componentStack: errorInfo.componentStack
+    });
   }
 
   render() {
     if (this.state.hasError) {
+      console.log("[ErrorBoundary] Rendering error UI");
       return (
         <div className="p-4">
           <Alert variant="destructive">
