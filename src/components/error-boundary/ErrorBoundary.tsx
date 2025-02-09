@@ -47,7 +47,6 @@ export class ErrorBoundary extends React.Component<Props, State> {
       errorInfo
     });
 
-    // Handle Stripe-specific errors
     if (error.message.includes('Stripe') || error.message.includes('stripe.com')) {
       console.error("[ErrorBoundary] Stripe error detected:", {
         message: error.message,
@@ -57,7 +56,6 @@ export class ErrorBoundary extends React.Component<Props, State> {
           effectiveType: (navigator as any).connection?.effectiveType
         }
       });
-      return;
     }
 
     if (error.message.includes('Failed to fetch dynamically imported module')) {
@@ -66,38 +64,69 @@ export class ErrorBoundary extends React.Component<Props, State> {
   }
 
   handleRetry = () => {
-    this.setState({ hasError: false, error: undefined, errorInfo: undefined });
-    window.location.reload();
+    const { error } = this.state;
+    if (!error) {
+      window.location.reload();
+      return;
+    }
+
+    const errorDetails = getErrorMessage(error);
+    
+    if (errorDetails.type === 'stripe_error') {
+      // For Stripe errors, we'll first clear the state and let the component try to reinitialize
+      this.setState({ hasError: false, error: undefined, errorInfo: undefined });
+    } else {
+      // For other errors, we'll do a full page reload
+      window.location.reload();
+    }
   };
 
+  renderErrorContent() {
+    if (!this.state.error) return null;
+
+    const { title, message, details, type } = getErrorMessage(this.state.error);
+    
+    return (
+      <Alert variant="destructive" className="p-6">
+        <AlertTriangle className="h-5 w-5" />
+        <AlertTitle className="text-lg font-semibold mb-2">{title}</AlertTitle>
+        <AlertDescription className="space-y-4">
+          <p className="text-base">{message}</p>
+          
+          {details && (
+            <ul className="list-disc pl-5 space-y-1 text-sm">
+              {details.map((detail, index) => (
+                <li key={index}>{detail}</li>
+              ))}
+            </ul>
+          )}
+
+          {this.state.error.stack && type === 'generic_error' && (
+            <details className="mt-4">
+              <summary className="cursor-pointer text-sm">Détails techniques</summary>
+              <pre className="mt-2 text-xs overflow-auto max-h-48 bg-gray-100 p-2 rounded">
+                {this.state.error.stack}
+              </pre>
+            </details>
+          )}
+
+          <Button
+            variant="outline"
+            className="mt-4"
+            onClick={this.handleRetry}
+          >
+            Réessayer
+          </Button>
+        </AlertDescription>
+      </Alert>
+    );
+  }
+
   render() {
-    if (this.state.hasError && this.state.error) {
-      const { title, message } = getErrorMessage(this.state.error);
-      
+    if (this.state.hasError) {
       return (
         <div className="p-4">
-          <Alert variant="destructive">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>{title}</AlertTitle>
-            <AlertDescription className="mt-2 space-y-2">
-              <p>{message}</p>
-              {this.state.error.stack && (
-                <details className="mt-2">
-                  <summary className="cursor-pointer text-sm">Détails techniques</summary>
-                  <pre className="mt-2 text-xs overflow-auto max-h-48 bg-gray-100 p-2 rounded">
-                    {this.state.error.stack}
-                  </pre>
-                </details>
-              )}
-            </AlertDescription>
-            <Button
-              variant="outline"
-              className="mt-4"
-              onClick={this.handleRetry}
-            >
-              Réessayer
-            </Button>
-          </Alert>
+          {this.renderErrorContent()}
         </div>
       );
     }
@@ -105,3 +134,4 @@ export class ErrorBoundary extends React.Component<Props, State> {
     return this.props.children;
   }
 }
+
