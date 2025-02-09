@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from "lucide-react";
 import { Article } from "@/types/article";
@@ -44,16 +43,14 @@ export const ArticleCard = ({ article, onTagClick, selectedTags }: ArticleCardPr
     }
 
     navigator.clipboard.writeText(citation);
-    toast({
-      title: "Citation copiée",
+    toast.success("Citation copiée", {
       description: `Format ${format} copié dans le presse-papier`
     });
   };
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href + '#' + article.id);
-    toast({
-      title: "Lien copié",
+    toast.success("Lien copié", {
       description: "Le lien a été copié dans le presse-papier"
     });
   };

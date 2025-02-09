@@ -1,3 +1,4 @@
+
 import { useState, useMemo } from "react";
 import { DiagnosticSearch } from "./DiagnosticSearch";
 import { ViewToggle } from "./ViewToggle";
@@ -22,10 +23,8 @@ export const DiagnosticGrid = () => {
     });
 
     if (filtered.length === 0 && searchTerm !== "") {
-      toast({
-        title: "Aucun résultat",
-        description: "Essayez de modifier vos critères de recherche",
-        variant: "destructive",
+      toast.error("Aucun résultat trouvé", {
+        description: "Essayez de modifier vos critères de recherche"
       });
     }
 
