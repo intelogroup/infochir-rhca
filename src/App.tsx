@@ -28,22 +28,124 @@ function AppRoutes() {
   const location = useLocation();
 
   return (
-    <Routes location={location} key={location.pathname}>
-      <Route path="/" element={<MainLayout><Suspense fallback={<LoadingSpinner />}><Home /></Suspense></MainLayout>} />
-      <Route path="/rhca" element={<MainLayout><Suspense fallback={<LoadingSpinner />}><RHCA /></Suspense></MainLayout>} />
-      <Route path="/rhca/directives" element={<MainLayout><Suspense fallback={<LoadingSpinner />}><RHCADirectives /></Suspense></MainLayout>} />
-      <Route path="/igm" element={<MainLayout><Suspense fallback={<LoadingSpinner />}><IGM /></Suspense></MainLayout>} />
-      <Route path="/igm/directives" element={<MainLayout><Suspense fallback={<LoadingSpinner />}><IGMDirectives /></Suspense></MainLayout>} />
-      <Route path="/igm/editorial-committee" element={<MainLayout><Suspense fallback={<LoadingSpinner />}><EditorialCommittee /></Suspense></MainLayout>} />
-      <Route path="/about" element={<MainLayout><Suspense fallback={<LoadingSpinner />}><About /></Suspense></MainLayout>} />
-      <Route path="/submission" element={<MainLayout><Suspense fallback={<LoadingSpinner />}><Submission /></Suspense></MainLayout>} />
-      <Route path="/annuaire" element={<MainLayout><Suspense fallback={<LoadingSpinner />}><Annuaire /></Suspense></MainLayout>} />
-      <Route path="/donate" element={<MainLayout><Suspense fallback={<LoadingSpinner />}><Donate /></Suspense></MainLayout>} />
-      <Route path="/donate/success" element={<MainLayout><Suspense fallback={<LoadingSpinner />}><DonateSuccess /></Suspense></MainLayout>} />
-      <Route path="/jobs" element={<MainLayout><Suspense fallback={<LoadingSpinner />}><Opportunities /></Suspense></MainLayout>} />
-      <Route path="/adc" element={<MainLayout><Suspense fallback={<LoadingSpinner />}><ADC /></Suspense></MainLayout>} />
-      <Route path="/index-medicus" element={<MainLayout><Suspense fallback={<LoadingSpinner />}><IndexMedicus /></Suspense></MainLayout>} />
-    </Routes>
+    <AnimatePresence mode="wait" initial={false} onExitComplete={() => window.scrollTo(0, 0)}>
+      <Routes location={location} key={location.pathname}>
+        <Route element={<MainLayout />}>
+          <Route
+            path="/"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <Home />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/rhca"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <RHCA />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/rhca/directives"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <RHCADirectives />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/igm"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <IGM />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/igm/directives"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <IGMDirectives />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/igm/editorial-committee"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <EditorialCommittee />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/about"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <About />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/submission"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <Submission />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/annuaire"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <Annuaire />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/donate"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <Donate />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/donate/success"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <DonateSuccess />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/jobs"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <Opportunities />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/adc"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <ADC />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/index-medicus"
+            element={
+              <Suspense fallback={<LoadingSpinner />}>
+                <IndexMedicus />
+              </Suspense>
+            }
+          />
+        </Route>
+      </Routes>
+    </AnimatePresence>
   );
 }
 
@@ -51,9 +153,7 @@ function App() {
   return (
     <LazyMotion features={domMax} strict>
       <ToastProvider>
-        <AnimatePresence mode="wait" initial={false} onExitComplete={() => window.scrollTo(0, 0)}>
-          <AppRoutes />
-        </AnimatePresence>
+        <AppRoutes />
         <Toaster />
       </ToastProvider>
     </LazyMotion>
