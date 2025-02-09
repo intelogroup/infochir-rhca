@@ -8,6 +8,8 @@ import { AtlasTableOfContents } from "@/components/atlas/AtlasTableOfContents";
 import { motion } from "framer-motion";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import { toast } from "@/hooks/use-toast";
+import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 
 // Lazy load components
 const ADCMission = lazy(() => import("@/components/adc/ADCMission").then(module => ({ default: module.ADCMission })));
@@ -25,6 +27,7 @@ const LoadingSkeleton = () => (
 );
 
 const VirtualizedAtlasGrid = ({ chapters }: { chapters: any[] }) => {
+  console.log("Rendering VirtualizedAtlasGrid with chapters:", chapters);
   const parentRef = useRef<HTMLDivElement>(null);
 
   const columnCount = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1;
@@ -87,40 +90,60 @@ const VirtualizedAtlasGrid = ({ chapters }: { chapters: any[] }) => {
   );
 };
 
-const ADC = () => {
-  const { data: chapters, isLoading } = useAtlasArticles();
+const ADCContent = () => {
+  const { data: chapters, isLoading, error } = useAtlasArticles();
+
+  if (error) {
+    console.error("Error loading Atlas articles:", error);
+    toast.error("Une erreur est survenue lors du chargement des articles");
+    return (
+      <div className="text-center py-12 text-red-500">
+        Une erreur est survenue lors du chargement des articles
+      </div>
+    );
+  }
 
   return (
-    <MainLayout>
-      <div className="min-h-screen bg-gradient-to-br from-white to-gray-50 pt-[70px]">
-        <ADCHeader />
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
-              Atlas de Diagnostic Chirurgical
-            </h2>
-            <AtlasTableOfContents />
-          </div>
-          
-          {isLoading ? (
-            <LoadingSkeleton />
-          ) : chapters && chapters.length > 0 ? (
-            <VirtualizedAtlasGrid chapters={chapters} />
-          ) : (
-            <div className="text-center py-12 text-gray-500">
-              Aucun chapitre disponible pour le moment
-            </div>
-          )}
-        </div>
-
-        <Suspense fallback={<LoadingSkeleton />}>
-          <ADCMission />
-        </Suspense>
-        
-        <Suspense fallback={<LoadingSkeleton />}>
-          <ADCSubmission />
-        </Suspense>
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-900">
+          Atlas de Diagnostic Chirurgical
+        </h2>
+        <AtlasTableOfContents />
       </div>
+      
+      {isLoading ? (
+        <LoadingSkeleton />
+      ) : chapters && chapters.length > 0 ? (
+        <VirtualizedAtlasGrid chapters={chapters} />
+      ) : (
+        <div className="text-center py-12 text-gray-500">
+          Aucun chapitre disponible pour le moment
+        </div>
+      )}
+    </div>
+  );
+};
+
+const ADC = () => {
+  console.log("Rendering ADC component");
+  
+  return (
+    <MainLayout>
+      <ErrorBoundary>
+        <div className="min-h-screen bg-gradient-to-br from-white to-gray-50 pt-[70px]">
+          <ADCHeader />
+          <ADCContent />
+          
+          <Suspense fallback={<LoadingSkeleton />}>
+            <ADCMission />
+          </Suspense>
+          
+          <Suspense fallback={<LoadingSkeleton />}>
+            <ADCSubmission />
+          </Suspense>
+        </div>
+      </ErrorBoundary>
     </MainLayout>
   );
 };
