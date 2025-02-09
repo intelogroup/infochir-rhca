@@ -31,125 +31,125 @@ function AppRoutes() {
   const location = useLocation();
 
   return (
-    <AnimatePresence mode="wait" initial={false} onExitComplete={() => window.scrollTo(0, 0)}>
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={
-          <MainLayout>
-            <Suspense fallback={<LoadingSpinner />}>
-              <Home />
-            </Suspense>
-          </MainLayout>
-        } />
-        <Route path="/rhca" element={
-          <MainLayout>
-            <Suspense fallback={<LoadingSpinner />}>
-              <RHCA />
-            </Suspense>
-          </MainLayout>
-        } />
-        <Route path="/rhca/directives" element={
-          <MainLayout>
-            <Suspense fallback={<LoadingSpinner />}>
-              <RHCADirectives />
-            </Suspense>
-          </MainLayout>
-        } />
-        <Route path="/igm" element={
-          <MainLayout>
-            <Suspense fallback={<LoadingSpinner />}>
-              <IGM />
-            </Suspense>
-          </MainLayout>
-        } />
-        <Route path="/igm/directives" element={
-          <MainLayout>
-            <Suspense fallback={<LoadingSpinner />}>
-              <IGMDirectives />
-            </Suspense>
-          </MainLayout>
-        } />
-        <Route path="/igm/editorial-committee" element={
-          <MainLayout>
-            <Suspense fallback={<LoadingSpinner />}>
-              <EditorialCommittee />
-            </Suspense>
-          </MainLayout>
-        } />
-        <Route path="/about" element={
-          <MainLayout>
-            <Suspense fallback={<LoadingSpinner />}>
-              <About />
-            </Suspense>
-          </MainLayout>
-        } />
-        <Route path="/submission" element={
-          <MainLayout>
-            <Suspense fallback={<LoadingSpinner />}>
-              <Submission />
-            </Suspense>
-          </MainLayout>
-        } />
-        <Route path="/annuaire" element={
-          <MainLayout>
-            <Suspense fallback={<LoadingSpinner />}>
-              <Annuaire />
-            </Suspense>
-          </MainLayout>
-        } />
-        <Route path="/donate" element={
-          <MainLayout>
-            <Suspense fallback={<LoadingSpinner />}>
-              <Donate />
-            </Suspense>
-          </MainLayout>
-        } />
-        <Route path="/donate/success" element={
-          <MainLayout>
-            <Suspense fallback={<LoadingSpinner />}>
-              <DonateSuccess />
-            </Suspense>
-          </MainLayout>
-        } />
-        <Route path="/jobs" element={
-          <MainLayout>
-            <Suspense fallback={<LoadingSpinner />}>
-              <Opportunities />
-            </Suspense>
-          </MainLayout>
-        } />
-        <Route path="/adc" element={
-          <MainLayout>
-            <Suspense fallback={<LoadingSpinner />}>
-              <ADC />
-            </Suspense>
-          </MainLayout>
-        } />
-        <Route path="/index-medicus" element={
-          <MainLayout>
-            <Suspense fallback={<LoadingSpinner />}>
-              <IndexMedicus />
-            </Suspense>
-          </MainLayout>
-        } />
-      </Routes>
-    </AnimatePresence>
+    <Routes location={location} key={location.pathname}>
+      <Route path="/" element={
+        <MainLayout>
+          <Suspense fallback={<LoadingSpinner />}>
+            <Home />
+          </Suspense>
+        </MainLayout>
+      } />
+      <Route path="/rhca" element={
+        <MainLayout>
+          <Suspense fallback={<LoadingSpinner />}>
+            <RHCA />
+          </Suspense>
+        </MainLayout>
+      } />
+      <Route path="/rhca/directives" element={
+        <MainLayout>
+          <Suspense fallback={<LoadingSpinner />}>
+            <RHCADirectives />
+          </Suspense>
+        </MainLayout>
+      } />
+      <Route path="/igm" element={
+        <MainLayout>
+          <Suspense fallback={<LoadingSpinner />}>
+            <IGM />
+          </Suspense>
+        </MainLayout>
+      } />
+      <Route path="/igm/directives" element={
+        <MainLayout>
+          <Suspense fallback={<LoadingSpinner />}>
+            <IGMDirectives />
+          </Suspense>
+        </MainLayout>
+      } />
+      <Route path="/igm/editorial-committee" element={
+        <MainLayout>
+          <Suspense fallback={<LoadingSpinner />}>
+            <EditorialCommittee />
+          </Suspense>
+        </MainLayout>
+      } />
+      <Route path="/about" element={
+        <MainLayout>
+          <Suspense fallback={<LoadingSpinner />}>
+            <About />
+          </Suspense>
+        </MainLayout>
+      } />
+      <Route path="/submission" element={
+        <MainLayout>
+          <Suspense fallback={<LoadingSpinner />}>
+            <Submission />
+          </Suspense>
+        </MainLayout>
+      } />
+      <Route path="/annuaire" element={
+        <MainLayout>
+          <Suspense fallback={<LoadingSpinner />}>
+            <Annuaire />
+          </Suspense>
+        </MainLayout>
+      } />
+      <Route path="/donate" element={
+        <MainLayout>
+          <Suspense fallback={<LoadingSpinner />}>
+            <Donate />
+          </Suspense>
+        </MainLayout>
+      } />
+      <Route path="/donate/success" element={
+        <MainLayout>
+          <Suspense fallback={<LoadingSpinner />}>
+            <DonateSuccess />
+          </Suspense>
+        </MainLayout>
+      } />
+      <Route path="/jobs" element={
+        <MainLayout>
+          <Suspense fallback={<LoadingSpinner />}>
+            <Opportunities />
+          </Suspense>
+        </MainLayout>
+      } />
+      <Route path="/adc" element={
+        <MainLayout>
+          <Suspense fallback={<LoadingSpinner />}>
+            <ADC />
+          </Suspense>
+        </MainLayout>
+      } />
+      <Route path="/index-medicus" element={
+        <MainLayout>
+          <Suspense fallback={<LoadingSpinner />}>
+            <IndexMedicus />
+          </Suspense>
+        </MainLayout>
+      } />
+    </Routes>
   );
 }
 
 function App() {
   return (
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <ErrorBoundary>
           <LazyMotion features={domMax} strict>
             <ToastProvider>
-              <AppRoutes />
+              <AnimatePresence mode="wait" initial={false} onExitComplete={() => window.scrollTo(0, 0)}>
+                <AppRoutes />
+              </AnimatePresence>
               <Toaster />
             </ToastProvider>
           </LazyMotion>
-        </BrowserRouter>
-      </QueryClientProvider>
-    </ErrorBoundary>
+        </ErrorBoundary>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 }
 
