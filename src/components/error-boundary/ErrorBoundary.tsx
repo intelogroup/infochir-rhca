@@ -103,6 +103,19 @@ export class ErrorBoundary extends React.Component<Props, State> {
       errorInfo
     });
 
+    // Handle Stripe-specific errors
+    if (error.message.includes('Stripe') || error.message.includes('stripe.com')) {
+      console.error("[ErrorBoundary] Stripe error detected:", {
+        message: error.message,
+        network: {
+          online: navigator.onLine,
+          type: (navigator as any).connection?.type,
+          effectiveType: (navigator as any).connection?.effectiveType
+        }
+      });
+      return;
+    }
+
     if (error.message.includes('Failed to fetch dynamically imported module')) {
       const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
       const resourceEntries = performance.getEntriesByType('resource')
@@ -229,18 +242,24 @@ export class ErrorBoundary extends React.Component<Props, State> {
   render() {
     if (this.state.hasError) {
       const isChunkError = this.state.error?.message.includes('Failed to fetch dynamically imported module');
+      const isStripeError = this.state.error?.message.includes('Stripe') || 
+                           this.state.error?.message.includes('stripe.com');
       
       return (
         <div className="p-4">
           <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>
-              {isChunkError ? "Erreur de chargement" : "Une erreur est survenue"}
+              {isChunkError ? "Erreur de chargement" : 
+               isStripeError ? "Erreur de paiement" :
+               "Une erreur est survenue"}
             </AlertTitle>
             <AlertDescription className="mt-2 space-y-2">
               <p>
                 {isChunkError 
                   ? "Le chargement de la page a échoué. Veuillez réessayer."
+                  : isStripeError
+                  ? "Le système de paiement est temporairement indisponible. Veuillez désactiver votre bloqueur de publicités si vous en utilisez un."
                   : this.state.error?.message || "Une erreur inattendue s'est produite."
                 }
               </p>
