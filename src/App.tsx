@@ -1,6 +1,6 @@
 
 import { Suspense, lazy } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, BrowserRouter } from "react-router-dom";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { AnimatePresence } from "framer-motion";
 import { MainLayout } from "@/components/layouts/MainLayout";
@@ -156,16 +156,18 @@ function AppRoutes() {
 
 function App() {
   return (
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <ToastProvider>
-          <LazyMotion features={domMax} strict>
-            <AppRoutes />
-            <Toaster />
-          </LazyMotion>
-        </ToastProvider>
-      </QueryClientProvider>
-    </ErrorBoundary>
+    <BrowserRouter>
+      <ErrorBoundary>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <LazyMotion features={domMax} strict>
+              <AppRoutes />
+              <Toaster />
+            </LazyMotion>
+          </ToastProvider>
+        </QueryClientProvider>
+      </ErrorBoundary>
+    </BrowserRouter>
   );
 }
 
