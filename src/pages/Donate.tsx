@@ -8,7 +8,7 @@ import { Toaster } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { stripePromise } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { DonationAmountSelector } from "@/components/donate/form/DonationAmountSelector";
@@ -71,7 +71,7 @@ const Donate = () => {
         throw new Error("No session ID returned from server");
       }
 
-      const stripe = await stripePromise;
+      const stripe = await getStripe();
       if (!stripe) {
         throw new Error("Stripe failed to initialize");
       }
