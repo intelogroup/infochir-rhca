@@ -1,10 +1,10 @@
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export const BackToTop = () => {
+const BackToTop: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -49,3 +49,5 @@ export const BackToTop = () => {
     </AnimatePresence>
   );
 };
+
+export default BackToTop;
