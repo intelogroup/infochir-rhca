@@ -45,25 +45,64 @@ export class ErrorBoundary extends React.Component<Props, State> {
       errorInfo
     });
 
-    // Enhanced error logging for chunk loading failures
+    // Enhanced chunk loading error diagnostics
     if (error.message.includes('Failed to fetch dynamically imported module')) {
-      console.error("[ErrorBoundary] Chunk loading error detected:", {
-        currentRoute: window.location.pathname,
-        networkState: navigator.onLine ? 'online' : 'offline',
-        timestamp: new Date().toISOString()
+      const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+      const resourceEntries = performance.getEntriesByType('resource')
+        .filter(entry => entry.name.includes('.js'))
+        .map(entry => ({
+          name: entry.name,
+          duration: entry.duration,
+          startTime: entry.startTime,
+          transferSize: entry.transferSize,
+          protocol: (entry as PerformanceResourceTiming).nextHopProtocol
+        }));
+
+      console.error("[ErrorBoundary] Chunk loading diagnostic:", {
+        timestamp: new Date().toISOString(),
+        location: {
+          currentPath: window.location.pathname,
+          previousPath: document.referrer,
+          hash: window.location.hash,
+          search: window.location.search
+        },
+        network: {
+          online: navigator.onLine,
+          type: (navigator as any).connection?.type,
+          effectiveType: (navigator as any).connection?.effectiveType,
+          downlink: (navigator as any).connection?.downlink
+        },
+        navigation: {
+          type: navigationEntry?.type,
+          redirectCount: navigationEntry?.redirectCount,
+          timing: {
+            fetchStart: navigationEntry?.fetchStart,
+            domainLookupStart: navigationEntry?.domainLookupStart,
+            domainLookupEnd: navigationEntry?.domainLookupEnd,
+            connectStart: navigationEntry?.connectStart,
+            connectEnd: navigationEntry?.connectEnd,
+            requestStart: navigationEntry?.requestStart,
+            responseStart: navigationEntry?.responseStart,
+            responseEnd: navigationEntry?.responseEnd,
+            domComplete: navigationEntry?.domComplete
+          }
+        },
+        router: {
+          historyState: window.history.state,
+          historyLength: window.history.length
+        },
+        resources: resourceEntries,
+        performanceMemory: {
+          jsHeapSizeLimit: (performance as any).memory?.jsHeapSizeLimit,
+          totalJSHeapSize: (performance as any).memory?.totalJSHeapSize,
+          usedJSHeapSize: (performance as any).memory?.usedJSHeapSize
+        }
       });
     }
-
-    // Log additional context
-    console.log("[ErrorBoundary] Current route:", window.location.pathname);
-    console.log("[ErrorBoundary] Component tree context:", errorInfo.componentStack.split('\n'));
   }
 
   handleRetry = () => {
-    // Clear the error state
     this.setState({ hasError: false, error: undefined, errorInfo: undefined });
-    
-    // Attempt to reload the current route
     window.location.reload();
   };
 
