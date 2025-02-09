@@ -19,7 +19,7 @@ const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
   // 1. Initialize page state
   const [currentPage, setCurrentPage] = useState(0);
   
-  // 2. Fetch data
+  // 2. Fetch data with proper error handling
   const { data, isLoading, error } = useArticlesQuery(currentPage);
   console.log('ArticleGrid query state:', { isLoading, error, hasData: !!data });
   
@@ -50,29 +50,25 @@ const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
     articleStats
   } = useArticlesState(articles);
 
-  // 4. Error handling
-  if (error) {
-    return <ErrorDisplay error={error as Error} />;
-  }
-
-  // 5. Loading state
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
-
-  const handleSearch = useCallback(() => {
-    console.time('Search Operation');
-    console.log("Searching with filters:", { 
-      searchTerm, 
-      selectedCategory, 
-      selectedSource, 
-      selectedTags,
-      selectedAuthors,
-      titleFilter,
-      date 
-    });
-    setCurrentPage(0); // Reset to first page when searching
-    console.timeEnd('Search Operation');
+  // 4. Implement properly memoized async handlers
+  const handleSearch = useCallback(async () => {
+    try {
+      console.time('Search Operation');
+      console.log("Searching with filters:", { 
+        searchTerm, 
+        selectedCategory, 
+        selectedSource, 
+        selectedTags,
+        selectedAuthors,
+        titleFilter,
+        date 
+      });
+      
+      await setCurrentPage(0); // Reset to first page when searching
+      console.timeEnd('Search Operation');
+    } catch (error) {
+      console.error('Search error:', error);
+    }
   }, [
     searchTerm, 
     selectedCategory, 
@@ -80,7 +76,8 @@ const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
     selectedTags,
     selectedAuthors,
     titleFilter,
-    date
+    date,
+    setCurrentPage
   ]);
 
   const handleTagClick = useCallback((tag: string) => {
@@ -88,6 +85,16 @@ const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
       setSelectedTags([...selectedTags, tag]);
     }
   }, [selectedTags, setSelectedTags]);
+
+  // 5. Error handling component
+  if (error) {
+    return <ErrorDisplay error={error as Error} />;
+  }
+
+  // 6. Loading state
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="space-y-4">

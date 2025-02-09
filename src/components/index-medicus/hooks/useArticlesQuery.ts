@@ -92,3 +92,4 @@ export const useArticlesQuery = (page = 0) => {
     retry: 2,
   });
 };
+
