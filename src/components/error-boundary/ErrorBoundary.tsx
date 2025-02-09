@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/alert";
 import { getLoadingDiagnostics } from "./utils/diagnostics";
 import { getErrorMessage } from "./utils/errorMessages";
+import { toast } from "sonner";
 
 interface Props {
   children: React.ReactNode;
@@ -38,6 +39,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    // Log detailed error information
     console.error("[ErrorBoundary] Error caught:", {
       error,
       message: error.message,
@@ -46,6 +48,26 @@ export class ErrorBoundary extends React.Component<Props, State> {
       componentStack: errorInfo.componentStack,
       errorInfo
     });
+
+    // Additional diagnostics for specific error types
+    if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
+      console.error("[ErrorBoundary] Network error detected:", {
+        message: error.message,
+        online: navigator.onLine,
+        connection: {
+          type: (navigator as any).connection?.type,
+          effectiveType: (navigator as any).connection?.effectiveType,
+          downlink: (navigator as any).connection?.downlink
+        }
+      });
+    }
+
+    if (error.message.includes('timeout') || error.name === 'TimeoutError') {
+      console.error("[ErrorBoundary] Timeout error detected:", {
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
 
     if (error.message.includes('Stripe') || error.message.includes('stripe.com')) {
       console.error("[ErrorBoundary] Stripe error detected:", {
@@ -72,12 +94,32 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
     const errorDetails = getErrorMessage(error);
     
-    if (errorDetails.type === 'stripe_error') {
-      // For Stripe errors, we'll first clear the state and let the component try to reinitialize
-      this.setState({ hasError: false, error: undefined, errorInfo: undefined });
-    } else {
-      // For other errors, we'll do a full page reload
-      window.location.reload();
+    switch (errorDetails.type) {
+      case 'network_error':
+        // For network errors, check connection first
+        if (navigator.onLine) {
+          this.setState({ hasError: false, error: undefined });
+          toast.success("Tentative de reconnexion...");
+        } else {
+          toast.error("Pas de connexion internet");
+        }
+        break;
+        
+      case 'timeout_error':
+        // For timeout errors, retry with toast notification
+        this.setState({ hasError: false, error: undefined });
+        toast.info("Nouvelle tentative...");
+        break;
+        
+      case 'stripe_error':
+        // For Stripe errors, clear state and reinitialize
+        this.setState({ hasError: false, error: undefined });
+        toast.info("Réinitialisation du système de paiement...");
+        break;
+        
+      default:
+        // For other errors, do a full page reload
+        window.location.reload();
     }
   };
 
