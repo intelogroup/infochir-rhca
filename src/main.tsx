@@ -8,11 +8,13 @@ import { Toaster } from "@/components/ui/toaster";
 import App from "./App";
 import "./index.css";
 
+// Create a client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 60 * 1000,
       retry: 1,
+      refetchOnWindowFocus: false,
     },
   },
 });
@@ -22,13 +24,13 @@ if (!rootElement) throw new Error('Root element not found');
 
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <QueryClientProvider client={queryClient}>
+        <ErrorBoundary>
           <App />
           <Toaster />
-        </QueryClientProvider>
+        </ErrorBoundary>
       </BrowserRouter>
-    </ErrorBoundary>
+    </QueryClientProvider>
   </React.StrictMode>
 );
