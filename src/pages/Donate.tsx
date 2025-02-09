@@ -58,6 +58,7 @@ const Donate = () => {
             name,
             email,
             is_anonymous: !name,
+            message: '' // Include empty message field
           }
         }
       });
