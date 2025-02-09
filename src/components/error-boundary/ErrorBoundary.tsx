@@ -67,6 +67,41 @@ export class ErrorBoundary extends React.Component<Props, State> {
           };
         });
 
+      // Track specific failure patterns for About chunks
+      const chunkLoadingDiagnostics = resourceEntries
+        .filter(entry => entry.name.includes('About-'))
+        .map(entry => {
+          const timing = entry as PerformanceResourceTiming;
+          return {
+            timing: {
+              total: timing.duration,
+              network: timing.responseEnd - timing.requestStart,
+              processing: timing.duration - (timing.responseEnd - timing.requestStart)
+            },
+            size: timing.decodedBodySize,
+            success: timing.responseEnd > 0
+          };
+        });
+
+      // Track session-level diagnostics
+      const sessionDiagnostics = {
+        pageLoads: Number(sessionStorage.getItem('pageLoadCount') || 0),
+        successfulChunks: Number(sessionStorage.getItem('successfulChunkLoads') || 0),
+        failedChunks: Number(sessionStorage.getItem('failedChunkLoads') || 0)
+      };
+
+      // Monitor loading sequence
+      const loadSequence = performance.getEntriesByType('resource')
+        .map(entry => {
+          const timing = entry as PerformanceResourceTiming;
+          return {
+            name: entry.name,
+            startTime: entry.startTime,
+            endTime: timing.responseEnd
+          };
+        })
+        .sort((a, b) => a.startTime - b.startTime);
+
       console.error("[ErrorBoundary] Chunk loading diagnostic:", {
         timestamp: new Date().toISOString(),
         location: {
@@ -106,12 +141,21 @@ export class ErrorBoundary extends React.Component<Props, State> {
           }
         },
         resources: resourceEntries,
+        chunkLoadingDiagnostics,
+        sessionDiagnostics,
+        loadSequence,
         modules: {
           pending: Array.from(document.querySelectorAll('script[type="module"]')).length,
           loaded: performance.getEntriesByType('resource')
-            .filter(e => e.name.endsWith('.js') && e.responseEnd > 0).length,
+            .filter(e => {
+              const timing = e as PerformanceResourceTiming;
+              return e.name.endsWith('.js') && timing.responseEnd > 0;
+            }).length,
           failed: performance.getEntriesByType('resource')
-            .filter(e => e.name.endsWith('.js') && !e.responseEnd).length
+            .filter(e => {
+              const timing = e as PerformanceResourceTiming;
+              return e.name.endsWith('.js') && !timing.responseEnd;
+            }).length
         },
         performanceMemory: {
           jsHeapSizeLimit: (performance as any).memory?.jsHeapSizeLimit,
@@ -169,4 +213,5 @@ export class ErrorBoundary extends React.Component<Props, State> {
     return this.props.children;
   }
 }
+
 
