@@ -29,6 +29,16 @@ const LoadingSkeleton = () => (
 const VirtualizedAtlasGrid = ({ chapters }: { chapters: any[] }) => {
   console.log("[VirtualizedAtlasGrid] Rendering with chapters:", chapters);
   const parentRef = useRef<HTMLDivElement>(null);
+  const isMounted = useRef(false);
+
+  useEffect(() => {
+    isMounted.current = true;
+    console.log("[VirtualizedAtlasGrid] Component mounted");
+    return () => {
+      isMounted.current = false;
+      console.log("[VirtualizedAtlasGrid] Component unmounting");
+    };
+  }, []);
 
   const columnCount = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1;
   const rowCount = Math.ceil(chapters.length / columnCount);
@@ -92,16 +102,34 @@ const VirtualizedAtlasGrid = ({ chapters }: { chapters: any[] }) => {
 
 const ADCContent = () => {
   console.log("[ADCContent] Component mounting");
+  const mountTime = useRef(Date.now());
   const { data: chapters, isLoading, error } = useAtlasArticles();
 
   useEffect(() => {
+    console.log("[ADCContent] Component mounted at:", mountTime.current);
+    console.log("[ADCContent] Initial state:", { isLoading, hasData: !!chapters, error });
+
+    return () => {
+      console.log("[ADCContent] Component unmounting, was mounted for:", Date.now() - mountTime.current, "ms");
+    };
+  }, []);
+
+  useEffect(() => {
     if (error) {
-      console.error("[ADCContent] Error loading Atlas articles:", error);
+      console.error("[ADCContent] Error loading Atlas articles:", {
+        error,
+        message: error.message,
+        stack: error.stack
+      });
     }
   }, [error]);
 
   useEffect(() => {
-    console.log("[ADCContent] Data loading state:", { isLoading, chaptersLength: chapters?.length });
+    console.log("[ADCContent] Data loading state updated:", { 
+      isLoading, 
+      chaptersLength: chapters?.length,
+      timestamp: Date.now() - mountTime.current
+    });
   }, [isLoading, chapters]);
 
   if (error) {
@@ -138,11 +166,12 @@ const ADCContent = () => {
 
 const ADC = () => {
   console.log("[ADC] Component mounting");
+  const mountTime = useRef(Date.now());
   
   useEffect(() => {
-    console.log("[ADC] Component mounted");
+    console.log("[ADC] Component mounted at:", mountTime.current);
     return () => {
-      console.log("[ADC] Component unmounting");
+      console.log("[ADC] Component unmounting, was mounted for:", Date.now() - mountTime.current, "ms");
     };
   }, []);
 
