@@ -149,4 +149,3 @@ const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
 ArticleGrid.displayName = 'ArticleGrid';
 
 export { ArticleGrid };
-

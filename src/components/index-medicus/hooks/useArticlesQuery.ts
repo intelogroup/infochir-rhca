@@ -52,44 +52,38 @@ export const useArticlesQuery = (page = 0) => {
 
       console.log('Executing Supabase query with range:', { start, end });
 
-      try {
-        const { data, error, count } = await supabase
-          .from("articles")
-          .select('*', { count: 'exact' })
-          .in('source', ['IGM', 'RHCA', 'ADC'])
-          .range(start, end)
-          .order("publication_date", { ascending: false });
+      const { data, error, count } = await supabase
+        .from("articles")
+        .select('*', { count: 'exact' })
+        .in('source', ['IGM', 'RHCA', 'ADC'])
+        .range(start, end)
+        .order("publication_date", { ascending: false });
 
-        console.log('Supabase response:', { data, error, count });
+      console.log('Supabase response:', { data, error, count });
 
-        if (error) {
-          console.error("Supabase query error:", error);
-          toast.error("Erreur lors du chargement des articles");
-          throw error;
-        }
-
-        if (!data) {
-          console.log('No data returned from query');
-          return { articles: [], totalPages: 0 };
-        }
-
-        console.log('Raw data from Supabase:', data);
-        const mappedArticles = data.map((article) => mapDatabaseArticleToArticle(article));
-        const totalPages = Math.ceil((count || 0) / PAGE_SIZE);
-
-        console.log('Final mapped articles:', mappedArticles);
-        console.log('Total pages calculated:', totalPages);
-
-        return { articles: mappedArticles, totalPages };
-      } catch (err) {
-        console.error("Error in useArticlesQuery:", err);
-        toast.error("Une erreur est survenue lors du chargement des articles");
-        throw err;
+      if (error) {
+        console.error("Supabase query error:", error);
+        toast.error("Erreur lors du chargement des articles");
+        throw error;
       }
+
+      if (!data) {
+        console.log('No data returned from query');
+        return { articles: [], totalPages: 0 };
+      }
+
+      console.log('Raw data from Supabase:', data);
+      const mappedArticles = data.map((article) => mapDatabaseArticleToArticle(article));
+      const totalPages = Math.ceil((count || 0) / PAGE_SIZE);
+
+      console.log('Final mapped articles:', mappedArticles);
+      console.log('Total pages calculated:', totalPages);
+
+      return { articles: mappedArticles, totalPages };
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 30 * 60 * 1000, // 30 minutes
     retry: 2,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 };
-

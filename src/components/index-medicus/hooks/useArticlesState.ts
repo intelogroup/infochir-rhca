@@ -38,14 +38,13 @@ export const useArticlesState = (articles: Article[]) => {
       searchTerm, 
       selectedCategory, 
       selectedSource, 
-      selectedTags, 
+      selectedTags,
       selectedAuthors,
       titleFilter,
       date 
     });
     
     return articles.filter(article => {
-      // Search term filter
       const searchLower = searchTerm.toLowerCase();
       const matchesSearch = !searchTerm || 
         article.title.toLowerCase().includes(searchLower) ||
@@ -58,27 +57,21 @@ export const useArticlesState = (articles: Article[]) => {
           tag.toLowerCase().includes(searchLower)
         );
 
-      // Title filter
       const matchesTitle = !titleFilter || 
         article.title.toLowerCase().includes(titleFilter.toLowerCase());
 
-      // Author filter
       const matchesAuthors = selectedAuthors.length === 0 || 
         selectedAuthors.every(author => 
           article.authors.includes(author)
         );
 
-      // Category filter
       const matchesCategory = !selectedCategory || article.category === selectedCategory;
       
-      // Source filter
       const matchesSource = !selectedSource || article.source === selectedSource;
       
-      // Tags filter
       const matchesTags = selectedTags.length === 0 || 
         selectedTags.every(tag => article.tags?.includes(tag));
 
-      // Date range filter
       const matchesDate = !date?.from || !date?.to || 
         (new Date(article.date) >= date.from && new Date(article.date) <= date.to);
 
