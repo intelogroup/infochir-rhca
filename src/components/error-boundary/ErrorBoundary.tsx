@@ -35,6 +35,64 @@ export class ErrorBoundary extends React.Component<Props, State> {
     return { hasError: true, error };
   }
 
+  private getChunkLoadStatus(chunkName: string) {
+    const entries = performance.getEntriesByType('resource')
+      .filter(entry => entry.name.includes(chunkName))
+      .map(entry => {
+        const resourceTiming = entry as PerformanceResourceTiming;
+        return {
+          status: resourceTiming.responseEnd > 0 ? 'loaded' : 'failed',
+          timing: {
+            start: resourceTiming.startTime,
+            end: resourceTiming.responseEnd,
+            duration: resourceTiming.duration
+          },
+          size: resourceTiming.decodedBodySize,
+          protocol: resourceTiming.nextHopProtocol
+        };
+      });
+    
+    return {
+      found: entries.length > 0,
+      entries,
+      dependencies: this.getDependencyChunks(chunkName)
+    };
+  }
+
+  private getDependencyChunks(mainChunk: string) {
+    return performance.getEntriesByType('resource')
+      .filter(entry => {
+        const name = entry.name;
+        const timing = entry as PerformanceResourceTiming;
+        const mainChunkEntry = performance.getEntriesByType('resource')
+          .find(e => e.name.includes(mainChunk));
+        return name.includes('.js') && 
+               name.includes('vendor') &&
+               mainChunkEntry &&
+               entry.startTime < mainChunkEntry.startTime;
+      })
+      .map(entry => {
+        const timing = entry as PerformanceResourceTiming;
+        return {
+          name: entry.name,
+          loaded: timing.responseEnd > 0
+        };
+      });
+  }
+
+  private getNavigationContext() {
+    const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+    return {
+      type: nav?.type || 'unknown',
+      redirect: nav?.redirectCount > 0,
+      timing: {
+        navigationStart: nav?.startTime || 0,
+        loadEventEnd: nav?.loadEventEnd || 0,
+        domComplete: nav?.domComplete || 0
+      }
+    };
+  }
+
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error("[ErrorBoundary] Error caught:", {
       error,
@@ -45,7 +103,6 @@ export class ErrorBoundary extends React.Component<Props, State> {
       errorInfo
     });
 
-    // Enhanced chunk loading error diagnostics
     if (error.message.includes('Failed to fetch dynamically imported module')) {
       const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
       const resourceEntries = performance.getEntriesByType('resource')
@@ -71,15 +128,14 @@ export class ErrorBoundary extends React.Component<Props, State> {
       const chunkLoadingDiagnostics = resourceEntries
         .filter(entry => entry.name.includes('About-'))
         .map(entry => {
-          const timing = entry as PerformanceResourceTiming;
           return {
             timing: {
-              total: timing.duration,
-              network: timing.responseEnd - timing.requestStart,
-              processing: timing.duration - (timing.responseEnd - timing.requestStart)
+              total: entry.duration,
+              network: entry.timing.request + entry.timing.response,
+              processing: entry.duration - (entry.timing.request + entry.timing.response)
             },
-            size: timing.decodedBodySize,
-            success: timing.responseEnd > 0
+            size: entry.size,
+            success: entry.timing.response > 0
           };
         });
 
@@ -91,15 +147,12 @@ export class ErrorBoundary extends React.Component<Props, State> {
       };
 
       // Monitor loading sequence
-      const loadSequence = performance.getEntriesByType('resource')
-        .map(entry => {
-          const timing = entry as PerformanceResourceTiming;
-          return {
-            name: entry.name,
-            startTime: entry.startTime,
-            endTime: timing.responseEnd
-          };
-        })
+      const loadSequence = resourceEntries
+        .map(entry => ({
+          name: entry.name,
+          startTime: entry.startTime,
+          endTime: entry.timing.response > 0 ? entry.startTime + entry.duration : 0
+        }))
         .sort((a, b) => a.startTime - b.startTime);
 
       console.error("[ErrorBoundary] Chunk loading diagnostic:", {
@@ -144,6 +197,8 @@ export class ErrorBoundary extends React.Component<Props, State> {
         chunkLoadingDiagnostics,
         sessionDiagnostics,
         loadSequence,
+        navigationContext: this.getNavigationContext(),
+        failedChunkDetails: this.getChunkLoadStatus('About'),
         modules: {
           pending: Array.from(document.querySelectorAll('script[type="module"]')).length,
           loaded: performance.getEntriesByType('resource')
@@ -213,5 +268,4 @@ export class ErrorBoundary extends React.Component<Props, State> {
     return this.props.children;
   }
 }
-
 
