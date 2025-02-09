@@ -1,6 +1,6 @@
 
 import { Suspense, lazy } from "react";
-import { Routes, Route, useLocation, BrowserRouter } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { AnimatePresence } from "framer-motion";
 import { MainLayout } from "@/components/layouts/MainLayout";
@@ -11,16 +11,14 @@ import { queryClient } from "@/lib/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { LazyMotion, domMax } from "framer-motion";
 
-// Preload critical routes
-const Home = lazy(() => import("@/pages/Home" /* webpackPrefetch: true */));
-const RHCA = lazy(() => import("@/pages/RHCA" /* webpackPrefetch: true */));
-const IGM = lazy(() => import("@/pages/IGM" /* webpackPrefetch: true */));
-const Donate = lazy(() => import("@/pages/Donate" /* webpackPrefetch: true */));
-const DonateSuccess = lazy(() => import("@/pages/donate/DonateSuccess" /* webpackPrefetch: true */));
-const ADC = lazy(() => import("@/pages/ADC" /* webpackPrefetch: true */));
-const IndexMedicus = lazy(() => import("@/pages/IndexMedicus" /* webpackPrefetch: true */));
-
-// Lazy load less frequently accessed routes
+// Lazy load routes
+const Home = lazy(() => import("@/pages/Home"));
+const RHCA = lazy(() => import("@/pages/RHCA"));
+const IGM = lazy(() => import("@/pages/IGM"));
+const Donate = lazy(() => import("@/pages/Donate"));
+const DonateSuccess = lazy(() => import("@/pages/donate/DonateSuccess"));
+const ADC = lazy(() => import("@/pages/ADC"));
+const IndexMedicus = lazy(() => import("@/pages/IndexMedicus"));
 const About = lazy(() => import("@/pages/About"));
 const EditorialCommittee = lazy(() => import("@/pages/EditorialCommittee"));
 const Submission = lazy(() => import("@/pages/Submission"));
@@ -58,20 +56,18 @@ function AppRoutes() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <ErrorBoundary>
-        <QueryClientProvider client={queryClient}>
-          <ToastProvider>
-            <LazyMotion features={domMax} strict>
-              <Suspense fallback={<LoadingSpinner />}>
-                <AppRoutes />
-              </Suspense>
-              <Toaster />
-            </LazyMotion>
-          </ToastProvider>
-        </QueryClientProvider>
-      </ErrorBoundary>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <ToastProvider>
+          <LazyMotion features={domMax} strict>
+            <Suspense fallback={<LoadingSpinner />}>
+              <AppRoutes />
+            </Suspense>
+            <Toaster />
+          </LazyMotion>
+        </ToastProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 
