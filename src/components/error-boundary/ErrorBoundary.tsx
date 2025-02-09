@@ -45,21 +45,46 @@ export class ErrorBoundary extends React.Component<Props, State> {
       errorInfo
     });
 
+    // Enhanced error logging for chunk loading failures
+    if (error.message.includes('Failed to fetch dynamically imported module')) {
+      console.error("[ErrorBoundary] Chunk loading error detected:", {
+        currentRoute: window.location.pathname,
+        networkState: navigator.onLine ? 'online' : 'offline',
+        timestamp: new Date().toISOString()
+      });
+    }
+
     // Log additional context
     console.log("[ErrorBoundary] Current route:", window.location.pathname);
     console.log("[ErrorBoundary] Component tree context:", errorInfo.componentStack.split('\n'));
   }
 
+  handleRetry = () => {
+    // Clear the error state
+    this.setState({ hasError: false, error: undefined, errorInfo: undefined });
+    
+    // Attempt to reload the current route
+    window.location.reload();
+  };
+
   render() {
     if (this.state.hasError) {
-      console.log("[ErrorBoundary] Rendering error UI with error:", this.state.error);
+      const isChunkError = this.state.error?.message.includes('Failed to fetch dynamically imported module');
+      
       return (
         <div className="p-4">
           <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>Une erreur est survenue</AlertTitle>
+            <AlertTitle>
+              {isChunkError ? "Erreur de chargement" : "Une erreur est survenue"}
+            </AlertTitle>
             <AlertDescription className="mt-2 space-y-2">
-              <p>{this.state.error?.message || "Une erreur inattendue s'est produite."}</p>
+              <p>
+                {isChunkError 
+                  ? "Le chargement de la page a échoué. Veuillez réessayer."
+                  : this.state.error?.message || "Une erreur inattendue s'est produite."
+                }
+              </p>
               {this.state.error?.stack && (
                 <details className="mt-2">
                   <summary className="cursor-pointer text-sm">Détails techniques</summary>
@@ -72,9 +97,9 @@ export class ErrorBoundary extends React.Component<Props, State> {
             <Button
               variant="outline"
               className="mt-4"
-              onClick={() => window.location.reload()}
+              onClick={this.handleRetry}
             >
-              Recharger la page
+              Réessayer
             </Button>
           </Alert>
         </div>

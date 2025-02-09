@@ -49,12 +49,13 @@ export default defineConfig(({ mode }) => ({
     },
     headers: {
       'Content-Security-Policy': `
-        default-src 'self' https://*.stripe.com;
-        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.stripe.com;
+        default-src 'self' https://*.stripe.com https://*.supabase.co;
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.stripe.com https://*.supabase.co blob:;
         style-src 'self' 'unsafe-inline';
-        img-src 'self' data: https://*.stripe.com;
-        connect-src 'self' https://*.stripe.com https://*.supabase.co wss://*.supabase.co;
+        img-src 'self' data: https://*.stripe.com https://*.supabase.co;
+        connect-src 'self' https://*.stripe.com https://*.supabase.co wss://*.supabase.co https://*.lovableproject.com wss://*.lovableproject.com;
         frame-src 'self' https://*.stripe.com;
+        worker-src 'self' blob:;
       `.replace(/\s+/g, ' ').trim()
     }
   },
