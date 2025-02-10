@@ -1,3 +1,4 @@
+import * as React from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { HeroSection } from "@/components/home/HeroSection";
 import { ProductsSection } from "@/components/home/ProductsSection";

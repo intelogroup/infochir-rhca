@@ -1,4 +1,5 @@
 
+import * as React from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { EditorialTeam } from "@/components/editorial/EditorialTeam";
 import { EditorialHeader } from "@/components/editorial/EditorialHeader";

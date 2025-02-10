@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import * as React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface LazyImageProps {
@@ -9,7 +8,7 @@ interface LazyImageProps {
 }
 
 const LazyImage = ({ src, alt, className = "" }: LazyImageProps) => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   return (
     <>

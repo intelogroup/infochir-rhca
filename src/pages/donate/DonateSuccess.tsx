@@ -1,5 +1,4 @@
-
-import { useEffect, useState } from "react";
+import * as React from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -9,9 +8,9 @@ import { CheckCircle2 } from "lucide-react";
 
 const DonateSuccess = () => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = React.useState(true);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const sessionId = params.get('session_id');
 
