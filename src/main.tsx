@@ -8,19 +8,25 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/react-query";
 import { BrowserRouter } from "react-router-dom";
 
+console.log("[main] Initializing application");
+
 const rootElement = document.getElementById("root");
-if (!rootElement) throw new Error('Root element not found');
+if (!rootElement) {
+  console.error("[main] Root element not found");
+  throw new Error('Root element not found');
+}
 
 const root = ReactDOM.createRoot(rootElement);
 
 root.render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <ErrorBoundary>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
           <App />
-        </ErrorBoundary>
-      </BrowserRouter>
-    </QueryClientProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </ErrorBoundary>
   </React.StrictMode>
 );
+

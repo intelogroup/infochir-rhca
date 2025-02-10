@@ -3,6 +3,7 @@ import * as React from "react";
 import { ToastContextValue, ToasterToast } from "./types";
 import { clearToasts, genId, setDispatch } from "./utils";
 import { reducer } from "./toast-reducer";
+import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 
 const ToastContext = React.createContext<ToastContextValue | null>(null);
 
@@ -10,6 +11,7 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = React.useReducer(reducer, { toasts: [] });
 
   React.useEffect(() => {
+    console.log('[ToastProvider] Initializing');
     setDispatch(dispatch);
     return () => {
       clearToasts();
@@ -40,9 +42,17 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
     dispatch({ type: "DISMISS_TOAST", toastId });
   }, []);
 
+  const contextValue = React.useMemo(() => ({
+    toasts: state.toasts,
+    toast,
+    dismiss
+  }), [state.toasts, toast, dismiss]);
+
   return (
-    <ToastContext.Provider value={{ toasts: state.toasts, toast, dismiss }}>
-      {children}
+    <ToastContext.Provider value={contextValue}>
+      <ErrorBoundary>
+        {children}
+      </ErrorBoundary>
     </ToastContext.Provider>
   );
 };
@@ -50,7 +60,9 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
 export const useToast = () => {
   const context = React.useContext(ToastContext);
   if (!context) {
+    console.error('[useToast] Toast context not found');
     throw new Error("useToast must be used within a ToastProvider");
   }
   return context;
 };
+

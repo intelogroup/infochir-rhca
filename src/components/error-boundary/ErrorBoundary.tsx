@@ -12,6 +12,7 @@ import { getErrorMessage } from "./utils/errorMessages";
 
 interface Props {
   children: React.ReactNode;
+  fallback?: React.ReactNode;
 }
 
 interface State {
@@ -34,6 +35,12 @@ export class ErrorBoundary extends React.Component<Props, State> {
       stack: error.stack,
       name: error.name
     });
+
+    // Handle context-specific errors
+    if (error.message.includes('must be used within')) {
+      console.error("[ErrorBoundary] Context provider missing:", error.message);
+    }
+
     return { hasError: true, error };
   }
 
@@ -72,19 +79,21 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
     const errorDetails = getErrorMessage(error);
     
-    if (errorDetails.type === 'stripe_error') {
-      // For Stripe errors, we'll first clear the state and let the component try to reinitialize
+    // Handle context recovery
+    if (error.message.includes('must be used within')) {
+      this.setState({ hasError: false, error: undefined, errorInfo: undefined });
+    } else if (errorDetails.type === 'stripe_error') {
       this.setState({ hasError: false, error: undefined, errorInfo: undefined });
     } else {
-      // For other errors, we'll do a full page reload
       window.location.reload();
     }
   };
 
   renderErrorContent() {
-    if (!this.state.error) return null;
+    const { error } = this.state;
+    if (!error) return null;
 
-    const { title, message, details, type } = getErrorMessage(this.state.error);
+    const { title, message, details, type } = getErrorMessage(error);
     
     return (
       <Alert variant="destructive" className="p-6">
@@ -101,11 +110,11 @@ export class ErrorBoundary extends React.Component<Props, State> {
             </ul>
           )}
 
-          {this.state.error.stack && type === 'generic_error' && (
+          {error.stack && type === 'generic_error' && (
             <details className="mt-4">
               <summary className="cursor-pointer text-sm">Détails techniques</summary>
               <pre className="mt-2 text-xs overflow-auto max-h-48 bg-gray-100 p-2 rounded">
-                {this.state.error.stack}
+                {error.stack}
               </pre>
             </details>
           )}
@@ -124,6 +133,9 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
+      if (this.props.fallback) {
+        return this.props.fallback;
+      }
       return (
         <div className="p-4">
           {this.renderErrorContent()}
