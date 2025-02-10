@@ -3,22 +3,24 @@ import { Table, TableBody } from "@/components/ui/table";
 import { SearchBar } from "./SearchBar";
 import { TableHeader } from "./TableHeader";
 import { MemberRow } from "./MemberRow";
-import { useState, useMemo, useCallback, memo } from "react";
+import { useState, useMemo, useCallback, FC } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const LoadingSkeleton = memo(() => (
+const LoadingSkeleton: FC = () => (
   <div className="space-y-4">
     {Array.from({ length: 5 }).map((_, i) => (
       <Skeleton key={i} className="w-full h-16" />
     ))}
   </div>
-));
+);
 
 LoadingSkeleton.displayName = 'LoadingSkeleton';
 
-const DirectoryList = memo(() => {
+interface DirectoryListProps {}
+
+const DirectoryList: FC<DirectoryListProps> = () => {
   console.time('DirectoryList Render');
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState<'id' | 'name' | 'email'>('name');
@@ -116,9 +118,8 @@ const DirectoryList = memo(() => {
       </div>
     </div>
   );
-});
+};
 
 DirectoryList.displayName = 'DirectoryList';
 
 export { DirectoryList };
-

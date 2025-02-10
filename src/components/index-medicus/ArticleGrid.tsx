@@ -4,7 +4,7 @@ import { ArticleContent } from "./ArticleContent";
 import { useArticlesState } from "./hooks/useArticlesState";
 import { useArticlesQuery } from "./hooks/useArticlesQuery";
 import { VirtualizedArticleList } from "./VirtualizedArticleList";
-import { memo, useState, useCallback } from "react";
+import { FC, useState, useCallback } from "react";
 import { LoadingSpinner } from "./components/LoadingState";
 import { ErrorDisplay } from "./components/ErrorDisplay";
 import { Pagination } from "./components/Pagination";
@@ -13,20 +13,17 @@ interface ArticleGridProps {
   viewMode?: "grid" | "table";
 }
 
-const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
+const ArticleGrid: FC<ArticleGridProps> = ({ viewMode = "table" }) => {
   console.log('ArticleGrid rendering with viewMode:', viewMode);
   
-  // 1. Initialize page state
   const [currentPage, setCurrentPage] = useState(0);
-  
-  // 2. Fetch data with proper error handling
   const { data, isLoading, error } = useArticlesQuery(currentPage);
+  
   console.log('ArticleGrid query state:', { isLoading, error, hasData: !!data });
   
   const articles = data?.articles || [];
   const totalPages = data?.totalPages || 0;
 
-  // 3. Initialize article state after data is available
   const {
     searchTerm,
     setSearchTerm,
@@ -50,7 +47,6 @@ const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
     articleStats
   } = useArticlesState(articles);
 
-  // 4. Implement properly memoized async handlers
   const handleSearch = useCallback(async () => {
     try {
       console.time('Search Operation');
@@ -64,7 +60,7 @@ const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
         date 
       });
       
-      await setCurrentPage(0); // Reset to first page when searching
+      await setCurrentPage(0);
       console.timeEnd('Search Operation');
     } catch (error) {
       console.error('Search error:', error);
@@ -86,12 +82,10 @@ const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
     }
   }, [selectedTags, setSelectedTags]);
 
-  // 5. Error handling component
   if (error) {
     return <ErrorDisplay error={error as Error} />;
   }
 
-  // 6. Loading state
   if (isLoading) {
     return <LoadingSpinner />;
   }
@@ -144,7 +138,7 @@ const ArticleGrid = memo(({ viewMode = "table" }: ArticleGridProps) => {
       />
     </div>
   );
-});
+};
 
 ArticleGrid.displayName = 'ArticleGrid';
 

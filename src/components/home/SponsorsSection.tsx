@@ -1,27 +1,28 @@
+
 import { sponsors } from "./sponsors/SponsorsData";
 import { SponsorCard } from "./sponsors/SponsorCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, FC } from "react";
 
-export const SponsorsSection = () => {
+interface SponsorsSectionProps {}
+
+const SponsorsSection: FC<SponsorsSectionProps> = () => {
   const { data: sponsorsData, isLoading, error, refetch } = useQuery({
     queryKey: ['sponsors'],
     queryFn: async () => {
       console.log('Fetching sponsors data');
-      // Simulating a network request for demonstration
       await new Promise(resolve => setTimeout(resolve, 500));
       return sponsors;
     },
-    staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
-    gcTime: 10 * 60 * 1000, // Keep unused data in cache for 10 minutes
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
     retry: 2,
     retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
-  // Prefetch data when component mounts
   useEffect(() => {
     const prefetchData = async () => {
       await refetch();
@@ -70,7 +71,6 @@ export const SponsorsSection = () => {
     );
   }
 
-  // Split sponsors into partners and sponsors based on their type
   const partners = sponsorsData?.filter(s => s.type === 'partner') || [];
   const sponsorsOnly = sponsorsData?.filter(s => s.type === 'sponsor') || [];
 
@@ -126,3 +126,7 @@ export const SponsorsSection = () => {
     </section>
   );
 };
+
+SponsorsSection.displayName = 'SponsorsSection';
+
+export { SponsorsSection };
