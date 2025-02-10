@@ -1,17 +1,17 @@
+import * as React from "react";
 import { RhcaCard } from "./RhcaCard";
 import { RhcaTable } from "./RhcaTable";
 import type { RhcaArticle } from "./types";
 import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, FileText, ChevronDown } from "lucide-react";
-import { useState, useEffect } from "react";
 
 interface RhcaArticleListProps {
   articles: RhcaArticle[];
   viewMode: "grid" | "table";
 }
 
-export const RhcaArticleList = ({ articles = [], viewMode }: RhcaArticleListProps) => {
-  const [expandedYears, setExpandedYears] = useState<number[]>([]);
+export const RhcaArticleList: React.FC<RhcaArticleListProps> = ({ articles = [], viewMode }) => {
+  const [expandedYears, setExpandedYears] = React.useState<number[]>([]);
 
   const articlesByYear = articles.reduce((acc, article) => {
     const year = new Date(article.date).getFullYear();
@@ -27,7 +27,7 @@ export const RhcaArticleList = ({ articles = [], viewMode }: RhcaArticleListProp
     .sort((a, b) => b - a);
 
   // Set the most recent year as expanded by default
-  useEffect(() => {
+  React.useEffect(() => {
     if (sortedYears.length > 0 && expandedYears.length === 0) {
       setExpandedYears([sortedYears[0]]);
     }

@@ -1,12 +1,12 @@
 
-import React from "react";
+import * as React from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { RhcaGrid } from "@/components/rhca/RhcaGrid";
 import BackToTop from "@/components/navigation/BackToTop";
 import { RHCAHeader } from "@/components/rhca/components/RHCAHeader";
 import { RHCASidebar } from "@/components/rhca/components/RHCASidebar";
 
-const RHCA = () => {
+const RHCA: React.FC = () => {
   return (
     <MainLayout>
       <div className="min-h-screen bg-gray-50/50 pt-[50px]">

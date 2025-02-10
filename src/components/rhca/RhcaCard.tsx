@@ -1,10 +1,10 @@
+import * as React from "react";
 import { Card } from "@/components/ui/card";
 import type { RhcaArticle } from "./types";
 import { ArticleHeader } from "./article/ArticleHeader";
 import { ArticleContent } from "./article/ArticleContent";
 import { ArticleActions } from "./article/ArticleActions";
 import { motion } from "framer-motion";
-import { useState } from "react";
 import { ArticleModal } from "./article/ArticleModal";
 
 interface RhcaCardProps {
@@ -13,8 +13,8 @@ interface RhcaCardProps {
   className?: string;
 }
 
-export const RhcaCard = ({ article, onCardClick, className }: RhcaCardProps) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+export const RhcaCard: React.FC<RhcaCardProps> = ({ article, onCardClick, className }) => {
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   const handleClick = () => {
     if (onCardClick) {

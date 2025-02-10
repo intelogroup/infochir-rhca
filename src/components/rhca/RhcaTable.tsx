@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Share2 } from "lucide-react";
 import { toast } from "sonner";
@@ -5,7 +6,11 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { RhcaArticle } from "./types";
 
-export const RhcaTable = ({ articles }: { articles: RhcaArticle[] }) => {
+interface RhcaTableProps {
+  articles: RhcaArticle[];
+}
+
+export const RhcaTable: React.FC<RhcaTableProps> = ({ articles }) => {
   const handleShare = (articleId: string) => {
     const shareUrl = `${window.location.origin}/rhca/articles/${articleId}`;
     navigator.clipboard.writeText(shareUrl);
