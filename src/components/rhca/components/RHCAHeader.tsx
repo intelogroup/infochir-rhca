@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const RHCAHeader: React.FC = () => {
+interface RHCAHeaderProps {}
+
+const RHCAHeader: React.FC<RHCAHeaderProps> = () => {
   return (
     <motion.div 
       className="relative overflow-hidden"

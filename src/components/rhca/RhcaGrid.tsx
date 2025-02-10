@@ -10,7 +10,9 @@ import { RhcaArticleList } from "./RhcaArticleList";
 import { motion } from "framer-motion";
 import { DateRange } from "react-day-picker";
 
-const RhcaGrid: React.FC = () => {
+interface RhcaGridProps {}
+
+const RhcaGrid: React.FC<RhcaGridProps> = () => {
   const [searchTerm, setSearchTerm] = React.useState("");
   const [sortBy, setSortBy] = React.useState<SortOption>("latest");
   const [viewMode, setViewMode] = React.useState<"grid" | "table">("grid");
