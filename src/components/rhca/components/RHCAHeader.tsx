@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
-export const RHCAHeader = () => {
+const RHCAHeader: React.FC = () => {
   return (
     <motion.div 
       className="relative overflow-hidden"
@@ -68,3 +68,5 @@ export const RHCAHeader = () => {
     </motion.div>
   );
 };
+
+export { RHCAHeader };

@@ -10,7 +10,7 @@ import { RhcaArticleList } from "./RhcaArticleList";
 import { motion } from "framer-motion";
 import { DateRange } from "react-day-picker";
 
-export const RhcaGrid = () => {
+const RhcaGrid: React.FC = () => {
   const [searchTerm, setSearchTerm] = React.useState("");
   const [sortBy, setSortBy] = React.useState<SortOption>("latest");
   const [viewMode, setViewMode] = React.useState<"grid" | "table">("grid");
@@ -28,7 +28,6 @@ export const RhcaGrid = () => {
       ) ||
       article.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
 
-    // Date range filtering
     const matchesDateRange = !dateRange?.from && !dateRange?.to ? true :
       new Date(article.date) >= (dateRange?.from || new Date(0)) &&
       new Date(article.date) <= (dateRange?.to || new Date());
@@ -36,7 +35,6 @@ export const RhcaGrid = () => {
     return matchesSearch && matchesDateRange;
   });
 
-  // Sort articles by date
   const sortedArticles = [...filteredArticles].sort((a, b) => {
     if (sortBy === "latest") {
       return new Date(b.date).getTime() - new Date(a.date).getTime();
@@ -106,3 +104,4 @@ export const RhcaGrid = () => {
   );
 };
 
+export { RhcaGrid };
