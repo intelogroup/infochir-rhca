@@ -1,3 +1,5 @@
+
+import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Copy, Share2 } from "lucide-react";
 import {
@@ -15,7 +17,7 @@ interface ArticleActionsProps {
   onShare: () => void;
 }
 
-export const ArticleActions = ({ title, pdfUrl, onCitation, onShare }: ArticleActionsProps) => {
+export const ArticleActions: React.FC<ArticleActionsProps> = ({ title, pdfUrl, onCitation, onShare }) => {
   const handleDownload = () => {
     if (pdfUrl) {
       const link = document.createElement('a');
@@ -79,3 +81,4 @@ export const ArticleActions = ({ title, pdfUrl, onCitation, onShare }: ArticleAc
     </div>
   );
 };
+

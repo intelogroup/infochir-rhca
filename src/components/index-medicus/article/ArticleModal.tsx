@@ -1,4 +1,5 @@
 
+import * as React from "react";
 import { DocumentModal } from "@/components/shared/DocumentModal";
 import { Tag } from "lucide-react";
 import type { Article } from "@/types/article";
@@ -10,7 +11,7 @@ interface ArticleModalProps {
   onClose: () => void;
 }
 
-export const ArticleModal = ({ article, open, onClose }: ArticleModalProps) => {
+export const ArticleModal: React.FC<ArticleModalProps> = ({ article, open, onClose }) => {
   const renderContent = (document: Article) => (
     <div className="space-y-6">
       <div className="prose prose-sm dark:prose-invert max-w-none">
@@ -85,3 +86,4 @@ const mockArticleTitles = [
   "Marie et al. - Techniques émergentes en microchirurgie",
   "Paul et al. - L'intelligence artificielle en chirurgie",
 ];
+

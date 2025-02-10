@@ -1,4 +1,5 @@
 
+import * as React from "react";
 import { TableCell, TableRow as TableRowBase } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { TableActions } from "./TableActions";
@@ -10,7 +11,7 @@ interface ArticleTableRowProps {
   article: Article;
 }
 
-export const ArticleTableRow = ({ article }: ArticleTableRowProps) => {
+export const ArticleTableRow: React.FC<ArticleTableRowProps> = ({ article }) => {
   console.log('Rendering ArticleTableRow with article:', article);
 
   // Add safeguards for potentially missing data
@@ -92,3 +93,4 @@ export const ArticleTableRow = ({ article }: ArticleTableRowProps) => {
     </TableRowBase>
   );
 };
+
