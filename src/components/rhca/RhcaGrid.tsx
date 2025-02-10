@@ -1,5 +1,5 @@
 
-import React from "react";
+import * as React from "react";
 import { SearchAndSort } from "@/components/issues/SearchAndSort";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { LayoutGrid, List } from "lucide-react";
