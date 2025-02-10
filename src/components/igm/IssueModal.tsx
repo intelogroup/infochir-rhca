@@ -1,3 +1,5 @@
+
+import * as React from "react";
 import { DocumentModal } from "@/components/shared/DocumentModal";
 import type { Issue } from "./types";
 import { motion } from "framer-motion";
@@ -9,7 +11,7 @@ interface IssueModalProps {
   onClose: () => void;
 }
 
-export const IssueModal = ({ issue, isOpen, onClose }: IssueModalProps) => {
+export const IssueModal: React.FC<IssueModalProps> = ({ issue, isOpen, onClose }) => {
   const renderContent = (document: Issue) => (
     <div className="space-y-4">
       <h3 className="text-[clamp(1.125rem,1.075rem+0.25vw,1.25rem)] font-semibold text-primary">
@@ -76,3 +78,4 @@ export const IssueModal = ({ issue, isOpen, onClose }: IssueModalProps) => {
     />
   );
 };
+

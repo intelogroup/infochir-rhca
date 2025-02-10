@@ -1,3 +1,5 @@
+
+import * as React from "react";
 import { Card } from "@/components/ui/card";
 import type { Issue } from "./types";
 import { motion } from "framer-motion";
@@ -11,7 +13,7 @@ interface IssueCardProps {
   issue: Issue;
 }
 
-export const IssueCard = memo(({ issue }: IssueCardProps) => {
+export const IssueCard: React.FC<IssueCardProps> = memo(({ issue }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
@@ -68,3 +70,4 @@ export const IssueCard = memo(({ issue }: IssueCardProps) => {
 });
 
 IssueCard.displayName = 'IssueCard';
+

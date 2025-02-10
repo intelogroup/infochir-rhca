@@ -1,4 +1,5 @@
 
+import * as React from "react";
 import { IssuesContent } from "./issues/IssuesContent";
 import { useIssuesState } from "./issues/hooks/useIssuesState";
 import { mockIssues } from "./igm/data/mockIssues";
@@ -9,7 +10,7 @@ interface IssuesGridProps {
   viewMode?: "grid" | "table";
 }
 
-export const IssuesGrid = ({ viewMode = "grid" }: IssuesGridProps) => {
+export const IssuesGrid: React.FC<IssuesGridProps> = ({ viewMode = "grid" }) => {
   const {
     sortBy,
     setSortBy,
@@ -35,3 +36,4 @@ export const IssuesGrid = ({ viewMode = "grid" }: IssuesGridProps) => {
     </div>
   );
 };
+
