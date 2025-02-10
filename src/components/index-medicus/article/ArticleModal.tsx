@@ -1,8 +1,7 @@
-
 import * as React from "react";
 import { DocumentModal } from "@/components/shared/DocumentModal";
 import { Tag } from "lucide-react";
-import type { Article } from "@/types/article";
+import type { Article } from "@/components/index-medicus/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ArticleModalProps {
@@ -86,4 +85,3 @@ const mockArticleTitles = [
   "Marie et al. - Techniques émergentes en microchirurgie",
   "Paul et al. - L'intelligence artificielle en chirurgie",
 ];
-

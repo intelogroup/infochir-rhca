@@ -1,6 +1,7 @@
+import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from "lucide-react";
-import { Article } from "@/types/article";
+import { Article } from "@/components/index-medicus/types";
 import { ArticleTags } from "./article/ArticleTags";
 import { ArticleCategories } from "./article/ArticleCategories";
 import { ArticleMetadata } from "./article/ArticleMetadata";
@@ -17,7 +18,7 @@ interface ArticleCardProps {
   selectedTags?: string[];
 }
 
-export const ArticleCard = ({ article, onTagClick, selectedTags }: ArticleCardProps) => {
+export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick, selectedTags }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const generateCitation = (format: 'APA' | 'MLA' | 'Chicago' | 'Harvard') => {

@@ -1,9 +1,9 @@
-
+import * as React from "react";
 import { ArticleCard } from "@/components/index-medicus/ArticleCard";
 import { ArticleTable } from "@/components/index-medicus/ArticleTable";
 import { RhcaCard } from "@/components/rhca/RhcaCard";
 import { RhcaTable } from "@/components/rhca/RhcaTable";
-import type { Article } from "@/types/article";
+import type { Article } from "@/components/index-medicus/types";
 import type { RhcaArticle } from "@/components/rhca/types";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -18,14 +18,14 @@ interface UnifiedArticleListProps {
   isLoading?: boolean;
 }
 
-export const UnifiedArticleList = ({
+export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
   viewMode,
   articles,
   variant,
   onTagClick,
   selectedTags,
   isLoading = false
-}: UnifiedArticleListProps) => {
+}) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
