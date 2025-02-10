@@ -10,39 +10,45 @@ import { RhcaArticleList } from "./RhcaArticleList";
 import { motion } from "framer-motion";
 import { DateRange } from "react-day-picker";
 
-interface RhcaGridProps {}
-
-const RhcaGrid: React.FC<RhcaGridProps> = () => {
+export const RhcaGrid: React.FC = () => {
+  // Group all state hooks at the top
   const [searchTerm, setSearchTerm] = React.useState("");
   const [sortBy, setSortBy] = React.useState<SortOption>("latest");
   const [viewMode, setViewMode] = React.useState<"grid" | "table">("grid");
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
 
-  const handleSortChange = (value: SortOption) => {
+  // Memoize handler functions
+  const handleSortChange = React.useCallback((value: SortOption) => {
     setSortBy(value);
-  };
+  }, []);
 
-  const filteredArticles = mockArticles.filter(article => {
-    const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      article.abstract.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      article.authors.some(author => 
-        typeof author === 'string' && author.toLowerCase().includes(searchTerm.toLowerCase())
-      ) ||
-      article.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+  // Memoize filtered articles computation
+  const filteredArticles = React.useMemo(() => {
+    return mockArticles.filter(article => {
+      const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        article.abstract.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        article.authors.some(author => 
+          typeof author === 'string' && author.toLowerCase().includes(searchTerm.toLowerCase())
+        ) ||
+        article.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
 
-    const matchesDateRange = !dateRange?.from && !dateRange?.to ? true :
-      new Date(article.date) >= (dateRange?.from || new Date(0)) &&
-      new Date(article.date) <= (dateRange?.to || new Date());
+      const matchesDateRange = !dateRange?.from && !dateRange?.to ? true :
+        new Date(article.date) >= (dateRange?.from || new Date(0)) &&
+        new Date(article.date) <= (dateRange?.to || new Date());
 
-    return matchesSearch && matchesDateRange;
-  });
+      return matchesSearch && matchesDateRange;
+    });
+  }, [searchTerm, dateRange]);
 
-  const sortedArticles = [...filteredArticles].sort((a, b) => {
-    if (sortBy === "latest") {
-      return new Date(b.date).getTime() - new Date(a.date).getTime();
-    }
-    return new Date(a.date).getTime() - new Date(b.date).getTime();
-  });
+  // Memoize sorted articles computation
+  const sortedArticles = React.useMemo(() => {
+    return [...filteredArticles].sort((a, b) => {
+      if (sortBy === "latest") {
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      }
+      return new Date(a.date).getTime() - new Date(b.date).getTime();
+    });
+  }, [filteredArticles, sortBy]);
 
   return (
     <div className="w-full space-y-6">
@@ -105,5 +111,3 @@ const RhcaGrid: React.FC<RhcaGridProps> = () => {
     </div>
   );
 };
-
-export { RhcaGrid };

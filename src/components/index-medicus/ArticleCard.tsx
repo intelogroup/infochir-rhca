@@ -1,14 +1,14 @@
+
 import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from "lucide-react";
-import { Article } from "@/components/index-medicus/types";
+import type { Article } from "@/components/index-medicus/types";
 import { ArticleTags } from "./article/ArticleTags";
 import { ArticleCategories } from "./article/ArticleCategories";
 import { ArticleMetadata } from "./article/ArticleMetadata";
 import { ArticleActions } from "./article/ArticleActions";
 import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
 import { toast } from "@/hooks/use-toast";
-import { useState } from "react";
 import { ArticleModal } from "./article/ArticleModal";
 import { motion } from "framer-motion";
 
@@ -19,9 +19,10 @@ interface ArticleCardProps {
 }
 
 export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick, selectedTags }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // Move hooks to the top level
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
 
-  const generateCitation = (format: 'APA' | 'MLA' | 'Chicago' | 'Harvard') => {
+  const generateCitation = React.useCallback((format: 'APA' | 'MLA' | 'Chicago' | 'Harvard') => {
     const year = article.publicationDate.getFullYear();
     const authors = article.authors.join(", ");
     let citation = '';
@@ -47,14 +48,14 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick, s
     toast.success("Citation copiée", {
       description: `Format ${format} copié dans le presse-papier`
     });
-  };
+  }, [article]);
 
-  const handleShare = () => {
+  const handleShare = React.useCallback(() => {
     navigator.clipboard.writeText(window.location.href + '#' + article.id);
     toast.success("Lien copié", {
       description: "Le lien a été copié dans le presse-papier"
     });
-  };
+  }, [article.id]);
 
   return (
     <>
