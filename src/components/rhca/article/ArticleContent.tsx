@@ -1,3 +1,5 @@
+
+import * as React from "react";
 import { Calendar } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -7,7 +9,7 @@ interface ArticleContentProps {
   article: RhcaArticle;
 }
 
-export const ArticleContent = ({ article }: ArticleContentProps) => {
+export const ArticleContent: React.FC<ArticleContentProps> = ({ article }) => {
   return (
     <div className="flex-1 min-w-0 space-y-2">
       <div>

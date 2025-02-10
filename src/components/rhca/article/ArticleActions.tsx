@@ -1,3 +1,5 @@
+
+import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Eye } from "lucide-react";
 import { toast } from "sonner";
@@ -8,7 +10,7 @@ interface ArticleActionsProps {
   onCardClick?: () => void;
 }
 
-export const ArticleActions = ({ id, pdfUrl, onCardClick }: ArticleActionsProps) => {
+export const ArticleActions: React.FC<ArticleActionsProps> = ({ id, pdfUrl, onCardClick }) => {
   const handleDownload = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!pdfUrl) {

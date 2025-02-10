@@ -1,3 +1,5 @@
+
+import * as React from "react";
 import { Calendar } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -7,7 +9,7 @@ interface ArticleHeaderProps {
   article: RhcaArticle;
 }
 
-export const ArticleHeader = ({ article }: ArticleHeaderProps) => {
+export const ArticleHeader: React.FC<ArticleHeaderProps> = ({ article }) => {
   return (
     <div className="space-y-2">
       <div className="space-y-1">
