@@ -32,4 +32,3 @@ export const getErrorMessage = (error: Error) => {
     type: "generic_error"
   };
 };
-

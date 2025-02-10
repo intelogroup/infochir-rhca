@@ -50,6 +50,26 @@ function AppRoutes() {
                   }
                 />
                 <Route
+                  path="/donate"
+                  element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <ErrorBoundary>
+                        <Donate />
+                      </ErrorBoundary>
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="/donate/success"
+                  element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <ErrorBoundary>
+                        <DonateSuccess />
+                      </ErrorBoundary>
+                    </Suspense>
+                  }
+                />
+                <Route
                   path="/rhca"
                   element={
                     <Suspense fallback={<LoadingSpinner />}>
@@ -125,26 +145,6 @@ function AppRoutes() {
                     <Suspense fallback={<LoadingSpinner />}>
                       <ErrorBoundary>
                         <Annuaire />
-                      </ErrorBoundary>
-                    </Suspense>
-                  }
-                />
-                <Route
-                  path="/donate"
-                  element={
-                    <Suspense fallback={<LoadingSpinner />}>
-                      <ErrorBoundary>
-                        <Donate />
-                      </ErrorBoundary>
-                    </Suspense>
-                  }
-                />
-                <Route
-                  path="/donate/success"
-                  element={
-                    <Suspense fallback={<LoadingSpinner />}>
-                      <ErrorBoundary>
-                        <DonateSuccess />
                       </ErrorBoundary>
                     </Suspense>
                   }

@@ -54,8 +54,9 @@ export class ErrorBoundary extends React.Component<Props, State> {
       errorInfo
     });
 
+    // Add specific error handling for payment flows
     if (error.message.includes('Stripe') || error.message.includes('stripe.com')) {
-      console.error("[ErrorBoundary] Stripe error detected:", {
+      console.error("[ErrorBoundary] Payment error detected:", {
         message: error.message,
         network: {
           online: navigator.onLine,
@@ -65,6 +66,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
       });
     }
 
+    // Handle chunk loading errors
     if (error.message.includes('Failed to fetch dynamically imported module')) {
       console.error("[ErrorBoundary] Chunk loading diagnostic:", getLoadingDiagnostics());
     }
@@ -79,7 +81,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
     const errorDetails = getErrorMessage(error);
     
-    // Handle context recovery
+    // Handle specific error recoveries
     if (error.message.includes('must be used within')) {
       this.setState({ hasError: false, error: undefined, errorInfo: undefined });
     } else if (errorDetails.type === 'stripe_error') {
@@ -146,4 +148,3 @@ export class ErrorBoundary extends React.Component<Props, State> {
     return this.props.children;
   }
 }
-
