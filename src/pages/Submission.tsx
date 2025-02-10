@@ -47,7 +47,7 @@ const formSchema = z.object({
   originalWork: z.boolean(),
 });
 
-const Submission = () => {
+const Submission: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [articleFiles, setArticleFiles] = useState<string[]>([]);
   const [imageAnnexes, setImageAnnexes] = useState<string[]>([]);
