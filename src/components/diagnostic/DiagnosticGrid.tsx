@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { useState, useMemo } from "react";
 import { DiagnosticSearch } from "./DiagnosticSearch";
@@ -7,11 +8,10 @@ import { mockCases, specialties } from "./mockData";
 import { toast } from "@/hooks/use-toast";
 
 export const DiagnosticGrid: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedSpecialty, setSelectedSpecialty] = useState("Toutes les spécialités");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedSpecialty, setSelectedSpecialty] = useState<string>("Toutes les spécialités");
   const [view, setView] = useState<"grid" | "table">("grid");
 
-  // Memoize filtered cases to prevent unnecessary recalculations
   const filteredCases = useMemo(() => {
     const filtered = mockCases.filter(item => {
       const matchesSearch = (
@@ -31,7 +31,6 @@ export const DiagnosticGrid: React.FC = () => {
     return filtered;
   }, [searchTerm, selectedSpecialty]);
 
-  // Get related cases based on specialty
   const relatedCases = useMemo(() => {
     if (selectedSpecialty === "Toutes les spécialités") return [];
     return mockCases
