@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { FileText, Share2, Eye, Calendar } from "lucide-react";
 import { toast } from "sonner";
@@ -9,7 +10,7 @@ interface DiagnosticTableProps {
   cases: DiagnosticCase[];
 }
 
-export const DiagnosticTable = ({ cases }: DiagnosticTableProps) => {
+export const DiagnosticTable: React.FC<DiagnosticTableProps> = ({ cases }) => {
   const handleShare = (id: string) => {
     navigator.clipboard.writeText(window.location.href + '#' + id);
     toast.success("Lien copié dans le presse-papier");

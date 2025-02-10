@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Search, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -10,13 +11,13 @@ interface DiagnosticSearchProps {
   specialties: string[];
 }
 
-export const DiagnosticSearch = ({
+export const DiagnosticSearch: React.FC<DiagnosticSearchProps> = ({
   searchTerm,
   setSearchTerm,
   selectedSpecialty,
   setSelectedSpecialty,
   specialties,
-}: DiagnosticSearchProps) => {
+}) => {
   return (
     <div className="bg-white/90 backdrop-blur-sm rounded-xl p-4 border border-gray-100 shadow-sm mb-6">
       <div className="grid gap-4 md:grid-cols-2">

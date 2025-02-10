@@ -1,3 +1,4 @@
+import * as React from "react";
 import { LayoutGrid, Table } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
@@ -6,7 +7,7 @@ interface ViewToggleProps {
   setView: (view: "grid" | "table") => void;
 }
 
-export const ViewToggle = ({ view, setView }: ViewToggleProps) => {
+export const ViewToggle: React.FC<ViewToggleProps> = ({ view, setView }) => {
   return (
     <ToggleGroup type="single" value={view} onValueChange={(value) => value && setView(value as "grid" | "table")}>
       <ToggleGroupItem value="grid" aria-label="Grid view">

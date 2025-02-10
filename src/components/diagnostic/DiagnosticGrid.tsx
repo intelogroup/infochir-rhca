@@ -1,4 +1,4 @@
-
+import * as React from "react";
 import { useState, useMemo } from "react";
 import { DiagnosticSearch } from "./DiagnosticSearch";
 import { ViewToggle } from "./ViewToggle";
@@ -6,7 +6,7 @@ import { DiagnosticGridContent } from "./DiagnosticGridContent";
 import { mockCases, specialties } from "./mockData";
 import { toast } from "@/hooks/use-toast";
 
-export const DiagnosticGrid = () => {
+export const DiagnosticGrid: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSpecialty, setSelectedSpecialty] = useState("Toutes les spécialités");
   const [view, setView] = useState<"grid" | "table">("grid");
