@@ -15,12 +15,12 @@ const root = ReactDOM.createRoot(rootElement);
 
 root.render(
   <React.StrictMode>
-    <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <QueryClientProvider client={queryClient}>
+        <ErrorBoundary>
           <App />
-        </QueryClientProvider>
+        </ErrorBoundary>
       </BrowserRouter>
-    </ErrorBoundary>
+    </QueryClientProvider>
   </React.StrictMode>
 );
