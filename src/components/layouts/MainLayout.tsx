@@ -1,20 +1,15 @@
 
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
+import * as React from "react";
+import { Outlet } from "react-router-dom";
 
-interface MainLayoutProps {
-  children: React.ReactNode;
-  className?: string;
+export interface MainLayoutProps {
+  children?: React.ReactNode;
 }
 
-export const MainLayout = ({ children, className = "" }: MainLayoutProps) => {
+export const MainLayout = ({ children }: MainLayoutProps) => {
   return (
-    <div className={`min-h-screen bg-[#f8fafc] ${className}`}>
-      <Navbar />
-      <main className="relative">
-        {children}
-      </main>
-      <Footer />
+    <div className="min-h-screen">
+      {children || <Outlet />}
     </div>
   );
 };

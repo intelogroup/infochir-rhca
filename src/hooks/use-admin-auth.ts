@@ -14,14 +14,18 @@ export const useAdminAuth = () => {
       if (!user) return false;
 
       const { data, error } = await supabase
-        .rpc('has_role', { _role: 'admin' });
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('role', 'admin')
+        .single();
 
       if (error) {
         console.error('Error checking admin role:', error);
         return false;
       }
 
-      return data || false;
+      return !!data;
     },
     enabled: !!supabase.auth.getSession(),
   });
