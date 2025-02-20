@@ -12,7 +12,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   return (
     <div className="min-h-screen bg-[#f8fafc]">
       <Navbar />
-      <main className="relative">
+      <main className="relative min-h-[calc(100vh-4rem)]">
         {children || <Outlet />}
       </main>
       <Footer />

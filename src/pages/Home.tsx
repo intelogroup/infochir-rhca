@@ -1,5 +1,5 @@
+
 import * as React from "react";
-import { MainLayout } from "@/components/layouts/MainLayout";
 import { HeroSection } from "@/components/home/HeroSection";
 import { ProductsSection } from "@/components/home/ProductsSection";
 import { CarouselSection } from "@/components/home/CarouselSection";
@@ -10,7 +10,7 @@ import { NewsletterSection } from "@/components/home/NewsletterSection";
 
 const Home = () => {
   return (
-    <MainLayout>
+    <>
       <HeroSection />
       <ProductsSection />
       <CarouselSection />
@@ -18,7 +18,7 @@ const Home = () => {
       <SponsorsSection />
       <StatsSection />
       <NewsletterSection />
-    </MainLayout>
+    </>
   );
 };
 
