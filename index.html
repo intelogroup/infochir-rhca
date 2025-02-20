@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,20 +8,26 @@
     <meta name="description" content="Lovable Generated Project" />
     <meta name="author" content="Lovable" />
     <meta property="og:image" content="/og-image.png" />
-    <!-- Add browser compatibility meta tags -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <!-- Add base styles for no-js fallback -->
+    <!-- Add JS detection immediately -->
+    <script>
+      (function() {
+        document.documentElement.classList.remove('no-js');
+        document.documentElement.classList.add('js');
+      })();
+    </script>
+    <!-- Base styles for no-js fallback -->
     <style>
       .no-js-warning {
         display: none;
+      }
+      .no-js .no-js-warning {
+        display: block;
         padding: 20px;
         text-align: center;
         background: #f8fafc;
         color: #1f2937;
         font-family: system, -apple-system, sans-serif;
-      }
-      .no-js .no-js-warning {
-        display: block;
       }
       .js-content {
         display: block;
@@ -30,13 +36,9 @@
         display: none;
       }
     </style>
-    <!-- Add JS detection -->
-    <script>
-      document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
-    </script>
   </head>
 
-  <body class="no-js">
+  <body>
     <!-- No JavaScript fallback -->
     <div class="no-js-warning">
       <h1>JavaScript Required</h1>
