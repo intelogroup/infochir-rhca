@@ -37,18 +37,18 @@ export const AdminSidebar = () => {
   };
 
   return (
-    <div className="w-64 min-h-screen bg-white border-r border-gray-200 px-3 py-4">
-      <div className="mb-8 px-4">
+    <div className="w-64 h-screen bg-white border-r border-gray-200 flex flex-col">
+      <div className="p-6">
         <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
       </div>
 
-      <nav className="space-y-1">
+      <nav className="flex-1 px-4 space-y-1 overflow-y-auto">
         {navItems.map((item) => (
           <NavLink
             key={item.href}
             to={item.href}
             className={({ isActive }) =>
-              `flex items-center px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+              `flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors ${
                 isActive
                   ? "bg-primary text-white"
                   : "text-gray-600 hover:bg-gray-50"
@@ -61,7 +61,7 @@ export const AdminSidebar = () => {
         ))}
       </nav>
 
-      <div className="absolute bottom-4 left-0 right-0 px-3">
+      <div className="p-4 border-t border-gray-200">
         <Button
           variant="ghost"
           className="w-full justify-start text-gray-600 hover:text-gray-900"
