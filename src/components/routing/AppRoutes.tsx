@@ -4,7 +4,9 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { LazyMotion, m, domMax } from "framer-motion";
 import { MainLayout } from "@/components/layouts/MainLayout";
+import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { RouteWrapper } from "./RouteWrapper";
+import { AdminRouteWrapper } from "./AdminRouteWrapper";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 import * as LazyComponents from "@/config/routes";
 
@@ -13,16 +15,17 @@ export const AppRoutes = () => {
 
   return (
     <ErrorBoundary>
-      <MainLayout>
-        <LazyMotion features={domMax} strict>
-          <AnimatePresence mode="wait" initial={false} onExitComplete={() => window.scrollTo(0, 0)}>
-            <m.div
-              key={location.pathname}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <Routes location={location}>
+      <LazyMotion features={domMax} strict>
+        <AnimatePresence mode="wait" initial={false} onExitComplete={() => window.scrollTo(0, 0)}>
+          <m.div
+            key={location.pathname}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <Routes location={location}>
+              {/* Public Routes */}
+              <Route element={<MainLayout />}>
                 <Route path="/" element={<RouteWrapper component={LazyComponents.Home} />} />
                 <Route path="/donate" element={<RouteWrapper component={LazyComponents.Donate} />} />
                 <Route path="/donate/success" element={<RouteWrapper component={LazyComponents.DonateSuccess} />} />
@@ -37,11 +40,20 @@ export const AppRoutes = () => {
                 <Route path="/jobs" element={<RouteWrapper component={LazyComponents.Opportunities} />} />
                 <Route path="/adc" element={<RouteWrapper component={LazyComponents.ADC} />} />
                 <Route path="/index-medicus" element={<RouteWrapper component={LazyComponents.IndexMedicus} />} />
-              </Routes>
-            </m.div>
-          </AnimatePresence>
-        </LazyMotion>
-      </MainLayout>
+              </Route>
+
+              {/* Admin Routes */}
+              <Route element={<AdminLayout />}>
+                <Route path="/admin" element={<AdminRouteWrapper component={LazyComponents.AdminDashboard} />} />
+                <Route path="/admin/content" element={<AdminRouteWrapper component={LazyComponents.AdminContent} />} />
+                <Route path="/admin/users" element={<AdminRouteWrapper component={LazyComponents.AdminUsers} />} />
+                <Route path="/admin/analytics" element={<AdminRouteWrapper component={LazyComponents.AdminAnalytics} />} />
+                <Route path="/admin/settings" element={<AdminRouteWrapper component={LazyComponents.AdminSettings} />} />
+              </Route>
+            </Routes>
+          </m.div>
+        </AnimatePresence>
+      </LazyMotion>
     </ErrorBoundary>
   );
 };

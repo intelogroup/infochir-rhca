@@ -16,3 +16,10 @@ export const Annuaire = lazy(() => import("@/pages/Annuaire"));
 export const Opportunities = lazy(() => import("@/pages/Opportunities"));
 export const RHCADirectives = lazy(() => import("@/pages/rhca/Directives"));
 export const IGMDirectives = lazy(() => import("@/pages/igm/Directives"));
+
+// Admin routes
+export const AdminDashboard = lazy(() => import("@/pages/admin/Dashboard"));
+export const AdminContent = lazy(() => import("@/pages/admin/Content"));
+export const AdminUsers = lazy(() => import("@/pages/admin/Users"));
+export const AdminAnalytics = lazy(() => import("@/pages/admin/Analytics"));
+export const AdminSettings = lazy(() => import("@/pages/admin/Settings"));
