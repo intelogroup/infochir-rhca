@@ -36,7 +36,35 @@ export default defineConfig(({ mode }) => ({
     esbuildOptions: {
       define: {
         global: 'globalThis'
+      },
+      supported: {
+        'async-await': true,
+        'arrow-functions': true,
+        'default-param-last': true,
+        'destructuring': true,
+        'dynamic-import': true,
+        'for-of': true,
+        'import-meta': true,
+        'nullish-coalescing': true,
+        'optional-chaining': true,
       }
+    }
+  },
+  build: {
+    target: ['es2015', 'edge88', 'firefox78', 'chrome87', 'safari13'],
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-slot', '@radix-ui/react-tabs'],
+          'motion-vendor': ['framer-motion'],
+          'query-vendor': ['@tanstack/react-query'],
+        }
+      }
+    },
+    sourcemap: true,
+    commonjsOptions: {
+      transformMixedEsModules: true
     }
   },
   server: {
@@ -57,22 +85,6 @@ export default defineConfig(({ mode }) => ({
         frame-src 'self' https://*.stripe.com;
         worker-src 'self' blob:;
       `.replace(/\s+/g, ' ').trim()
-    }
-  },
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-slot', '@radix-ui/react-tabs'],
-          'motion-vendor': ['framer-motion'],
-          'query-vendor': ['@tanstack/react-query'],
-        }
-      }
-    },
-    sourcemap: true,
-    commonjsOptions: {
-      transformMixedEsModules: true
     }
   },
   esbuild: {
