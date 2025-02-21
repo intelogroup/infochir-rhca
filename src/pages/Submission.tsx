@@ -147,9 +147,9 @@ const Submission = () => {
                         'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
                       }}
                       maxFileSize={10}
-                      maxFiles={3}
+                      maxFiles={20} // Updated to 20
                       onUploadComplete={setArticleFiles}
-                      helperText="Formats acceptés: DOC, DOCX, PDF. Taille max: 10MB"
+                      helperText="Formats acceptés: DOC, DOCX, PDF. Taille max: 10MB. Maximum 20 fichiers"
                     />
                   </div>
 
@@ -161,9 +161,9 @@ const Submission = () => {
                         'image/*': ['.png', '.jpg', '.jpeg', '.gif']
                       }}
                       maxFileSize={5}
-                      maxFiles={5}
+                      maxFiles={20} // Updated to 20
                       onUploadComplete={setImageAnnexes}
-                      helperText="Formats acceptés: PNG, JPEG, GIF. Taille max: 5MB"
+                      helperText="Formats acceptés: PNG, JPEG, GIF. Taille max: 5MB. Maximum 20 fichiers"
                       type="image"
                     />
                   </div>
