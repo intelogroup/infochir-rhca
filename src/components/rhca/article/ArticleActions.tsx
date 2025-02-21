@@ -28,20 +28,18 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
 
     setIsDownloading(true);
     try {
-      // If it's a Supabase storage URL, get the signed URL
-      if (pdfUrl.includes('rhca-pdfs')) {
-        const { data: signedUrl, error } = await supabase
-          .storage
-          .from('rhca-pdfs')
-          .createSignedUrl(pdfUrl, 60); // URL valid for 60 seconds
+      // Get signed URL from Supabase storage
+      const { data: signedUrlData, error: signedUrlError } = await supabase
+        .storage
+        .from('rhca-pdfs')
+        .createSignedUrl(pdfUrl, 60); // URL valid for 60 seconds
 
-        if (error) throw error;
-        window.open(signedUrl.signedUrl, '_blank');
-      } else {
-        // For external URLs, open directly
-        window.open(pdfUrl, '_blank');
+      if (signedUrlError) {
+        throw signedUrlError;
       }
-      
+
+      // Open the signed URL in a new tab
+      window.open(signedUrlData.signedUrl, '_blank');
       toast.success("Ouverture du PDF en cours...");
     } catch (error) {
       console.error('Download error:', error);
