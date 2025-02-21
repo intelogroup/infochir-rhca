@@ -29,10 +29,10 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
     setIsDownloading(true);
     try {
       // If it's a Supabase storage URL, get the signed URL
-      if (pdfUrl.includes('article-pdfs')) {
+      if (pdfUrl.includes('rhca-pdfs')) {
         const { data: signedUrl, error } = await supabase
           .storage
-          .from('article-pdfs')
+          .from('rhca-pdfs')
           .createSignedUrl(pdfUrl, 60); // URL valid for 60 seconds
 
         if (error) throw error;
