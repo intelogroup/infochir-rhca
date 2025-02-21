@@ -20,10 +20,8 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
 
   const handleDownload = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    console.log('Starting download for file:', pdfFileName);
     
     if (!pdfFileName) {
-      console.log('No PDF filename provided');
       toast.error("PDF non disponible");
       return;
     }
@@ -31,48 +29,24 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
     setIsDownloading(true);
 
     try {
-      // First check if the file exists
-      const { data: fileExists, error: listError } = await supabase
+      const { data, error } = await supabase
         .storage
         .from('rhca-pdfs')
-        .list('', {
-          limit: 1,
-          search: pdfFileName
-        });
+        .download(pdfFileName);
 
-      if (listError) {
-        console.error('Error checking file existence:', listError);
-        toast.error("Erreur lors de la vérification du fichier");
+      if (error) {
+        console.error('Download error:', error);
+        toast.error("Erreur lors du téléchargement du fichier");
         return;
       }
 
-      if (!fileExists || fileExists.length === 0) {
-        console.error('File not found in storage:', pdfFileName);
-        toast.error("Le fichier PDF n'existe pas dans le stockage");
+      if (!data) {
+        toast.error("Le fichier PDF n'existe pas");
         return;
       }
 
-      // Get the public URL for the file
-      const { data } = supabase
-        .storage
-        .from('rhca-pdfs')
-        .getPublicUrl(pdfFileName);
-
-      const publicUrl = data.publicUrl;
-      console.log('Fetching PDF from public URL:', publicUrl);
-
-      // Fetch the file from the public URL
-      const response = await fetch(publicUrl);
-      
-      if (!response.ok) {
-        console.error('HTTP Error:', response.status, response.statusText);
-        throw new Error(`Erreur HTTP: ${response.status} ${response.statusText}`);
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      
-      // Create link and trigger download
+      // Create URL and trigger download
+      const url = window.URL.createObjectURL(data);
       const link = document.createElement('a');
       link.href = url;
       link.download = pdfFileName;
@@ -83,20 +57,10 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
       window.URL.revokeObjectURL(url);
       document.body.removeChild(link);
       
-      console.log('Download completed successfully');
       toast.success("Téléchargement réussi");
     } catch (error) {
-      console.error('Download error details:', {
-        error,
-        fileName: pdfFileName,
-        timestamp: new Date().toISOString()
-      });
-
-      if (error instanceof Error) {
-        toast.error(`Erreur: ${error.message}`);
-      } else {
-        toast.error("Une erreur inattendue est survenue lors du téléchargement");
-      }
+      console.error('Download error:', error);
+      toast.error("Une erreur est survenue lors du téléchargement");
     } finally {
       setIsDownloading(false);
     }
