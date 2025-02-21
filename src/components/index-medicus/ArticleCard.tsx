@@ -120,6 +120,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick, s
                   />
                 </div>
                 <ArticleActions 
+                  title={article.title}
                   pdfUrl={article.pdfUrl}
                   onCitation={generateCitation}
                   onShare={handleShare}

@@ -4,7 +4,7 @@ import type { RhcaVolume } from "../../types";
 export const volumes2021: RhcaVolume[] = [
   {
     id: "2021-12",
-    volume: 12,
+    volume: "12",
     date: "2021-12-15",
     description: "Rétrospective 2021",
     articleCount: 15,
@@ -21,14 +21,12 @@ export const volumes2021: RhcaVolume[] = [
         citations: 42,
         downloads: 105,
         shares: 58,
-        pageNumber: "1-15",
+        pageNumber: 1,
         volume: "12",
         tags: ["Rétrospective", "Bilan", "Innovation"],
         publicationDate: "2021-12-15",
         specialty: "Chirurgie générale",
-        source: "RHCA",
-        imageUrl: "https://images.pexels.com/photos/4225880/pexels-photo-4225880.jpeg?auto=format",
-        pdfFileName: "RHCA_2021_12_bilan_annuel.pdf"
+        source: "RHCA"
       }
     ],
     coverImage: "https://images.pexels.com/photos/4225880/pexels-photo-4225880.jpeg?auto=format"
