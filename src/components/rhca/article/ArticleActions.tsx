@@ -25,12 +25,16 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
   const handleDownload = async (e: React.MouseEvent) => {
     e.stopPropagation();
     
+    // Input validation
     if (!pdfFileName) {
       toast.error("PDF non disponible");
+      console.error("Download attempted without PDF filename for article:", id);
       return;
     }
 
     setIsDownloading(true);
+    console.log(`Starting download for file: ${pdfFileName}`);
+
     try {
       const { data, error } = await supabase
         .storage
@@ -38,35 +42,59 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
         .download(pdfFileName);
 
       if (error) {
+        console.error('Supabase storage error:', error);
+        
+        // Handle specific error cases
+        if (error.statusCode === "404") {
+          toast.error("Le fichier PDF n'a pas été trouvé");
+          return;
+        }
+        if (error.statusCode === "403") {
+          toast.error("Accès non autorisé au fichier");
+          return;
+        }
         throw error;
       }
 
       if (!data) {
-        throw new Error('Could not download file');
+        console.error('No data received from Supabase for file:', pdfFileName);
+        toast.error("Le fichier est vide ou corrompu");
+        return;
       }
 
-      // Create a URL for the blob
-      const url = window.URL.createObjectURL(data);
-      
-      // Create a temporary link element
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = pdfFileName; // Set the file name
-      document.body.appendChild(link);
-      
-      // Trigger the download
-      link.click();
-      
-      // Clean up
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(link);
-      
-      toast.success("Téléchargement réussi");
+      console.log(`File downloaded successfully, size: ${data.size} bytes`);
+
+      try {
+        // Create a URL for the blob
+        const url = window.URL.createObjectURL(data);
+        console.log('Blob URL created successfully');
+        
+        // Create a temporary link element
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = pdfFileName;
+        document.body.appendChild(link);
+        
+        // Trigger the download
+        link.click();
+        console.log('Download triggered');
+        
+        // Clean up
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(link);
+        console.log('Resources cleaned up');
+        
+        toast.success("Téléchargement réussi");
+      } catch (browserError) {
+        console.error('Browser download error:', browserError);
+        toast.error("Erreur lors de la préparation du téléchargement");
+      }
     } catch (error) {
-      console.error('Download error:', error);
-      toast.error("Erreur lors du téléchargement du PDF");
+      console.error('Unhandled download error:', error);
+      toast.error("Une erreur inattendue s'est produite");
     } finally {
       setIsDownloading(false);
+      console.log('Download process completed');
     }
   };
 
