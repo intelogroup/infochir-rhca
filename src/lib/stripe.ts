@@ -33,23 +33,23 @@ export const getStripePublishableKey = async () => {
 };
 
 // Initialize Stripe lazily - only when needed
-let stripeInstance: Promise<any> | null = null;
+let stripePromise: Promise<any> | null = null;
 
 export const initStripe = async () => {
-  if (!stripeInstance) {
+  if (!stripePromise) {
     console.log('[Stripe] Initializing Stripe instance');
-    stripeInstance = getStripePublishableKey()
-      .then(key => {
-        console.log('[Stripe] Loading Stripe with publishable key');
-        return loadStripe(key);
-      })
-      .catch(err => {
-        console.error('[Stripe] Failed to initialize Stripe:', err);
-        stripeInstance = null; // Reset for retry
-        return null;
-      });
+    try {
+      const key = await getStripePublishableKey();
+      console.log('[Stripe] Loading Stripe with publishable key');
+      stripePromise = loadStripe(key);
+      return stripePromise;
+    } catch (err) {
+      console.error('[Stripe] Failed to initialize Stripe:', err);
+      stripePromise = null; // Reset for retry
+      throw err;
+    }
   }
-  return stripeInstance;
+  return stripePromise;
 };
 
 // Export a function to get Stripe instance rather than the promise directly
@@ -66,3 +66,34 @@ export const getStripe = async () => {
   }
 };
 
+// Handle checkout session creation
+export const createCheckoutSession = async (amount: number, metadata: any = {}) => {
+  try {
+    console.log('[Stripe] Creating checkout session...');
+    const { data: sessionData, error: sessionError } = await supabase.functions.invoke('stripe-checkout', {
+      body: { amount, metadata }
+    });
+
+    if (sessionError) {
+      console.error('[Stripe] Session creation error:', sessionError);
+      throw sessionError;
+    }
+
+    if (!sessionData?.session_id) {
+      throw new Error('No session ID returned from server');
+    }
+
+    const stripe = await getStripe();
+    if (!stripe) {
+      throw new Error('Stripe failed to initialize');
+    }
+
+    return stripe.redirectToCheckout({
+      sessionId: sessionData.session_id
+    });
+  } catch (error) {
+    console.error('[Stripe] Checkout session creation failed:', error);
+    toast.error("Failed to initialize payment. Please try again later.");
+    throw error;
+  }
+};

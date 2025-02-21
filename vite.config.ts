@@ -59,6 +59,7 @@ export default defineConfig(({ mode }) => ({
           'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-slot', '@radix-ui/react-tabs'],
           'motion-vendor': ['framer-motion'],
           'query-vendor': ['@tanstack/react-query'],
+          'stripe-vendor': ['@stripe/stripe-js']
         }
       }
     },
@@ -84,6 +85,7 @@ export default defineConfig(({ mode }) => ({
         connect-src 'self' https://*.stripe.com https://*.supabase.co wss://*.supabase.co https://*.lovableproject.com wss://*.lovableproject.com;
         frame-src 'self' https://*.stripe.com;
         worker-src 'self' blob:;
+        preload-src 'self';
       `.replace(/\s+/g, ' ').trim()
     }
   },
