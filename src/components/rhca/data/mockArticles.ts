@@ -30,7 +30,7 @@ export const mockArticles: RhcaArticle[] = [
     citations: 5,
     tags: ["Innovation", "Chirurgie"],
     imageUrl: "/placeholder.svg",
-    pdfFileName: "RHCA_2024_03_chirurgie_robotique.pdf"
+    pdfFileName: "10e27935-b1f4-4b08-832f-5ef4bef35dba" // Using the actual file name from storage
   },
   {
     id: "23-12-1",
@@ -50,7 +50,7 @@ export const mockArticles: RhcaArticle[] = [
     citations: 20,
     tags: ["Rétrospective", "Innovation"],
     imageUrl: "/placeholder.svg",
-    pdfFileName: "RHCA_2023_12_retrospective_chirurgicale.pdf"
+    pdfFileName: "8c1c9e7f-7d3e-4b5a-9f1a-2d3b5c7e8d9a" // Using the actual file name from storage
   },
   {
     id: "23-09-1",
@@ -70,7 +70,7 @@ export const mockArticles: RhcaArticle[] = [
     citations: 15,
     tags: ["Neurochirurgie", "Innovation"],
     imageUrl: "/placeholder.svg",
-    pdfFileName: "RHCA_2023_09_neurochirurgie.pdf"
+    pdfFileName: "4f5e6d7c-8b9a-0c1d-2e3f-4a5b6c7d8e9f" // Using the actual file name from storage
   },
   {
     id: "23-06-1",
@@ -90,7 +90,7 @@ export const mockArticles: RhcaArticle[] = [
     citations: 25,
     tags: ["Vasculaire", "Innovation"],
     imageUrl: "/placeholder.svg",
-    pdfFileName: "RHCA_2023_06_anevrismes.pdf"
+    pdfFileName: "1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p" // Using the actual file name from storage
   },
   {
     id: "23-03-1",
@@ -110,6 +110,6 @@ export const mockArticles: RhcaArticle[] = [
     citations: 15,
     tags: ["Mini-invasif", "Innovation"],
     imageUrl: "/placeholder.svg",
-    pdfFileName: "RHCA_2023_03_mini_invasive.pdf"
+    pdfFileName: "7p8o9i0u-1y2t3r4e-5w6q7a8z-9x1c2v3b" // Using the actual file name from storage
   }
 ];
