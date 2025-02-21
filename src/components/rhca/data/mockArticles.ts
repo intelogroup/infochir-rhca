@@ -30,7 +30,7 @@ export const mockArticles: RhcaArticle[] = [
     citations: 5,
     tags: ["Innovation", "Chirurgie"],
     imageUrl: "/placeholder.svg",
-    pdfFileName: "RHCA_2024_03_chirurgie_robotique"
+    pdfFileName: "RHCA_2024_03_chirurgie_robotique.pdf"
   },
   {
     id: "23-12-1",
@@ -50,7 +50,7 @@ export const mockArticles: RhcaArticle[] = [
     citations: 20,
     tags: ["Rétrospective", "Innovation"],
     imageUrl: "/placeholder.svg",
-    pdfFileName: "RHCA_2023_12_retrospective_chirurgicale"
+    pdfFileName: "RHCA_2023_12_retrospective_chirurgicale.pdf"
   },
   {
     id: "23-09-1",
@@ -70,7 +70,7 @@ export const mockArticles: RhcaArticle[] = [
     citations: 15,
     tags: ["Neurochirurgie", "Innovation"],
     imageUrl: "/placeholder.svg",
-    pdfFileName: "RHCA_2023_09_neurochirurgie"
+    pdfFileName: "RHCA_2023_09_neurochirurgie.pdf"
   },
   {
     id: "23-06-1",
@@ -90,7 +90,7 @@ export const mockArticles: RhcaArticle[] = [
     citations: 25,
     tags: ["Vasculaire", "Innovation"],
     imageUrl: "/placeholder.svg",
-    pdfFileName: "RHCA_2023_06_anevrismes"
+    pdfFileName: "RHCA_2023_06_anevrismes.pdf"
   },
   {
     id: "23-03-1",
@@ -110,6 +110,6 @@ export const mockArticles: RhcaArticle[] = [
     citations: 15,
     tags: ["Mini-invasif", "Innovation"],
     imageUrl: "/placeholder.svg",
-    pdfFileName: "RHCA_2023_03_mini_invasive"
+    pdfFileName: "RHCA_2023_03_mini_invasive.pdf"
   }
 ];
