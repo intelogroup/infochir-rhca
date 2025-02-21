@@ -27,7 +27,7 @@ export const volumes2021: RhcaVolume[] = [
         publicationDate: "2021-12-15",
         specialty: "Chirurgie générale",
         source: "RHCA",
-        pdfUrl: "2021/vol12/bilan-annuel-chirurgie-2021.pdf"
+        pdfUrl: "RHCA_2021_12_bilan_annuel.pdf"
       },
       {
         id: "21-12-2",
@@ -45,7 +45,7 @@ export const volumes2021: RhcaVolume[] = [
         publicationDate: "2021-12-15",
         specialty: "Chirurgie robotique",
         source: "RHCA",
-        pdfUrl: "2021/vol12/innovations-chirurgie-robotique-2021.pdf"
+        pdfUrl: "RHCA_2021_12_innovations_robotique.pdf"
       }
     ],
     coverImage: "/placeholder.svg"
@@ -75,7 +75,7 @@ export const volumes2021: RhcaVolume[] = [
         publicationDate: "2021-01-15",
         specialty: "Chirurgie d'urgence",
         source: "RHCA",
-        pdfUrl: "2021/vol1/protocoles-chirurgie-urgence.pdf"
+        pdfUrl: "RHCA_2021_01_protocoles_urgence.pdf"
       },
       {
         id: "21-01-2",
@@ -93,7 +93,7 @@ export const volumes2021: RhcaVolume[] = [
         publicationDate: "2021-01-15",
         specialty: "Traumatologie",
         source: "RHCA",
-        pdfUrl: "2021/vol1/traumatologie-urgence-2021.pdf"
+        pdfUrl: "RHCA_2021_01_traumatologie_urgence.pdf"
       }
     ],
     coverImage: "/placeholder.svg"
