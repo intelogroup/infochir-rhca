@@ -20,8 +20,10 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
 
   const handleDownload = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    console.log('Starting download for file:', pdfFileName);
     
     if (!pdfFileName) {
+      console.log('No PDF filename provided');
       toast.error("PDF non disponible");
       return;
     }
@@ -29,18 +31,41 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
     setIsDownloading(true);
 
     try {
+      console.log('Attempting to download from bucket rhca-pdfs:', pdfFileName);
+      
       const { data, error } = await supabase
         .storage
         .from('rhca-pdfs')
         .download(pdfFileName);
 
       if (error) {
+        console.error('Supabase Storage Error:', {
+          errorMessage: error.message,
+          errorDetails: error,
+          bucket: 'rhca-pdfs',
+          fileName: pdfFileName
+        });
+        
+        // Handle specific error cases
+        if (error.message?.includes('not found')) {
+          toast.error("Le fichier PDF n'existe pas dans le stockage");
+        } else if (error.message?.includes('permission')) {
+          toast.error("Erreur d'accès au fichier - Permissions insuffisantes");
+        } else if (error.message?.includes('bucket')) {
+          toast.error("Erreur de configuration du stockage");
+        } else {
+          toast.error(`Erreur de téléchargement: ${error.message || 'Erreur inconnue'}`);
+        }
         throw error;
       }
 
       if (!data) {
-        throw new Error('No data received');
+        console.error('No data received from storage');
+        toast.error("Aucune donnée reçue du serveur");
+        throw new Error('No data received from storage');
       }
+
+      console.log('File downloaded successfully, creating blob URL');
 
       // Create URL for the blob
       const url = window.URL.createObjectURL(data);
@@ -56,12 +81,24 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
       window.URL.revokeObjectURL(url);
       document.body.removeChild(link);
       
+      console.log('Download completed successfully');
       toast.success("Téléchargement réussi");
     } catch (error) {
-      console.error('Download error:', error);
-      toast.error("Une erreur est survenue lors du téléchargement");
+      console.error('Download error details:', {
+        error,
+        fileName: pdfFileName,
+        timestamp: new Date().toISOString(),
+        storageUrl: supabase.storage.from('rhca-pdfs').getPublicUrl(pdfFileName).data.publicUrl
+      });
+
+      if (error instanceof Error) {
+        toast.error(`Erreur: ${error.message}`);
+      } else {
+        toast.error("Une erreur inattendue est survenue lors du téléchargement");
+      }
     } finally {
       setIsDownloading(false);
+      console.log('Download process completed');
     }
   };
 
