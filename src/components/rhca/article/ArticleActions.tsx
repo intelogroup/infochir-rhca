@@ -29,6 +29,20 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
     setIsDownloading(true);
 
     try {
+      // First check if the file exists
+      const { data: fileExists } = await supabase
+        .storage
+        .from('rhca-pdfs')
+        .list('', {
+          search: pdfFileName
+        });
+
+      if (!fileExists || fileExists.length === 0) {
+        console.log(`File ${pdfFileName} not found in bucket`);
+        toast.error("Ce PDF n'est pas encore disponible dans notre système");
+        return;
+      }
+
       const { data, error } = await supabase
         .storage
         .from('rhca-pdfs')
