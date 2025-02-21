@@ -8,7 +8,7 @@ import { ArticleCategories } from "./article/ArticleCategories";
 import { ArticleMetadata } from "./article/ArticleMetadata";
 import { ArticleActions } from "./article/ArticleActions";
 import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { ArticleModal } from "./article/ArticleModal";
 import { motion } from "framer-motion";
 
@@ -19,11 +19,10 @@ interface ArticleCardProps {
 }
 
 export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick, selectedTags }) => {
-  // Move hooks to the top level
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   const generateCitation = React.useCallback((format: 'APA' | 'MLA' | 'Chicago' | 'Harvard') => {
-    const year = article.publicationDate.getFullYear();
+    const year = new Date(article.publicationDate).getFullYear();
     const authors = article.authors.join(", ");
     let citation = '';
 
@@ -45,17 +44,11 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick, s
     }
 
     navigator.clipboard.writeText(citation);
-    toast.success("Citation copiée", {
+    toast({
+      title: "Citation copiée",
       description: `Format ${format} copié dans le presse-papier`
     });
   }, [article]);
-
-  const handleShare = React.useCallback(() => {
-    navigator.clipboard.writeText(window.location.href + '#' + article.id);
-    toast.success("Lien copié", {
-      description: "Le lien a été copié dans le presse-papier"
-    });
-  }, [article.id]);
 
   return (
     <>
@@ -92,7 +85,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick, s
                     </CardTitle>
                     <ArticleMetadata 
                       authors={article.authors}
-                      date={article.publicationDate.toISOString()}
+                      date={article.publicationDate}
                       views={article.views}
                       citations={article.citations}
                       downloads={article.downloads}
@@ -124,7 +117,6 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick, s
                   title={article.title}
                   pdfUrl={article.pdfUrl}
                   onCitation={generateCitation}
-                  onShare={handleShare}
                 />
               </CardContent>
             </div>

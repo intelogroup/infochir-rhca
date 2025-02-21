@@ -8,8 +8,9 @@ export const useAtlasArticles = () => {
     queryKey: ["atlas-chapters"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("atlas_unified_view")
+        .from("unified_content")
         .select("*")
+        .eq('source', 'ADC')
         .order("publication_date", { ascending: false });
 
       if (error) {
@@ -20,15 +21,15 @@ export const useAtlasArticles = () => {
       const chapters: AtlasChapter[] = data?.map(item => ({
         id: item.id,
         title: item.title,
-        description: item.description,
+        description: item.description || undefined,
         abstract: item.abstract,
         content: item.content,
         lastUpdate: item.updated_at,
         publicationDate: item.publication_date,
-        author: item.author,
-        authors: item.authors,
-        status: item.status || "available",
-        coverImage: item.cover_image,
+        author: Array.isArray(item.authors) ? item.authors[0] : undefined,
+        authors: Array.isArray(item.authors) ? item.authors : [],
+        status: item.status === 'draft' ? 'coming' : 'available',
+        coverImage: item.image_url,
         stats: {
           views: item.views || 0,
           shares: item.shares || 0,
@@ -40,9 +41,9 @@ export const useAtlasArticles = () => {
         category: item.category,
         source: "ADC",
         pdfUrl: item.pdf_url,
-        imageUrls: item.image_urls,
+        imageUrls: [],
         institution: item.institution,
-        userId: item.user_id
+        userId: undefined
       })) || [];
 
       return chapters;

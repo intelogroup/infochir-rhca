@@ -6,41 +6,6 @@ import { toast } from "sonner";
 
 const PAGE_SIZE = 10;
 
-const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
-  console.log('Mapping database article:', dbArticle);
-  
-  const publicationDate = new Date(dbArticle.publication_date);
-
-  const mappedArticle: Article = {
-    id: dbArticle.id,
-    title: dbArticle.title,
-    abstract: dbArticle.abstract || '',
-    date: dbArticle.publication_date,
-    publicationDate,
-    source: dbArticle.source,
-    category: dbArticle.category,
-    authors: dbArticle.co_authors || [],
-    tags: dbArticle.tags || [],
-    imageUrl: dbArticle.image_url || undefined,
-    views: dbArticle.views || 0,
-    citations: dbArticle.citations || 0,
-    pdfUrl: dbArticle.pdf_url || undefined,
-    downloads: dbArticle.downloads || 0,
-    institution: dbArticle.institution,
-    status: dbArticle.status,
-    userId: dbArticle.user_id,
-    shares: dbArticle.shares || 0,
-    volume: dbArticle.volume,
-    issue: dbArticle.issue,
-    pageNumber: dbArticle.page_number,
-    specialty: dbArticle.specialty,
-    articleType: dbArticle.article_type
-  };
-
-  console.log('Final mapped article:', mappedArticle);
-  return mappedArticle;
-};
-
 export const useArticlesQuery = (page = 0) => {
   return useQuery({
     queryKey: ["articles", page],
@@ -53,8 +18,8 @@ export const useArticlesQuery = (page = 0) => {
       console.log('Executing Supabase query with range:', { start, end });
 
       const { data, error, count } = await supabase
-        .from("articles")
-        .select('*', { count: 'exact' })
+        .from("unified_content")
+        .select("*", { count: 'exact' })
         .in('source', ['IGM', 'RHCA', 'ADC'])
         .range(start, end)
         .order("publication_date", { ascending: false });
@@ -72,14 +37,34 @@ export const useArticlesQuery = (page = 0) => {
         return { articles: [], totalPages: 0 };
       }
 
-      console.log('Raw data from Supabase:', data);
-      const mappedArticles = data.map((article) => mapDatabaseArticleToArticle(article));
+      const articles: Article[] = data.map((item) => ({
+        id: item.id,
+        title: item.title,
+        abstract: item.abstract,
+        date: item.publication_date,
+        publicationDate: item.publication_date,
+        source: item.source as Article['source'],
+        category: item.category,
+        authors: Array.isArray(item.authors) ? item.authors : [],
+        tags: Array.isArray(item.tags) ? item.tags : [],
+        imageUrl: item.image_url,
+        views: item.views || 0,
+        citations: item.citations || 0,
+        pdfUrl: item.pdf_url,
+        downloads: item.downloads || 0,
+        institution: item.institution,
+        status: item.status,
+        shares: item.shares || 0,
+        volume: item.volume,
+        issue: item.issue,
+        pageNumber: item.page_number,
+        specialty: item.specialty,
+        articleType: item.source as Article['source']
+      }));
+
       const totalPages = Math.ceil((count || 0) / PAGE_SIZE);
 
-      console.log('Final mapped articles:', mappedArticles);
-      console.log('Total pages calculated:', totalPages);
-
-      return { articles: mappedArticles, totalPages };
+      return { articles, totalPages };
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 30 * 60 * 1000, // 30 minutes
