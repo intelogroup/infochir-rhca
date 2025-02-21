@@ -1,137 +1,102 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FileUploaders } from "./article-form/FileUploaders";
 import { PublicationTypeSelector } from "./article-form/PublicationTypeSelector";
 import { ArticleDetails } from "./article-form/ArticleDetails";
-import { FileUploaders } from "./article-form/FileUploaders";
-import { DraftPreview } from "./article-form/DraftPreview";
-import { FormErrors } from "./article-form/FormErrors";
-import { SubmitButton } from "./article-form/SubmitButton";
+import { CoverImageUploader } from "./article-form/CoverImageUploader";
+import { supabase } from "@/integrations/supabase/client";
 
-interface ArticleFormProps {
-  initialData?: {
-    title: string;
-    abstract: string;
-  };
-  onSubmit: (data: { 
-    title: string; 
-    abstract: string;
-    articleFilesUrls: string[];
-    imageAnnexesUrls: string[];
-  }) => Promise<void>;
-  isLoading: boolean;
-}
+const formSchema = z.object({
+  title: z.string().min(1, "Le titre est requis"),
+  abstract: z.string().min(50, "Le résumé doit contenir au moins 50 caractères"),
+  publicationType: z.enum(["RHCA", "IGM", "ADC"]),
+});
 
-export const ArticleForm = ({ initialData, onSubmit, isLoading }: ArticleFormProps) => {
-  const [title, setTitle] = useState(initialData?.title || "");
-  const [abstract, setAbstract] = useState(initialData?.abstract || "");
+export const ArticleForm = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [coverImageUrl, setCoverImageUrl] = useState("");
   const [articleFilesUrls, setArticleFilesUrls] = useState<string[]>([]);
   const [imageAnnexesUrls, setImageAnnexesUrls] = useState<string[]>([]);
-  const [publicationType, setPublicationType] = useState<"RHCA" | "IGM">("RHCA");
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const validateForm = () => {
-    const newErrors: { [key: string]: string } = {};
-    
-    if (!title.trim()) {
-      newErrors.title = "Le titre est requis";
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      publicationType: "RHCA",
+      title: "",
+      abstract: "",
     }
-    
-    if (!abstract.trim()) {
-      newErrors.abstract = "Le résumé est requis";
-    }
-    
+  });
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (articleFilesUrls.length === 0) {
-      newErrors.files = "Au moins un fichier d'article est requis";
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      toast.error("Veuillez corriger les erreurs avant de soumettre");
+      toast.error("Veuillez uploader au moins un fichier d'article");
       return;
     }
 
+    setIsSubmitting(true);
     try {
-      await onSubmit({ 
-        title, 
-        abstract, 
-        articleFilesUrls,
-        imageAnnexesUrls 
-      });
-      toast.success("Article soumis avec succès");
+      const { data, error } = await supabase
+        .from('articles')
+        .insert({
+          title: values.title,
+          abstract: values.abstract,
+          source: values.publicationType,
+          article_files: articleFilesUrls,
+          image_annexes_urls: imageAnnexesUrls,
+          image_url: coverImageUrl, // Add cover image URL
+          status: 'draft'
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast.success("Article créé avec succès!");
+      form.reset();
+      setCoverImageUrl("");
+      setArticleFilesUrls([]);
+      setImageAnnexesUrls([]);
     } catch (error) {
-      toast.error("Erreur lors de la soumission");
-      console.error(error);
+      console.error('Submission error:', error);
+      toast.error("Une erreur est survenue lors de la création de l'article");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleSaveDraft = () => {
-    const draft = {
-      title,
-      abstract,
-      publicationType,
-      articleFilesUrls,
-      imageAnnexesUrls,
-      lastSaved: new Date().toISOString()
-    };
-    localStorage.setItem('article-draft', JSON.stringify(draft));
-    toast.success("Brouillon sauvegardé");
-  };
-
   return (
-    <motion.form 
-      onSubmit={handleSubmit} 
-      className="space-y-8 max-w-4xl mx-auto"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <PublicationTypeSelector 
-        publicationType={publicationType}
-        setPublicationType={setPublicationType}
-      />
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <div className="space-y-8 bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-gray-100">
+          <PublicationTypeSelector form={form} />
+          <ArticleDetails form={form} />
+          
+          <CoverImageUploader
+            onImageUpload={setCoverImageUrl}
+            currentImage={coverImageUrl}
+            className="mb-6"
+          />
 
-      <motion.div 
-        className="space-y-6 bg-white p-6 rounded-xl shadow-sm border border-gray-100"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-      >
-        <ArticleDetails
-          title={title}
-          setTitle={setTitle}
-          abstract={abstract}
-          setAbstract={setAbstract}
-          errors={errors}
-        />
+          <FileUploaders
+            setArticleFilesUrls={setArticleFilesUrls}
+            setImageAnnexesUrls={setImageAnnexesUrls}
+          />
+        </div>
 
-        <FileUploaders
-          setArticleFilesUrls={setArticleFilesUrls}
-          setImageAnnexesUrls={setImageAnnexesUrls}
-          errors={errors}
-        />
-
-        <DraftPreview
-          title={title}
-          abstract={abstract}
-          onSaveDraft={handleSaveDraft}
-        />
-      </motion.div>
-
-      <FormErrors errors={errors} />
-
-      <div className="flex justify-end">
-        <SubmitButton 
-          isLoading={isLoading}
-          isEditing={!!initialData}
-        />
-      </div>
-    </motion.form>
+        <div className="flex justify-end">
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Création en cours..." : "Créer l'article"}
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 };
