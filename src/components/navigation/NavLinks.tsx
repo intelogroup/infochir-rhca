@@ -1,4 +1,5 @@
-import { motion, useAnimation } from "framer-motion";
+
+import { motion } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
 import { navItems } from "@/config/navigation";
 import { Heart } from "lucide-react";
@@ -47,7 +48,7 @@ export const NavLinks = () => {
   };
 
   return (
-    <div className="flex items-center gap-1 md:gap-1.5 lg:gap-3" role="menubar">
+    <div className="flex items-center gap-2 md:gap-3 lg:gap-4" role="menubar">
       {navItems.map((item) => {
         const isActive = location.pathname === item.href;
         return (
@@ -55,33 +56,35 @@ export const NavLinks = () => {
             key={item.name}
             onClick={() => navigate(item.href)}
             className={`
-              flex h-8 md:h-9 w-auto px-2 md:px-3 items-center justify-center rounded-full
-              text-[0.8125rem] md:text-sm
-              transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/50
+              group relative flex h-9 md:h-10 w-auto px-3 md:px-4 items-center justify-center 
+              rounded-full transition-all duration-300 
               ${isActive 
-                ? 'bg-primary text-white shadow-md hover:bg-primary-light' 
-                : 'bg-gradient-to-br from-primary/10 to-secondary/10 text-primary hover:from-primary/20 hover:to-secondary/20 hover:shadow-sm'
+                ? 'bg-gradient-to-r from-primary to-primary-light text-white shadow-lg hover:shadow-xl hover:scale-105' 
+                : 'bg-white/90 hover:bg-white text-gray-600 hover:text-primary border border-gray-200/50 shadow-sm hover:shadow-md hover:border-primary/20'
               }
+              focus:outline-none focus:ring-2 focus:ring-primary/20
             `}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             role="menuitem"
             aria-label={item.name}
             aria-current={isActive ? 'page' : undefined}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                navigate(item.href);
-              }
-            }}
           >
             {item.icon && (
               <item.icon 
-                className={`h-3.5 md:h-4 w-3.5 md:w-4 mr-1.5 md:mr-2 ${isActive ? 'text-white' : 'text-primary/80'}`} 
+                className={`h-4 md:h-4.5 w-4 md:w-4.5 mr-2 
+                  ${isActive ? 'text-white' : 'text-primary/70 group-hover:text-primary transition-colors'}`} 
                 aria-hidden="true" 
               />
             )}
-            <span className="text-[0.8125rem] md:text-sm font-medium">{item.name}</span>
+            <span className="text-sm md:text-[0.9375rem] font-medium">{item.name}</span>
+            {isActive && (
+              <motion.div 
+                className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 rounded-full bg-white"
+                layoutId="activeIndicator"
+                transition={{ type: "spring", stiffness: 380, damping: 30 }}
+              />
+            )}
           </motion.button>
         );
       })}
@@ -90,23 +93,23 @@ export const NavLinks = () => {
         onClick={handleDonateClick}
         className={`
           group relative
-          flex h-8 md:h-9 px-3 md:px-4 items-center justify-center rounded-full
+          flex h-9 md:h-10 px-4 md:px-5 items-center justify-center rounded-full
           bg-gradient-to-r from-secondary to-secondary-light
-          text-white hover:opacity-90 transition-all duration-300
-          ml-1 md:ml-2 space-x-1.5 md:space-x-2 focus:outline-none focus:ring-2
-          focus:ring-secondary/50 shadow-md hover:shadow-lg
-          ${location.pathname === '/donate' ? 'opacity-90 ring-2 ring-secondary' : ''}
+          text-white shadow-lg hover:shadow-xl transition-all duration-300
+          ml-2 md:ml-3 space-x-2 focus:outline-none focus:ring-2
+          focus:ring-secondary/30 hover:scale-105
+          ${location.pathname === '/donate' ? 'ring-2 ring-secondary' : ''}
         `}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
         role="menuitem"
         aria-label="Faire un don"
         aria-current={location.pathname === '/donate' ? 'page' : undefined}
       >
-        <span className="text-[0.8125rem] md:text-sm font-medium whitespace-nowrap">Faire un don</span>
+        <span className="text-sm md:text-[0.9375rem] font-medium whitespace-nowrap">Faire un don</span>
         <div className="relative">
           <Heart 
-            className="h-3.5 md:h-4 w-3.5 md:w-4 text-white fill-white transition-all duration-300 group-hover:fill-[#ea384c] group-hover:text-[#ea384c] group-hover:animate-[shake_0.5s_ease-in-out_infinite]" 
+            className="h-4 md:h-4.5 w-4 md:w-4.5 text-white fill-white transition-all duration-300 group-hover:fill-[#ea384c] group-hover:text-[#ea384c] group-hover:animate-[shake_0.5s_ease-in-out_infinite]" 
             aria-hidden="true" 
           />
           <motion.div
