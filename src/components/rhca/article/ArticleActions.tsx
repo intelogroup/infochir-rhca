@@ -7,13 +7,15 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface ArticleActionsProps {
   id: string;
-  pdfUrl?: string;
+  volume: string;
+  date: string;
   onCardClick?: () => void;
 }
 
 export const ArticleActions: React.FC<ArticleActionsProps> = ({ 
   id, 
-  pdfUrl, 
+  volume,
+  date,
   onCardClick 
 }) => {
   const [isDownloading, setIsDownloading] = React.useState(false);
@@ -21,33 +23,18 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
   const handleDownload = async (e: React.MouseEvent) => {
     e.stopPropagation();
     
-    if (!pdfUrl) {
-      toast.error("Le PDF n'est pas encore disponible");
-      return;
-    }
-
     setIsDownloading(true);
     try {
-      // Clean up the filename - remove any path or URL components
-      const fileName = pdfUrl.split('/').pop()?.split('?')[0] || pdfUrl;
+      // Generate PDF filename based on article metadata
+      const year = new Date(date).getFullYear();
+      const month = String(new Date(date).getMonth() + 1).padStart(2, '0');
+      const pdfFileName = `RHCA_${year}_${month}.pdf`;
       
-      // First check if the file exists
-      const { data: fileExists } = await supabase
-        .storage
-        .from('rhca-pdfs')
-        .list('', {
-          search: fileName
-        });
-
-      if (!fileExists || fileExists.length === 0) {
-        throw new Error('PDF file not found in storage');
-      }
-
       // Get public URL from Supabase storage
       const { data: publicUrl } = supabase
         .storage
         .from('rhca-pdfs')
-        .getPublicUrl(fileName);
+        .getPublicUrl(pdfFileName);
 
       if (!publicUrl?.publicUrl) {
         throw new Error('Could not generate public URL');
@@ -87,7 +74,7 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
         size="sm"
         className="gap-2 text-emerald-600 border-emerald-200 hover:bg-emerald-50"
         onClick={handleDownload}
-        disabled={isDownloading || !pdfUrl}
+        disabled={isDownloading}
       >
         <Download className="h-4 w-4" />
         <span className="hidden sm:inline">

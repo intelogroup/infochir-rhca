@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { Card } from "@/components/ui/card";
 import type { RhcaArticle } from "./types";
@@ -59,7 +60,8 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article, onCardClick, classN
                 <div className="hidden sm:block">
                   <ArticleActions 
                     id={article.id}
-                    pdfUrl={article.pdfUrl}
+                    volume={article.volume}
+                    date={article.date}
                     onCardClick={onCardClick}
                   />
                 </div>
@@ -67,7 +69,8 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article, onCardClick, classN
               <div className="mt-3 sm:hidden">
                 <ArticleActions 
                   id={article.id}
-                  pdfUrl={article.pdfUrl}
+                  volume={article.volume}
+                  date={article.date}
                   onCardClick={onCardClick}
                 />
               </div>
