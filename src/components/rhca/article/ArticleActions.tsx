@@ -31,44 +31,29 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
     setIsDownloading(true);
 
     try {
-      console.log('Attempting to download from bucket rhca-pdfs:', pdfFileName);
-      
-      const { data, error } = await supabase
+      // Get the public URL for the file
+      const { data: { publicUrl }, error: urlError } = supabase
         .storage
         .from('rhca-pdfs')
-        .download(pdfFileName);
+        .getPublicUrl(pdfFileName);
 
-      if (error) {
-        console.error('Supabase Storage Error:', {
-          errorMessage: error.message,
-          errorDetails: error,
-          bucket: 'rhca-pdfs',
-          fileName: pdfFileName
-        });
-        
-        // Handle specific error cases
-        if (error.message?.includes('not found')) {
-          toast.error("Le fichier PDF n'existe pas dans le stockage");
-        } else if (error.message?.includes('permission')) {
-          toast.error("Erreur d'accès au fichier - Permissions insuffisantes");
-        } else if (error.message?.includes('bucket')) {
-          toast.error("Erreur de configuration du stockage");
-        } else {
-          toast.error(`Erreur de téléchargement: ${error.message || 'Erreur inconnue'}`);
-        }
-        throw error;
+      if (urlError) {
+        console.error('Error getting public URL:', urlError);
+        toast.error("Erreur lors de l'accès au fichier");
+        return;
       }
 
-      if (!data) {
-        console.error('No data received from storage');
-        toast.error("Aucune donnée reçue du serveur");
-        throw new Error('No data received from storage');
+      console.log('Fetching PDF from public URL:', publicUrl);
+
+      // Fetch the file from the public URL
+      const response = await fetch(publicUrl);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      console.log('File downloaded successfully, creating blob URL');
-
-      // Create URL for the blob
-      const url = window.URL.createObjectURL(data);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
       
       // Create link and trigger download
       const link = document.createElement('a');
@@ -87,8 +72,7 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
       console.error('Download error details:', {
         error,
         fileName: pdfFileName,
-        timestamp: new Date().toISOString(),
-        storageUrl: supabase.storage.from('rhca-pdfs').getPublicUrl(pdfFileName).data.publicUrl
+        timestamp: new Date().toISOString()
       });
 
       if (error instanceof Error) {
@@ -98,7 +82,6 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
       }
     } finally {
       setIsDownloading(false);
-      console.log('Download process completed');
     }
   };
 
