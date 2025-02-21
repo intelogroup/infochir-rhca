@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -17,13 +18,15 @@ const formSchema = z.object({
   publicationType: z.enum(["RHCA", "IGM", "ADC"]),
 });
 
+type FormValues = z.infer<typeof formSchema>;
+
 export const ArticleForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [coverImageUrl, setCoverImageUrl] = useState("");
   const [articleFilesUrls, setArticleFilesUrls] = useState<string[]>([]);
   const [imageAnnexesUrls, setImageAnnexesUrls] = useState<string[]>([]);
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       publicationType: "RHCA",
@@ -32,7 +35,7 @@ export const ArticleForm = () => {
     }
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: FormValues) => {
     if (articleFilesUrls.length === 0) {
       toast.error("Veuillez uploader au moins un fichier d'article");
       return;
@@ -41,14 +44,13 @@ export const ArticleForm = () => {
     setIsSubmitting(true);
     try {
       const { data, error } = await supabase
-        .from('articles')
+        .from('unified_content')
         .insert({
           title: values.title,
           abstract: values.abstract,
           source: values.publicationType,
-          article_files: articleFilesUrls,
-          image_annexes_urls: imageAnnexesUrls,
-          image_url: coverImageUrl, // Add cover image URL
+          article_files_urls: articleFilesUrls,
+          image_url: coverImageUrl,
           status: 'draft'
         })
         .select()

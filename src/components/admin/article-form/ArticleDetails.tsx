@@ -1,56 +1,45 @@
+
+import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { UseFormReturn } from "react-hook-form";
 
-interface ArticleDetailsProps {
-  title: string;
-  setTitle: (title: string) => void;
-  abstract: string;
-  setAbstract: (abstract: string) => void;
-  errors?: { [key: string]: string };
+export interface ArticleDetailsProps {
+  form: UseFormReturn<any>;
 }
 
-export const ArticleDetails = ({
-  title,
-  setTitle,
-  abstract,
-  setAbstract,
-  errors
-}: ArticleDetailsProps) => {
+export const ArticleDetails = ({ form }: ArticleDetailsProps) => {
   return (
-    <div className="space-y-6">
-      <div>
-        <label htmlFor="title" className="block text-sm font-medium mb-1 text-gray-700">
-          Titre
-        </label>
-        <Input
-          id="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className={`w-full ${errors?.title ? 'border-red-500' : ''}`}
-          placeholder="Entrez le titre de votre article"
-          required
-        />
-        {errors?.title && (
-          <p className="mt-1 text-sm text-red-500">{errors.title}</p>
+    <div className="space-y-4">
+      <FormField
+        control={form.control}
+        name="title"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Titre</FormLabel>
+            <FormControl>
+              <Input {...field} placeholder="Titre de l'article" />
+            </FormControl>
+          </FormItem>
         )}
-      </div>
-
-      <div>
-        <label htmlFor="abstract" className="block text-sm font-medium mb-1 text-gray-700">
-          Résumé
-        </label>
-        <Textarea
-          id="abstract"
-          value={abstract}
-          onChange={(e) => setAbstract(e.target.value)}
-          className={`w-full min-h-[150px] ${errors?.abstract ? 'border-red-500' : ''}`}
-          placeholder="Entrez le résumé de votre article"
-          required
-        />
-        {errors?.abstract && (
-          <p className="mt-1 text-sm text-red-500">{errors.abstract}</p>
+      />
+      
+      <FormField
+        control={form.control}
+        name="abstract"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Résumé</FormLabel>
+            <FormControl>
+              <Textarea 
+                {...field} 
+                placeholder="Résumé de l'article"
+                className="min-h-[150px]"
+              />
+            </FormControl>
+          </FormItem>
         )}
-      </div>
+      />
     </div>
   );
 };
