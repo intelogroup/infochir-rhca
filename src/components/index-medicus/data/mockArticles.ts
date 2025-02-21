@@ -1,3 +1,4 @@
+
 import { Article } from "../types";
 
 export const mockArticles: Article[] = [
@@ -83,7 +84,7 @@ export const mockArticles: Article[] = [
   },
   {
     id: "5",
-    title": "The Role of Technology in Healthcare",
+    title: "The Role of Technology in Healthcare",
     abstract: "Examining the impact of digital tools and telemedicine...",
     authors: ["Dr. Martinez", "Dr. Anderson"],
     date: "2024-05-12",
