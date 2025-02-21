@@ -9,6 +9,7 @@ interface ArticleActionsProps {
   id: string;
   volume: string;
   date: string;
+  pdfFileName?: string;
   onCardClick?: () => void;
 }
 
@@ -16,6 +17,7 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
   id, 
   volume,
   date,
+  pdfFileName,
   onCardClick 
 }) => {
   const [isDownloading, setIsDownloading] = React.useState(false);
@@ -24,9 +26,10 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
   // Get the PDF URL when the component mounts
   React.useEffect(() => {
     const getPdfUrl = async () => {
-      const year = new Date(date).getFullYear();
-      const month = String(new Date(date).getMonth() + 1).padStart(2, '0');
-      const pdfFileName = `RHCA_${year}_${month}.pdf`;
+      if (!pdfFileName) {
+        console.log('No PDF filename provided for article:', id);
+        return;
+      }
 
       const { data } = supabase
         .storage
@@ -35,11 +38,14 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
 
       if (data?.publicUrl) {
         setPdfUrl(data.publicUrl);
+        console.log('PDF URL generated:', data.publicUrl);
+      } else {
+        console.log('Could not generate URL for:', pdfFileName);
       }
     };
 
     getPdfUrl();
-  }, [date]);
+  }, [pdfFileName, id]);
 
   const handleDownload = async (e: React.MouseEvent) => {
     e.stopPropagation();

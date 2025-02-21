@@ -29,7 +29,8 @@ export const mockArticles: RhcaArticle[] = [
     shares: 43,
     citations: 20,
     tags: ["Rétrospective", "Innovation"],
-    imageUrl: "/placeholder.svg"
+    imageUrl: "/placeholder.svg",
+    pdfFileName: "RHCA_2023_12_retrospective_chirurgicale.pdf"
   },
   {
     id: "23-09-1",
@@ -48,7 +49,8 @@ export const mockArticles: RhcaArticle[] = [
     shares: 40,
     citations: 15,
     tags: ["Neurochirurgie", "Innovation"],
-    imageUrl: "/placeholder.svg"
+    imageUrl: "/placeholder.svg",
+    pdfFileName: "RHCA_2023_09_neurochirurgie.pdf"
   },
   {
     id: "23-06-1",
@@ -67,7 +69,8 @@ export const mockArticles: RhcaArticle[] = [
     shares: 48,
     citations: 25,
     tags: ["Vasculaire", "Innovation"],
-    imageUrl: "/placeholder.svg"
+    imageUrl: "/placeholder.svg",
+    pdfFileName: "RHCA_2023_06_anevrismes.pdf"
   },
   {
     id: "23-03-1",
@@ -86,6 +89,7 @@ export const mockArticles: RhcaArticle[] = [
     shares: 40,
     citations: 15,
     tags: ["Mini-invasif", "Innovation"],
-    imageUrl: "/placeholder.svg"
+    imageUrl: "/placeholder.svg",
+    pdfFileName: "RHCA_2023_03_mini_invasive.pdf"
   }
 ];
