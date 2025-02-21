@@ -27,9 +27,7 @@ export const IssueCardActions = ({ pdfUrl, id, onViewDetails }: IssueCardActions
     try {
       const shareUrl = `${window.location.origin}/igm/issues/${id}`;
       await navigator.clipboard.writeText(shareUrl);
-      toast.success("Lien copié dans le presse-papier", {
-        className: "bg-secondary text-white",
-      });
+      toast.success("Lien copié dans le presse-papier");
     } finally {
       setTimeout(() => setIsSharing(false), 1000);
     }
@@ -44,28 +42,54 @@ export const IssueCardActions = ({ pdfUrl, id, onViewDetails }: IssueCardActions
     
     setIsDownloading(true);
     try {
-      // Handle Supabase storage URLs
-      if (pdfUrl.includes('article-pdfs')) {
-        const { data: signedUrl, error } = await supabase
-          .storage
-          .from('article-pdfs')
-          .createSignedUrl(pdfUrl, 60);
+      // Simple direct download from storage
+      const { data, error } = await supabase
+        .storage
+        .from('igm-pdfs')
+        .download(pdfUrl);
 
-        if (error) throw error;
-        window.open(signedUrl.signedUrl, '_blank');
-      } else {
-        // Handle external URLs
-        window.open(pdfUrl, '_blank');
+      if (error) {
+        console.error('Download error:', error);
+        toast.error("Erreur lors du téléchargement du fichier");
+        return;
       }
+
+      if (!data) {
+        toast.error("Le fichier PDF n'existe pas");
+        return;
+      }
+
+      // Create URL and trigger download
+      const url = window.URL.createObjectURL(data);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = pdfUrl;
+      document.body.appendChild(link);
+      link.click();
       
-      toast.success("Ouverture du PDF...", {
-        className: "bg-secondary text-white",
-      });
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+
+      // Update download count
+      const { error: updateError } = await supabase
+        .from('articles')
+        .update({ 
+          downloads: 1,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', id);
+
+      if (updateError) {
+        console.error('Error updating download count:', updateError);
+      }
+
+      toast.success("Téléchargement réussi");
     } catch (error) {
       console.error('Download error:', error);
       toast.error("Erreur lors du téléchargement du PDF");
     } finally {
-      setTimeout(() => setIsDownloading(false), 1000);
+      setIsDownloading(false);
     }
   };
 
