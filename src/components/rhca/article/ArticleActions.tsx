@@ -29,22 +29,21 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
     setIsDownloading(true);
 
     try {
-      // Get the signed URL first
-      const { data: { signedUrl }, error: signedUrlError } = await supabase
+      const { data, error } = await supabase
         .storage
         .from('rhca-pdfs')
-        .createSignedUrl(pdfFileName, 60);
+        .download(pdfFileName);
 
-      if (signedUrlError) {
-        throw signedUrlError;
+      if (error) {
+        throw error;
       }
 
-      // Download using the signed URL
-      const response = await fetch(signedUrl);
-      const blob = await response.blob();
-      
+      if (!data) {
+        throw new Error('No data received');
+      }
+
       // Create URL for the blob
-      const url = window.URL.createObjectURL(blob);
+      const url = window.URL.createObjectURL(data);
       
       // Create link and trigger download
       const link = document.createElement('a');
