@@ -14,7 +14,7 @@ export const volumes2023: RhcaVolume[] = [
       {
         id: "23-12-1",
         title: "Rétrospective 2023 des avancées chirurgicales",
-        abstract: "Synthèse des progrès majeurs en chirurgie au cours de l'année, avec focus sur les innovations technologiques et les nouvelles approches thérapeutiques...",
+        abstract: "Synthèse des progrès majeurs en chirurgie au cours de l'année, avec focus sur les innovations technologiques...",
         authors: ["Dr. Marie Lambert", "Dr. Jean-Marc Bernard"],
         date: "2023-12-15",
         views: 245,
@@ -44,7 +44,7 @@ export const volumes2023: RhcaVolume[] = [
       {
         id: "23-09-1",
         title: "Nouvelles approches en chirurgie cérébrale",
-        abstract: "Exploration des techniques innovantes en neurochirurgie, incluant la navigation 3D et l'imagerie peropératoire avancée...",
+        abstract: "Exploration des techniques innovantes en neurochirurgie...",
         authors: ["Dr. Pierre Dubois", "Dr. Marie Claire"],
         date: "2023-09-15",
         views: 230,
@@ -74,7 +74,7 @@ export const volumes2023: RhcaVolume[] = [
       {
         id: "23-06-1",
         title: "Traitement endovasculaire des anévrismes",
-        abstract: "Analyse comparative des différentes approches endovasculaires dans le traitement des anévrismes de l'aorte...",
+        abstract: "Analyse comparative des différentes approches endovasculaires...",
         authors: ["Dr. Jean Martin", "Dr. Sophie Bernard"],
         date: "2023-06-15",
         views: 280,
@@ -104,7 +104,7 @@ export const volumes2023: RhcaVolume[] = [
       {
         id: "23-03-1",
         title: "Chirurgie mini-invasive du poumon",
-        abstract: "Évaluation des résultats à long terme de la chirurgie thoracoscopique dans le traitement des tumeurs pulmonaires...",
+        abstract: "Évaluation des résultats à long terme de la chirurgie thoracoscopique...",
         authors: ["Dr. Marc Antoine", "Dr. Claire Dubois"],
         date: "2023-03-15",
         views: 210,
