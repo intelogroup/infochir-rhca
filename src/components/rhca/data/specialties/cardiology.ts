@@ -24,3 +24,15 @@ export const cardiologyArticles: RhcaArticle[] = [
     pdfFileName: "cardiac-innovations-2024.pdf"
   }
 ];
+
+export const cardiologyVolumes = [{
+  id: "cv-2024-1",
+  volume: "12",
+  date: "2024-01",
+  description: "Cardiology advances in 2024",
+  articleCount: 15,
+  downloadCount: 450,
+  shareCount: 200,
+  articles: cardiologyArticles,
+  coverImage: "/images/cardiology-cover.jpg"
+}];

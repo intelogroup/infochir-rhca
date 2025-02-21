@@ -28,20 +28,16 @@ export const IssueCardActions = ({ pdfUrl, id, onViewDetails }: IssueCardActions
       const shareUrl = `${window.location.origin}/igm/issues/${id}`;
       await navigator.clipboard.writeText(shareUrl);
       
-      // Update share count
-      const { error: updateError } = await supabase
-        .from('unified_collections')
-        .update({ 
-          share_count: supabase.rpc('increment_count', { table_name: 'unified_collections', column_name: 'share_count', row_id: id }),
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', id);
-
-      if (updateError) {
-        console.error('Error updating share count:', updateError);
-      }
+      // Update share count using stored procedure
+      await supabase.rpc('increment_count', {
+        table_name: 'unified_collections',
+        column_name: 'share_count',
+        row_id: id
+      });
 
       toast.success("Lien copié dans le presse-papier");
+    } catch (error) {
+      console.error('Error updating share count:', error);
     } finally {
       setTimeout(() => setIsSharing(false), 1000);
     }
@@ -84,18 +80,12 @@ export const IssueCardActions = ({ pdfUrl, id, onViewDetails }: IssueCardActions
       window.URL.revokeObjectURL(url);
       document.body.removeChild(link);
 
-      // Update download count
-      const { error: updateError } = await supabase
-        .from('unified_collections')
-        .update({ 
-          download_count: supabase.rpc('increment_count', { table_name: 'unified_collections', column_name: 'download_count', row_id: id }),
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', id);
-
-      if (updateError) {
-        console.error('Error updating download count:', updateError);
-      }
+      // Update download count using stored procedure
+      await supabase.rpc('increment_count', {
+        table_name: 'unified_collections',
+        column_name: 'download_count',
+        row_id: id
+      });
 
       toast.success("Téléchargement réussi");
     } catch (error) {

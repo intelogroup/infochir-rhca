@@ -969,6 +969,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_count: {
+        Args: {
+          table_name: string
+          column_name: string
+          row_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "admin" | "editor" | "user"

@@ -24,3 +24,15 @@ export const articles2024: RhcaArticle[] = [
     pdfFileName: "surgery-advances-2024.pdf"
   }
 ];
+
+export const volumes2024 = [{
+  id: "v-2024-1",
+  volume: "1",
+  date: "2024-01",
+  description: "First volume of 2024",
+  articleCount: 25,
+  downloadCount: 750,
+  shareCount: 300,
+  articles: articles2024,
+  coverImage: "/images/2024-cover.jpg"
+}];
