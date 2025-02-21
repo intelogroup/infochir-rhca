@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from "lucide-react";
@@ -119,7 +120,6 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick, s
                   />
                 </div>
                 <ArticleActions 
-                  title={article.title}
                   pdfUrl={article.pdfUrl}
                   onCitation={generateCitation}
                   onShare={handleShare}

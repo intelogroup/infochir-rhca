@@ -4,7 +4,7 @@ import type { RhcaVolume } from "../../types";
 export const plasticVolumes: RhcaVolume[] = [
   {
     id: "11",
-    volume: 11,
+    volume: "11",
     date: "2024-02-15",
     description: "Chirurgie plastique reconstructive",
     articleCount: 13,
@@ -21,7 +21,7 @@ export const plasticVolumes: RhcaVolume[] = [
         citations: 28,
         downloads: 82,
         shares: 42,
-        pageNumber: "1",
+        pageNumber: 1,
         volume: "11",
         tags: ["Chirurgie plastique", "Reconstruction", "Trauma"],
         publicationDate: "2024-02-15",
