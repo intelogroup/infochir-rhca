@@ -30,7 +30,7 @@ export const mockArticles: RhcaArticle[] = [
     citations: 5,
     tags: ["Innovation", "Chirurgie"],
     imageUrl: "/placeholder.svg",
-    pdfFileName: "RHCA_2024_03_innovations.pdf"
+    pdfFileName: "RHCA_2024_03_chirurgie_robotique.pdf"
   },
   {
     id: "23-12-1",
