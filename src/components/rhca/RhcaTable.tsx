@@ -1,11 +1,12 @@
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import { Download, Share2 } from "lucide-react";
+import { Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { RhcaArticle } from "./types";
+import { ArticleActions } from "./article/ArticleActions";
 
 interface RhcaTableProps {
   articles: RhcaArticle[];
@@ -16,18 +17,6 @@ export const RhcaTable: React.FC<RhcaTableProps> = ({ articles }) => {
     const shareUrl = `${window.location.origin}/rhca/articles/${articleId}`;
     navigator.clipboard.writeText(shareUrl);
     toast.success("Lien copié dans le presse-papier");
-  };
-
-  const handleDownload = (pdfFileName?: string) => {
-    if (!pdfFileName) {
-      toast.error("Le PDF n'est pas encore disponible");
-      return;
-    }
-    // Use the ArticleActions component's download functionality
-    const element = document.createElement('button');
-    element.setAttribute('data-pdf-filename', pdfFileName);
-    element.click();
-    toast.success("Début du téléchargement...");
   };
 
   return (
@@ -111,16 +100,12 @@ export const RhcaTable: React.FC<RhcaTableProps> = ({ articles }) => {
                 <Share2 className="h-4 w-4" aria-hidden="true" />
                 <span>Partager</span>
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex-1 lg:flex-none gap-2 bg-white hover:bg-gray-50"
-                onClick={() => handleDownload(article.pdfFileName)}
-                aria-label={article.pdfFileName ? "Télécharger le PDF" : "PDF non disponible"}
-              >
-                <Download className="h-4 w-4" aria-hidden="true" />
-                <span>PDF</span>
-              </Button>
+              <ArticleActions
+                id={article.id}
+                volume={article.volume}
+                date={article.date}
+                pdfFileName={article.pdfFileName}
+              />
             </div>
           </div>
         </div>
