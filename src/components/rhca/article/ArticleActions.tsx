@@ -44,12 +44,12 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
       if (error) {
         console.error('Supabase storage error:', error);
         
-        // Handle specific error cases
-        if (error.statusCode === "404") {
+        // Handle specific error cases using the correct 'status' property
+        if (error.status === 404) {
           toast.error("Le fichier PDF n'a pas été trouvé");
           return;
         }
-        if (error.statusCode === "403") {
+        if (error.status === 403) {
           toast.error("Accès non autorisé au fichier");
           return;
         }
