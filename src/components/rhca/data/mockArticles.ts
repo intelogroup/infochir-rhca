@@ -11,7 +11,7 @@ export const mockArticles: RhcaArticle[] = [
   ...volumes2023.flatMap(volume => volume.articles),
   ...volumes2022.flatMap(volume => volume.articles),
   ...volumes2021.flatMap(volume => volume.articles),
-  // Add a few example articles with real PDFs from our bucket
+  // Add articles with real PDFs from our bucket
   {
     id: "24-03-1",
     title: "Innovations chirurgicales du premier trimestre 2024",
