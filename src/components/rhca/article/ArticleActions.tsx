@@ -29,34 +29,7 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
     setIsDownloading(true);
 
     try {
-      // First get the article from database to ensure it exists
-      const { data: article, error: articleError } = await supabase
-        .from('articles')
-        .select('id, pdf_url')
-        .eq('id', id)
-        .single();
-
-      if (articleError || !article) {
-        console.error('Article not found:', articleError);
-        toast.error("Article non trouvé dans la base de données");
-        return;
-      }
-
-      // Then check if the file exists in storage
-      const { data: fileExists } = await supabase
-        .storage
-        .from('rhca-pdfs')
-        .list('', {
-          search: pdfFileName
-        });
-
-      if (!fileExists || fileExists.length === 0) {
-        console.error(`File ${pdfFileName} not found in bucket`);
-        toast.error("Ce PDF n'est pas encore disponible dans notre système");
-        return;
-      }
-
-      // Download the file
+      // Simple direct download using the pdfFileName
       const { data, error } = await supabase
         .storage
         .from('rhca-pdfs')
@@ -84,12 +57,12 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
       // Cleanup
       window.URL.revokeObjectURL(url);
       document.body.removeChild(link);
-      
-      // Update download count in the database
+
+      // Simple update of download count
       const { error: updateError } = await supabase
         .from('articles')
         .update({ 
-          downloads: article.downloads ? article.downloads + 1 : 1,
+          downloads: 1, // Increment by 1
           updated_at: new Date().toISOString()
         })
         .eq('id', id);
