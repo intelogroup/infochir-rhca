@@ -28,9 +28,21 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
 
     setIsDownloading(true);
     try {
-      // Extract just the filename from the full path if needed
-      const fileName = pdfUrl.split('/').pop() || pdfUrl;
+      // Clean up the filename - remove any path or URL components
+      const fileName = pdfUrl.split('/').pop()?.split('?')[0] || pdfUrl;
       
+      // First check if the file exists
+      const { data: fileExists } = await supabase
+        .storage
+        .from('rhca-pdfs')
+        .list('', {
+          search: fileName
+        });
+
+      if (!fileExists || fileExists.length === 0) {
+        throw new Error('PDF file not found in storage');
+      }
+
       // Get public URL from Supabase storage
       const { data: publicUrl } = supabase
         .storage
