@@ -28,7 +28,7 @@ export const volumes2024: RhcaVolume[] = [
         specialty: "Chirurgie générale",
         imageUrl: "https://images.unsplash.com/photo-1527613426441-4da17471b66d?w=800&auto=format",
         source: "RHCA",
-        pdfFileName: "RHCA-2024-Vol3.pdf"
+        pdfFileName: "RHCA_2024_03_chirurgie_robotique.pdf"
       }
     ],
     coverImage: "https://images.unsplash.com/photo-1527613426441-4da17471b66d?w=800&auto=format"
