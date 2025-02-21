@@ -31,25 +31,42 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
     setIsDownloading(true);
 
     try {
+      // First check if the file exists
+      const { data: fileExists, error: listError } = await supabase
+        .storage
+        .from('rhca-pdfs')
+        .list('', {
+          limit: 1,
+          search: pdfFileName
+        });
+
+      if (listError) {
+        console.error('Error checking file existence:', listError);
+        toast.error("Erreur lors de la vérification du fichier");
+        return;
+      }
+
+      if (!fileExists || fileExists.length === 0) {
+        console.error('File not found in storage:', pdfFileName);
+        toast.error("Le fichier PDF n'existe pas dans le stockage");
+        return;
+      }
+
       // Get the public URL for the file
-      const { data: { publicUrl }, error: urlError } = supabase
+      const { data } = supabase
         .storage
         .from('rhca-pdfs')
         .getPublicUrl(pdfFileName);
 
-      if (urlError) {
-        console.error('Error getting public URL:', urlError);
-        toast.error("Erreur lors de l'accès au fichier");
-        return;
-      }
-
+      const publicUrl = data.publicUrl;
       console.log('Fetching PDF from public URL:', publicUrl);
 
       // Fetch the file from the public URL
       const response = await fetch(publicUrl);
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.error('HTTP Error:', response.status, response.statusText);
+        throw new Error(`Erreur HTTP: ${response.status} ${response.statusText}`);
       }
 
       const blob = await response.blob();
