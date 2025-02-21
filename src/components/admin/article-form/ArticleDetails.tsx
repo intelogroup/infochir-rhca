@@ -3,9 +3,10 @@ import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/for
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { UseFormReturn } from "react-hook-form";
+import { ArticleFormData } from "@/types/article";
 
 export interface ArticleDetailsProps {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<ArticleFormData>;
 }
 
 export const ArticleDetails = ({ form }: ArticleDetailsProps) => {

@@ -11,6 +11,7 @@ import { PublicationTypeSelector } from "./article-form/PublicationTypeSelector"
 import { ArticleDetails } from "./article-form/ArticleDetails";
 import { CoverImageUploader } from "./article-form/CoverImageUploader";
 import { supabase } from "@/integrations/supabase/client";
+import { Article, ArticleFormData } from "@/types/article";
 
 const formSchema = z.object({
   title: z.string().min(1, "Le titre est requis"),
@@ -18,26 +19,34 @@ const formSchema = z.object({
   publicationType: z.enum(["RHCA", "IGM", "ADC"]),
 });
 
-type FormValues = z.infer<typeof formSchema>;
+interface ArticleFormProps {
+  initialData?: Article;
+  onSubmit?: (data: ArticleFormData) => Promise<void>;
+  isLoading?: boolean;
+}
 
-export const ArticleForm = () => {
+export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = false }: ArticleFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [coverImageUrl, setCoverImageUrl] = useState("");
-  const [articleFilesUrls, setArticleFilesUrls] = useState<string[]>([]);
-  const [imageAnnexesUrls, setImageAnnexesUrls] = useState<string[]>([]);
+  const [coverImageUrl, setCoverImageUrl] = useState(initialData?.image_url || "");
+  const [articleFilesUrls, setArticleFilesUrls] = useState<string[]>(initialData?.article_files || []);
 
-  const form = useForm<FormValues>({
+  const form = useForm<ArticleFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      publicationType: "RHCA",
-      title: "",
-      abstract: "",
+      publicationType: (initialData?.publication_type as "RHCA" | "IGM" | "ADC") || "RHCA",
+      title: initialData?.title || "",
+      abstract: initialData?.abstract || "",
     }
   });
 
-  const onSubmit = async (values: FormValues) => {
+  const handleSubmit = async (values: ArticleFormData) => {
     if (articleFilesUrls.length === 0) {
       toast.error("Veuillez uploader au moins un fichier d'article");
+      return;
+    }
+
+    if (customSubmit) {
+      await customSubmit(values);
       return;
     }
 
@@ -49,7 +58,7 @@ export const ArticleForm = () => {
           title: values.title,
           abstract: values.abstract,
           source: values.publicationType,
-          article_files_urls: articleFilesUrls,
+          article_files: articleFilesUrls,
           image_url: coverImageUrl,
           status: 'draft'
         })
@@ -62,7 +71,6 @@ export const ArticleForm = () => {
       form.reset();
       setCoverImageUrl("");
       setArticleFilesUrls([]);
-      setImageAnnexesUrls([]);
     } catch (error) {
       console.error('Submission error:', error);
       toast.error("Une erreur est survenue lors de la création de l'article");
@@ -73,7 +81,7 @@ export const ArticleForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
         <div className="space-y-8 bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-gray-100">
           <PublicationTypeSelector form={form} />
           <ArticleDetails form={form} />
@@ -86,16 +94,15 @@ export const ArticleForm = () => {
 
           <FileUploaders
             setArticleFilesUrls={setArticleFilesUrls}
-            setImageAnnexesUrls={setImageAnnexesUrls}
           />
         </div>
 
         <div className="flex justify-end">
           <Button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || isLoading}
           >
-            {isSubmitting ? "Création en cours..." : "Créer l'article"}
+            {isSubmitting || isLoading ? "En cours..." : initialData ? "Mettre à jour" : "Créer l'article"}
           </Button>
         </div>
       </form>

@@ -2,9 +2,10 @@
 import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UseFormReturn } from "react-hook-form";
+import { ArticleFormData } from "@/types/article";
 
 export interface PublicationTypeSelectorProps {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<ArticleFormData>;
 }
 
 export const PublicationTypeSelector = ({ form }: PublicationTypeSelectorProps) => {
