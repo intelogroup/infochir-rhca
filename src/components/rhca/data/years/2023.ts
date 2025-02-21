@@ -28,7 +28,7 @@ export const volumes2023: RhcaVolume[] = [
         specialty: "Chirurgie générale",
         imageUrl: "https://images.pexels.com/photos/3259624/pexels-photo-3259624.jpeg?auto=format",
         source: "RHCA",
-        pdfUrl: "RHCA_2023_12.pdf"
+        pdfUrl: "RHCA_2023_12_retrospective_chirurgicale.pdf"
       }
     ],
     coverImage: "https://images.pexels.com/photos/3259624/pexels-photo-3259624.jpeg?auto=format"
@@ -59,7 +59,7 @@ export const volumes2023: RhcaVolume[] = [
         specialty: "Neurochirurgie",
         imageUrl: "https://images.unsplash.com/photo-1516549655169-df83a0774514?w=800&auto=format",
         source: "RHCA",
-        pdfUrl: "RHCA_2023_09.pdf"
+        pdfUrl: "RHCA_2023_09_neurochirurgie.pdf"
       }
     ],
     coverImage: "https://images.unsplash.com/photo-1516549655169-df83a0774514?w=800&auto=format"
@@ -90,7 +90,7 @@ export const volumes2023: RhcaVolume[] = [
         specialty: "Chirurgie vasculaire",
         imageUrl: "https://images.pexels.com/photos/4226769/pexels-photo-4226769.jpeg?auto=format",
         source: "RHCA",
-        pdfUrl: "RHCA_2023_06.pdf"
+        pdfUrl: "RHCA_2023_06_anevrismes.pdf"
       }
     ],
     coverImage: "https://images.pexels.com/photos/4226769/pexels-photo-4226769.jpeg?auto=format"
@@ -121,7 +121,7 @@ export const volumes2023: RhcaVolume[] = [
         specialty: "Chirurgie thoracique",
         imageUrl: "https://images.unsplash.com/photo-1527613426441-4da17471b66d?w=800&auto=format",
         source: "RHCA",
-        pdfUrl: "RHCA_2023_03.pdf"
+        pdfUrl: "RHCA_2023_03_thorax.pdf"
       }
     ],
     coverImage: "https://images.unsplash.com/photo-1527613426441-4da17471b66d?w=800&auto=format"
