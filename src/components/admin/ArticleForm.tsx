@@ -29,6 +29,7 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [coverImageUrl, setCoverImageUrl] = useState(initialData?.image_url || "");
   const [articleFilesUrls, setArticleFilesUrls] = useState<string[]>(initialData?.article_files || []);
+  const [imageAnnexesUrls, setImageAnnexesUrls] = useState<string[]>([]);
 
   const form = useForm<ArticleFormData>({
     resolver: zodResolver(formSchema),
@@ -71,6 +72,7 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
       form.reset();
       setCoverImageUrl("");
       setArticleFilesUrls([]);
+      setImageAnnexesUrls([]);
     } catch (error) {
       console.error('Submission error:', error);
       toast.error("Une erreur est survenue lors de la création de l'article");
@@ -94,6 +96,7 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
 
           <FileUploaders
             setArticleFilesUrls={setArticleFilesUrls}
+            setImageAnnexesUrls={setImageAnnexesUrls}
           />
         </div>
 

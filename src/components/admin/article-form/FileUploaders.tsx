@@ -1,8 +1,10 @@
-import { MultiFileUploader } from "@/components/pdf/MultiFileUploader";
 
-interface FileUploadersProps {
-  setArticleFilesUrls: (urls: string[]) => void;
-  setImageAnnexesUrls: (urls: string[]) => void;
+import { MultiFileUploader } from "@/components/pdf/MultiFileUploader";
+import { Dispatch, SetStateAction } from "react";
+
+export interface FileUploadersProps {
+  setArticleFilesUrls: Dispatch<SetStateAction<string[]>>;
+  setImageAnnexesUrls: Dispatch<SetStateAction<string[]>>;
   errors?: { [key: string]: string };
 }
 
@@ -43,6 +45,7 @@ export const FileUploaders = ({
           maxFiles={5}
           onUploadComplete={setImageAnnexesUrls}
           helperText="Formats acceptés: PNG, JPEG, GIF. Taille max: 5MB"
+          type="image"
         />
       </div>
     </div>
