@@ -29,19 +29,22 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
     setIsDownloading(true);
 
     try {
-      const { data, error } = await supabase
+      // Get the signed URL first
+      const { data: { signedUrl }, error: signedUrlError } = await supabase
         .storage
         .from('rhca-pdfs')
-        .download(pdfFileName);
+        .createSignedUrl(pdfFileName, 60);
 
-      if (error) {
-        console.error('Download error:', error);
-        toast.error("Erreur lors du téléchargement");
-        return;
+      if (signedUrlError) {
+        throw signedUrlError;
       }
 
+      // Download using the signed URL
+      const response = await fetch(signedUrl);
+      const blob = await response.blob();
+      
       // Create URL for the blob
-      const url = window.URL.createObjectURL(data);
+      const url = window.URL.createObjectURL(blob);
       
       // Create link and trigger download
       const link = document.createElement('a');
@@ -56,8 +59,8 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
       
       toast.success("Téléchargement réussi");
     } catch (error) {
-      console.error('Unexpected error:', error);
-      toast.error("Une erreur inattendue s'est produite");
+      console.error('Download error:', error);
+      toast.error("Une erreur est survenue lors du téléchargement");
     } finally {
       setIsDownloading(false);
     }
