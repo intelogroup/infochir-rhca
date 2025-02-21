@@ -1,7 +1,7 @@
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import { Download, Copy, Share2 } from "lucide-react";
+import { Download, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -28,18 +28,21 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
 
     setIsDownloading(true);
     try {
-      // Get signed URL from Supabase storage
-      const { data: signedUrlData, error: signedUrlError } = await supabase
+      // Extract just the filename from the full path if needed
+      const fileName = pdfUrl.split('/').pop() || pdfUrl;
+      
+      // Get public URL from Supabase storage
+      const { data: publicUrl } = supabase
         .storage
         .from('rhca-pdfs')
-        .createSignedUrl(pdfUrl, 60); // URL valid for 60 seconds
+        .getPublicUrl(fileName);
 
-      if (signedUrlError) {
-        throw signedUrlError;
+      if (!publicUrl?.publicUrl) {
+        throw new Error('Could not generate public URL');
       }
 
-      // Open the signed URL in a new tab
-      window.open(signedUrlData.signedUrl, '_blank');
+      // Open the public URL in a new tab
+      window.open(publicUrl.publicUrl, '_blank');
       toast.success("Ouverture du PDF en cours...");
     } catch (error) {
       console.error('Download error:', error);
