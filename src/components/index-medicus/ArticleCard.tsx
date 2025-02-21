@@ -44,8 +44,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick, s
     }
 
     navigator.clipboard.writeText(citation);
-    toast({
-      title: "Citation copiée",
+    toast("Citation copiée", {
       description: `Format ${format} copié dans le presse-papier`
     });
   }, [article]);
