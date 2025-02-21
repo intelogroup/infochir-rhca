@@ -13,6 +13,26 @@ export const mockArticles: RhcaArticle[] = [
   ...volumes2021.flatMap(volume => volume.articles),
   // Add a few example articles with real PDFs from our bucket
   {
+    id: "24-03-1",
+    title: "Innovations chirurgicales du premier trimestre 2024",
+    abstract: "Synthèse des avancées chirurgicales majeures...",
+    authors: ["Dr. Marie Lambert", "Dr. Jean-Marc Bernard"],
+    publicationDate: "2024-03-15",
+    date: "2024-03-15",
+    specialty: "Chirurgie générale",
+    category: "Innovation",
+    source: "RHCA",
+    volume: "3",
+    pageNumber: "1-12",
+    views: 150,
+    downloads: 45,
+    shares: 20,
+    citations: 5,
+    tags: ["Innovation", "Chirurgie"],
+    imageUrl: "/placeholder.svg",
+    pdfFileName: "RHCA_2024_03_innovations.pdf"
+  },
+  {
     id: "23-12-1",
     title: "Rétrospective 2023 des avancées chirurgicales",
     abstract: "Synthèse des progrès majeurs en chirurgie au cours de l'année...",
