@@ -1,40 +1,58 @@
+
 import { motion } from "framer-motion";
-import { Target, CheckCircle, BookOpen } from "lucide-react";
+import { BookOpen, Award, Users, CheckCircle } from "lucide-react";
 
-export const EditorialMission = () => (
-  <motion.div 
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5, delay: 0.2 }}
-    className="mb-16"
-  >
-    <div className="grid md:grid-cols-3 gap-8">
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-        <Target className="h-8 w-8 text-primary mb-4" />
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">Notre Mission</h3>
-        <p className="text-gray-600">
-          Assurer la qualité scientifique et la pertinence des articles publiés 
-          dans l'Info Gazette Médicale.
-        </p>
-      </div>
+export const EditorialMission = () => {
+  const missions = [
+    {
+      icon: <BookOpen className="h-6 w-6 text-primary" />,
+      title: "Excellence Éditoriale",
+      description: "Maintien des standards élevés dans la sélection et la révision des articles."
+    },
+    {
+      icon: <Award className="h-6 w-6 text-primary" />,
+      title: "Innovation Scientifique",
+      description: "Promotion de la recherche innovante et des avancées chirurgicales."
+    },
+    {
+      icon: <Users className="h-6 w-6 text-primary" />,
+      title: "Collaboration",
+      description: "Favorisation des échanges entre chercheurs et praticiens."
+    },
+    {
+      icon: <CheckCircle className="h-6 w-6 text-primary" />,
+      title: "Rigueur Scientifique",
+      description: "Application stricte des normes de publication internationale."
+    }
+  ];
 
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-        <CheckCircle className="h-8 w-8 text-primary mb-4" />
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">Notre Engagement</h3>
-        <p className="text-gray-600">
-          Maintenir les plus hauts standards de rigueur scientifique et d'éthique 
-          dans la publication médicale.
-        </p>
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className="mb-16"
+    >
+      <h2 className="text-2xl font-semibold text-gray-900 mb-8 text-center">
+        Notre Mission
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {missions.map((mission, index) => (
+          <motion.div
+            key={mission.title}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 * index }}
+            className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+          >
+            <div className="flex flex-col items-center text-center space-y-3">
+              {mission.icon}
+              <h3 className="font-semibold text-gray-900">{mission.title}</h3>
+              <p className="text-gray-600 text-sm">{mission.description}</p>
+            </div>
+          </motion.div>
+        ))}
       </div>
-
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-        <BookOpen className="h-8 w-8 text-primary mb-4" />
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">Notre Vision</h3>
-        <p className="text-gray-600">
-          Contribuer à l'avancement des connaissances médicales en Haïti et 
-          promouvoir l'excellence en recherche.
-        </p>
-      </div>
-    </div>
-  </motion.div>
-);
+    </motion.div>
+  );
+};
