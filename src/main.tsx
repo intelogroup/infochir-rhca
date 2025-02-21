@@ -74,13 +74,12 @@ const initializeApp = async () => {
     // Render app with comprehensive error boundary
     root.render(
       <React.StrictMode>
-        <ErrorBoundary onError={(error) => {
-          console.error("[React Error Boundary]", {
-            error,
-            timestamp: new Date().toISOString(),
-            location: window.location.href
-          });
-        }}>
+        <ErrorBoundary fallback={
+          <div className="p-4 bg-red-50 border border-red-100 rounded-md m-4">
+            <h2 className="text-red-800 text-lg font-semibold mb-2">Une erreur est survenue</h2>
+            <p className="text-red-600">Veuillez rafraîchir la page ou réessayer plus tard.</p>
+          </div>
+        }>
           {!isModernBrowser && (
             <div className="bg-yellow-50 p-4 text-yellow-800 text-sm rounded-md mb-4">
               Votre navigateur pourrait ne pas prendre en charge toutes les fonctionnalités. 
