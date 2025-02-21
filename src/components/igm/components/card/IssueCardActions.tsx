@@ -32,7 +32,7 @@ export const IssueCardActions = ({ pdfUrl, id, onViewDetails }: IssueCardActions
       const { error: updateError } = await supabase
         .from('unified_collections')
         .update({ 
-          share_count: supabase.rpc('create_payment_intent', { amount: 1, currency: 'usd' }),
+          share_count: supabase.rpc('increment_count', { table_name: 'unified_collections', column_name: 'share_count', row_id: id }),
           updated_at: new Date().toISOString()
         })
         .eq('id', id);
@@ -88,7 +88,7 @@ export const IssueCardActions = ({ pdfUrl, id, onViewDetails }: IssueCardActions
       const { error: updateError } = await supabase
         .from('unified_collections')
         .update({ 
-          download_count: supabase.rpc('create_payment_intent', { amount: 1, currency: 'usd' }),
+          download_count: supabase.rpc('increment_count', { table_name: 'unified_collections', column_name: 'download_count', row_id: id }),
           updated_at: new Date().toISOString()
         })
         .eq('id', id);

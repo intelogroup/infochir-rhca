@@ -1,52 +1,26 @@
 
-import type { RhcaVolume } from "../../types";
+import type { RhcaArticle } from "../../types";
 
-export const cardiologyVolumes: RhcaVolume[] = [
+export const cardiologyArticles: RhcaArticle[] = [
   {
-    id: "7",
-    volume: 7,
-    date: "2024-02-01",
-    description: "Innovations en chirurgie cardiaque",
-    articleCount: 16,
-    downloadCount: 580,
-    shareCount: 120,
-    articles: [
-      {
-        id: "13",
-        title: "Nouvelles approches en chirurgie valvulaire mini-invasive",
-        abstract: "Évaluation des techniques innovantes en chirurgie valvulaire minimalement invasive...",
-        authors: ["Dr. Marie-Claire Dubois", "Dr. Jean-Paul Martin"],
-        date: "2024-02-01",
-        publicationDate: "2024-02-01",
-        views: 245,
-        citations: 28,
-        downloads: 85,
-        shares: 42,
-        pageNumber: "1",
-        volume: "7",
-        pdfUrl: "/path/to/pdf13.pdf",
-        tags: ["Chirurgie cardiaque", "Mini-invasif", "Innovation"],
-        source: "RHCA",
-        specialty: "Cardiologie"
-      },
-      {
-        id: "14",
-        title: "Assistance circulatoire mécanique : état de l'art",
-        abstract: "Revue des dispositifs d'assistance circulatoire de dernière génération...",
-        authors: ["Dr. Pierre Lambert", "Dr. Sophie Bernard"],
-        date: "2024-02-01",
-        views: 198,
-        citations: 22,
-        downloads: 76,
-        shares: 35,
-        pageNumber: "20",
-        volume: "7",
-        pdfUrl: "/path/to/pdf14.pdf",
-        tags: ["Assistance circulatoire", "Technologie", "Cardiologie"],
-        publicationDate: "2024-02-01",
-        specialty: "Cardiologie",
-        source: "RHCA"
-      }
-    ]
+    id: "card-1",
+    title: "Innovations in Cardiac Surgery",
+    abstract: "Latest developments in cardiac surgical procedures...",
+    authors: ["Dr. Jane Smith", "Dr. John Doe"],
+    publicationDate: "2024-01-15",
+    date: "2024-01-15",
+    specialty: "Cardiology",
+    category: "Research",
+    source: "RHCA",
+    volume: "12",
+    pageNumber: 1,
+    views: 250,
+    downloads: 120,
+    shares: 45,
+    citations: 15,
+    tags: ["cardiac surgery", "innovation", "research"],
+    imageUrl: "/images/cardiac-surgery.jpg",
+    pdfUrl: "/pdfs/cardiac-innovations-2024.pdf",
+    pdfFileName: "cardiac-innovations-2024.pdf"
   }
 ];
