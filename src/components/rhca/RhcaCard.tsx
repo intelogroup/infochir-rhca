@@ -62,7 +62,7 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article, onCardClick, classN
                     id={article.id}
                     volume={article.volume}
                     date={article.date}
-                    onCardClick={onCardClick}
+                    pdfFileName={article.pdfFileName}
                   />
                 </div>
               </div>
@@ -71,7 +71,7 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article, onCardClick, classN
                   id={article.id}
                   volume={article.volume}
                   date={article.date}
-                  onCardClick={onCardClick}
+                  pdfFileName={article.pdfFileName}
                 />
               </div>
             </div>
