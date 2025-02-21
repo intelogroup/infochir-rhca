@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User } from "lucide-react";
@@ -49,6 +48,12 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick, s
       description: `Format ${format} copié dans le presse-papier`
     });
   }, [article]);
+
+  const handleShare = React.useCallback(() => {
+    const shareUrl = `${window.location.origin}/articles/${article.id}`;
+    navigator.clipboard.writeText(shareUrl);
+    toast.success("Lien copié dans le presse-papier");
+  }, [article.id]);
 
   return (
     <>
@@ -117,6 +122,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick, s
                   title={article.title}
                   pdfUrl={article.pdfUrl}
                   onCitation={generateCitation}
+                  onShare={handleShare}
                 />
               </CardContent>
             </div>

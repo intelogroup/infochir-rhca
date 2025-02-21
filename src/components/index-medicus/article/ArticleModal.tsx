@@ -1,8 +1,16 @@
-import * as React from "react";
-import { DocumentModal } from "@/components/shared/DocumentModal";
-import { Tag } from "lucide-react";
-import type { Article } from "@/components/index-medicus/types";
-import { ScrollArea } from "@/components/ui/scroll-area";
+
+import React from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Article } from "../types";
+import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 interface ArticleModalProps {
   article: Article;
@@ -10,78 +18,51 @@ interface ArticleModalProps {
   onClose: () => void;
 }
 
-export const ArticleModal: React.FC<ArticleModalProps> = ({ article, open, onClose }) => {
-  const renderContent = (document: Article) => (
-    <div className="space-y-6">
-      <div className="prose prose-sm dark:prose-invert max-w-none">
-        <p className="text-lg font-semibold text-gray-900 mb-4">{document.title}</p>
-        <h3 className="text-lg font-semibold text-primary">Résumé</h3>
-        <p className="text-gray-600 dark:text-gray-300">{document.abstract}</p>
-      </div>
-
-      {document.tags && document.tags.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {document.tags.map((tag, index) => (
-            <span
-              key={index}
-              className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary"
-            >
-              <Tag className="w-3 h-3 mr-1" />
-              {tag}
-            </span>
-          ))}
-        </div>
-      )}
-
-      <div>
-        <h3 className="text-lg font-semibold text-primary mb-3">Articles</h3>
-        <ScrollArea className="h-[200px] w-full rounded-md border p-4">
-          <div className="space-y-2">
-            {mockArticleTitles.map((title, index) => (
-              <div 
-                key={index}
-                className="p-2 hover:bg-gray-50 rounded-md cursor-pointer transition-colors"
-              >
-                <p className="text-sm text-gray-700">{title}</p>
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
-      </div>
-    </div>
-  );
+export const ArticleModal: React.FC<ArticleModalProps> = ({
+  article,
+  open,
+  onClose,
+}) => {
+  const formattedDate = format(new Date(article.publicationDate), "PPP", { locale: fr });
 
   return (
-    <DocumentModal
-      document={{
-        id: article.id,
-        title: `Infochir/RHCA Volume`,
-        date: article.publicationDate.toISOString(),
-        description: article.title,
-        downloadCount: article.downloads || 0,
-        shareCount: article.shares || 0,
-        pdfUrl: article.pdfUrl,
-        imageUrl: article.imageUrl,
-      }}
-      open={open}
-      onClose={onClose}
-      renderContent={() => renderContent(article)}
-    />
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold">
+            {article.title}
+          </DialogTitle>
+          <DialogDescription>
+            Publié le {formattedDate}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          <div className="flex flex-wrap gap-2">
+            {article.tags.map((tag) => (
+              <Badge key={tag} variant="secondary">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+
+          <div className="prose max-w-none">
+            <p className="text-gray-600">{article.abstract}</p>
+          </div>
+
+          <div className="border-t pt-4">
+            <h4 className="font-semibold mb-2">Auteurs</h4>
+            <p>{article.authors.join(", ")}</p>
+          </div>
+
+          {article.institution && (
+            <div>
+              <h4 className="font-semibold mb-2">Institution</h4>
+              <p>{article.institution}</p>
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
-
-// Temporary mock data for demonstration
-const mockArticleTitles = [
-  "Martin et al. - L'impact des nouvelles technologies en chirurgie cardiaque",
-  "Dubois et al. - Évolution des techniques de transplantation hépatique",
-  "Bernard et al. - Innovations en chirurgie mini-invasive",
-  "Lambert et al. - Approches modernes en chirurgie pédiatrique",
-  "Robert et al. - Techniques avancées en neurochirurgie",
-  "Dupont et al. - Les progrès en chirurgie robotique",
-  "Claire et al. - Nouvelles perspectives en chirurgie plastique",
-  "Pierre et al. - Développements récents en chirurgie orthopédique",
-  "Sophie et al. - Avancées en chirurgie vasculaire",
-  "Jean et al. - La chirurgie assistée par ordinateur : état des lieux",
-  "Marie et al. - Techniques émergentes en microchirurgie",
-  "Paul et al. - L'intelligence artificielle en chirurgie",
-];
