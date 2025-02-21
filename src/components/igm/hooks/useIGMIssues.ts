@@ -1,35 +1,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import type { Issue } from "../types";
+import type { Issue, DatabaseIssue, mapDatabaseIssueToIssue } from "../types";
 import { toast } from "sonner";
-
-const mapDatabaseIssueToIssue = (dbIssue: any): Issue => {
-  console.log('[useIGMIssues] Mapping database issue:', dbIssue);
-  
-  return {
-    id: dbIssue.id,
-    title: dbIssue.title,
-    volume: dbIssue.volume || '',
-    issue: dbIssue.issue || '',
-    date: new Date(dbIssue.publication_date).toISOString(),
-    abstract: dbIssue.abstract || '',
-    pdfUrl: dbIssue.pdf_url,
-    coverImage: dbIssue.cover_image,
-    articleCount: (dbIssue.article_files?.length || 0),
-    downloads: dbIssue.downloads || 0,
-    shares: dbIssue.shares || 0,
-    articles: dbIssue.article_files?.map((article: any, index: number) => ({
-      id: `${dbIssue.id}-${index}`,
-      title: article.title || '',
-      authors: article.authors || [],
-      pageNumber: article.page_number || 1,
-      abstract: article.abstract,
-      tags: article.tags || []
-    })) || [],
-    categories: dbIssue.category ? [dbIssue.category] : []
-  };
-};
 
 export const useIGMIssues = () => {
   console.log('[useIGMIssues] Hook initializing');
@@ -42,7 +15,7 @@ export const useIGMIssues = () => {
 
       try {
         const { data, error } = await supabase
-          .from("igm_issues_view")
+          .from("igm_unified_view")
           .select('*')
           .order('publication_date', { ascending: false });
 
@@ -72,7 +45,7 @@ export const useIGMIssues = () => {
           lastItem: data[data.length - 1]
         });
 
-        const issues = data.map(mapDatabaseIssueToIssue);
+        const issues = data.map((item: DatabaseIssue) => mapDatabaseIssueToIssue(item));
 
         console.log('[useIGMIssues] Mapped issues:', {
           count: issues.length,

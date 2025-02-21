@@ -388,6 +388,132 @@ export type Database = {
         }
         Relationships: []
       }
+      unified_collections: {
+        Row: {
+          article_count: number | null
+          category: string | null
+          cover_image: string | null
+          created_at: string | null
+          description: string | null
+          download_count: number | null
+          id: string
+          issue: string | null
+          publication_date: string | null
+          share_count: number | null
+          source: string
+          title: string
+          updated_at: string | null
+          volume: string | null
+        }
+        Insert: {
+          article_count?: number | null
+          category?: string | null
+          cover_image?: string | null
+          created_at?: string | null
+          description?: string | null
+          download_count?: number | null
+          id?: string
+          issue?: string | null
+          publication_date?: string | null
+          share_count?: number | null
+          source: string
+          title: string
+          updated_at?: string | null
+          volume?: string | null
+        }
+        Update: {
+          article_count?: number | null
+          category?: string | null
+          cover_image?: string | null
+          created_at?: string | null
+          description?: string | null
+          download_count?: number | null
+          id?: string
+          issue?: string | null
+          publication_date?: string | null
+          share_count?: number | null
+          source?: string
+          title?: string
+          updated_at?: string | null
+          volume?: string | null
+        }
+        Relationships: []
+      }
+      unified_content: {
+        Row: {
+          abstract: string
+          authors: string[] | null
+          category: string | null
+          citations: number | null
+          created_at: string | null
+          downloads: number | null
+          id: string
+          image_url: string | null
+          institution: string | null
+          issue: string | null
+          page_number: string | null
+          pdf_url: string | null
+          publication_date: string | null
+          shares: number | null
+          source: string
+          specialty: string | null
+          status: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+          views: number | null
+          volume: string | null
+        }
+        Insert: {
+          abstract: string
+          authors?: string[] | null
+          category?: string | null
+          citations?: number | null
+          created_at?: string | null
+          downloads?: number | null
+          id?: string
+          image_url?: string | null
+          institution?: string | null
+          issue?: string | null
+          page_number?: string | null
+          pdf_url?: string | null
+          publication_date?: string | null
+          shares?: number | null
+          source: string
+          specialty?: string | null
+          status?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+          views?: number | null
+          volume?: string | null
+        }
+        Update: {
+          abstract?: string
+          authors?: string[] | null
+          category?: string | null
+          citations?: number | null
+          created_at?: string | null
+          downloads?: number | null
+          id?: string
+          image_url?: string | null
+          institution?: string | null
+          issue?: string | null
+          page_number?: string | null
+          pdf_url?: string | null
+          publication_date?: string | null
+          shares?: number | null
+          source?: string
+          specialty?: string | null
+          status?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+          views?: number | null
+          volume?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -676,6 +802,48 @@ export type Database = {
           shares?: number | null
           status?: string | null
           tags?: string[] | null
+          title?: string | null
+          volume?: string | null
+        }
+        Relationships: []
+      }
+      igm_unified_view: {
+        Row: {
+          abstract: string | null
+          article_count: number | null
+          articles: Json[] | null
+          cover_image: string | null
+          downloads: number | null
+          id: string | null
+          issue: string | null
+          publication_date: string | null
+          shares: number | null
+          title: string | null
+          volume: string | null
+        }
+        Insert: {
+          abstract?: string | null
+          article_count?: number | null
+          articles?: never
+          cover_image?: string | null
+          downloads?: number | null
+          id?: string | null
+          issue?: string | null
+          publication_date?: string | null
+          shares?: number | null
+          title?: string | null
+          volume?: string | null
+        }
+        Update: {
+          abstract?: string | null
+          article_count?: number | null
+          articles?: never
+          cover_image?: string | null
+          downloads?: number | null
+          id?: string | null
+          issue?: string | null
+          publication_date?: string | null
+          shares?: number | null
           title?: string | null
           volume?: string | null
         }

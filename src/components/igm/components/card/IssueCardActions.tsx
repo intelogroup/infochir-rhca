@@ -27,6 +27,20 @@ export const IssueCardActions = ({ pdfUrl, id, onViewDetails }: IssueCardActions
     try {
       const shareUrl = `${window.location.origin}/igm/issues/${id}`;
       await navigator.clipboard.writeText(shareUrl);
+      
+      // Update share count
+      const { error: updateError } = await supabase
+        .from('unified_collections')
+        .update({ 
+          share_count: supabase.rpc('increment', { amount: 1 }),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', id);
+
+      if (updateError) {
+        console.error('Error updating share count:', updateError);
+      }
+
       toast.success("Lien copié dans le presse-papier");
     } finally {
       setTimeout(() => setIsSharing(false), 1000);
@@ -42,7 +56,6 @@ export const IssueCardActions = ({ pdfUrl, id, onViewDetails }: IssueCardActions
     
     setIsDownloading(true);
     try {
-      // Simple direct download from storage
       const { data, error } = await supabase
         .storage
         .from('igm-pdfs')
@@ -73,9 +86,9 @@ export const IssueCardActions = ({ pdfUrl, id, onViewDetails }: IssueCardActions
 
       // Update download count
       const { error: updateError } = await supabase
-        .from('articles')
+        .from('unified_collections')
         .update({ 
-          downloads: 1,
+          download_count: supabase.rpc('increment', { amount: 1 }),
           updated_at: new Date().toISOString()
         })
         .eq('id', id);

@@ -5,7 +5,7 @@ export interface IgmArticle {
   id: string;
   title: string;
   authors: string[];
-  pageNumber: number;
+  pageNumber: string;
   abstract?: string;
   tags?: string[];
 }
@@ -26,8 +26,19 @@ export interface Issue {
   categories?: string[];
 }
 
-export interface DatabaseIssue extends Omit<Issue, 'date'> {
-  date: Date | string;
+export interface DatabaseIssue {
+  id: string;
+  title: string;
+  publication_date: Date | string;
+  abstract: string;
+  volume: string;
+  issue: string;
+  cover_image: string | null;
+  article_count: number;
+  downloads: number;
+  shares: number;
+  articles: any[];
+  category?: string;
 }
 
 export interface IssuesStateOptions {
@@ -46,10 +57,10 @@ export const isValidDate = (date: unknown): date is Date => {
 export const mapDatabaseIssueToIssue = (dbIssue: DatabaseIssue): Issue => {
   let dateString: string;
 
-  if (dbIssue.date instanceof Date) {
-    dateString = dbIssue.date.toISOString();
+  if (dbIssue.publication_date instanceof Date) {
+    dateString = dbIssue.publication_date.toISOString();
   } else {
-    const parsedDate = new Date(dbIssue.date);
+    const parsedDate = new Date(dbIssue.publication_date);
     if (isValidDate(parsedDate)) {
       dateString = parsedDate.toISOString();
     } else {
@@ -59,10 +70,25 @@ export const mapDatabaseIssueToIssue = (dbIssue: DatabaseIssue): Issue => {
   }
 
   return {
-    ...dbIssue,
+    id: dbIssue.id,
+    title: dbIssue.title,
+    volume: dbIssue.volume,
+    issue: dbIssue.issue,
     date: dateString,
-    downloads: dbIssue.downloads || 0,
-    shares: dbIssue.shares || 0,
+    abstract: dbIssue.abstract,
+    coverImage: dbIssue.cover_image || undefined,
+    articleCount: dbIssue.article_count,
+    downloads: dbIssue.downloads,
+    shares: dbIssue.shares,
+    articles: dbIssue.articles.map(article => ({
+      id: article.id,
+      title: article.title,
+      authors: article.authors,
+      pageNumber: article.pageNumber,
+      abstract: article.abstract,
+      tags: article.tags
+    })),
+    categories: dbIssue.category ? [dbIssue.category] : []
   };
 };
 
@@ -77,4 +103,3 @@ export const formatIssueDate = (dateString: string): string => {
     month: 'long',
   });
 };
-
