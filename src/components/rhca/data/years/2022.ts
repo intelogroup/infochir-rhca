@@ -27,7 +27,8 @@ export const volumes2022: RhcaVolume[] = [
         publicationDate: "2022-12-15",
         specialty: "Chirurgie générale",
         imageUrl: "https://images.pexels.com/photos/4225880/pexels-photo-4225880.jpeg?auto=format",
-        source: "RHCA"
+        source: "RHCA",
+        pdfUrl: "RHCA_2022_12_bilan_annuel.pdf"
       }
     ],
     coverImage: "https://images.pexels.com/photos/4225880/pexels-photo-4225880.jpeg?auto=format"
@@ -117,7 +118,8 @@ export const volumes2022: RhcaVolume[] = [
         publicationDate: "2022-03-15",
         specialty: "Traumatologie",
         imageUrl: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a7?w=800&auto=format",
-        source: "RHCA"
+        source: "RHCA",
+        pdfUrl: "RHCA_2022_03_polytraumatises.pdf"
       }
     ],
     coverImage: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a7?w=800&auto=format"
