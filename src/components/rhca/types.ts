@@ -1,3 +1,4 @@
+
 import { ArticleSource } from "@/components/index-medicus/types/article";
 
 export interface RhcaArticle {
@@ -12,7 +13,7 @@ export interface RhcaArticle {
   source: ArticleSource;
   volume: string;
   issue?: string;
-  pageNumber: string;
+  pageNumber: number;
   views?: number;
   downloads?: number;
   shares?: number;
@@ -24,12 +25,12 @@ export interface RhcaArticle {
   institution?: string;
   userId?: string;
   articleType?: ArticleSource;
-  pdfFileName?: string; // Add this new field
+  pdfFileName?: string;
 }
 
 export interface RhcaVolume {
   id: string;
-  volume: number;
+  volume: string;
   date: string;
   description: string;
   articleCount: number;

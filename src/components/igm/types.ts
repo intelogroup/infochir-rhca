@@ -5,7 +5,7 @@ export interface IgmArticle {
   id: string;
   title: string;
   authors: string[];
-  pageNumber: string;
+  pageNumber: number;
   abstract?: string;
   tags?: string[];
 }
@@ -84,7 +84,7 @@ export const mapDatabaseIssueToIssue = (dbIssue: DatabaseIssue): Issue => {
       id: article.id,
       title: article.title,
       authors: article.authors,
-      pageNumber: article.pageNumber,
+      pageNumber: Number(article.pageNumber) || 0,
       abstract: article.abstract,
       tags: article.tags
     })),
