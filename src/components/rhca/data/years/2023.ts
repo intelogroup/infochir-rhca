@@ -28,7 +28,7 @@ export const volumes2023: RhcaVolume[] = [
         specialty: "Chirurgie générale",
         imageUrl: "https://images.pexels.com/photos/3259624/pexels-photo-3259624.jpeg?auto=format",
         source: "RHCA",
-        pdfFileName: "RHCA_2023_12_retrospective_chirurgicale.pdf"
+        pdfFileName: "RHCA-2023-Vol12.pdf"
       }
     ],
     coverImage: "https://images.pexels.com/photos/3259624/pexels-photo-3259624.jpeg?auto=format"
