@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => ({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
-    dedupe: ['react', 'react-dom', 'framer-motion', '@tanstack/react-query', 'react-router-dom']
+    dedupe: ['react', 'react-dom', 'framer-motion']
   },
   optimizeDeps: {
     include: [
@@ -33,13 +33,10 @@ export default defineConfig(({ mode }) => ({
       'sonner',
       '@stripe/stripe-js'
     ],
-    exclude: [],
-    force: true, // Force dependency optimization
     esbuildOptions: {
       define: {
         global: 'globalThis'
       },
-      target: 'es2020',
       supported: {
         'async-await': true,
         'arrow-functions': true,
@@ -54,11 +51,7 @@ export default defineConfig(({ mode }) => ({
     }
   },
   build: {
-    target: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari13'],
-    sourcemap: true,
-    commonjsOptions: {
-      transformMixedEsModules: true
-    },
+    target: ['es2015', 'edge88', 'firefox78', 'chrome87', 'safari13'],
     rollupOptions: {
       output: {
         manualChunks: {
@@ -69,6 +62,10 @@ export default defineConfig(({ mode }) => ({
           'stripe-vendor': ['@stripe/stripe-js']
         }
       }
+    },
+    sourcemap: true,
+    commonjsOptions: {
+      transformMixedEsModules: true
     }
   },
   server: {
@@ -94,6 +91,5 @@ export default defineConfig(({ mode }) => ({
   },
   esbuild: {
     logOverride: { 'this-is-undefined-in-esm': 'silent' }
-  },
-  clearScreen: false // Helps with debugging by keeping error messages visible
+  }
 }));
