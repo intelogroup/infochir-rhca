@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Share2, Download, Eye, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Tooltip,
   TooltipContent,
@@ -43,10 +44,26 @@ export const IssueCardActions = ({ pdfUrl, id, onViewDetails }: IssueCardActions
     
     setIsDownloading(true);
     try {
-      window.open(pdfUrl, '_blank');
+      // Handle Supabase storage URLs
+      if (pdfUrl.includes('article-pdfs')) {
+        const { data: signedUrl, error } = await supabase
+          .storage
+          .from('article-pdfs')
+          .createSignedUrl(pdfUrl, 60);
+
+        if (error) throw error;
+        window.open(signedUrl.signedUrl, '_blank');
+      } else {
+        // Handle external URLs
+        window.open(pdfUrl, '_blank');
+      }
+      
       toast.success("Ouverture du PDF...", {
         className: "bg-secondary text-white",
       });
+    } catch (error) {
+      console.error('Download error:', error);
+      toast.error("Erreur lors du téléchargement du PDF");
     } finally {
       setTimeout(() => setIsDownloading(false), 1000);
     }
