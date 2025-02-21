@@ -28,7 +28,7 @@ export const volumes2022: RhcaVolume[] = [
         specialty: "Chirurgie générale",
         imageUrl: "https://images.pexels.com/photos/4225880/pexels-photo-4225880.jpeg?auto=format",
         source: "RHCA",
-        pdfUrl: "RHCA_2022_12_bilan_annuel.pdf"
+        pdfUrl: "RHCA_2022_12.pdf"
       }
     ],
     coverImage: "https://images.pexels.com/photos/4225880/pexels-photo-4225880.jpeg?auto=format"
@@ -58,7 +58,8 @@ export const volumes2022: RhcaVolume[] = [
         publicationDate: "2022-09-15",
         specialty: "Chirurgie digestive",
         imageUrl: "https://images.unsplash.com/photo-1579165466741-7f35e4755660?w=800&auto=format",
-        source: "RHCA"
+        source: "RHCA",
+        pdfUrl: "RHCA_2022_09.pdf"
       }
     ],
     coverImage: "https://images.unsplash.com/photo-1579165466741-7f35e4755660?w=800&auto=format"
@@ -88,7 +89,8 @@ export const volumes2022: RhcaVolume[] = [
         publicationDate: "2022-06-15",
         specialty: "Chirurgie cardiaque",
         imageUrl: "https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?w=800&auto=format",
-        source: "RHCA"
+        source: "RHCA",
+        pdfUrl: "RHCA_2022_06.pdf"
       }
     ],
     coverImage: "https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?w=800&auto=format"
@@ -119,7 +121,7 @@ export const volumes2022: RhcaVolume[] = [
         specialty: "Traumatologie",
         imageUrl: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a7?w=800&auto=format",
         source: "RHCA",
-        pdfUrl: "RHCA_2022_03_polytraumatises.pdf"
+        pdfUrl: "RHCA_2022_03.pdf"
       }
     ],
     coverImage: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a7?w=800&auto=format"
