@@ -47,7 +47,7 @@ const formSchema = z.object({
   originalWork: z.boolean(),
 });
 
-const Submission: React.FC = () => {
+const Submission = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [articleFiles, setArticleFiles] = useState<string[]>([]);
   const [imageAnnexes, setImageAnnexes] = useState<string[]>([]);
@@ -70,6 +70,8 @@ const Submission: React.FC = () => {
 
     try {
       setIsSubmitting(true);
+
+      const { data: userSession } = await supabase.auth.getSession();
       
       const { data, error } = await supabase
         .from('article_submissions')
@@ -89,6 +91,8 @@ const Submission: React.FC = () => {
           original_work: values.originalWork,
           article_files_urls: articleFiles,
           image_annexes_urls: imageAnnexes,
+          user_id: userSession?.session?.user?.id,
+          status: 'pending'
         })
         .select()
         .single();
@@ -160,6 +164,7 @@ const Submission: React.FC = () => {
                       maxFiles={5}
                       onUploadComplete={setImageAnnexes}
                       helperText="Formats acceptés: PNG, JPEG, GIF. Taille max: 5MB"
+                      type="image"
                     />
                   </div>
 

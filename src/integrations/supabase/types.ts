@@ -78,17 +78,18 @@ export type Database = {
           corresponding_author_phone: string
           created_at: string
           ethics_approval: boolean
-          id: number
+          id: string
           image_annexes_urls: string[] | null
           institution: string
           keywords: string
           no_conflict: boolean
           original_work: boolean
-          pdf_url: string | null
           publication_type: string
+          reviewer_comments: string | null
           status: string
           title: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           abstract: string
@@ -100,17 +101,18 @@ export type Database = {
           corresponding_author_phone: string
           created_at?: string
           ethics_approval?: boolean
-          id?: number
+          id?: string
           image_annexes_urls?: string[] | null
           institution: string
           keywords: string
           no_conflict?: boolean
           original_work?: boolean
-          pdf_url?: string | null
           publication_type: string
+          reviewer_comments?: string | null
           status?: string
           title: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           abstract?: string
@@ -122,17 +124,18 @@ export type Database = {
           corresponding_author_phone?: string
           created_at?: string
           ethics_approval?: boolean
-          id?: number
+          id?: string
           image_annexes_urls?: string[] | null
           institution?: string
           keywords?: string
           no_conflict?: boolean
           original_work?: boolean
-          pdf_url?: string | null
           publication_type?: string
+          reviewer_comments?: string | null
           status?: string
           title?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }

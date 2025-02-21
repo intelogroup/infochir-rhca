@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -44,7 +45,9 @@ export const MultiFileUploader = ({
           continue;
         }
 
-        const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+        // Sanitize filename and create a unique name
+        const sanitizedName = file.name.replace(/[^\x00-\x7F]/g, '_');
+        const fileName = `${Date.now()}_${sanitizedName}`;
         
         const { data, error: uploadError } = await supabase.storage
           .from(bucket)
