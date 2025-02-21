@@ -7,71 +7,161 @@ import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/react-query";
 import { BrowserRouter } from "react-router-dom";
+import { toast } from "sonner";
 
-// Browser compatibility detection
+// Enhanced browser compatibility detection
 const browserCompatibilityCheck = () => {
-  const isModernBrowser = (
-    'fetch' in window &&
-    'Promise' in window &&
-    'assign' in Object &&
-    'Map' in window
-  );
+  console.log("[Initialization] Starting browser compatibility check");
+  
+  const requiredFeatures = {
+    fetch: 'fetch' in window,
+    Promise: 'Promise' in window,
+    Object_assign: 'assign' in Object,
+    Map: 'Map' in window
+  };
 
+  console.log("[Compatibility] Feature detection results:", requiredFeatures);
+
+  const isModernBrowser = Object.values(requiredFeatures).every(Boolean);
+  
   if (!isModernBrowser) {
-    console.warn('[Browser Compatibility] Some features may not work in this browser');
+    console.warn('[Compatibility] Browser missing required features:', 
+      Object.entries(requiredFeatures)
+        .filter(([, supported]) => !supported)
+        .map(([feature]) => feature)
+    );
   }
 
   return isModernBrowser;
 };
 
-// Initialize application with compatibility checks
-const initializeApp = async () => {
-  console.log("[main] Initializing application");
+// Enhanced error handling for dependency loading
+const handleDependencyError = (error: Error) => {
+  console.error('[Dependency Error]', {
+    message: error.message,
+    stack: error.stack,
+    timestamp: new Date().toISOString()
+  });
 
-  const rootElement = document.getElementById("root");
-  if (!rootElement) {
-    console.error("[main] Root element not found");
-    throw new Error('Root element not found');
-  }
-
-  // Check browser compatibility
-  const isModernBrowser = browserCompatibilityCheck();
-
-  // Create root with fallback for older browsers
-  const root = ReactDOM.createRoot(rootElement);
-
-  // Render app with compatibility warning if needed
-  root.render(
-    <React.StrictMode>
-      <ErrorBoundary>
-        {!isModernBrowser && (
-          <div className="bg-yellow-50 p-4 text-yellow-800 text-sm rounded-md mb-4">
-            Your browser may not support all features. Please consider updating to a modern browser for the best experience.
-          </div>
-        )}
-        <QueryClientProvider client={queryClient}>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
-        </QueryClientProvider>
-      </ErrorBoundary>
-    </React.StrictMode>
-  );
+  toast.error("Une erreur est survenue lors du chargement de l'application", {
+    description: "Veuillez rafraîchir la page ou réessayer plus tard."
+  });
 };
 
-// Handle initialization errors
-try {
-  initializeApp();
-} catch (error) {
-  console.error('[Initialization Error]', error);
-  // Display error message in DOM
-  const rootElement = document.getElementById("root");
-  if (rootElement) {
-    rootElement.innerHTML = `
-      <div style="padding: 20px; text-align: center;">
-        <h1>Application Error</h1>
-        <p>We're sorry, but something went wrong. Please try reloading the page.</p>
-      </div>
-    `;
+// Initialize application with enhanced logging
+const initializeApp = async () => {
+  console.log("[Initialization] Starting application initialization");
+  console.time("App Initialization");
+
+  try {
+    const rootElement = document.getElementById("root");
+    if (!rootElement) {
+      throw new Error('[Critical] Root element not found in DOM');
+    }
+
+    // Check browser compatibility
+    const isModernBrowser = browserCompatibilityCheck();
+    console.log("[Initialization] Browser compatibility check complete:", { isModernBrowser });
+
+    // Create root with error tracking
+    console.log("[Initialization] Creating React root");
+    const root = ReactDOM.createRoot(rootElement);
+
+    // Enhanced initialization logging
+    console.log("[Initialization] Setting up React Query client");
+    console.log("[Initialization] Preparing to render app");
+
+    // Render app with comprehensive error boundary
+    root.render(
+      <React.StrictMode>
+        <ErrorBoundary onError={(error) => {
+          console.error("[React Error Boundary]", {
+            error,
+            timestamp: new Date().toISOString(),
+            location: window.location.href
+          });
+        }}>
+          {!isModernBrowser && (
+            <div className="bg-yellow-50 p-4 text-yellow-800 text-sm rounded-md mb-4">
+              Votre navigateur pourrait ne pas prendre en charge toutes les fonctionnalités. 
+              Veuillez le mettre à jour pour une meilleure expérience.
+            </div>
+          )}
+          <QueryClientProvider client={queryClient}>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </QueryClientProvider>
+        </ErrorBoundary>
+      </React.StrictMode>
+    );
+
+    console.timeEnd("App Initialization");
+    console.log("[Initialization] Application successfully mounted");
+
+  } catch (error) {
+    console.error('[Critical Initialization Error]', {
+      error,
+      timestamp: new Date().toISOString(),
+      userAgent: navigator.userAgent,
+      url: window.location.href
+    });
+    handleDependencyError(error as Error);
+    
+    // Display error message in DOM
+    const rootElement = document.getElementById("root");
+    if (rootElement) {
+      rootElement.innerHTML = `
+        <div style="padding: 20px; text-align: center; font-family: system-ui, -apple-system, sans-serif;">
+          <h1 style="color: #991B1B; margin-bottom: 1rem;">Erreur de l'Application</h1>
+          <p style="color: #374151; margin-bottom: 1rem;">
+            Nous sommes désolés, mais une erreur s'est produite lors du chargement de l'application.
+          </p>
+          <button onclick="window.location.reload()" 
+                  style="background: #2563EB; color: white; padding: 8px 16px; border-radius: 4px; border: none; cursor: pointer;">
+            Rafraîchir la page
+          </button>
+        </div>
+      `;
+    }
   }
+};
+
+// Wrap the entire initialization in error boundary
+try {
+  console.log("[Bootstrap] Starting application bootstrap");
+  initializeApp().catch(error => {
+    console.error('[Async Initialization Error]', {
+      error,
+      timestamp: new Date().toISOString()
+    });
+    handleDependencyError(error);
+  });
+} catch (error) {
+  console.error('[Bootstrap Error]', {
+    error,
+    timestamp: new Date().toISOString()
+  });
+  handleDependencyError(error as Error);
 }
+
+// Add global error handler for uncaught errors
+window.onerror = function(msg, url, lineNo, columnNo, error) {
+  console.error('[Uncaught Error]', {
+    message: msg,
+    url,
+    lineNo,
+    columnNo,
+    error,
+    timestamp: new Date().toISOString()
+  });
+  return false;
+};
+
+// Add handler for unhandled promise rejections
+window.addEventListener('unhandledrejection', event => {
+  console.error('[Unhandled Promise Rejection]', {
+    reason: event.reason,
+    timestamp: new Date().toISOString()
+  });
+});
