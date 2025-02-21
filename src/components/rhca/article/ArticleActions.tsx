@@ -19,29 +19,40 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
   onCardClick 
 }) => {
   const [isDownloading, setIsDownloading] = React.useState(false);
+  const [pdfUrl, setPdfUrl] = React.useState<string | null>(null);
 
-  const handleDownload = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    
-    setIsDownloading(true);
-    try {
-      // Generate PDF filename based on article metadata
+  // Get the PDF URL when the component mounts
+  React.useEffect(() => {
+    const getPdfUrl = async () => {
       const year = new Date(date).getFullYear();
       const month = String(new Date(date).getMonth() + 1).padStart(2, '0');
       const pdfFileName = `RHCA_${year}_${month}.pdf`;
-      
-      // Get public URL from Supabase storage
-      const { data: publicUrl } = supabase
+
+      const { data } = supabase
         .storage
         .from('rhca-pdfs')
         .getPublicUrl(pdfFileName);
 
-      if (!publicUrl?.publicUrl) {
-        throw new Error('Could not generate public URL');
+      if (data?.publicUrl) {
+        setPdfUrl(data.publicUrl);
       }
+    };
 
-      // Open the public URL in a new tab
-      window.open(publicUrl.publicUrl, '_blank');
+    getPdfUrl();
+  }, [date]);
+
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (!pdfUrl) {
+      toast.error("PDF non disponible");
+      return;
+    }
+
+    setIsDownloading(true);
+    try {
+      // Open PDF in new tab
+      window.open(pdfUrl, '_blank');
       toast.success("Ouverture du PDF en cours...");
     } catch (error) {
       console.error('Download error:', error);
@@ -74,7 +85,7 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
         size="sm"
         className="gap-2 text-emerald-600 border-emerald-200 hover:bg-emerald-50"
         onClick={handleDownload}
-        disabled={isDownloading}
+        disabled={isDownloading || !pdfUrl}
       >
         <Download className="h-4 w-4" />
         <span className="hidden sm:inline">
