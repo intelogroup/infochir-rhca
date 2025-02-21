@@ -1,38 +1,25 @@
 
-import type { RhcaArticle } from "../../types";
+import { RhcaArticle } from "../../types";
 
 export const articles2024: RhcaArticle[] = [
   {
     id: "2024-1",
-    title: "Latest Advances in Surgery",
-    abstract: "Comprehensive review of surgical innovations in 2024...",
-    authors: ["Dr. Sarah Johnson", "Dr. Michael Brown"],
-    publicationDate: "2024-01-01",
-    date: "2024-01-01",
+    title: "Latest Surgical Techniques",
+    abstract: "Comprehensive review of modern surgical approaches...",
+    authors: ["Dr. White", "Dr. Miller"],
+    publicationDate: "2024-01-05",
+    date: "2024-01-05",
     specialty: "General Surgery",
-    category: "Review",
     source: "RHCA",
-    volume: "1",
+    volume: "14",
     pageNumber: 1,
-    views: 300,
-    downloads: 150,
-    shares: 75,
+    views: 250,
+    downloads: 120,
+    shares: 60,
     citations: 20,
-    tags: ["surgery", "innovation", "2024"],
-    imageUrl: "/images/surgery-2024.jpg",
-    pdfUrl: "/pdfs/surgery-advances-2024.pdf",
-    pdfFileName: "surgery-advances-2024.pdf"
+    tags: ["surgery", "techniques", "modern"],
+    imageUrl: "/images/surgery.jpg",
+    pdfUrl: "/pdfs/surgical-techniques-2024.pdf",
+    status: "published"
   }
 ];
-
-export const volumes2024 = [{
-  id: "v-2024-1",
-  volume: "1",
-  date: "2024-01",
-  description: "First volume of 2024",
-  articleCount: 25,
-  downloadCount: 750,
-  shareCount: 300,
-  articles: articles2024,
-  coverImage: "/images/2024-cover.jpg"
-}];

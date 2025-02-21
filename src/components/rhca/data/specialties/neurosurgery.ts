@@ -1,53 +1,45 @@
 
-import type { RhcaVolume } from "../../types";
+import { RhcaArticle } from "../../types";
 
-export const neurosurgeryVolumes: RhcaVolume[] = [
+export const neurosurgeryArticles: RhcaArticle[] = [
   {
-    id: "8",
-    volume: 8,
+    id: "neuro-1",
+    title: "Advances in Brain Surgery",
+    abstract: "Latest developments in neurosurgical procedures...",
+    authors: ["Dr. Smith", "Dr. Johnson"],
+    publicationDate: "2024-01-15",
     date: "2024-01-15",
-    description: "Avancées en neurochirurgie",
-    articleCount: 14,
-    downloadCount: 495,
-    shareCount: 98,
-    articles: [
-      {
-        id: "15",
-        title: "Chirurgie éveillée des tumeurs cérébrales : nouvelles approches",
-        abstract: "Analyse des protocoles innovants en chirurgie éveillée...",
-        authors: ["Dr. Marc Dupont", "Dr. Claire Rousseau"],
-        date: "2024-01-15",
-        views: 276,
-        citations: 32,
-        downloads: 92,
-        shares: 48,
-        pageNumber: "1",
-        volume: "8",
-        pdfUrl: "/path/to/pdf15.pdf",
-        tags: ["Neurochirurgie", "Tumeurs cérébrales", "Innovation"],
-        publicationDate: "2024-01-15",
-        specialty: "Neurochirurgie",
-        source: "RHCA"
-      },
-      {
-        id: "16",
-        title: "Navigation peropératoire en neurochirurgie spinale",
-        abstract: "Applications des systèmes de navigation 3D en chirurgie rachidienne...",
-        authors: ["Dr. Thomas Martin", "Dr. Anne Lefebvre"],
-        date: "2024-01-15",
-        views: 234,
-        citations: 26,
-        downloads: 84,
-        shares: 39,
-        pageNumber: "18",
-        volume: "8",
-        pdfUrl: "/path/to/pdf16.pdf",
-        tags: ["Neurochirurgie", "Navigation", "Rachis"],
-        publicationDate: "2024-01-15",
-        specialty: "Neurochirurgie",
-        source: "RHCA"
-      }
-    ],
-    coverImage: "/placeholder.svg"
+    specialty: "Neurosurgery",
+    source: "RHCA",
+    volume: "12",
+    pageNumber: 1,
+    views: 150,
+    downloads: 75,
+    shares: 30,
+    citations: 12,
+    tags: ["brain", "surgery", "neurosurgery"],
+    imageUrl: "/images/brain.jpg",
+    pdfUrl: "/pdfs/brain-surgery-2024.pdf",
+    status: "published"
+  },
+  {
+    id: "neuro-2",
+    title: "Modern Approaches to Spine Surgery",
+    abstract: "Exploring new techniques in spinal procedures...",
+    authors: ["Dr. Wilson", "Dr. Brown"],
+    publicationDate: "2024-01-10",
+    date: "2024-01-10",
+    specialty: "Neurosurgery",
+    source: "RHCA",
+    volume: "12",
+    pageNumber: 15,
+    views: 200,
+    downloads: 100,
+    shares: 45,
+    citations: 8,
+    tags: ["spine", "surgery", "neurosurgery"],
+    imageUrl: "/images/spine.jpg",
+    pdfUrl: "/pdfs/spine-surgery-2024.pdf",
+    status: "published"
   }
 ];

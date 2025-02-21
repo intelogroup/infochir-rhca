@@ -53,7 +53,9 @@ export const useArticlesQuery = (page = 0) => {
         pdfUrl: item.pdf_url,
         downloads: item.downloads || 0,
         institution: item.institution,
-        status: item.status,
+        status: (item.status === 'published' || item.status === 'pending' || item.status === 'draft') 
+          ? item.status as 'published' | 'pending' | 'draft'
+          : 'published',
         shares: item.shares || 0,
         volume: item.volume,
         issue: item.issue,

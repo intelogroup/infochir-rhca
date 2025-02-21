@@ -21,9 +21,9 @@ export const useAtlasArticles = () => {
       const chapters: AtlasChapter[] = data?.map(item => ({
         id: item.id,
         title: item.title,
-        description: item.description || undefined,
+        description: item.abstract || undefined,
         abstract: item.abstract,
-        content: item.content,
+        content: item.abstract,
         lastUpdate: item.updated_at,
         publicationDate: item.publication_date,
         author: Array.isArray(item.authors) ? item.authors[0] : undefined,
