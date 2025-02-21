@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Share2 } from "lucide-react";
@@ -17,13 +18,16 @@ export const RhcaTable: React.FC<RhcaTableProps> = ({ articles }) => {
     toast.success("Lien copié dans le presse-papier");
   };
 
-  const handleDownload = (pdfUrl?: string) => {
-    if (!pdfUrl) {
+  const handleDownload = (pdfFileName?: string) => {
+    if (!pdfFileName) {
       toast.error("Le PDF n'est pas encore disponible");
       return;
     }
-    window.open(pdfUrl, '_blank');
-    toast.success("Ouverture du PDF...");
+    // Use the ArticleActions component's download functionality
+    const element = document.createElement('button');
+    element.setAttribute('data-pdf-filename', pdfFileName);
+    element.click();
+    toast.success("Début du téléchargement...");
   };
 
   return (
@@ -111,8 +115,8 @@ export const RhcaTable: React.FC<RhcaTableProps> = ({ articles }) => {
                 variant="outline"
                 size="sm"
                 className="flex-1 lg:flex-none gap-2 bg-white hover:bg-gray-50"
-                onClick={() => handleDownload(article.pdfUrl)}
-                aria-label={article.pdfUrl ? "Télécharger le PDF" : "PDF non disponible"}
+                onClick={() => handleDownload(article.pdfFileName)}
+                aria-label={article.pdfFileName ? "Télécharger le PDF" : "PDF non disponible"}
               >
                 <Download className="h-4 w-4" aria-hidden="true" />
                 <span>PDF</span>

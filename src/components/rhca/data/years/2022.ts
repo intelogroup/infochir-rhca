@@ -27,7 +27,8 @@ export const volumes2022: RhcaVolume[] = [
         publicationDate: "2022-12-15",
         specialty: "Chirurgie générale",
         imageUrl: "https://images.pexels.com/photos/4225880/pexels-photo-4225880.jpeg?auto=format",
-        source: "RHCA"
+        source: "RHCA",
+        pdfFileName: "RHCA_2022_12_bilan.pdf"
       }
     ],
     coverImage: "https://images.pexels.com/photos/4225880/pexels-photo-4225880.jpeg?auto=format"
