@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { RhcaGrid } from "@/components/rhca/RhcaGrid";
@@ -10,12 +9,18 @@ import { toast } from "sonner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { InfoIcon } from "lucide-react";
 import { useState, useEffect } from "react";
-import { checkFileExistsInBucket } from "@/lib/pdf-utils";
+import { 
+  checkFileExistsInBucket, 
+  debugDatabaseTables,
+  updatePdfFilenames
+} from "@/lib/pdf-utils";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 
 const RHCA: React.FC = () => {
   const [searchParams] = useSearchParams();
   const isAdmin = searchParams.get('admin') === 'true';
+  const isDebug = searchParams.get('debug') === 'true';
   const [pdfFilesStatus, setPdfFilesStatus] = useState<Record<string, boolean>>({});
   const [coverFilesStatus, setCoverFilesStatus] = useState<Record<string, boolean>>({});
   const [pdfFilesList, setPdfFilesList] = useState<string[]>([]);
@@ -137,6 +142,14 @@ const RHCA: React.FC = () => {
     }
   };
 
+  const handleDebugDatabase = () => {
+    debugDatabaseTables();
+  };
+
+  const handleUpdateFilenames = () => {
+    updatePdfFilenames();
+  };
+
   return (
     <MainLayout>
       <div className="min-h-screen bg-gray-50/50 pt-[50px]">
@@ -147,6 +160,24 @@ const RHCA: React.FC = () => {
           {isAdmin && (
             <div className="mb-8 p-6 bg-white shadow-sm rounded-lg border border-gray-200">
               <h2 className="text-xl font-semibold mb-4">Admin: Upload RHCA Files</h2>
+              
+              {isDebug && (
+                <div className="mb-4 space-y-2">
+                  <Button 
+                    variant="outline" 
+                    className="mr-2" 
+                    onClick={handleDebugDatabase}
+                  >
+                    Debug Database Tables
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={handleUpdateFilenames}
+                  >
+                    Update PDF Filenames
+                  </Button>
+                </div>
+              )}
               
               <Alert className="mb-6">
                 <InfoIcon className="h-4 w-4" />

@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -302,4 +301,87 @@ export const mapToCoverImageFileName = (volume: string, issue: string): string |
   }
   
   return filename;
+};
+
+/**
+ * Debug function to check database table structure and data
+ */
+export const debugDatabaseTables = async (): Promise<void> => {
+  try {
+    console.log('[Database:DEBUG] Checking database tables and views structure');
+    
+    // Check the view definition
+    const { data: viewInfo, error: viewError } = await supabase
+      .rpc('get_view_definition', { view_name: 'rhca_articles_view' });
+      
+    if (viewError) {
+      console.error('[Database:ERROR] Error fetching view definition:', viewError);
+    } else {
+      console.log('[Database:INFO] View definition:', viewInfo);
+    }
+    
+    // Check direct table data
+    const { data: articlesData, error: articlesError } = await supabase
+      .from('articles')
+      .select('id, title, volume, issue, pdf_filename')
+      .eq('source', 'RHCA')
+      .limit(5);
+      
+    if (articlesError) {
+      console.error('[Database:ERROR] Error fetching articles table data:', articlesError);
+    } else {
+      console.log('[Database:INFO] Sample articles table data:', articlesData);
+    }
+    
+    // Check view data
+    const { data: viewData, error: viewDataError } = await supabase
+      .from('rhca_articles_view')
+      .select('id, title, volume, issue, pdf_filename')
+      .limit(5);
+      
+    if (viewDataError) {
+      console.error('[Database:ERROR] Error fetching rhca_articles_view data:', viewDataError);
+    } else {
+      console.log('[Database:INFO] Sample rhca_articles_view data:', viewData);
+    }
+    
+    toast.info('Database debug information logged to console');
+  } catch (error) {
+    console.error('[Database:ERROR] Exception during database debugging:', error);
+    toast.error('Error debugging database information');
+  }
+};
+
+// Add a function to directly update the database
+export const updatePdfFilenames = async (): Promise<void> => {
+  try {
+    console.log('[Database:INFO] Attempting to update PDF filenames directly');
+    
+    const updates = [
+      { volume: '2', issue: '47', filename: 'RHCA_vol_02_no_47_19_7_2024.pdf' },
+      { volume: '3', issue: '48', filename: 'RHCA_vol_03_no_48_18_10_2024.pdf' },
+      { volume: '4', issue: '49', filename: 'RHCA_vol_04_no_49_11_1_2025.pdf' }
+    ];
+    
+    for (const update of updates) {
+      const { error } = await supabase
+        .from('articles')
+        .update({ pdf_filename: update.filename })
+        .eq('source', 'RHCA')
+        .eq('volume', update.volume)
+        .eq('issue', update.issue);
+        
+      if (error) {
+        console.error(`[Database:ERROR] Error updating volume ${update.volume}, issue ${update.issue}:`, error);
+        toast.error(`Failed to update PDF filename for volume ${update.volume}, issue ${update.issue}`);
+      } else {
+        console.log(`[Database:SUCCESS] Updated volume ${update.volume}, issue ${update.issue} with filename ${update.filename}`);
+      }
+    }
+    
+    toast.success('PDF filenames updated in database');
+  } catch (error) {
+    console.error('[Database:ERROR] Exception during PDF filename updates:', error);
+    toast.error('Error updating PDF filenames');
+  }
 };
