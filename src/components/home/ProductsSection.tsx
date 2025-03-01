@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { products } from "./products/ProductsData";
 
 export const ProductsSection = () => (
-  <section className="py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden mt-0">
+  <section className="py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
     <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] opacity-5" />
     <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
     

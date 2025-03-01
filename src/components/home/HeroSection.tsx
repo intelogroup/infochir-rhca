@@ -76,15 +76,12 @@ export const HeroSection = () => {
   }, [cycleCount]);
 
   return (
-    <section 
-      ref={sectionRef} 
-      className="relative px-4 sm:px-6 lg:px-8 overflow-visible min-h-[calc(100vh-3.9rem)] pt-32 md:pt-40 z-0 pb-12"
-    >
+    <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(100vh-4rem)] pt-32 md:pt-40 z-0">
       <AnimatePresence mode="wait">
         <div
           key={currentIndex}
           className="absolute inset-0 z-0"
-          style={{ height: '34%' }}
+          style={{ height: '33%' }} // Reduced to one-third of the original size
         >
           <div 
             className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-90 z-0`}
