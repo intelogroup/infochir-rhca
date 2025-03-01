@@ -21,13 +21,13 @@ export const RhcaTable: React.FC<RhcaTableProps> = ({ articles }) => {
       await navigator.clipboard.writeText(shareUrl);
       toast.success("Lien copié dans le presse-papier");
       
-      // Update share count
+      // Update share count using increment_count function
       const { error } = await supabase
-        .from('rhca_articles_view')
-        .update({ 
-          shares: supabase.rpc('increment', { value: 1, column: 'shares', id: articleId })
-        })
-        .eq('id', articleId);
+        .rpc('increment_count', { 
+          table_name: 'rhca_articles_view',
+          column_name: 'shares',
+          row_id: articleId
+        });
         
       if (error) {
         console.error('Error updating share count:', error);

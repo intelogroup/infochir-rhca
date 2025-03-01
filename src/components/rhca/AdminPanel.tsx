@@ -1,54 +1,41 @@
 
-import React from "react";
-import { ArticleForm } from "@/components/admin/ArticleForm";
-import { Article, ArticleFormData } from "@/types/article";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import * as React from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RenamePDFFiles } from "./admin/RenamePDFFiles";
 
-interface AdminPanelProps {
-  article?: Article;
-  onUpdate?: () => void;
-}
-
-export const AdminPanel = ({ article, onUpdate }: AdminPanelProps) => {
-  const [isLoading, setIsLoading] = React.useState(false);
-
-  const handleSubmit = async (data: ArticleFormData) => {
-    if (!article?.id) return;
-    
-    setIsLoading(true);
-    try {
-      const { error } = await supabase
-        .from('unified_content')
-        .update({
-          title: data.title,
-          abstract: data.abstract,
-          source: data.publicationType,
-        })
-        .eq('id', article.id);
-
-      if (error) throw error;
-
-      toast.success("Article mis à jour avec succès");
-      onUpdate?.();
-    } catch (error) {
-      console.error('Update error:', error);
-      toast.error("Erreur lors de la mise à jour de l'article");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+export const AdminPanel: React.FC = () => {
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">Gestion de l'article</h2>
-      {article && (
-        <ArticleForm
-          initialData={article}
-          onSubmit={handleSubmit}
-          isLoading={isLoading}
-        />
-      )}
-    </div>
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle>Administration RHCA</CardTitle>
+        <CardDescription>
+          Gérez les articles, volumes et autres fonctionnalités de la RHCA
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Tabs defaultValue="files">
+          <TabsList className="mb-4">
+            <TabsTrigger value="files">Fichiers</TabsTrigger>
+            <TabsTrigger value="articles">Articles</TabsTrigger>
+            <TabsTrigger value="volumes">Volumes</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="files" className="space-y-4">
+            <div className="flex flex-wrap gap-4">
+              <RenamePDFFiles />
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="articles">
+            <p>Gestion des articles - Fonctionnalité à venir</p>
+          </TabsContent>
+          
+          <TabsContent value="volumes">
+            <p>Gestion des volumes - Fonctionnalité à venir</p>
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
   );
 };

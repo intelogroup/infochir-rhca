@@ -32,13 +32,13 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
       console.log(`[ArticleActions] Attempting to download PDF: ${pdfFileName}`);
       
       // First check if the file exists in storage
-      const { data: fileExists, error: checkError } = await supabase
+      const { data: publicUrlData } = await supabase
         .storage
         .from('rhca-pdfs')
         .getPublicUrl(pdfFileName);
         
-      if (checkError) {
-        console.error('PDF check error:', checkError);
+      if (!publicUrlData.publicUrl) {
+        console.error('PDF URL could not be generated');
         toast.error("Le PDF n'a pas pu être trouvé");
         return;
       }
@@ -72,13 +72,13 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
       window.URL.revokeObjectURL(url);
       document.body.removeChild(link);
 
-      // Update download count using increment operation
+      // Update download count using increment_count function
       const { error: updateError } = await supabase
-        .from('rhca_articles_view')
-        .update({ 
-          downloads: supabase.rpc('increment', { value: 1, column: 'downloads', id: id })
-        })
-        .eq('id', id);
+        .rpc('increment_count', { 
+          table_name: 'rhca_articles_view',
+          column_name: 'downloads',
+          row_id: id
+        });
 
       if (updateError) {
         console.error('Error updating download count:', updateError);

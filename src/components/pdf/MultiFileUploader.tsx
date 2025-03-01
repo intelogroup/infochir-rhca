@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { FileUploadArea } from "./FileUploadArea";
 import { FileList } from "./FileList";
+import { formatDateToSimple } from "@/lib/utils";
 
 interface MultiFileUploaderProps {
   bucket: string;
@@ -13,6 +14,10 @@ interface MultiFileUploaderProps {
   onUploadComplete: (urls: string[]) => void;
   helperText?: string;
   type?: 'document' | 'image';
+  volumeInfo?: {
+    volume: string;
+    issue: string;
+  };
 }
 
 export const MultiFileUploader = ({
@@ -22,10 +27,23 @@ export const MultiFileUploader = ({
   maxFiles = 5,
   onUploadComplete,
   helperText,
-  type = 'document'
+  type = 'document',
+  volumeInfo
 }: MultiFileUploaderProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
+
+  const generateRHCAFilename = (originalName: string) => {
+    if (bucket !== 'rhca-pdfs' || !volumeInfo) {
+      return originalName;
+    }
+
+    const now = new Date();
+    const dateFormatted = formatDateToSimple(now);
+    const fileExt = originalName.split('.').pop() || 'pdf';
+    
+    return `RHCA_vol_${volumeInfo.volume}_no_${volumeInfo.issue}_${dateFormatted}.${fileExt}`;
+  };
 
   const handleFileSelect = async (files: File[]) => {
     if (uploadedFiles.length + files.length > maxFiles) {
@@ -45,9 +63,16 @@ export const MultiFileUploader = ({
           continue;
         }
 
-        // Sanitize filename and create a unique name
+        // Sanitize filename and create a unique name based on criteria
         const sanitizedName = file.name.replace(/[^\x00-\x7F]/g, '_');
-        const fileName = `${Date.now()}_${sanitizedName}`;
+        
+        // Use RHCA naming convention if applicable
+        let fileName = sanitizedName;
+        if (bucket === 'rhca-pdfs' && volumeInfo) {
+          fileName = generateRHCAFilename(sanitizedName);
+        } else {
+          fileName = `${Date.now()}_${sanitizedName}`;
+        }
         
         const { data, error: uploadError } = await supabase.storage
           .from(bucket)
