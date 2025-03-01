@@ -1,14 +1,14 @@
 
-import { IssuesSearch } from "../../components/IssuesSearch";
+import { IssuesSearch } from "@/components/igm/components/IssuesSearch";
 import { IssuesGridContent } from "@/components/igm/components/IssuesGridContent";
-import { useIssuesState } from "../../hooks/useIssuesState";
-import { SORT_OPTIONS } from "../../constants/sortOptions";
+import { useIssuesState } from "@/components/igm/hooks/useIssuesState";
+import { SORT_OPTIONS } from "@/components/igm/constants/sortOptions";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { SortOption } from "@/types/sortOptions";
 import { DateRange } from "react-day-picker";
-import { useIGMIssues } from "../../hooks/useIGMIssues";
+import { useIGMIssues } from "@/components/igm/hooks/useIGMIssues";
 import { Loader2 } from "lucide-react";
 
 interface IssuesGridLayoutProps {
