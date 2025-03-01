@@ -53,12 +53,12 @@ export const ProductCard = ({
 
   const getLogoSize = (title: string) => {
     if (title === "Index Medicus") {
-      return "h-14 w-14"; // Original size for Index Medicus
+      return "h-14 w-14"; // Smaller size for Index Medicus
     }
     if (title === "RHCA") {
-      return "h-20 w-20"; // Original size for RHCA
+      return "h-20 w-20"; // Larger size for RHCA
     }
-    return "h-16 w-16"; // Original size for other logos
+    return "h-16 w-16"; // Default size for other logos
   };
 
   const CardComponent = () => (
