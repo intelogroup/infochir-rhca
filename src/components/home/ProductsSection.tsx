@@ -1,3 +1,4 @@
+
 import { ProductCard } from "@/components/ProductCard";
 import { motion } from "framer-motion";
 import { products } from "./products/ProductsData";
@@ -8,20 +9,6 @@ export const ProductsSection = () => (
     <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
     
     <div className="max-w-7xl mx-auto relative">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="text-center mb-16"
-      >
-        <h2 className="text-4xl font-bold bg-gradient-to-r from-[#1E40AF] via-[#41b06e] to-[#41b06e] bg-clip-text text-transparent mb-4">
-          Nos Produits
-        </h2>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Découvrez nos ressources complètes pour la communauté médicale
-        </p>
-      </motion.div>
-      
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
         {products.map((product, index) => (
           <motion.div 
