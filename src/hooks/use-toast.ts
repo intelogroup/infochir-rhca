@@ -1,10 +1,6 @@
 
-// Re-export sonner toast directly to avoid unnecessary wrapping
+// Re-export sonner toast directly
 import { toast } from "sonner";
 
-// Export it to provide consistent API
+// Export toast for consistent usage across the app
 export { toast };
-
-// If you still need the custom ToastProvider functionality, uncomment this:
-// export { ToastProvider } from "./toast/ToastProvider";
-// export type { ToasterToast } from "./toast/types";

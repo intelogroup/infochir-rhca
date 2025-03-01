@@ -1,10 +1,8 @@
-
 import { useState } from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { motion } from "framer-motion";
 import { DonateHeader } from "@/components/donate/DonateHeader";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
-import { Toaster } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
