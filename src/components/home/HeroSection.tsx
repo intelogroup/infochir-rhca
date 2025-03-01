@@ -14,26 +14,24 @@ export const HeroSection = () => {
       ref={sectionRef} 
       className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(100vh-4rem)] pt-20 md:pt-28"
     >
-      {/* Background container - added higher z-index layering for proper stacking */}
+      {/* Background container */}
       <div className="absolute inset-0 w-full h-full">
-        {/* Image layer - using img element instead of background-image for better loading control */}
-        <div className="absolute inset-0 w-full h-full" style={{ zIndex: 1 }}>
-          <img 
-            src="/lovable-uploads/3f1d1dc5-06fa-401a-9ca6-3d4b49276253.png" 
-            alt="Medical background" 
-            className="w-full h-full object-cover object-center"
-            onError={(e) => {
-              console.error("Image failed to load", e);
-              // Fallback to solid color if image fails
-              e.currentTarget.style.display = 'none';
-              e.currentTarget.parentElement.style.backgroundColor = '#f0f0f0';
-            }}
-          />
-        </div>
+        {/* Direct image tag for better visibility and debugging */}
+        <img 
+          src="/lovable-uploads/86c46dd1-7e7a-44bc-bbf5-e3727e954bb7.png"
+          alt="Medical background" 
+          className="absolute inset-0 w-full h-full object-cover object-center"
+          style={{ zIndex: 1 }}
+          onError={(e) => {
+            console.error("Hero image failed to load:", e);
+            e.currentTarget.style.display = 'none';
+            e.currentTarget.parentElement.style.backgroundColor = '#f0f0f0';
+          }}
+        />
         
-        {/* Gradient overlay - adjusted opacity and blend mode */}
+        {/* Gradient overlay with reduced opacity for better image visibility */}
         <div 
-          className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] opacity-70"
+          className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] opacity-60"
           style={{ 
             mixBlendMode: 'multiply',
             zIndex: 2,
