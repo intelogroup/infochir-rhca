@@ -149,6 +149,7 @@ export type Database = {
           category: string
           citations: number | null
           co_authors: string[] | null
+          cover_image_filename: string | null
           created_at: string | null
           doi: string | null
           downloads: number | null
@@ -184,6 +185,7 @@ export type Database = {
           category: string
           citations?: number | null
           co_authors?: string[] | null
+          cover_image_filename?: string | null
           created_at?: string | null
           doi?: string | null
           downloads?: number | null
@@ -219,6 +221,7 @@ export type Database = {
           category?: string
           citations?: number | null
           co_authors?: string[] | null
+          cover_image_filename?: string | null
           created_at?: string | null
           doi?: string | null
           downloads?: number | null
