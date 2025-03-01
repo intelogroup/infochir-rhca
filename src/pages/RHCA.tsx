@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { RhcaGrid } from "@/components/rhca/RhcaGrid";
@@ -12,7 +13,8 @@ import { useState, useEffect } from "react";
 import { 
   checkFileExistsInBucket, 
   debugDatabaseTables,
-  updatePdfFilenames
+  updatePdfFilenames,
+  mapToCoverImageFileName
 } from "@/lib/pdf-utils";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -24,6 +26,7 @@ const RHCA: React.FC = () => {
   const [pdfFilesStatus, setPdfFilesStatus] = useState<Record<string, boolean>>({});
   const [coverFilesStatus, setCoverFilesStatus] = useState<Record<string, boolean>>({});
   const [pdfFilesList, setPdfFilesList] = useState<string[]>([]);
+  const [coverFilesList, setCoverFilesList] = useState<string[]>([]);
 
   useEffect(() => {
     if (isAdmin) {
@@ -40,6 +43,19 @@ const RHCA: React.FC = () => {
           setPdfFilesList(fileNames);
           console.log('[RHCA] PDF files in storage:', fileNames);
         }
+
+        // Fetch all cover image files in the storage bucket
+        const { data: coverFiles, error: coverError } = await supabase.storage
+          .from('rhca_covers')
+          .list('');
+          
+        if (coverError) {
+          console.error('[RHCA] Error fetching cover image files:', coverError);
+        } else if (coverFiles) {
+          const coverNames = coverFiles.map(file => file.name);
+          setCoverFilesList(coverNames);
+          console.log('[RHCA] Cover image files in storage:', coverNames);
+        }
         
         const volumeIssues = ['2:47', '3:48', '4:49'];
         const pdfStatus: Record<string, boolean> = {};
@@ -47,7 +63,7 @@ const RHCA: React.FC = () => {
         
         console.log("[RHCA] Starting file verification for admin panel...");
         
-        // PDF file naming pattern: RHCA_vol_XX_no_XX_date.pdf
+        // File naming patterns
         for (const vi of volumeIssues) {
           const [volume, issue] = vi.split(':');
           const pdfFilePattern = `RHCA_vol_${volume.padStart(2, '0')}_no_${issue}`;
@@ -186,7 +202,7 @@ const RHCA: React.FC = () => {
                   <p>Pour que les fichiers soient correctement associés aux articles, suivez ces conventions de nommage:</p>
                   <ul className="list-disc pl-5 space-y-1 text-sm">
                     <li><strong>PDF:</strong> RHCA_vol_XX_no_XX_date.pdf (ex: RHCA_vol_04_no_49_11_1_2025.pdf)</li>
-                    <li><strong>Couvertures:</strong> RHCA_vol_XX_no_XX_cover.jpg (ex: RHCA_vol_04_no_49_cover.jpg)</li>
+                    <li><strong>Couvertures:</strong> RHCA_vol_XX_no_XX_cover.png (ex: RHCA_vol_04_no_49_cover.png)</li>
                   </ul>
                   <p className="text-sm mt-2">
                     <strong>Statut des fichiers:</strong>
@@ -220,11 +236,25 @@ const RHCA: React.FC = () => {
                           </div>
                         ))}
                       </div>
-                      <p className="text-xs mt-1 text-gray-500">
-                        Assurez-vous que les noms de fichiers correspondent aux volumes et numéros dans la base de données.
-                      </p>
                     </div>
                   )}
+                  
+                  {coverFilesList.length > 0 && (
+                    <div className="mt-3">
+                      <strong className="text-sm">Images de couverture disponibles:</strong>
+                      <div className="text-xs mt-1 bg-gray-50 p-2 rounded max-h-24 overflow-y-auto">
+                        {coverFilesList.map(file => (
+                          <div key={file} className="mb-1 pb-1 border-b border-gray-100 last:border-0">
+                            {file}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <p className="text-xs mt-1 text-gray-500">
+                    Assurez-vous que les noms de fichiers correspondent aux volumes et numéros dans la base de données.
+                  </p>
                 </AlertDescription>
               </Alert>
               

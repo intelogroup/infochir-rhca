@@ -28,6 +28,8 @@ export interface Article {
   pageNumber?: string;
   articleType?: ArticleSource;
   lastUpdate?: string;
+  pdfFileName?: string;
+  coverImageFileName?: string;
 }
 
 export interface DatabaseArticle {
@@ -44,6 +46,8 @@ export interface DatabaseArticle {
   tags: string[] | null;
   image_url: string | null;
   cover_image: string | null;
+  cover_image_filename?: string | null;
+  pdf_filename?: string | null;
   views: number | null;
   citations: number | null;
   pdf_url: string | null;
