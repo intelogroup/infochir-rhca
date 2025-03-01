@@ -1,169 +1,59 @@
 
-import { useState } from "react";
-import { Share2, Download, Eye, Loader2 } from "lucide-react";
+import * as React from "react";
 import { Button } from "@/components/ui/button";
+import { Download, Share2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 interface IssueCardActionsProps {
   pdfUrl?: string;
   id: string;
-  onViewDetails: () => void;
 }
 
-export const IssueCardActions = ({ pdfUrl, id, onViewDetails }: IssueCardActionsProps) => {
-  const [isSharing, setIsSharing] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
-
-  const handleShare = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsSharing(true);
-    try {
-      const shareUrl = `${window.location.origin}/igm/issues/${id}`;
-      await navigator.clipboard.writeText(shareUrl);
-      
-      // Update share count using stored procedure
-      await supabase.rpc('increment_count', {
-        table_name: 'unified_collections',
-        column_name: 'share_count',
-        row_id: id
-      });
-
-      toast.success("Lien copié dans le presse-papier");
-    } catch (error) {
-      console.error('Error updating share count:', error);
-    } finally {
-      setTimeout(() => setIsSharing(false), 1000);
-    }
-  };
-
-  const handleDownload = async (e: React.MouseEvent) => {
-    e.stopPropagation();
+export const IssueCardActions: React.FC<IssueCardActionsProps> = ({
+  pdfUrl,
+  id
+}) => {
+  const handleDownload = () => {
     if (!pdfUrl) {
-      toast.error("Le PDF n'est pas encore disponible");
+      toast.error("Le PDF n'est pas disponible pour ce numéro");
       return;
     }
     
-    setIsDownloading(true);
-    try {
-      const { data, error } = await supabase
-        .storage
-        .from('igm-pdfs')
-        .download(pdfUrl);
+    window.open(pdfUrl, '_blank');
+    toast.success("Téléchargement du PDF en cours...");
+  };
 
-      if (error) {
-        console.error('Download error:', error);
-        toast.error("Erreur lors du téléchargement du fichier");
-        return;
-      }
-
-      if (!data) {
-        toast.error("Le fichier PDF n'existe pas");
-        return;
-      }
-
-      // Create URL and trigger download
-      const url = window.URL.createObjectURL(data);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = pdfUrl;
-      document.body.appendChild(link);
-      link.click();
-      
-      // Cleanup
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(link);
-
-      // Update download count using stored procedure
-      await supabase.rpc('increment_count', {
-        table_name: 'unified_collections',
-        column_name: 'download_count',
-        row_id: id
-      });
-
-      toast.success("Téléchargement réussi");
-    } catch (error) {
-      console.error('Download error:', error);
-      toast.error("Erreur lors du téléchargement du PDF");
-    } finally {
-      setIsDownloading(false);
-    }
+  const handleShare = () => {
+    const shareUrl = `${window.location.origin}/igm/issues/${id}`;
+    navigator.clipboard.writeText(shareUrl);
+    toast.success("Lien copié dans le presse-papier");
   };
 
   return (
-    <div className="flex gap-1.5 flex-shrink-0">
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-8 w-8 p-0 hover:bg-secondary/10 hover:text-secondary transition-colors relative"
-              onClick={handleShare}
-              disabled={isSharing}
-            >
-              {isSharing ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Share2 className="h-4 w-4" />
-              )}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Partager</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant="ghost"
-              size="sm" 
-              className="h-8 w-8 p-0 hover:bg-secondary/10 hover:text-secondary transition-colors"
-              onClick={handleDownload}
-              disabled={!pdfUrl || isDownloading}
-            >
-              {isDownloading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Download className="h-4 w-4" />
-              )}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Télécharger PDF</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 hover:bg-secondary/10 hover:text-secondary transition-colors"
-              onClick={(e) => {
-                e.stopPropagation();
-                onViewDetails();
-              }}
-            >
-              <Eye className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Voir les détails</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+    <div className="flex gap-2">
+      <Button
+        variant="outline"
+        size="icon"
+        className="h-7 w-7"
+        onClick={(e) => {
+          e.stopPropagation();
+          handleShare();
+        }}
+      >
+        <Share2 className="h-3.5 w-3.5" />
+      </Button>
+      <Button
+        variant="outline"
+        size="icon"
+        className="h-7 w-7"
+        onClick={(e) => {
+          e.stopPropagation();
+          handleDownload();
+        }}
+        disabled={!pdfUrl}
+      >
+        <Download className="h-3.5 w-3.5" />
+      </Button>
     </div>
   );
 };
