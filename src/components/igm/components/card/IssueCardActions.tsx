@@ -33,8 +33,8 @@ export const IssueCardActions: React.FC<IssueCardActionsProps> = ({
     <div className="flex gap-2">
       <Button
         variant="outline"
-        size="icon"
-        className="h-7 w-7"
+        size="sm"
+        className="h-7 w-7 p-0"
         onClick={(e) => {
           e.stopPropagation();
           handleShare();
@@ -44,8 +44,8 @@ export const IssueCardActions: React.FC<IssueCardActionsProps> = ({
       </Button>
       <Button
         variant="outline"
-        size="icon"
-        className="h-7 w-7"
+        size="sm"
+        className="h-7 w-7 p-0"
         onClick={(e) => {
           e.stopPropagation();
           handleDownload();
