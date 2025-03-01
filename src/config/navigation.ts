@@ -1,5 +1,5 @@
 
-import { BookOpen, Database, Newspaper, Info, Book, FileText, List, Globe, Link } from "lucide-react";
+import { BookOpen, Database, Newspaper, Info, Book, FileText, List, Globe, Link, Scissors } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 export type NavItem = {
@@ -30,13 +30,14 @@ const icons = {
   List,
   Globe,
   Link,
+  Scissors,
 } as const;
 
 export const navItems: NavItem[] = [
   { 
     name: "RHCA", 
     href: "/rhca",
-    icon: Globe,
+    icon: Scissors,
     description: "Publiez vos articles scientifiques et contribuez à l'avancement des connaissances en chirurgie et anesthésiologie",
     logo: "/lovable-uploads/f65134f5-3929-4504-9567-104510b21f5d.png"
   },
