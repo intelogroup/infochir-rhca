@@ -76,7 +76,7 @@ export const HeroSection = () => {
   }, [cycleCount]);
 
   return (
-    <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(100vh-4rem-20px)] pt-32 md:pt-40 z-0">
+    <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(100vh-4rem-30px)] pt-32 md:pt-40 z-0">
       <AnimatePresence mode="wait">
         <div
           key={currentIndex}
@@ -86,7 +86,7 @@ export const HeroSection = () => {
             className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-90 z-0`}
           />
           <motion.div 
-            className="absolute bottom-0 right-0 w-1/2 h-[calc(4/5*100%-20px)] md:h-[calc(3/4*100%-20px)] lg:h-[calc(2/3*100%-20px)] z-0"
+            className="absolute bottom-0 right-0 w-1/2 h-[calc(4/5*100%-30px)] md:h-[calc(3/4*100%-30px)] lg:h-[calc(2/3*100%-30px)] z-0"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
