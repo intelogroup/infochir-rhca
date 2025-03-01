@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -257,7 +256,7 @@ export const mapToCoverImageFileName = async (volume: string, issue: string): Pr
       // Check for cover_image_filename field
       if ('cover_image_filename' in data && data.cover_image_filename) {
         console.log(`[DB:INFO] Found cover_image_filename in database: ${data.cover_image_filename}`);
-        return data.cover_image_filename;
+        return data.cover_image_filename as string; // Add type assertion here
       } else {
         console.warn('[DB:WARN] cover_image_filename not found in data or is null');
       }
@@ -273,5 +272,56 @@ export const mapToCoverImageFileName = async (volume: string, issue: string): Pr
   } catch (err) {
     console.error('[DB:ERROR] Error mapping to cover image filename:', err);
     return null;
+  }
+};
+
+// Add a new function to update cover image filenames similar to updatePdfFilenames
+export const updateCoverImageFilenames = async () => {
+  try {
+    console.log('[DB:INFO] Starting cover image filename update process');
+    
+    // Fetch all articles from articles table with RHCA source
+    const { data: articles, error: articlesError } = await supabase
+      .from('articles')
+      .select('id, volume, issue')
+      .eq('source', 'RHCA');
+
+    if (articlesError) {
+      console.error('[DB:ERROR] Error fetching articles for cover image filename update:', articlesError);
+      return;
+    }
+
+    if (!articles || articles.length === 0) {
+      console.log('[DB:INFO] No articles found to update cover image filenames.');
+      return;
+    }
+
+    console.log(`[DB:INFO] Found ${articles.length} articles to update cover image filenames`);
+
+    // Iterate through each article and update the cover_image_filename
+    for (const article of articles) {
+      if (article.volume && article.issue) {
+        const coverImageFileName = `RHCA_vol_${String(article.volume).padStart(2, '0')}_no_${String(article.issue).padStart(2, '0')}_cover.png`;
+        console.log(`[DB:DEBUG] Updating article ${article.id} with cover image filename: ${coverImageFileName}`);
+
+        // Update the article in the database
+        const { error: updateError } = await supabase
+          .from('articles')
+          .update({ cover_image_filename: coverImageFileName })
+          .eq('id', article.id);
+
+        if (updateError) {
+          console.error(`[DB:ERROR] Error updating article ${article.id} cover image:`, updateError);
+        } else {
+          console.log(`[DB:SUCCESS] Updated cover image filename for article ${article.id} to ${coverImageFileName}`);
+        }
+      } else {
+        console.warn(`[DB:WARN] Skipping article ${article.id} due to missing volume or issue.`);
+      }
+    }
+
+    console.log('[DB:SUCCESS] Cover image filenames updated successfully!');
+  } catch (err) {
+    console.error('[DB:ERROR] Exception updating cover image filenames:', err);
   }
 };

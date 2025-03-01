@@ -54,10 +54,16 @@ export const ImageOptimizer = ({
       
       if (isRHCACover) {
         console.log(`[ImageOptimizer:DEBUG] Loading RHCA cover image: ${src}`);
+        // Add cache-busting parameter to ensure fresh image load
+        const cacheBuster = `?t=${Date.now()}`;
+        const cacheBustedSrc = `${src}${cacheBuster}`;
+        console.log(`[ImageOptimizer:DEBUG] Using cache-busted URL: ${cacheBustedSrc}`);
+        img.src = cacheBustedSrc;
+        setImageSrc(cacheBustedSrc);
+      } else {
+        img.src = src;
+        setImageSrc(src);
       }
-      
-      img.src = src;
-      setImageSrc(src);
     } 
     else {
       console.log(`[ImageOptimizer:DEBUG] Loading standard image: ${src}`);
@@ -80,6 +86,19 @@ export const ImageOptimizer = ({
           timeStamp: error.timeStamp
         });
       }
+      
+      // Try to perform an HTTP request to check if the image URL is accessible
+      fetch(src, { method: 'HEAD' })
+        .then(response => {
+          console.log(`[ImageOptimizer:DEBUG] HTTP head request status: ${response.status} ${response.statusText}`);
+          if (!response.ok) {
+            console.error(`[ImageOptimizer:ERROR] Image URL returns HTTP ${response.status}`);
+          }
+        })
+        .catch(fetchError => {
+          console.error(`[ImageOptimizer:ERROR] Fetch check failed:`, fetchError);
+        });
+        
       setHasError(true);
       setIsLoading(false);
     };

@@ -31,22 +31,32 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article, onCardClick, classN
       }
       
       console.log(`[RhcaCard:INFO] Checking cover image: ${article.coverImageFileName}`);
-      const exists = await checkFileExistsInBucket('rhca_covers', article.coverImageFileName);
-      
-      console.log(`[RhcaCard:INFO] Cover image ${article.coverImageFileName} exists: ${exists}`);
-      setCoverExists(exists);
-      
-      if (exists) {
-        const url = getFilePublicUrl('rhca_covers', article.coverImageFileName);
-        console.log(`[RhcaCard:INFO] Got public URL for cover: ${url}`);
-        if (url) setCoverUrl(url);
-      } else {
-        console.warn(`[RhcaCard:WARN] Cover image ${article.coverImageFileName} not found in storage bucket`);
+      try {
+        const exists = await checkFileExistsInBucket('rhca_covers', article.coverImageFileName);
+        
+        console.log(`[RhcaCard:INFO] Cover image ${article.coverImageFileName} exists: ${exists}`);
+        setCoverExists(exists);
+        
+        if (exists) {
+          const url = getFilePublicUrl('rhca_covers', article.coverImageFileName);
+          console.log(`[RhcaCard:INFO] Got public URL for cover: ${url}`);
+          if (url) setCoverUrl(url);
+        } else {
+          console.warn(`[RhcaCard:WARN] Cover image ${article.coverImageFileName} not found in storage bucket`);
+          // Fall back to the original image URL if available
+          if (article.imageUrl) {
+            console.log(`[RhcaCard:INFO] Using fallback imageUrl: ${article.imageUrl}`);
+            setCoverUrl(article.imageUrl);
+          }
+        }
+      } catch (error) {
+        console.error(`[RhcaCard:ERROR] Error verifying cover image:`, error);
+        setCoverExists(false);
       }
     };
     
     verifyCoverExists();
-  }, [article.coverImageFileName, article.id, article.title]);
+  }, [article.coverImageFileName, article.id, article.title, article.imageUrl]);
 
   const handleClick = () => {
     if (onCardClick) {

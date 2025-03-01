@@ -14,8 +14,8 @@ interface RhcaDatabaseArticle {
   source: string;
   category: string;
   tags: string[];
-  pdf_url?: string;
-  image_url?: string;
+  pdf_url: string; // Make this required to match DatabaseArticle
+  image_url: string; // Make this required to match DatabaseArticle
   views?: number;
   downloads?: number;
   shares?: number;
@@ -77,12 +77,18 @@ export const useRHCAArticles = () => {
               console.warn(`[RHCA:WARN] Article ${article.id} missing pdf_filename`);
             }
             
-            // First map the base article properties
-            const mappedArticle = mapDatabaseArticleToArticle({
+            // Ensure required fields have default values to match DatabaseArticle type
+            const articleWithDefaults: RhcaDatabaseArticle = {
               ...article,
-              // Ensure cover_image property exists for the mapping function
-              cover_image: article.image_url
-            });
+              // Ensure these fields have default values if they're undefined
+              pdf_url: article.pdf_url || '',
+              image_url: article.image_url || '',
+              // Add cover_image to match expected structure
+              cover_image: article.image_url || ''
+            };
+            
+            // First map the base article properties
+            const mappedArticle = mapDatabaseArticleToArticle(articleWithDefaults);
             
             // Then add RHCA-specific properties
             return {
