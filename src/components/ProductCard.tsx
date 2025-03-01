@@ -1,4 +1,3 @@
-
 import { LucideIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -54,12 +53,12 @@ export const ProductCard = ({
 
   const getLogoSize = (title: string) => {
     if (title === "Index Medicus") {
-      return "h-24 w-24"; // Increased from h-14 w-14 by 10px
+      return "h-14 w-14"; // Original size for Index Medicus
     }
     if (title === "RHCA") {
-      return "h-30 w-30"; // Increased from h-20 w-20 by 10px
+      return "h-20 w-20"; // Original size for RHCA
     }
-    return "h-26 w-26"; // Increased from h-16 w-16 by 10px
+    return "h-16 w-16"; // Original size for other logos
   };
 
   const CardComponent = () => (

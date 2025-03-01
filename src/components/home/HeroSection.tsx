@@ -87,7 +87,7 @@ export const HeroSection = () => {
             style={{ height: 'calc(100% - 40px)' }}
           />
           <motion.div 
-            className="absolute bottom-0 right-0 w-1/2 h-[calc(4/5-20px)] md:h-[calc(3/4-20px)] lg:h-[calc(2/3-20px)] z-0"
+            className="absolute bottom-0 right-0 w-1/2 h-[calc(4/5-30px)] md:h-[calc(3/4-30px)] lg:h-[calc(2/3-30px)] z-0"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
