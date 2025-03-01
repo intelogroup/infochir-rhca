@@ -235,26 +235,20 @@ export const mapToCoverImageFileName = async (volume: string, issue: string): Pr
   try {
     console.log(`[DB:DEBUG] Mapping cover image filename for volume:${volume}, issue:${issue}`);
     
-    // First, try to get the specific cover_image_filename from the database
+    // First, try to get the specific pdf_filename from the database to extract info
     const { data, error } = await supabase
       .from('rhca_articles_view')
-      .select('volume, issue, cover_image_filename')
+      .select('volume, issue, pdf_filename')
       .eq('volume', volume)
       .eq('issue', issue)
       .maybeSingle();
       
     if (error) {
-      console.error('[DB:ERROR] Error getting cover image filename:', error);
+      console.error('[DB:ERROR] Error getting article info:', error);
       return null;
     }
     
-    // Check if data exists and has a cover_image_filename
-    if (data && data.cover_image_filename) {
-      console.log(`[DB:INFO] Found cover_image_filename in database: ${data.cover_image_filename}`);
-      return data.cover_image_filename;
-    } 
-    
-    // Fallback - generate a standard filename using the current date
+    // Generate a standard filename using the current date
     const now = new Date();
     const fallbackName = formatRHCACoverImageFilename(volume, issue, now);
     console.log(`[DB:INFO] Using fallback cover image filename: ${fallbackName}`);

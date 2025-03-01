@@ -1,14 +1,15 @@
-import { SearchAndSort } from "@/components/issues/SearchAndSort";
-import { IssuesGridContent } from "./IssuesGridContent";
-import { useIssuesState } from "../hooks/useIssuesState";
-import { mockIssues } from "../data/mockIssues";
-import { SORT_OPTIONS } from "../constants/sortOptions";
-import { useState, useEffect } from "react";
-import { DateRange } from "react-day-picker";
-import { motion, AnimatePresence } from "framer-motion";
-import { useInView } from "framer-motion";
+
+import { IssuesSearch } from "../IssuesSearch";
+import { IssuesGridContent } from "@/components/igm/components/IssuesGridContent";
+import { useIssuesState } from "../../hooks/useIssuesState";
+import { SORT_OPTIONS } from "../../constants/sortOptions";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { SortOption } from "@/types/sortOptions";
+import { DateRange } from "react-day-picker";
+import { useIGMIssues } from "../../hooks/useIGMIssues";
+import { Loader2 } from "lucide-react";
 
 interface IssuesGridLayoutProps {
   viewMode?: "grid" | "table";
@@ -19,60 +20,63 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
   const [sortBy, setSortBy] = useState<SortOption>("latest");
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [displayCount, setDisplayCount] = useState(6);
   const isMobile = useIsMobile();
 
-  const {
-    sortedIssues,
-    issuesByYear,
+  const { data: issues = [], isLoading, error } = useIGMIssues();
+
+  const { 
+    sortedIssues, 
+    issuesByYear, 
     sortedYears,
-    availableCategories,
-  } = useIssuesState(mockIssues, {
+    availableCategories 
+  } = useIssuesState(issues, {
     searchTerm,
     sortBy,
     dateRange,
     selectedCategories,
   });
 
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1000);
-    return () => clearTimeout(timer);
-  }, []);
-
   const loadMore = () => {
     setDisplayCount(prev => prev + (isMobile ? 3 : 6));
   };
 
-  const handleSortChange = (value: SortOption) => {
-    setSortBy(value);
-  };
+  if (error) {
+    return (
+      <div className="p-8 bg-red-50 border border-red-200 rounded-lg">
+        <p className="text-red-600 font-medium">Une erreur est survenue lors du chargement des numéros.</p>
+        <p className="text-red-500 text-sm mt-2">{error.message}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4 sm:space-y-6">
       <motion.div 
-        className="bg-white rounded-lg sm:rounded-xl border-b border-gray-100 p-4 sm:p-6 shadow-sm"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <SearchAndSort
+        <IssuesSearch
           searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
           sortBy={sortBy}
-          onSearch={setSearchTerm}
-          onSort={handleSortChange}
-          sortOptions={SORT_OPTIONS}
+          setSortBy={setSortBy}
           dateRange={dateRange}
-          onDateRangeChange={setDateRange}
+          setDateRange={setDateRange}
+          sortOptions={[...SORT_OPTIONS]}
           selectedCategories={selectedCategories}
           onCategoryChange={setSelectedCategories}
           availableCategories={availableCategories}
-          disabled={isLoading}
         />
       </motion.div>
       
       <div className="px-2 sm:px-4">
-        <AnimatePresence mode="wait">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+        >
           <IssuesGridContent
             viewMode={viewMode}
             sortedIssues={sortedIssues.slice(0, displayCount)}
@@ -82,7 +86,7 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
             onLoadMore={loadMore}
             hasMore={displayCount < sortedIssues.length}
           />
-        </AnimatePresence>
+        </motion.div>
       </div>
     </div>
   );
