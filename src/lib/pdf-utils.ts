@@ -10,34 +10,37 @@ export const checkFileExistsInBucket = async (
   fileName: string
 ): Promise<boolean> => {
   if (!fileName) {
-    console.log(`[Storage] No filename provided to check`);
+    console.error(`[Storage:ERROR] No filename provided to check`);
     return false;
   }
 
   try {
-    console.log(`[Storage] Checking if file exists: ${fileName} in bucket: ${bucketName}`);
+    console.log(`[Storage:INFO] Checking if file exists: ${fileName} in bucket: ${bucketName}`);
     
     // First attempt: direct path check
     try {
+      console.log(`[Storage:DEBUG] Attempting direct download check for: ${fileName}`);
       const { data: fileData, error: fileError } = await supabase
         .storage
         .from(bucketName)
         .download(fileName);
         
       if (fileData) {
-        console.log(`[Storage] File exists (direct check): ${fileName}`);
+        console.log(`[Storage:SUCCESS] File exists (direct check): ${fileName}`);
         return true;
       }
       
       if (fileError) {
-        console.log(`[Storage] Direct download check failed: ${fileError.message}`);
+        console.error(`[Storage:ERROR] Direct download check failed: ${fileError.message}`, fileError);
       }
     } catch (e) {
-      console.log(`[Storage] Error during direct download check: ${e instanceof Error ? e.message : String(e)}`);
+      console.error(`[Storage:ERROR] Exception during direct download check:`, e);
+      console.error(`Error details: ${e instanceof Error ? e.message : String(e)}`);
     }
     
     // If direct check fails, try listing files with search
     try {
+      console.log(`[Storage:DEBUG] Attempting list search for: ${fileName}`);
       const { data, error } = await supabase
         .storage
         .from(bucketName)
@@ -46,21 +49,35 @@ export const checkFileExistsInBucket = async (
         });
 
       if (error) {
-        console.error(`[Storage] Error checking file existence:`, error);
+        console.error(`[Storage:ERROR] Error during list search:`, error);
+        console.error(`Error details: ${error.message}`);
+        return false;
+      }
+
+      if (!data || data.length === 0) {
+        console.log(`[Storage:INFO] No files found matching: ${fileName}`);
         return false;
       }
 
       // If we found the file in the list, it exists
-      const fileExists = data && data.some(file => file.name === fileName);
-      console.log(`[Storage] File exists (list check): ${fileExists} for ${fileName}`);
+      const fileExists = data.some(file => file.name === fileName);
+      console.log(`[Storage:${fileExists ? 'SUCCESS' : 'INFO'}] File exists (list check): ${fileExists} for ${fileName}`);
+      
+      if (fileExists) {
+        console.log(`[Storage:DEBUG] Found matching file in bucket: ${data.find(file => file.name === fileName)?.name}`);
+      } else {
+        console.log(`[Storage:DEBUG] Available files in bucket:`, data.map(file => file.name));
+      }
       
       return fileExists;
     } catch (e) {
-      console.log(`[Storage] Error during list check: ${e instanceof Error ? e.message : String(e)}`);
+      console.error(`[Storage:ERROR] Exception during list check:`, e);
+      console.error(`Error details: ${e instanceof Error ? e.message : String(e)}`);
       return false;
     }
   } catch (err) {
-    console.error(`[Storage] Failed to check file existence:`, err);
+    console.error(`[Storage:ERROR] Failed to check file existence:`, err);
+    console.error(`Error details: ${err instanceof Error ? err.message : String(err)}`);
     return false;
   }
 };
@@ -73,20 +90,27 @@ export const getFilePublicUrl = (
   fileName: string
 ): string | null => {
   if (!fileName) {
-    console.log(`[Storage] No filename provided to get public URL`);
+    console.error(`[Storage:ERROR] No filename provided to get public URL`);
     return null;
   }
   
   try {
+    console.log(`[Storage:DEBUG] Generating public URL for ${fileName} in bucket ${bucketName}`);
     const { data } = supabase
       .storage
       .from(bucketName)
       .getPublicUrl(fileName);
       
-    console.log(`[Storage] Generated public URL for ${fileName}: ${data?.publicUrl || 'null'}`);
-    return data?.publicUrl || null;
+    if (!data || !data.publicUrl) {
+      console.error(`[Storage:ERROR] Failed to generate public URL for ${fileName}`);
+      return null;
+    }
+    
+    console.log(`[Storage:SUCCESS] Generated public URL for ${fileName}: ${data.publicUrl}`);
+    return data.publicUrl;
   } catch (e) {
-    console.error(`[Storage] Error generating public URL: ${e instanceof Error ? e.message : String(e)}`);
+    console.error(`[Storage:ERROR] Exception generating public URL:`, e);
+    console.error(`Error details: ${e instanceof Error ? e.message : String(e)}`);
     return null;
   }
 };
@@ -101,40 +125,56 @@ export const downloadFileFromStorage = async (
   counterFunction: (articleId: string, type: 'downloads' | 'views') => Promise<void>
 ): Promise<void> => {
   if (!fileName) {
+    console.error(`[Storage:ERROR] Download attempted with no filename`);
     toast.error("Fichier non disponible");
     return;
   }
 
   try {
-    console.log(`[Storage] Attempting to download file: ${fileName} from bucket: ${bucketName}`);
+    console.log(`[Storage:INFO] Attempting to download file: ${fileName} from bucket: ${bucketName}`);
     
     // Check if file exists first
+    console.log(`[Storage:DEBUG] Verifying file existence before download`);
     const fileExists = await checkFileExistsInBucket(bucketName, fileName);
     
     if (!fileExists) {
+      console.error(`[Storage:ERROR] File does not exist in storage: ${fileName}`);
       toast.error("Le fichier n'existe pas dans notre stockage");
       return;
     }
     
     // Get the public URL
+    console.log(`[Storage:DEBUG] Getting public URL for download`);
     const publicUrl = getFilePublicUrl(bucketName, fileName);
     
     if (!publicUrl) {
+      console.error(`[Storage:ERROR] Failed to get public URL for ${fileName}`);
       toast.error("Impossible d'obtenir l'URL du fichier");
       return;
     }
     
     // Fetch the file using the public URL
+    console.log(`[Storage:DEBUG] Fetching file from URL: ${publicUrl}`);
     const response = await fetch(publicUrl);
     
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorText = await response.text().catch(() => 'Unknown error');
+      console.error(`[Storage:ERROR] HTTP error fetching file! Status: ${response.status}`, {
+        statusText: response.statusText,
+        errorText,
+        url: publicUrl
+      });
+      throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
     }
     
+    console.log(`[Storage:DEBUG] File fetched successfully, creating blob`);
     const blob = await response.blob();
     
     // Create URL and trigger download
+    console.log(`[Storage:DEBUG] Creating object URL for blob (size: ${blob.size} bytes)`);
     const url = window.URL.createObjectURL(blob);
+    
+    console.log(`[Storage:DEBUG] Triggering download via link click`);
     const link = document.createElement('a');
     link.href = url;
     link.download = fileName;
@@ -142,15 +182,26 @@ export const downloadFileFromStorage = async (
     link.click();
     
     // Cleanup
+    console.log(`[Storage:DEBUG] Cleaning up after download`);
     window.URL.revokeObjectURL(url);
     document.body.removeChild(link);
 
     // Update download count
-    await counterFunction(articleId, 'downloads');
+    console.log(`[Storage:DEBUG] Updating download counter for article ${articleId}`);
+    try {
+      await counterFunction(articleId, 'downloads');
+      console.log(`[Storage:SUCCESS] Download counter updated for article ${articleId}`);
+    } catch (countError) {
+      console.error(`[Storage:ERROR] Failed to update download counter:`, countError);
+      // Don't fail the download if counter update fails
+    }
 
+    console.log(`[Storage:SUCCESS] Download completed successfully for ${fileName}`);
     toast.success("Téléchargement réussi");
   } catch (error) {
-    console.error('[Storage] Download error:', error);
+    console.error('[Storage:ERROR] Download failed:', error);
+    console.error(`Error details: ${error instanceof Error ? error.message : String(error)}`);
+    console.error(`Error stack: ${error instanceof Error ? error.stack : 'No stack trace available'}`);
     toast.error("Une erreur est survenue lors du téléchargement");
   }
 };
@@ -165,38 +216,54 @@ export const openFileInNewTab = async (
   counterFunction: (articleId: string, type: 'downloads' | 'views') => Promise<void>
 ): Promise<void> => {
   if (!fileName) {
+    console.error(`[Storage:ERROR] Open in new tab attempted with no filename`);
     toast.error("Fichier non disponible");
     return;
   }
 
   try {
-    console.log(`[Storage] Attempting to open file: ${fileName} from bucket: ${bucketName}`);
+    console.log(`[Storage:INFO] Attempting to open file: ${fileName} from bucket: ${bucketName}`);
     
     // Check if file exists first
+    console.log(`[Storage:DEBUG] Verifying file existence before opening`);
     const fileExists = await checkFileExistsInBucket(bucketName, fileName);
     
     if (!fileExists) {
+      console.error(`[Storage:ERROR] File does not exist in storage: ${fileName}`);
       toast.error("Le fichier n'existe pas dans notre stockage");
       return;
     }
     
     // Get the public URL
+    console.log(`[Storage:DEBUG] Getting public URL for opening in new tab`);
     const publicUrl = getFilePublicUrl(bucketName, fileName);
     
     if (!publicUrl) {
+      console.error(`[Storage:ERROR] Failed to get public URL for ${fileName}`);
       toast.error("Impossible d'obtenir l'URL du fichier");
       return;
     }
     
     // Open in new tab
+    console.log(`[Storage:DEBUG] Opening URL in new tab: ${publicUrl}`);
     window.open(publicUrl, '_blank');
     
     // Increment view counter
-    await counterFunction(articleId, 'views');
+    console.log(`[Storage:DEBUG] Updating view counter for article ${articleId}`);
+    try {
+      await counterFunction(articleId, 'views');
+      console.log(`[Storage:SUCCESS] View counter updated for article ${articleId}`);
+    } catch (countError) {
+      console.error(`[Storage:ERROR] Failed to update view counter:`, countError);
+      // Don't fail the file opening if counter update fails
+    }
     
+    console.log(`[Storage:SUCCESS] File opened successfully in new tab: ${fileName}`);
     toast.success("Fichier ouvert dans un nouvel onglet");
   } catch (error) {
-    console.error('[Storage] Error opening file:', error);
+    console.error('[Storage:ERROR] Error opening file:', error);
+    console.error(`Error details: ${error instanceof Error ? error.message : String(error)}`);
+    console.error(`Error stack: ${error instanceof Error ? error.stack : 'No stack trace available'}`);
     toast.error("Erreur lors de l'ouverture du fichier");
   }
 };
@@ -205,8 +272,13 @@ export const openFileInNewTab = async (
  * Extract filename from a URL or path
  */
 export const extractFilenameFromUrl = (url: string | undefined): string | undefined => {
-  if (!url) return undefined;
-  return url.split('/').pop();
+  if (!url) {
+    console.log(`[Storage:DEBUG] No URL provided to extract filename`);
+    return undefined;
+  }
+  const filename = url.split('/').pop();
+  console.log(`[Storage:DEBUG] Extracted filename from URL: ${filename}`);
+  return filename;
 };
 
 /**
@@ -221,5 +293,13 @@ export const mapToCoverImageFileName = (volume: string, issue: string): string |
   };
   
   const key = `${volume}:${issue}`;
-  return volumeIssueMap[key];
+  const filename = volumeIssueMap[key];
+  
+  if (!filename) {
+    console.log(`[Storage:DEBUG] No cover image mapping found for volume:issue ${key}`);
+  } else {
+    console.log(`[Storage:DEBUG] Mapped ${key} to cover image: ${filename}`);
+  }
+  
+  return filename;
 };
