@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -41,8 +42,12 @@ export const MultiFileUploader = ({
     const fileExt = originalName.split('.').pop() || (type === 'document' ? 'pdf' : 'png');
     
     if (bucket === 'rhca_covers') {
-      // Use the specialized cover image format
-      return formatRHCACoverImageFilename(volumeInfo.volume, volumeInfo.issue, now);
+      // Use the full date format for cover images: RHCA_vol_XX_no_XX_DD_MM_YYYY.png
+      const paddedVolume = volumeInfo.volume.padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const year = now.getFullYear();
+      return `RHCA_vol_${paddedVolume}_no_${volumeInfo.issue}_${day}_${month}_${year}.${fileExt}`;
     } else {
       // For PDF documents
       const dateFormatted = formatDateForFilename(now);
@@ -76,6 +81,7 @@ export const MultiFileUploader = ({
         let fileName = sanitizedName;
         if ((bucket === 'rhca-pdfs' || bucket === 'rhca_covers') && volumeInfo) {
           fileName = generateRHCAFilename(sanitizedName);
+          console.log(`[MultiFileUploader:INFO] Generated filename: ${fileName}`);
         } else {
           fileName = `${Date.now()}_${sanitizedName}`;
         }
@@ -84,7 +90,7 @@ export const MultiFileUploader = ({
           .from(bucket)
           .upload(fileName, file, {
             cacheControl: '3600',
-            upsert: false
+            upsert: true // Allow overwriting existing files
           });
 
         if (uploadError) {
@@ -99,7 +105,40 @@ export const MultiFileUploader = ({
           .getPublicUrl(fileName);
 
         uploadedUrls.push(publicUrl);
-        toast.success(`${file.name} uploadé avec succès`);
+        toast.success(`${file.name} uploadé avec succès comme ${fileName}`);
+        
+        // If this is a cover image, update the corresponding article record
+        if (bucket === 'rhca_covers' && volumeInfo) {
+          try {
+            // Find articles matching this volume/issue
+            const { data: articles, error: fetchError } = await supabase
+              .from('articles')
+              .select('id')
+              .eq('volume', volumeInfo.volume)
+              .eq('issue', volumeInfo.issue)
+              .eq('source', 'RHCA');
+              
+            if (fetchError) {
+              console.error('[MultiFileUploader:ERROR] Failed to fetch articles:', fetchError);
+            } else if (articles && articles.length > 0) {
+              console.log(`[MultiFileUploader:INFO] Updating ${articles.length} articles with cover_image_filename: ${fileName}`);
+              
+              // Update all articles with this volume/issue
+              const { error: updateError } = await supabase
+                .from('articles')
+                .update({ cover_image_filename: fileName })
+                .in('id', articles.map(a => a.id));
+                
+              if (updateError) {
+                console.error('[MultiFileUploader:ERROR] Failed to update articles:', updateError);
+              } else {
+                console.log(`[MultiFileUploader:SUCCESS] Updated articles with cover_image_filename`);
+              }
+            }
+          } catch (error) {
+            console.error('[MultiFileUploader:ERROR] Error updating articles:', error);
+          }
+        }
       }
 
       if (failedUploads.length > 0) {

@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
 import { useState, useEffect } from "react";
 import { checkFileExistsInBucket, getFilePublicUrl } from "@/lib/pdf-utils";
+import { supabase } from "@/integrations/supabase/client";
 
 interface RhcaCardProps {
   article: RhcaArticle;
@@ -30,19 +31,45 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article, onCardClick, classN
         coverImage: article.coverImage
       }));
       
-      // Use the coverImageFileName if available, otherwise fallback to filename from imageUrl
+      // Use the coverImageFileName if available
       let filenameToCheck = article.coverImageFileName;
       
+      // If we don't have a coverImageFileName, try to generate one based on volume and issue
+      if (!filenameToCheck && article.volume && article.issue) {
+        const paddedVolume = String(article.volume).padStart(2, '0');
+        filenameToCheck = `RHCA_vol_${paddedVolume}_no_${article.issue}.png`;
+        console.log(`[RhcaCard:DEBUG] Generated cover image filename: ${filenameToCheck}`);
+      }
+      
+      // Still no filename? Try to extract from imageUrl
       if (!filenameToCheck && article.imageUrl) {
-        // Try to extract filename from imageUrl
         const urlParts = article.imageUrl.split('/');
         filenameToCheck = urlParts[urlParts.length - 1];
+        console.log(`[RhcaCard:DEBUG] Extracted filename from imageUrl: ${filenameToCheck}`);
       }
       
       if (!filenameToCheck) {
         console.warn(`[RhcaCard:WARN] No cover image filename available for article ${article.id}`);
         setCoverExists(false);
         return;
+      }
+      
+      // Update article in database with generated filename if it doesn't have one yet
+      if (!article.coverImageFileName && filenameToCheck) {
+        try {
+          const { error } = await supabase
+            .from('articles')
+            .update({ cover_image_filename: filenameToCheck })
+            .eq('id', article.id);
+            
+          if (error) {
+            console.error(`[RhcaCard:ERROR] Failed to update cover_image_filename:`, error);
+          } else {
+            console.log(`[RhcaCard:INFO] Updated article ${article.id} with cover_image_filename: ${filenameToCheck}`);
+          }
+        } catch (error) {
+          console.error(`[RhcaCard:ERROR] Error updating article:`, error);
+        }
       }
       
       console.log(`[RhcaCard:INFO] Checking cover image: ${filenameToCheck}`);
@@ -56,8 +83,34 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article, onCardClick, classN
           const url = getFilePublicUrl('rhca_covers', filenameToCheck);
           console.log(`[RhcaCard:INFO] Got public URL for cover: ${url}`);
           if (url) setCoverUrl(url);
-        } else {
+        } else if (article.coverImageFileName) {
           console.warn(`[RhcaCard:WARN] Cover image ${filenameToCheck} not found in storage bucket`);
+          
+          // Get a list of files in the bucket to help debug
+          const { data: files, error } = await supabase.storage
+            .from('rhca_covers')
+            .list();
+            
+          if (error) {
+            console.error(`[RhcaCard:ERROR] Error listing files in rhca_covers:`, error);
+          } else if (files && files.length > 0) {
+            console.log(`[RhcaCard:DEBUG] Files in rhca_covers bucket:`, files.map(f => f.name));
+            
+            // Check if there's a file with a similar name
+            const similarFile = files.find(f => 
+              f.name.startsWith(`RHCA_vol_${article.volume}_`) || 
+              f.name.includes(`_no_${article.issue}_`)
+            );
+            
+            if (similarFile) {
+              console.log(`[RhcaCard:INFO] Found similar file: ${similarFile.name}`);
+              const url = getFilePublicUrl('rhca_covers', similarFile.name);
+              if (url) setCoverUrl(url);
+            }
+          } else {
+            console.log(`[RhcaCard:DEBUG] No files found in rhca_covers bucket`);
+          }
+          
           // Fall back to the original image URL if available
           if (article.imageUrl) {
             console.log(`[RhcaCard:INFO] Using fallback imageUrl: ${article.imageUrl}`);
@@ -74,7 +127,7 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article, onCardClick, classN
     };
     
     verifyCoverExists();
-  }, [article.coverImageFileName, article.id, article.title, article.imageUrl, article.coverImage]);
+  }, [article.coverImageFileName, article.id, article.title, article.imageUrl, article.coverImage, article.volume, article.issue]);
 
   const handleClick = () => {
     if (onCardClick) {
@@ -95,7 +148,7 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article, onCardClick, classN
       >
         <div className="flex gap-4 p-4">
           <div className="w-20 flex-shrink-0">
-            {coverExists && coverUrl ? (
+            {coverUrl ? (
               <div className="aspect-[3/4] relative overflow-hidden rounded-lg border border-gray-100">
                 <ImageOptimizer 
                   src={coverUrl} 

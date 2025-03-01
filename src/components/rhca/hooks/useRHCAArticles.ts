@@ -40,7 +40,7 @@ export const useRHCAArticles = () => {
         setLoading(true);
         console.log('[RHCA:INFO] Fetching RHCA articles from database');
         
-        // Use the view we created to get articles with cover_image_filename
+        // Use the view we created to get articles
         const { data, error } = await supabase
           .from('rhca_articles_view')
           .select('*')
@@ -63,18 +63,15 @@ export const useRHCAArticles = () => {
           const mappedArticles = data.map((article: any) => {
             console.log(`[RHCA:DEBUG] Processing article: ${article.id}, title: ${article.title}`);
             
-            // Check if cover_image_filename exists
-            if ('cover_image_filename' in article) {
-              console.log(`[RHCA:DEBUG] Article has cover_image_filename: ${article.cover_image_filename}`);
-            } else {
-              console.warn(`[RHCA:WARN] Article ${article.id} missing cover_image_filename`);
-            }
+            // Generate cover image filename based on volume and issue if not present
+            let coverImageFilename = article.cover_image_filename;
             
-            // Check if pdf_filename exists
-            if ('pdf_filename' in article) {
-              console.log(`[RHCA:DEBUG] Article has pdf_filename: ${article.pdf_filename}`);
-            } else {
-              console.warn(`[RHCA:WARN] Article ${article.id} missing pdf_filename`);
+            if (!coverImageFilename && article.volume && article.issue) {
+              // Try to build a cover image filename based on the format RHCA_vol_XX_no_XX_DD_MM_YYYY.png
+              // For now we'll use a simplified version without the date
+              const paddedVolume = String(article.volume).padStart(2, '0');
+              coverImageFilename = `RHCA_vol_${paddedVolume}_no_${article.issue}.png`;
+              console.log(`[RHCA:DEBUG] Generated cover image filename: ${coverImageFilename}`);
             }
             
             // Ensure required fields have default values to match DatabaseArticle type
@@ -87,7 +84,8 @@ export const useRHCAArticles = () => {
               views: article.views || 0,
               downloads: article.downloads || 0,
               shares: article.shares || 0,
-              citations: article.citations || 0
+              citations: article.citations || 0,
+              cover_image_filename: coverImageFilename
             };
             
             // First map the base article properties
@@ -97,7 +95,7 @@ export const useRHCAArticles = () => {
             return {
               ...mappedArticle,
               pdfFileName: article.pdf_filename || undefined,
-              coverImageFileName: article.cover_image_filename || undefined
+              coverImageFileName: coverImageFilename || undefined
             } as RhcaArticle;
           });
           

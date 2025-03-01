@@ -23,11 +23,13 @@ export const ImageOptimizer = ({
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [imageSrc, setImageSrc] = useState("");
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     // Reset states when src changes
     setIsLoading(true);
     setHasError(false);
+    setRetryCount(0);
     
     if (!src) {
       console.warn(`[ImageOptimizer:WARN] No source URL provided for image: ${alt}`);
@@ -38,78 +40,93 @@ export const ImageOptimizer = ({
 
     console.log(`[ImageOptimizer:INFO] Loading image from: ${src}, alt: ${alt}`);
 
-    const img = new Image();
-    
-    // Add quality and resize parameters to the URL if it's an Unsplash image
-    if (src.includes('unsplash.com')) {
-      const optimizedSrc = `${src}&q=75&w=${width}&fit=crop`;
-      console.log(`[ImageOptimizer:DEBUG] Using optimized Unsplash URL: ${optimizedSrc}`);
-      img.src = optimizedSrc;
-      setImageSrc(optimizedSrc);
-    } 
-    // Handle Supabase storage URLs for RHCA covers
-    else if (src.includes('supabase.co') || src.includes('llxzstqejdrplmxdjxlu')) {
-      // For RHCA cover images, handle them with special attention
-      const isRHCACover = src.includes('rhca_covers') || 
+    const loadImage = () => {
+      const img = new Image();
+      
+      // Add quality and resize parameters to the URL if it's an Unsplash image
+      if (src.includes('unsplash.com')) {
+        const optimizedSrc = `${src}&q=75&w=${width}&fit=crop`;
+        console.log(`[ImageOptimizer:DEBUG] Using optimized Unsplash URL: ${optimizedSrc}`);
+        img.src = optimizedSrc;
+        setImageSrc(optimizedSrc);
+      } 
+      // Handle Supabase storage URLs for RHCA covers
+      else if (src.includes('supabase.co') || src.includes('llxzstqejdrplmxdjxlu')) {
+        // Check if this is an RHCA cover image
+        const isRHCACover = src.includes('rhca_covers') || 
                           src.includes('rhca-covers') || 
                           src.includes('RHCA_vol_');
-      
-      if (isRHCACover) {
-        console.log(`[ImageOptimizer:DEBUG] Loading RHCA cover image: ${src}`);
-        // Add cache-busting parameter to ensure fresh image load
-        const cacheBuster = `?t=${Date.now()}`;
-        const cacheBustedSrc = `${src}${cacheBuster}`;
-        console.log(`[ImageOptimizer:DEBUG] Using cache-busted URL: ${cacheBustedSrc}`);
-        img.src = cacheBustedSrc;
-        setImageSrc(cacheBustedSrc);
-      } else {
+        
+        if (isRHCACover) {
+          console.log(`[ImageOptimizer:DEBUG] Loading RHCA cover image: ${src}`);
+          // Add cache-busting parameter to ensure fresh image load
+          const cacheBuster = `?t=${Date.now()}`;
+          const cacheBustedSrc = `${src}${cacheBuster}`;
+          console.log(`[ImageOptimizer:DEBUG] Using cache-busted URL: ${cacheBustedSrc}`);
+          img.src = cacheBustedSrc;
+          setImageSrc(cacheBustedSrc);
+        } else {
+          img.src = src;
+          setImageSrc(src);
+        }
+      } 
+      else {
+        console.log(`[ImageOptimizer:DEBUG] Loading standard image: ${src}`);
         img.src = src;
         setImageSrc(src);
       }
-    } 
-    else {
-      console.log(`[ImageOptimizer:DEBUG] Loading standard image: ${src}`);
-      img.src = src;
-      setImageSrc(src);
-    }
 
-    img.onload = () => {
-      console.log(`[ImageOptimizer:SUCCESS] Image loaded successfully: ${src}`);
-      setIsLoading(false);
-    };
+      img.onload = () => {
+        console.log(`[ImageOptimizer:SUCCESS] Image loaded successfully: ${src}`);
+        setIsLoading(false);
+        setHasError(false);
+      };
 
-    img.onerror = (error) => {
-      console.error(`[ImageOptimizer:ERROR] Failed to load image from: ${src}`, error);
-      // Log more details about the error
-      if (error instanceof Event) {
-        console.error('[ImageOptimizer:ERROR] Image loading error details:', {
-          target: error.target,
-          type: error.type,
-          timeStamp: error.timeStamp
-        });
-      }
-      
-      // Try to perform an HTTP request to check if the image URL is accessible
-      fetch(src, { method: 'HEAD' })
-        .then(response => {
-          console.log(`[ImageOptimizer:DEBUG] HTTP head request status: ${response.status} ${response.statusText}`);
-          if (!response.ok) {
-            console.error(`[ImageOptimizer:ERROR] Image URL returns HTTP ${response.status}`);
-          }
-        })
-        .catch(fetchError => {
-          console.error(`[ImageOptimizer:ERROR] Fetch check failed:`, fetchError);
-        });
+      img.onerror = (error) => {
+        console.error(`[ImageOptimizer:ERROR] Failed to load image from: ${src}`, error);
         
-      setHasError(true);
-      setIsLoading(false);
+        // If we've already retried 3 times, give up
+        if (retryCount >= 2) {
+          setHasError(true);
+          setIsLoading(false);
+          return;
+        }
+        
+        // If this is an RHCA cover, try to see if the file exists with a slightly different name
+        if (src.includes('RHCA_vol_')) {
+          const urlParts = src.split('/');
+          const filename = urlParts[urlParts.length - 1];
+          
+          // Try with and without date format
+          if (filename.match(/RHCA_vol_\d+_no_\d+_\d+_\d+_\d+/)) {
+            // Has date format, try without date
+            const baseFilename = filename.replace(/(_\d+_\d+_\d+)\.png.*/, '.png');
+            const newSrc = src.replace(filename, baseFilename);
+            console.log(`[ImageOptimizer:DEBUG] Retrying with simplified filename: ${newSrc}`);
+            
+            setRetryCount(prev => prev + 1);
+            setTimeout(() => {
+              const newImg = new Image();
+              newImg.src = newSrc;
+              setImageSrc(newSrc);
+            }, 500);
+          } else {
+            setHasError(true);
+            setIsLoading(false);
+          }
+        } else {
+          setHasError(true);
+          setIsLoading(false);
+        }
+      };
     };
+
+    loadImage();
 
     return () => {
-      img.onload = null;
-      img.onerror = null;
+      // Clean up
     };
-  }, [src, width, alt]);
+  }, [src, width, alt, retryCount]);
 
   if (isLoading) {
     return <Skeleton className={`${className} bg-muted`} style={{ width, height }} />;

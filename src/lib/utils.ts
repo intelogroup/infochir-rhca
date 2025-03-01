@@ -36,9 +36,11 @@ export function formatDateForFilename(date: Date): string {
  */
 export function formatRHCACoverImageFilename(volume: string, issue: string, date: Date): string {
   const paddedVolume = String(volume).padStart(2, '0');
-  const dateFormatted = formatDateForFilename(date);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
   
-  return `RHCA_vol_${paddedVolume}_no_${issue}_${dateFormatted}.png`;
+  return `RHCA_vol_${paddedVolume}_no_${issue}_${day}_${month}_${year}.png`;
 }
 
 /**
