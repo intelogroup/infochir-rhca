@@ -4,6 +4,73 @@ import { supabase } from "@/integrations/supabase/client";
 import type { RhcaArticle } from "../types";
 import { toast } from "sonner";
 
+// Helper functions for URL formatting
+const formatPdfUrl = (pdfPath: string | null): string | undefined => {
+  if (!pdfPath) return undefined;
+  
+  // Check if it's already a full URL
+  if (pdfPath.startsWith('http')) return pdfPath;
+  
+  // Handle relative paths by constructing proper Supabase storage URL
+  if (pdfPath.startsWith('/')) {
+    const fileName = pdfPath.split('/').pop();
+    if (!fileName) return undefined;
+    
+    const { data } = supabase.storage
+      .from('rhca-pdfs')
+      .getPublicUrl(fileName);
+      
+    return data.publicUrl;
+  }
+  
+  // Direct bucket path
+  const { data } = supabase.storage
+    .from('rhca-pdfs')
+    .getPublicUrl(pdfPath);
+    
+  return data.publicUrl;
+};
+
+const formatImageUrl = (imagePath: string | null): string | undefined => {
+  if (!imagePath) return undefined;
+  
+  // Check if it's already a full URL (like Unsplash)
+  if (imagePath.startsWith('http')) return imagePath;
+  
+  // Construct proper Supabase storage URL
+  const { data } = supabase.storage
+    .from('rhca_covers')
+    .getPublicUrl(imagePath);
+    
+  return data.publicUrl;
+};
+
+// Convert string arrays or comma-separated strings to proper string arrays
+const parseStringArray = (value: any): string[] => {
+  if (!value) return [];
+  if (Array.isArray(value)) return value;
+  if (typeof value === 'string') {
+    return value.split(',').map(item => item.trim()).filter(Boolean);
+  }
+  return [];
+};
+
+// Merge author fields into a single array
+const mergeAuthors = (primaryAuthor: string | null, coAuthors: any): string[] => {
+  const authors: string[] = [];
+  
+  if (primaryAuthor) {
+    authors.push(primaryAuthor);
+  }
+  
+  if (coAuthors) {
+    const coAuthorsList = parseStringArray(coAuthors);
+    authors.push(...coAuthorsList);
+  }
+  
+  return authors;
+};
+
 export const useRHCAArticles = () => {
   console.log('[useRHCAArticles] Hook initializing');
   const startTime = Date.now();
@@ -49,13 +116,23 @@ export const useRHCAArticles = () => {
           // Convert date strings to ISO format for consistency
           const publicationDate = new Date(item.publication_date).toISOString();
           
+          // Process authors from primary_author and co_authors fields
+          const authors = mergeAuthors(item.primary_author, item.co_authors);
+          
+          // Format URLs for images and PDFs
+          const imageUrl = formatImageUrl(item.image_url);
+          const pdfUrl = formatPdfUrl(item.pdf_url);
+          
+          // Extract PDF filename from URL
+          const pdfFileName = pdfUrl ? pdfUrl.split('/').pop() : undefined;
+          
           return {
             id: item.id,
             title: item.title,
             abstract: item.abstract || "",
-            authors: Array.isArray(item.authors) ? item.authors : [],
+            authors: authors,
             publicationDate: publicationDate,
-            date: publicationDate,
+            date: publicationDate, // Use publicationDate for date field
             specialty: item.specialty || "",
             category: item.category || "",
             source: item.source || "RHCA",
@@ -66,14 +143,14 @@ export const useRHCAArticles = () => {
             downloads: item.downloads || 0,
             shares: item.shares || 0,
             citations: item.citations || 0,
-            tags: Array.isArray(item.tags) ? item.tags : [],
-            imageUrl: item.image_url || undefined,
-            pdfUrl: item.pdf_url || undefined,
+            tags: parseStringArray(item.tags),
+            imageUrl: imageUrl,
+            pdfUrl: pdfUrl,
             status: item.status || "published",
             institution: item.institution || "",
             userId: item.user_id || undefined,
             articleType: item.article_type || "RHCA",
-            pdfFileName: item.pdf_url ? item.pdf_url.split('/').pop() : undefined
+            pdfFileName: pdfFileName
           };
         });
 
