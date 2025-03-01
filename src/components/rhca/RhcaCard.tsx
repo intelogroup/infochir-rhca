@@ -2,11 +2,12 @@
 import * as React from "react";
 import { Card } from "@/components/ui/card";
 import type { RhcaArticle } from "./types";
-import { ArticleHeader } from "./article/ArticleHeader";
 import { ArticleContent } from "./article/ArticleContent";
 import { ArticleActions } from "./article/ArticleActions";
 import { motion } from "framer-motion";
 import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
+import { useState, useEffect } from "react";
+import { checkFileExistsInBucket, getFilePublicUrl } from "@/lib/pdf-utils";
 
 interface RhcaCardProps {
   article: RhcaArticle;
@@ -15,6 +16,28 @@ interface RhcaCardProps {
 }
 
 export const RhcaCard: React.FC<RhcaCardProps> = ({ article, onCardClick, className }) => {
+  const [coverExists, setCoverExists] = useState<boolean | null>(null);
+  const [coverUrl, setCoverUrl] = useState<string | undefined>(article.imageUrl);
+  
+  useEffect(() => {
+    const verifyCoverExists = async () => {
+      if (!article.coverImageFileName) {
+        setCoverExists(false);
+        return;
+      }
+      
+      const exists = await checkFileExistsInBucket('rhca_covers', article.coverImageFileName);
+      setCoverExists(exists);
+      
+      if (exists) {
+        const url = getFilePublicUrl('rhca_covers', article.coverImageFileName);
+        if (url) setCoverUrl(url);
+      }
+    };
+    
+    verifyCoverExists();
+  }, [article.coverImageFileName]);
+
   const handleClick = () => {
     if (onCardClick) {
       onCardClick();
@@ -34,10 +57,10 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article, onCardClick, classN
       >
         <div className="flex gap-4 p-4">
           <div className="w-20 flex-shrink-0">
-            {article.imageUrl ? (
+            {coverExists && coverUrl ? (
               <div className="aspect-[3/4] relative overflow-hidden rounded-lg border border-gray-100">
                 <ImageOptimizer 
-                  src={article.imageUrl} 
+                  src={coverUrl} 
                   alt={article.title}
                   className="object-cover w-full h-full"
                   width={80}
@@ -47,7 +70,7 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article, onCardClick, classN
               </div>
             ) : (
               <div className="aspect-[3/4] bg-emerald-50/50 rounded-lg border border-emerald-100/50 flex items-center justify-center">
-                <span className="text-emerald-600/30 text-lg font-semibold">PDF</span>
+                <span className="text-emerald-600/30 text-lg font-semibold">RHCA</span>
               </div>
             )}
           </div>

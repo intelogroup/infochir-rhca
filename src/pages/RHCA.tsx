@@ -10,10 +10,50 @@ import { MultiFileUploader } from "@/components/pdf/MultiFileUploader";
 import { toast } from "sonner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { InfoIcon } from "lucide-react";
+import { useState, useEffect } from "react";
+import { checkFileExistsInBucket } from "@/lib/pdf-utils";
 
 const RHCA: React.FC = () => {
   const [searchParams] = useSearchParams();
   const isAdmin = searchParams.get('admin') === 'true';
+  const [pdfFilesStatus, setPdfFilesStatus] = useState<Record<string, boolean>>({});
+  const [coverFilesStatus, setCoverFilesStatus] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    if (isAdmin) {
+      const checkFiles = async () => {
+        const volumeIssues = ['2:47', '3:48', '4:49'];
+        const pdfStatus: Record<string, boolean> = {};
+        const coverStatus: Record<string, boolean> = {};
+        
+        // PDF file naming pattern: RHCA_vol_XX_no_XX_date.pdf
+        for (const vi of volumeIssues) {
+          const [volume, issue] = vi.split(':');
+          const pdfFilePattern = `RHCA_vol_${volume.padStart(2, '0')}_no_${issue}`;
+          const coverFilePattern = `RHCA_vol_${volume.padStart(2, '0')}_no_${issue}_cover`;
+          
+          // Check for PDFs
+          const { data: pdfFiles } = await supabase.storage
+            .from('rhca-pdfs')
+            .list('', { search: pdfFilePattern });
+            
+          pdfStatus[vi] = pdfFiles && pdfFiles.length > 0;
+          
+          // Check for covers
+          const { data: coverFiles } = await supabase.storage
+            .from('rhca_covers')
+            .list('', { search: coverFilePattern });
+            
+          coverStatus[vi] = coverFiles && coverFiles.length > 0;
+        }
+        
+        setPdfFilesStatus(pdfStatus);
+        setCoverFilesStatus(coverStatus);
+      };
+      
+      checkFiles();
+    }
+  }, [isAdmin]);
 
   const handlePdfUploadComplete = (urls: string[]) => {
     if (urls.length > 0) {
@@ -43,9 +83,34 @@ const RHCA: React.FC = () => {
               
               <Alert className="mb-6">
                 <InfoIcon className="h-4 w-4" />
-                <AlertTitle>Gestion des fichiers PDF</AlertTitle>
-                <AlertDescription>
-                  Pour que les PDFs soient correctement associés aux articles, assurez-vous que les noms des fichiers suivent le format <strong>RHCA_vol_XX_no_XX_date.pdf</strong> et correspondent aux entrées dans la base de données.
+                <AlertTitle>Gestion des fichiers RHCA</AlertTitle>
+                <AlertDescription className="space-y-2">
+                  <p>Pour que les fichiers soient correctement associés aux articles, suivez ces conventions de nommage:</p>
+                  <ul className="list-disc pl-5 space-y-1 text-sm">
+                    <li><strong>PDF:</strong> RHCA_vol_XX_no_XX_date.pdf (ex: RHCA_vol_04_no_49_11_1_2025.pdf)</li>
+                    <li><strong>Couvertures:</strong> RHCA_vol_XX_no_XX_cover.jpg (ex: RHCA_vol_04_no_49_cover.jpg)</li>
+                  </ul>
+                  <p className="text-sm mt-2">
+                    <strong>Statut des fichiers:</strong>
+                    {Object.entries(pdfFilesStatus).length > 0 && (
+                      <span className="block mt-1">
+                        PDFs: {Object.entries(pdfFilesStatus).map(([vi, exists]) => (
+                          <span key={`pdf-${vi}`} className={`inline-flex items-center mr-2 px-2 py-1 rounded-full text-xs ${exists ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                            Vol {vi.split(':')[0]}, No {vi.split(':')[1]}: {exists ? '✓' : '✗'}
+                          </span>
+                        ))}
+                      </span>
+                    )}
+                    {Object.entries(coverFilesStatus).length > 0 && (
+                      <span className="block mt-1">
+                        Covers: {Object.entries(coverFilesStatus).map(([vi, exists]) => (
+                          <span key={`cover-${vi}`} className={`inline-flex items-center mr-2 px-2 py-1 rounded-full text-xs ${exists ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                            Vol {vi.split(':')[0]}, No {vi.split(':')[1]}: {exists ? '✓' : '✗'}
+                          </span>
+                        ))}
+                      </span>
+                    )}
+                  </p>
                 </AlertDescription>
               </Alert>
               

@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { RhcaArticle } from "../types";
 import { toast } from "sonner";
+import { mapToCoverImageFileName } from "@/lib/pdf-utils";
 
 // Helper functions for URL formatting
 const formatPdfUrl = (pdfPath: string | null): string | undefined => {
@@ -135,14 +136,15 @@ export const useRHCAArticles = () => {
           // Process authors from primary_author and co_authors fields
           const authors = mergeAuthors(item.primary_author, item.co_authors);
           
-          // Format URLs for images
-          const imageUrl = formatImageUrl(item.image_url);
-          
           // Get the appropriate PDF filename based on volume and issue
           const pdfFileName = mapToPdfFileName(item.volume, item.issue);
           
-          // Format PDF URL if we have a filename
+          // Get cover image filename
+          const coverImageFileName = mapToCoverImageFileName(item.volume, item.issue);
+          
+          // Format URLs if we have filenames
           const pdfUrl = pdfFileName ? formatPdfUrl(pdfFileName) : undefined;
+          const imageUrl = coverImageFileName ? formatImageUrl(coverImageFileName) : item.image_url ? formatImageUrl(item.image_url) : undefined;
           
           return {
             id: item.id,
@@ -168,7 +170,8 @@ export const useRHCAArticles = () => {
             institution: item.institution || "",
             userId: item.user_id || undefined,
             articleType: item.article_type || "RHCA",
-            pdfFileName: pdfFileName
+            pdfFileName: pdfFileName,
+            coverImageFileName: coverImageFileName
           };
         });
 

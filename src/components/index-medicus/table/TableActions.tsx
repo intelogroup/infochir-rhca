@@ -1,257 +1,160 @@
-
-import { Button } from "@/components/ui/button";
-import { Download, Share2, ExternalLink, Loader2, AlertCircle } from "lucide-react";
-import { toast } from "sonner";
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import * as React from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { 
-  checkFileExistsInBucket, 
-  extractFilenameFromUrl, 
-  openFileInNewTab, 
-  downloadFileFromStorage 
-} from "@/lib/pdf-utils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Copy, Edit, MoreHorizontal, RotateCcw, Trash } from "lucide-react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useRouter } from "next/navigation";
 
-interface TableActionsProps {
-  articleId: string;
-  pdfUrl?: string;
+interface TableActionsProps<TData> {
+  row: {
+    original: TData;
+  };
 }
 
-export const TableActions = ({ articleId, pdfUrl }: TableActionsProps) => {
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [fileExists, setFileExists] = useState<boolean | null>(null);
-  const BUCKET_NAME = 'article-pdfs';
+export function TableActions<TData extends { id: string; title: string }>(
+  props: TableActionsProps<TData>
+) {
+  const { row } = props;
+  const router = useRouter();
+  const id = row.original.id;
+  const title = row.original.title;
 
-  // Extract filename from URL
-  const pdfFileName = extractFilenameFromUrl(pdfUrl);
-  
-  // Check if file exists when component mounts
-  useEffect(() => {
-    const verifyFileExists = async () => {
-      // For external URLs assume they exist unless proven otherwise
-      if (!pdfFileName) {
-        setFileExists(false);
-        return;
-      }
-      
-      if (pdfUrl?.includes('article-pdfs')) {
-        setFileExists(await checkFileExistsInBucket(BUCKET_NAME, pdfFileName));
-      } else if (pdfUrl) {
-        // For external URLs, try a HEAD request
-        try {
-          const response = await fetch(pdfUrl, { method: 'HEAD' });
-          setFileExists(response.ok);
-        } catch (err) {
-          console.error('Failed to check external URL:', err);
-          setFileExists(false);
-        }
-      } else {
-        setFileExists(false);
-      }
-    };
+  const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
-    verifyFileExists();
-  }, [pdfUrl, pdfFileName]);
-
-  // Function to increment counts
-  const incrementCounter = async (id: string, countType: 'downloads' | 'views') => {
-    try {
-      const { error } = await supabase.rpc('increment_count', { 
-        table_name: 'igm_articles_view',
-        column_name: countType,
-        row_id: id
-      });
-      
-      if (error) {
-        console.error(`Failed to increment ${countType} count:`, error);
-      }
-    } catch (error) {
-      console.error(`Error in increment counter:`, error);
-    }
-  };
-
-  const handleShare = () => {
-    const shareUrl = `${window.location.origin}/index-medicus/articles/${articleId}`;
-    navigator.clipboard.writeText(shareUrl);
-    toast.success("Lien copié dans le presse-papier");
-    
-    // Try to increment share count
-    supabase.rpc('increment_count', { 
-      table_name: 'igm_articles_view',
-      column_name: 'shares',
-      row_id: articleId
-    }).catch(error => {
-      console.error('Failed to increment share count:', error);
+  const handleCopyId = () => {
+    navigator.clipboard.writeText(id);
+    toast({
+      title: "Copié!",
+      description: "L'ID de l'article a été copié dans le presse-papier.",
     });
   };
 
-  const handleOpenPdf = async () => {
-    if (!pdfUrl) {
-      toast.error("Le PDF n'est pas encore disponible");
-      return;
-    }
-
-    setIsDownloading(true);
-    
-    try {
-      if (pdfUrl.includes('article-pdfs') && pdfFileName) {
-        await openFileInNewTab(BUCKET_NAME, pdfFileName, articleId, incrementCounter);
-      } else {
-        // External URL handling
-        window.open(pdfUrl, '_blank');
-        await incrementCounter(articleId, 'views');
-        toast.success("Ouverture du PDF...");
-      }
-    } catch (error) {
-      console.error('PDF open error:', error);
-      toast.error("Erreur lors de l'ouverture du PDF");
-    } finally {
-      setIsDownloading(false);
-    }
-  };
-  
-  const handleDownloadPdf = async () => {
-    if (!pdfUrl) {
-      toast.error("Le PDF n'est pas encore disponible");
-      return;
-    }
-
-    setIsDownloading(true);
-    
-    try {
-      if (pdfUrl.includes('article-pdfs') && pdfFileName) {
-        await downloadFileFromStorage(BUCKET_NAME, pdfFileName, articleId, incrementCounter);
-      } else {
-        // Handle external URL download
-        const response = await fetch(pdfUrl);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const blob = await response.blob();
-        const fileName = pdfFileName || `article-${articleId}.pdf`;
-        
-        // Create an invisible link to download the file
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-        
-        // Increment download counter
-        await incrementCounter(articleId, 'downloads');
-        
-        toast.success("Téléchargement réussi");
-      }
-    } catch (error) {
-      console.error('Download error:', error);
-      toast.error("Erreur lors du téléchargement du PDF");
-    } finally {
-      setIsDownloading(false);
-    }
+  const handleEdit = () => {
+    router.push(`/dashboard/articles/edit/${id}`);
   };
 
-  // If we're still checking if the file exists
-  if (fileExists === null && pdfUrl) {
-    return (
-      <div className="flex justify-end items-center space-x-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleShare}
-          className="hover:bg-muted"
-        >
-          <Share2 className="h-4 w-4" />
-        </Button>
-        
-        <Button
-          variant="ghost"
-          size="sm"
-          disabled
-          className="hover:bg-muted"
-        >
-          <Loader2 className="h-4 w-4 animate-spin" />
-        </Button>
-        
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => window.open(`/index-medicus/articles/${articleId}`, '_blank')}
-          className="hover:bg-muted"
-        >
-          <ExternalLink className="h-4 w-4" />
-        </Button>
-      </div>
-    );
-  }
+  const handleDelete = async () => {
+    setLoading(true);
+    try {
+      // Delete related records in article_authors table
+      const { error: authorError } = await supabase
+        .from("article_authors")
+        .delete()
+        .eq("article_id", id);
+
+      if (authorError) {
+        console.error("Error deleting article authors:", authorError);
+        toast({
+          title: "Erreur!",
+          description:
+            "Une erreur est survenue lors de la suppression des auteurs de l'article.",
+        });
+        return;
+      }
+
+      // Delete the article itself
+      const { error: articleError } = await supabase
+        .from("articles")
+        .delete()
+        .eq("id", id);
+
+      if (articleError) {
+        console.error("Error deleting article:", articleError);
+        toast({
+          title: "Erreur!",
+          description:
+            "Une erreur est survenue lors de la suppression de l'article.",
+        });
+        return;
+      }
+
+      toast({
+        title: "Succès!",
+        description: "L'article a été supprimé avec succès.",
+      });
+      setOpen(false);
+      router.refresh();
+    } catch (error) {
+      console.error("Unexpected error:", error);
+      toast({
+        title: "Erreur!",
+        description: "Une erreur inattendue est survenue.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="flex justify-end items-center space-x-2">
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={handleShare}
-        className="hover:bg-muted"
-      >
-        <Share2 className="h-4 w-4" />
-      </Button>
-      
-      {(pdfUrl && fileExists) ? (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="hover:bg-muted"
-              disabled={isDownloading}
-            >
-              {isDownloading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Download className="h-4 w-4" />
-              )}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={handleOpenPdf}>
-              <ExternalLink className="h-4 w-4 mr-2" />
-              Ouvrir dans un nouvel onglet
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="p-2 rounded-md hover:bg-secondary">
+          <MoreHorizontal className="w-4 h-4" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={handleCopyId}>
+          <Copy className="w-4 h-4 mr-2" />
+          Copier l'ID
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleEdit}>
+          <Edit className="w-4 h-4 mr-2" />
+          Modifier
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <DropdownMenuItem className="text-destructive focus:bg-destructive/20">
+              <Trash className="w-4 h-4 mr-2" />
+              Supprimer
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleDownloadPdf}>
-              <Download className="h-4 w-4 mr-2" />
-              Télécharger
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ) : pdfUrl ? (
-        <Button
-          variant="ghost"
-          size="sm"
-          disabled
-          className="hover:bg-muted"
-          title="PDF non disponible"
-        >
-          <AlertCircle className="h-4 w-4" />
-        </Button>
-      ) : null}
-      
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => window.open(`/index-medicus/articles/${articleId}`, '_blank')}
-        className="hover:bg-muted"
-      >
-        <ExternalLink className="h-4 w-4" />
-      </Button>
-    </div>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Êtes-vous sûr(e) ?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Cette action est irréversible. L'article "{title}" sera
+                définitivement supprimé.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Annuler</AlertDialogCancel>
+              <AlertDialogAction
+                disabled={loading}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleDelete();
+                }}
+              >
+                {loading ? (
+                  <RotateCcw className="mr-2 w-4 h-4 animate-spin" />
+                ) : (
+                  <Trash className="w-4 h-4 mr-2" />
+                )}
+                Supprimer
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
-};
+}
