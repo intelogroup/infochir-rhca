@@ -7,16 +7,35 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { RhcaArticle } from "./types";
 import { ArticleActions } from "./article/ArticleActions";
+import { supabase } from "@/integrations/supabase/client";
 
 interface RhcaTableProps {
   articles: RhcaArticle[];
 }
 
 export const RhcaTable: React.FC<RhcaTableProps> = ({ articles }) => {
-  const handleShare = (articleId: string) => {
+  const handleShare = async (articleId: string) => {
     const shareUrl = `${window.location.origin}/rhca/articles/${articleId}`;
-    navigator.clipboard.writeText(shareUrl);
-    toast.success("Lien copié dans le presse-papier");
+    
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success("Lien copié dans le presse-papier");
+      
+      // Update share count
+      const { error } = await supabase
+        .from('rhca_articles_view')
+        .update({ 
+          shares: supabase.rpc('increment', { value: 1, column: 'shares', id: articleId })
+        })
+        .eq('id', articleId);
+        
+      if (error) {
+        console.error('Error updating share count:', error);
+      }
+    } catch (error) {
+      console.error('Share error:', error);
+      toast.error("Erreur lors de la copie du lien");
+    }
   };
 
   return (

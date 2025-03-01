@@ -6,6 +6,7 @@ import { ArticleHeader } from "./article/ArticleHeader";
 import { ArticleContent } from "./article/ArticleContent";
 import { ArticleActions } from "./article/ArticleActions";
 import { motion } from "framer-motion";
+import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
 
 interface RhcaCardProps {
   article: RhcaArticle;
@@ -35,10 +36,13 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article, onCardClick, classN
           <div className="w-20 flex-shrink-0">
             {article.imageUrl ? (
               <div className="aspect-[3/4] relative overflow-hidden rounded-lg border border-gray-100">
-                <img 
+                <ImageOptimizer 
                   src={article.imageUrl} 
                   alt={article.title}
                   className="object-cover w-full h-full"
+                  width={80}
+                  height={120}
+                  fallbackText="RHCA"
                 />
               </div>
             ) : (
