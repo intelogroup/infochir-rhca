@@ -1,3 +1,4 @@
+
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState, useRef } from "react";
@@ -80,6 +81,7 @@ export const HeroSection = () => {
         <div
           key={currentIndex}
           className="absolute inset-0 z-0"
+          style={{ height: '33%' }} // Reduced to one-third of the original size
         >
           <div 
             className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-90 z-0`}
