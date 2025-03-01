@@ -84,7 +84,15 @@ const mapToPdfFileName = (volume: string, issue: string): string | undefined => 
   };
   
   const key = `${volume}:${issue}`;
-  return volumeIssueMap[key];
+  const fileName = volumeIssueMap[key];
+  
+  if (!fileName) {
+    console.warn(`[useRHCAArticles] No PDF file mapping found for volume:issue ${key}`);
+  } else {
+    console.log(`[useRHCAArticles] Mapped volume:issue ${key} to file: ${fileName}`);
+  }
+  
+  return fileName;
 };
 
 export const useRHCAArticles = () => {
@@ -145,6 +153,14 @@ export const useRHCAArticles = () => {
           // Format URLs if we have filenames
           const pdfUrl = pdfFileName ? formatPdfUrl(pdfFileName) : undefined;
           const imageUrl = coverImageFileName ? formatImageUrl(coverImageFileName) : item.image_url ? formatImageUrl(item.image_url) : undefined;
+          
+          if (pdfFileName) {
+            console.log(`[useRHCAArticles] Article ${item.id} mapped to PDF: ${pdfFileName}, URL: ${pdfUrl}`);
+          }
+          
+          if (coverImageFileName) {
+            console.log(`[useRHCAArticles] Article ${item.id} mapped to cover: ${coverImageFileName}, URL: ${imageUrl}`);
+          }
           
           return {
             id: item.id,

@@ -14,6 +14,18 @@ export const checkFileExistsInBucket = async (
   try {
     console.log(`[Storage] Checking if file exists: ${fileName} in bucket: ${bucketName}`);
     
+    // First attempt: direct path check
+    const { data: fileData, error: fileError } = await supabase
+      .storage
+      .from(bucketName)
+      .download(fileName);
+      
+    if (fileData) {
+      console.log(`[Storage] File exists (direct check): ${fileName}`);
+      return true;
+    }
+    
+    // If direct check fails, try listing files with search
     const { data, error } = await supabase
       .storage
       .from(bucketName)
@@ -28,7 +40,7 @@ export const checkFileExistsInBucket = async (
 
     // If we found the file in the list, it exists
     const fileExists = data && data.some(file => file.name === fileName);
-    console.log(`[Storage] File exists: ${fileExists}`);
+    console.log(`[Storage] File exists (list check): ${fileExists}`);
     
     return fileExists;
   } catch (err) {

@@ -39,7 +39,10 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
         return;
       }
 
-      setFileExists(await checkFileExistsInBucket(BUCKET_NAME, pdfFileName));
+      console.log(`[ArticleActions] Checking if PDF exists: ${pdfFileName}`);
+      const exists = await checkFileExistsInBucket(BUCKET_NAME, pdfFileName);
+      console.log(`[ArticleActions] PDF exists check result: ${exists}`);
+      setFileExists(exists);
     };
 
     verifyFileExists();

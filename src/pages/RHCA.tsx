@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { RhcaGrid } from "@/components/rhca/RhcaGrid";
@@ -26,11 +25,17 @@ const RHCA: React.FC = () => {
         const pdfStatus: Record<string, boolean> = {};
         const coverStatus: Record<string, boolean> = {};
         
+        console.log("[RHCA] Starting file verification for admin panel...");
+        
         // PDF file naming pattern: RHCA_vol_XX_no_XX_date.pdf
         for (const vi of volumeIssues) {
           const [volume, issue] = vi.split(':');
           const pdfFilePattern = `RHCA_vol_${volume.padStart(2, '0')}_no_${issue}`;
           const coverFilePattern = `RHCA_vol_${volume.padStart(2, '0')}_no_${issue}_cover`;
+          
+          console.log(`[RHCA] Checking files for volume:issue ${vi}`);
+          console.log(`[RHCA] PDF pattern: ${pdfFilePattern}`);
+          console.log(`[RHCA] Cover pattern: ${coverFilePattern}`);
           
           // Check for PDFs
           const { data: pdfFiles } = await supabase.storage
@@ -45,10 +50,14 @@ const RHCA: React.FC = () => {
             .list('', { search: coverFilePattern });
             
           coverStatus[vi] = coverFiles && coverFiles.length > 0;
+          
+          console.log(`[RHCA] Status for ${vi} - PDF: ${pdfStatus[vi]}, Cover: ${coverStatus[vi]}`);
         }
         
         setPdfFilesStatus(pdfStatus);
         setCoverFilesStatus(coverStatus);
+        
+        console.log("[RHCA] File verification complete", { pdfStatus, coverStatus });
       };
       
       checkFiles();
@@ -61,6 +70,27 @@ const RHCA: React.FC = () => {
         description: "N'oubliez pas de mettre à jour les références dans la base de données."
       });
       console.log('Uploaded PDF files:', urls);
+      
+      // Refresh file status checks
+      const checkFiles = async () => {
+        const volumeIssues = ['2:47', '3:48', '4:49'];
+        const pdfStatus: Record<string, boolean> = {};
+        
+        for (const vi of volumeIssues) {
+          const [volume, issue] = vi.split(':');
+          const pdfFilePattern = `RHCA_vol_${volume.padStart(2, '0')}_no_${issue}`;
+          
+          const { data: pdfFiles } = await supabase.storage
+            .from('rhca-pdfs')
+            .list('', { search: pdfFilePattern });
+            
+          pdfStatus[vi] = pdfFiles && pdfFiles.length > 0;
+        }
+        
+        setPdfFilesStatus(pdfStatus);
+      };
+      
+      checkFiles();
     }
   };
 
@@ -68,6 +98,27 @@ const RHCA: React.FC = () => {
     if (urls.length > 0) {
       toast.success(`${urls.length} image(s) de couverture uploadée(s) avec succès`);
       console.log('Uploaded cover images:', urls);
+      
+      // Refresh file status checks
+      const checkFiles = async () => {
+        const volumeIssues = ['2:47', '3:48', '4:49'];
+        const coverStatus: Record<string, boolean> = {};
+        
+        for (const vi of volumeIssues) {
+          const [volume, issue] = vi.split(':');
+          const coverFilePattern = `RHCA_vol_${volume.padStart(2, '0')}_no_${issue}_cover`;
+          
+          const { data: coverFiles } = await supabase.storage
+            .from('rhca_covers')
+            .list('', { search: coverFilePattern });
+            
+          coverStatus[vi] = coverFiles && coverFiles.length > 0;
+        }
+        
+        setCoverFilesStatus(coverStatus);
+      };
+      
+      checkFiles();
     }
   };
 
