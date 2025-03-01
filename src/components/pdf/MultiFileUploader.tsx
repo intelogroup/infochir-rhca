@@ -34,13 +34,13 @@ export const MultiFileUploader = ({
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
 
   const generateRHCAFilename = (originalName: string) => {
-    if (bucket !== 'rhca-pdfs' || !volumeInfo) {
+    if ((!volumeInfo) || (bucket !== 'rhca-pdfs' && bucket !== 'rhca-covers')) {
       return originalName;
     }
 
     const now = new Date();
     const dateFormatted = formatDateToSimple(now);
-    const fileExt = originalName.split('.').pop() || 'pdf';
+    const fileExt = originalName.split('.').pop() || (type === 'document' ? 'pdf' : 'jpg');
     
     return `RHCA_vol_${volumeInfo.volume}_no_${volumeInfo.issue}_${dateFormatted}.${fileExt}`;
   };
@@ -68,7 +68,7 @@ export const MultiFileUploader = ({
         
         // Use RHCA naming convention if applicable
         let fileName = sanitizedName;
-        if (bucket === 'rhca-pdfs' && volumeInfo) {
+        if ((bucket === 'rhca-pdfs' || bucket === 'rhca-covers') && volumeInfo) {
           fileName = generateRHCAFilename(sanitizedName);
         } else {
           fileName = `${Date.now()}_${sanitizedName}`;
