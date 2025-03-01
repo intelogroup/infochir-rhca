@@ -43,7 +43,7 @@ export const navItems: NavItem[] = [
   {
     name: "IGM",
     href: "/igm",
-    icon: Link,
+    icon: Newspaper,
     description: "Restez informé des dernières nouvelles et évolutions du domaine médical avec notre gazette médicale",
     logo: "/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png"
   },
