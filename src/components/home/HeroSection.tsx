@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import LazyImage from "@/components/adc/LazyImage";
 
 export const HeroSection = () => {
   const sectionRef = useRef(null);
@@ -13,23 +14,26 @@ export const HeroSection = () => {
       ref={sectionRef} 
       className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(100vh-4rem)] pt-20 md:pt-28"
     >
-      {/* Background container with proper z-index stacking */}
+      {/* Background container - added higher z-index layering for proper stacking */}
       <div className="absolute inset-0 w-full h-full">
-        {/* Image layer */}
-        <div 
-          className="absolute inset-0 w-full h-full"
-          style={{ 
-            backgroundImage: `url(/lovable-uploads/3f1d1dc5-06fa-401a-9ca6-3d4b49276253.png)`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            zIndex: 1,
-          }}
-        />
+        {/* Image layer - using img element instead of background-image for better loading control */}
+        <div className="absolute inset-0 w-full h-full" style={{ zIndex: 1 }}>
+          <img 
+            src="/lovable-uploads/3f1d1dc5-06fa-401a-9ca6-3d4b49276253.png" 
+            alt="Medical background" 
+            className="w-full h-full object-cover object-center"
+            onError={(e) => {
+              console.error("Image failed to load", e);
+              // Fallback to solid color if image fails
+              e.currentTarget.style.display = 'none';
+              e.currentTarget.parentElement.style.backgroundColor = '#f0f0f0';
+            }}
+          />
+        </div>
         
-        {/* Gradient overlay */}
+        {/* Gradient overlay - adjusted opacity and blend mode */}
         <div 
-          className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] opacity-60"
+          className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] opacity-70"
           style={{ 
             mixBlendMode: 'multiply',
             zIndex: 2,
