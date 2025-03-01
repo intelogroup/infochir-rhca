@@ -22,7 +22,13 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article, onCardClick, classN
   useEffect(() => {
     const verifyCoverExists = async () => {
       console.log(`[RhcaCard:DEBUG] Verifying cover for article: ${article.id}, title: ${article.title}`);
-      console.log(`[RhcaCard:DEBUG] Article data:`, article);
+      console.log(`[RhcaCard:DEBUG] Article data:`, JSON.stringify({
+        id: article.id,
+        title: article.title,
+        coverImageFileName: article.coverImageFileName,
+        imageUrl: article.imageUrl,
+        coverImage: article.coverImage
+      }));
       
       if (!article.coverImageFileName) {
         console.warn(`[RhcaCard:WARN] No coverImageFileName available for article ${article.id}`);
@@ -47,6 +53,9 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article, onCardClick, classN
           if (article.imageUrl) {
             console.log(`[RhcaCard:INFO] Using fallback imageUrl: ${article.imageUrl}`);
             setCoverUrl(article.imageUrl);
+          } else if (article.coverImage) {
+            console.log(`[RhcaCard:INFO] Using fallback coverImage: ${article.coverImage}`);
+            setCoverUrl(article.coverImage);
           }
         }
       } catch (error) {
@@ -56,7 +65,7 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article, onCardClick, classN
     };
     
     verifyCoverExists();
-  }, [article.coverImageFileName, article.id, article.title, article.imageUrl]);
+  }, [article.coverImageFileName, article.id, article.title, article.imageUrl, article.coverImage]);
 
   const handleClick = () => {
     if (onCardClick) {

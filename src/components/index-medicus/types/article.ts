@@ -102,6 +102,8 @@ export const mapDatabaseArticleToArticle = (dbArticle: DatabaseArticle): Article
     issue: dbArticle.issue,
     pageNumber: dbArticle.page_number,
     articleType: dbArticle.article_type as ArticleSource | undefined,
-    lastUpdate: dbArticle.updated_at
+    lastUpdate: dbArticle.updated_at,
+    pdfFileName: dbArticle.pdf_filename || undefined,
+    coverImageFileName: dbArticle.cover_image_filename || undefined
   };
 };

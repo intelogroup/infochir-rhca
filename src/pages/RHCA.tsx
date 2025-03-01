@@ -14,6 +14,7 @@ import {
   checkFileExistsInBucket, 
   debugDatabaseTables,
   updatePdfFilenames,
+  updateCoverImageFilenames,
   mapToCoverImageFileName
 } from "@/lib/pdf-utils";
 import { supabase } from "@/integrations/supabase/client";
@@ -166,6 +167,11 @@ const RHCA: React.FC = () => {
     updatePdfFilenames();
   };
 
+  const handleUpdateCoverFilenames = () => {
+    updateCoverImageFilenames();
+    toast.success("Cover image filenames updated in database");
+  };
+
   return (
     <MainLayout>
       <div className="min-h-screen bg-gray-50/50 pt-[50px]">
@@ -188,9 +194,16 @@ const RHCA: React.FC = () => {
                   </Button>
                   <Button 
                     variant="outline"
+                    className="mr-2"
                     onClick={handleUpdateFilenames}
                   >
                     Update PDF Filenames
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={handleUpdateCoverFilenames}
+                  >
+                    Update Cover Filenames
                   </Button>
                 </div>
               )}

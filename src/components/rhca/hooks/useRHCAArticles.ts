@@ -14,8 +14,9 @@ interface RhcaDatabaseArticle {
   source: string;
   category: string;
   tags: string[];
-  pdf_url: string; // Make this required to match DatabaseArticle
-  image_url: string; // Make this required to match DatabaseArticle
+  pdf_url: string; // Required to match DatabaseArticle
+  image_url: string; // Required to match DatabaseArticle
+  cover_image: string; // Required to match DatabaseArticle
   views?: number;
   downloads?: number;
   shares?: number;
@@ -60,7 +61,7 @@ export const useRHCAArticles = () => {
             console.log('[RHCA:DEBUG] Available columns:', Object.keys(data[0]));
           }
           
-          const mappedArticles = data.map((article: RhcaDatabaseArticle) => {
+          const mappedArticles = data.map((article: any) => {
             console.log(`[RHCA:DEBUG] Processing article: ${article.id}, title: ${article.title}`);
             
             // Check if cover_image_filename exists
@@ -83,8 +84,7 @@ export const useRHCAArticles = () => {
               // Ensure these fields have default values if they're undefined
               pdf_url: article.pdf_url || '',
               image_url: article.image_url || '',
-              // Add cover_image to match expected structure
-              cover_image: article.image_url || ''
+              cover_image: article.cover_image || article.image_url || ''
             };
             
             // First map the base article properties
