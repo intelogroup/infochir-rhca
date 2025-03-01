@@ -1,3 +1,4 @@
+
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState, useRef } from "react";
@@ -75,7 +76,7 @@ export const HeroSection = () => {
   }, [cycleCount]);
 
   return (
-    <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(100vh-4rem)] pt-32 md:pt-40 z-0">
+    <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(100vh-4rem-10px)] pt-32 md:pt-40 z-0">
       <AnimatePresence mode="wait">
         <div
           key={currentIndex}
@@ -85,7 +86,7 @@ export const HeroSection = () => {
             className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-90 z-0`}
           />
           <motion.div 
-            className="absolute bottom-0 right-0 w-1/2 h-4/5 md:h-3/4 lg:h-2/3 z-0"
+            className="absolute bottom-0 right-0 w-1/2 h-[calc(4/5*100%-10px)] md:h-[calc(3/4*100%-10px)] lg:h-[calc(2/3*100%-10px)] z-0"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
