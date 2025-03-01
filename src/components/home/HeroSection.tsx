@@ -13,10 +13,10 @@ export const HeroSection = () => {
     <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(80vh-4rem-30px)] pt-20 md:pt-28 z-0">
       <div className="absolute inset-0 z-0">
         <div 
-          className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] opacity-70 z-0"
+          className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] opacity-70 z-10"
         />
         <div 
-          className="absolute inset-0 z-0"
+          className="absolute inset-0 z-20"
           style={{ 
             backgroundImage: `url(/lovable-uploads/2cdc7a00-de30-4d15-94b2-b43fde942709.png)`,
             backgroundSize: 'cover',
@@ -27,7 +27,7 @@ export const HeroSection = () => {
         />
       </div>
       
-      <div className="relative max-w-7xl mx-auto text-left z-10">
+      <div className="relative max-w-7xl mx-auto text-left z-30">
         <div className="max-w-xl lg:max-w-3xl">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 animate-fade-up tracking-tight md:whitespace-nowrap whitespace-normal">
             Votre espace scientifique<br className="md:hidden" /> en ligne
