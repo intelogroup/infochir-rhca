@@ -9,40 +9,56 @@ export const checkFileExistsInBucket = async (
   bucketName: string,
   fileName: string
 ): Promise<boolean> => {
-  if (!fileName) return false;
+  if (!fileName) {
+    console.log(`[Storage] No filename provided to check`);
+    return false;
+  }
 
   try {
     console.log(`[Storage] Checking if file exists: ${fileName} in bucket: ${bucketName}`);
     
     // First attempt: direct path check
-    const { data: fileData, error: fileError } = await supabase
-      .storage
-      .from(bucketName)
-      .download(fileName);
+    try {
+      const { data: fileData, error: fileError } = await supabase
+        .storage
+        .from(bucketName)
+        .download(fileName);
+        
+      if (fileData) {
+        console.log(`[Storage] File exists (direct check): ${fileName}`);
+        return true;
+      }
       
-    if (fileData) {
-      console.log(`[Storage] File exists (direct check): ${fileName}`);
-      return true;
+      if (fileError) {
+        console.log(`[Storage] Direct download check failed: ${fileError.message}`);
+      }
+    } catch (e) {
+      console.log(`[Storage] Error during direct download check: ${e instanceof Error ? e.message : String(e)}`);
     }
     
     // If direct check fails, try listing files with search
-    const { data, error } = await supabase
-      .storage
-      .from(bucketName)
-      .list('', {
-        search: fileName
-      });
+    try {
+      const { data, error } = await supabase
+        .storage
+        .from(bucketName)
+        .list('', {
+          search: fileName
+        });
 
-    if (error) {
-      console.error(`[Storage] Error checking file existence:`, error);
+      if (error) {
+        console.error(`[Storage] Error checking file existence:`, error);
+        return false;
+      }
+
+      // If we found the file in the list, it exists
+      const fileExists = data && data.some(file => file.name === fileName);
+      console.log(`[Storage] File exists (list check): ${fileExists} for ${fileName}`);
+      
+      return fileExists;
+    } catch (e) {
+      console.log(`[Storage] Error during list check: ${e instanceof Error ? e.message : String(e)}`);
       return false;
     }
-
-    // If we found the file in the list, it exists
-    const fileExists = data && data.some(file => file.name === fileName);
-    console.log(`[Storage] File exists (list check): ${fileExists}`);
-    
-    return fileExists;
   } catch (err) {
     console.error(`[Storage] Failed to check file existence:`, err);
     return false;
@@ -56,14 +72,23 @@ export const getFilePublicUrl = (
   bucketName: string,
   fileName: string
 ): string | null => {
-  if (!fileName) return null;
+  if (!fileName) {
+    console.log(`[Storage] No filename provided to get public URL`);
+    return null;
+  }
   
-  const { data } = supabase
-    .storage
-    .from(bucketName)
-    .getPublicUrl(fileName);
-    
-  return data?.publicUrl || null;
+  try {
+    const { data } = supabase
+      .storage
+      .from(bucketName)
+      .getPublicUrl(fileName);
+      
+    console.log(`[Storage] Generated public URL for ${fileName}: ${data?.publicUrl || 'null'}`);
+    return data?.publicUrl || null;
+  } catch (e) {
+    console.error(`[Storage] Error generating public URL: ${e instanceof Error ? e.message : String(e)}`);
+    return null;
+  }
 };
 
 /**
@@ -73,7 +98,7 @@ export const downloadFileFromStorage = async (
   bucketName: string,
   fileName: string,
   articleId: string,
-  counterFunction: (id: string, type: 'downloads' | 'views') => Promise<void>
+  counterFunction: (articleId: string, type: 'downloads' | 'views') => Promise<void>
 ): Promise<void> => {
   if (!fileName) {
     toast.error("Fichier non disponible");
@@ -137,7 +162,7 @@ export const openFileInNewTab = async (
   bucketName: string,
   fileName: string,
   articleId: string,
-  counterFunction: (id: string, type: 'downloads' | 'views') => Promise<void>
+  counterFunction: (articleId: string, type: 'downloads' | 'views') => Promise<void>
 ): Promise<void> => {
   if (!fileName) {
     toast.error("Fichier non disponible");

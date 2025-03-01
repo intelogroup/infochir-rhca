@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { RhcaArticle } from "../types";
-import { toast } from "sonner"; // Direct import from sonner
+import { toast } from "sonner";
 import { mapToCoverImageFileName } from "@/lib/pdf-utils";
 
 // Helper functions for URL formatting
@@ -72,29 +72,6 @@ const mergeAuthors = (primaryAuthor: string | null, coAuthors: any): string[] =>
   return authors;
 };
 
-// Map volume/issue to actual existing PDF files
-const mapToPdfFileName = (volume: string, issue: string): string | undefined => {
-  // This mapping matches the actual files in storage to the article records
-  // Modify this mapping based on your actual files
-  const volumeIssueMap: Record<string, string> = {
-    // Map volume+issue combinations to actual filenames in storage
-    "2:47": "RHCA_vol_02_no_47_19_7_2024.pdf",
-    "3:48": "RHCA_vol_03_no_48_18_10_2024.pdf", 
-    "4:49": "RHCA_vol_04_no_49_11_1_2025.pdf"
-  };
-  
-  const key = `${volume}:${issue}`;
-  const fileName = volumeIssueMap[key];
-  
-  if (!fileName) {
-    console.warn(`[useRHCAArticles] No PDF file mapping found for volume:issue ${key}`);
-  } else {
-    console.log(`[useRHCAArticles] Mapped volume:issue ${key} to file: ${fileName}`);
-  }
-  
-  return fileName;
-};
-
 export const useRHCAArticles = () => {
   console.log('[useRHCAArticles] Hook initializing');
   const startTime = Date.now();
@@ -144,8 +121,9 @@ export const useRHCAArticles = () => {
           // Process authors from primary_author and co_authors fields
           const authors = mergeAuthors(item.primary_author, item.co_authors);
           
-          // Get the appropriate PDF filename based on volume and issue
-          const pdfFileName = mapToPdfFileName(item.volume, item.issue);
+          // Use pdf_filename directly from the database, no mapping needed
+          const pdfFileName = item.pdf_filename || null;
+          console.log(`[useRHCAArticles] Article ${item.id} has pdf_filename: ${pdfFileName}`);
           
           // Get cover image filename
           const coverImageFileName = mapToCoverImageFileName(item.volume, item.issue);

@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { RhcaGrid } from "@/components/rhca/RhcaGrid";
@@ -17,10 +18,24 @@ const RHCA: React.FC = () => {
   const isAdmin = searchParams.get('admin') === 'true';
   const [pdfFilesStatus, setPdfFilesStatus] = useState<Record<string, boolean>>({});
   const [coverFilesStatus, setCoverFilesStatus] = useState<Record<string, boolean>>({});
+  const [pdfFilesList, setPdfFilesList] = useState<string[]>([]);
 
   useEffect(() => {
     if (isAdmin) {
       const checkFiles = async () => {
+        // Fetch all PDF files in the storage bucket
+        const { data: pdfFiles, error: pdfError } = await supabase.storage
+          .from('rhca-pdfs')
+          .list('');
+          
+        if (pdfError) {
+          console.error('[RHCA] Error fetching PDF files:', pdfError);
+        } else if (pdfFiles) {
+          const fileNames = pdfFiles.map(file => file.name);
+          setPdfFilesList(fileNames);
+          console.log('[RHCA] PDF files in storage:', fileNames);
+        }
+        
         const volumeIssues = ['2:47', '3:48', '4:49'];
         const pdfStatus: Record<string, boolean> = {};
         const coverStatus: Record<string, boolean> = {};
@@ -163,6 +178,22 @@ const RHCA: React.FC = () => {
                       </span>
                     )}
                   </p>
+                  
+                  {pdfFilesList.length > 0 && (
+                    <div className="mt-3">
+                      <strong className="text-sm">Fichiers PDF disponibles:</strong>
+                      <div className="text-xs mt-1 bg-gray-50 p-2 rounded max-h-24 overflow-y-auto">
+                        {pdfFilesList.map(file => (
+                          <div key={file} className="mb-1 pb-1 border-b border-gray-100 last:border-0">
+                            {file}
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-xs mt-1 text-gray-500">
+                        Assurez-vous que les noms de fichiers correspondent aux volumes et numéros dans la base de données.
+                      </p>
+                    </div>
+                  )}
                 </AlertDescription>
               </Alert>
               

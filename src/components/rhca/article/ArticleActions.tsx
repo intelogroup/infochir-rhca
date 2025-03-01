@@ -35,22 +35,24 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
   React.useEffect(() => {
     const verifyFileExists = async () => {
       if (!pdfFileName) {
+        console.log(`[ArticleActions] No PDF filename provided for article ${id}`);
         setFileExists(false);
         return;
       }
 
       console.log(`[ArticleActions] Checking if PDF exists: ${pdfFileName}`);
       const exists = await checkFileExistsInBucket(BUCKET_NAME, pdfFileName);
-      console.log(`[ArticleActions] PDF exists check result: ${exists}`);
+      console.log(`[ArticleActions] PDF exists check result: ${exists} for file ${pdfFileName}`);
       setFileExists(exists);
     };
 
     verifyFileExists();
-  }, [pdfFileName]);
+  }, [pdfFileName, id]);
 
   // Function to increment download/view counter
   const incrementCounter = async (countType: 'downloads' | 'views') => {
     try {
+      console.log(`[ArticleActions] Incrementing ${countType} count for article ${id}`);
       const { error } = await supabase
         .rpc('increment_count', { 
           table_name: 'rhca_articles_view',
