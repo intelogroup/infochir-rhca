@@ -12,13 +12,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { 
   checkFileExistsInBucket, 
-  openFileInNewTab, 
-  downloadFileFromStorage 
+  getFilePublicUrl
 } from "@/lib/pdf-utils";
 
 interface ArticleActionsProps {
   id: string;
-  volume: string;
+  volume?: string;
   date: string;
   pdfFileName?: string;
 }
@@ -111,10 +110,24 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
     setError(null);
     
     try {
-      await openFileInNewTab(BUCKET_NAME, pdfFileName, id, incrementCounter);
+      // Get the public URL for the file
+      const publicUrl = getFilePublicUrl(BUCKET_NAME, pdfFileName);
+      
+      if (!publicUrl) {
+        throw new Error(`Failed to get public URL for ${pdfFileName}`);
+      }
+      
+      // Open the file in a new tab
+      window.open(publicUrl, '_blank');
+      
+      // Increment the view count
+      await incrementCounter(id, 'views');
+      
+      toast.success('PDF ouvert dans un nouvel onglet');
     } catch (err) {
       console.error(`[ArticleActions:ERROR] Error opening file in new tab:`, err);
       setError(`Erreur: ${err instanceof Error ? err.message : String(err)}`);
+      toast.error(`Erreur: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setIsLoading(false);
     }
@@ -133,10 +146,49 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
     setError(null);
     
     try {
-      await downloadFileFromStorage(BUCKET_NAME, pdfFileName, id, incrementCounter);
+      // Get the file download URL (signed URL for better security)
+      const { data, error } = await supabase.storage
+        .from(BUCKET_NAME)
+        .createSignedUrl(pdfFileName, 60);
+      
+      if (error || !data) {
+        throw error || new Error('Failed to create signed URL');
+      }
+      
+      // Fetch the file using the signed URL
+      const response = await fetch(data.signedUrl);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      // Get the file as a blob
+      const blob = await response.blob();
+      
+      // Create a URL for the blob
+      const url = window.URL.createObjectURL(blob);
+      
+      // Create an invisible link to download the file
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = pdfFileName; // Use the filename from the path
+      
+      // Append the link to the document, click it, and remove it
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Release the blob URL
+      window.URL.revokeObjectURL(url);
+      
+      // Increment the download count
+      await incrementCounter(id, 'downloads');
+      
+      toast.success('Téléchargement réussi');
     } catch (err) {
       console.error(`[ArticleActions:ERROR] Error downloading file:`, err);
       setError(`Erreur: ${err instanceof Error ? err.message : String(err)}`);
+      toast.error(`Erreur: ${err instanceof Error ? err.message : String(err)}`);
     } finally {
       setIsLoading(false);
     }

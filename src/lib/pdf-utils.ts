@@ -127,6 +127,7 @@ export const mapToCoverImageFileName = async (volume: string, issue: string): Pr
       return null;
     }
     
+    // Check if cover_image_filename exists in the data
     if (data && data.cover_image_filename) {
       return data.cover_image_filename;
     }
@@ -136,96 +137,5 @@ export const mapToCoverImageFileName = async (volume: string, issue: string): Pr
   } catch (err) {
     console.error('[Storage:ERROR] Error mapping to cover image filename:', err);
     return null;
-  }
-};
-
-// Add the missing functions needed by ArticleActions.tsx
-
-export const openFileInNewTab = async (
-  bucketName: string, 
-  filePath: string, 
-  articleId: string,
-  incrementCounterFn?: (id: string, countType: 'views' | 'downloads') => Promise<void>
-): Promise<void> => {
-  try {
-    console.log(`[PDFUtils:INFO] Opening file ${filePath} from bucket ${bucketName} in new tab`);
-    
-    // Get the public URL for the file
-    const publicUrl = getFilePublicUrl(bucketName, filePath);
-    
-    if (!publicUrl) {
-      throw new Error(`Failed to get public URL for ${filePath}`);
-    }
-    
-    // Open the file in a new tab
-    window.open(publicUrl, '_blank');
-    
-    // Increment the view count if a counter function is provided
-    if (incrementCounterFn) {
-      await incrementCounterFn(articleId, 'views');
-    }
-    
-    toast.success('PDF ouvert dans un nouvel onglet');
-  } catch (err) {
-    console.error(`[PDFUtils:ERROR] Error opening file in new tab:`, err);
-    toast.error(`Erreur: ${err instanceof Error ? err.message : String(err)}`);
-    throw err;
-  }
-};
-
-export const downloadFileFromStorage = async (
-  bucketName: string, 
-  filePath: string, 
-  articleId: string,
-  incrementCounterFn?: (id: string, countType: 'views' | 'downloads') => Promise<void>
-): Promise<void> => {
-  try {
-    console.log(`[PDFUtils:INFO] Downloading file ${filePath} from bucket ${bucketName}`);
-    
-    // Get the file download URL (signed URL for better security)
-    const { data, error } = await supabase.storage
-      .from(bucketName)
-      .createSignedUrl(filePath, 60);
-    
-    if (error || !data) {
-      throw error || new Error('Failed to create signed URL');
-    }
-    
-    // Fetch the file using the signed URL
-    const response = await fetch(data.signedUrl);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    // Get the file as a blob
-    const blob = await response.blob();
-    
-    // Create a URL for the blob
-    const url = window.URL.createObjectURL(blob);
-    
-    // Create an invisible link to download the file
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filePath; // Use the filename from the path
-    
-    // Append the link to the document, click it, and remove it
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    // Release the blob URL
-    window.URL.revokeObjectURL(url);
-    
-    // Increment the download count if a counter function is provided
-    if (incrementCounterFn) {
-      await incrementCounterFn(articleId, 'downloads');
-    }
-    
-    toast.success('Téléchargement réussi');
-  } catch (err) {
-    console.error(`[PDFUtils:ERROR] Error downloading file:`, err);
-    toast.error(`Erreur: ${err instanceof Error ? err.message : String(err)}`);
-    throw err;
   }
 };

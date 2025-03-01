@@ -35,8 +35,8 @@ export const useRHCAArticles = () => {
             // Then add RHCA-specific properties
             return {
               ...mappedArticle,
-              pdfFileName: article.pdf_filename,
-              coverImageFileName: article.cover_image_filename
+              pdfFileName: article.pdf_filename || undefined,
+              coverImageFileName: article.cover_image_filename || undefined
             } as RhcaArticle;
           });
           
