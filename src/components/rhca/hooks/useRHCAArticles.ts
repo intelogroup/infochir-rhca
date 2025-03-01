@@ -82,12 +82,15 @@ export const useRHCAArticles = () => {
       console.log('[useRHCAArticles] Starting data fetch at:', Date.now() - startTime, 'ms');
 
       try {
-        // For now, use mock data to match our naming conventions
-        console.log('[useRHCAArticles] Using mock data for development');
-        return mockRhcaArticles;
+        // For development, use mock data
+        const useMockData = process.env.NODE_ENV === 'development' || true;
+        
+        if (useMockData) {
+          console.log('[useRHCAArticles] Using mock data for development');
+          return mockRhcaArticles;
+        }
 
         // The following code would be used for the actual Supabase query
-        /*
         const { data, error } = await supabase
           .from("rhca_articles_view")
           .select('*')
@@ -168,7 +171,6 @@ export const useRHCAArticles = () => {
         });
 
         return articles;
-        */
       } catch (error) {
         console.error('[useRHCAArticles] Error in query function:', {
           error,
