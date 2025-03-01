@@ -20,12 +20,12 @@ const RHCA: React.FC = () => {
         <div className="container mx-auto px-4 py-8 md:py-12">
           {isAdmin && (
             <div className="mb-8 p-6 bg-white shadow-sm rounded-lg border border-gray-200">
-              <h2 className="text-xl font-semibold mb-4">Admin: Upload RHCA Cover Images</h2>
+              <h2 className="text-xl font-semibold mb-4">Admin: Upload RHCA Files</h2>
               <div className="grid gap-6 md:grid-cols-2">
                 <div>
                   <h3 className="text-md font-medium mb-2">Cover Images</h3>
                   <MultiFileUploader
-                    bucket="rhca-covers"
+                    bucket="rhca_covers"
                     acceptedFileTypes={{
                       'image/*': ['.png', '.jpg', '.jpeg', '.webp']
                     }}
@@ -37,8 +37,28 @@ const RHCA: React.FC = () => {
                     helperText="Upload cover images for RHCA articles (PNG, JPG, WebP)"
                     type="image"
                     volumeInfo={{
-                      volume: '2',
-                      issue: '48'
+                      volume: '4',
+                      issue: '49'
+                    }}
+                  />
+                </div>
+                <div>
+                  <h3 className="text-md font-medium mb-2">PDF Documents</h3>
+                  <MultiFileUploader
+                    bucket="rhca-pdfs"
+                    acceptedFileTypes={{
+                      'application/pdf': ['.pdf']
+                    }}
+                    maxFileSize={10}
+                    maxFiles={5}
+                    onUploadComplete={(urls) => {
+                      console.log('Uploaded PDF documents:', urls);
+                    }}
+                    helperText="Upload PDF documents for RHCA articles"
+                    type="document"
+                    volumeInfo={{
+                      volume: '4',
+                      issue: '49'
                     }}
                   />
                 </div>

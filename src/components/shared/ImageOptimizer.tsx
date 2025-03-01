@@ -46,7 +46,7 @@ export const ImageOptimizer = ({
     // Handle Supabase storage URLs for RHCA covers
     else if (src.includes('supabase.co') || src.includes('llxzstqejdrplmxdjxlu')) {
       // For RHCA cover images, handle them with special attention
-      const isRHCACover = src.includes('rhca-covers') || src.includes('RHCA_vol_');
+      const isRHCACover = src.includes('rhca_covers') || src.includes('rhca-covers') || src.includes('RHCA_vol_');
       
       if (isRHCACover) {
         console.log(`[ImageOptimizer] Loading RHCA cover image: ${src}`);

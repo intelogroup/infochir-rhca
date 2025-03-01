@@ -1,4 +1,14 @@
 
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+/**
+ * Combines class names with Tailwind's class merging
+ */
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
 /**
  * Format a date to DD-MM-YY format for filenames
  */
@@ -11,11 +21,23 @@ export function formatDateToSimple(date: Date): string {
 }
 
 /**
+ * Formats a date to the new file naming convention: DD_MM_YYYY
+ */
+export function formatDateForFilename(date: Date): string {
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  
+  return `${day}_${month}_${year}`;
+}
+
+/**
  * Extracts volume and issue numbers from RHCA filename
- * Example: RHCA_vol_2_no_48_31-10-24.pdf -> { volume: '2', issue: '48' }
+ * Supports both old format: RHCA_vol_2_no_48_31-10-24.pdf
+ * And new format: RHCA_vol_04_no_49_14_1_2025.pdf
  */
 export function extractVolumeInfoFromFilename(filename: string): { volume: string; issue: string } | null {
-  // Match the pattern RHCA_vol_X_no_Y
+  // Match both old and new pattern: RHCA_vol_X_no_Y
   const match = filename.match(/RHCA_vol_(\d+)_no_(\d+)/);
   
   if (match && match.length >= 3) {

@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { FileUploadArea } from "./FileUploadArea";
 import { FileList } from "./FileList";
-import { formatDateToSimple } from "@/lib/utils";
+import { formatDateForFilename } from "@/lib/utils";
 
 interface MultiFileUploaderProps {
   bucket: string;
@@ -34,15 +34,18 @@ export const MultiFileUploader = ({
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
 
   const generateRHCAFilename = (originalName: string) => {
-    if ((!volumeInfo) || (bucket !== 'rhca-pdfs' && bucket !== 'rhca-covers')) {
+    if ((!volumeInfo) || (bucket !== 'rhca-pdfs' && bucket !== 'rhca_covers')) {
       return originalName;
     }
 
     const now = new Date();
-    const dateFormatted = formatDateToSimple(now);
+    const dateFormatted = formatDateForFilename(now);
     const fileExt = originalName.split('.').pop() || (type === 'document' ? 'pdf' : 'jpg');
     
-    return `RHCA_vol_${volumeInfo.volume}_no_${volumeInfo.issue}_${dateFormatted}.${fileExt}`;
+    // Format volume with leading zero if needed
+    const paddedVolume = volumeInfo.volume.padStart(2, '0');
+    
+    return `RHCA_vol_${paddedVolume}_no_${volumeInfo.issue}_${dateFormatted}.${fileExt}`;
   };
 
   const handleFileSelect = async (files: File[]) => {
@@ -68,7 +71,7 @@ export const MultiFileUploader = ({
         
         // Use RHCA naming convention if applicable
         let fileName = sanitizedName;
-        if ((bucket === 'rhca-pdfs' || bucket === 'rhca-covers') && volumeInfo) {
+        if ((bucket === 'rhca-pdfs' || bucket === 'rhca_covers') && volumeInfo) {
           fileName = generateRHCAFilename(sanitizedName);
         } else {
           fileName = `${Date.now()}_${sanitizedName}`;
