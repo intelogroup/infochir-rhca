@@ -25,7 +25,8 @@ interface RhcaDatabaseArticle {
   issue?: string;
   specialty?: string;
   pdf_filename?: string;
-  cover_image_filename?: string;
+  // We don't access cover_image_filename directly from the database response
+  // as it might not exist in the view yet, instead we generate it
   [key: string]: any;
 }
 
@@ -70,7 +71,18 @@ export const useRHCAArticles = () => {
               // Try to build a cover image filename based on the format RHCA_vol_XX_no_XX_DD_MM_YYYY.png
               // For now we'll use a simplified version without the date
               const paddedVolume = String(article.volume).padStart(2, '0');
-              coverImageFilename = `RHCA_vol_${paddedVolume}_no_${article.issue}.png`;
+              const issueDate = new Date(article.publication_date);
+              
+              // Use formatted date if available, otherwise use simplified format
+              if (isNaN(issueDate.getTime())) {
+                coverImageFilename = `RHCA_vol_${paddedVolume}_no_${article.issue}.png`;
+              } else {
+                const day = String(issueDate.getDate()).padStart(2, '0');
+                const month = String(issueDate.getMonth() + 1).padStart(2, '0');
+                const year = issueDate.getFullYear();
+                coverImageFilename = `RHCA_vol_${paddedVolume}_no_${article.issue}_${day}_${month}_${year}.png`;
+              }
+              
               console.log(`[RHCA:DEBUG] Generated cover image filename: ${coverImageFilename}`);
             }
             
@@ -84,8 +96,7 @@ export const useRHCAArticles = () => {
               views: article.views || 0,
               downloads: article.downloads || 0,
               shares: article.shares || 0,
-              citations: article.citations || 0,
-              cover_image_filename: coverImageFilename
+              citations: article.citations || 0
             };
             
             // First map the base article properties
