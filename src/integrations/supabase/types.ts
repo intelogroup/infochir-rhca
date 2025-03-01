@@ -352,45 +352,6 @@ export type Database = {
         }
         Relationships: []
       }
-      rhca_volumes: {
-        Row: {
-          article_count: number | null
-          cover_image: string | null
-          created_at: string | null
-          date: string
-          description: string | null
-          download_count: number | null
-          id: string
-          share_count: number | null
-          updated_at: string | null
-          volume: number
-        }
-        Insert: {
-          article_count?: number | null
-          cover_image?: string | null
-          created_at?: string | null
-          date?: string
-          description?: string | null
-          download_count?: number | null
-          id?: string
-          share_count?: number | null
-          updated_at?: string | null
-          volume: number
-        }
-        Update: {
-          article_count?: number | null
-          cover_image?: string | null
-          created_at?: string | null
-          date?: string
-          description?: string | null
-          download_count?: number | null
-          id?: string
-          share_count?: number | null
-          updated_at?: string | null
-          volume?: number
-        }
-        Relationships: []
-      }
       unified_collections: {
         Row: {
           article_count: number | null
