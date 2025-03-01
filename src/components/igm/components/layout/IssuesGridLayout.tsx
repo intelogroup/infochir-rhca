@@ -9,6 +9,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import type { SortOption } from "@/types/sortOptions";
 import { DateRange } from "react-day-picker";
 import { useIGMIssues } from "../../hooks/useIGMIssues";
+import { Loader2 } from "lucide-react";
 
 interface IssuesGridLayoutProps {
   viewMode?: "grid" | "table";
@@ -22,7 +23,7 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
   const [displayCount, setDisplayCount] = useState(6);
   const isMobile = useIsMobile();
 
-  const { data: issues = [], isLoading } = useIGMIssues();
+  const { data: issues = [], isLoading, error } = useIGMIssues();
 
   const { 
     sortedIssues, 
@@ -39,6 +40,15 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
   const loadMore = () => {
     setDisplayCount(prev => prev + (isMobile ? 3 : 6));
   };
+
+  if (error) {
+    return (
+      <div className="p-8 bg-red-50 border border-red-200 rounded-lg">
+        <p className="text-red-600 font-medium">Une erreur est survenue lors du chargement des numéros.</p>
+        <p className="text-red-500 text-sm mt-2">{error.message}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4 sm:space-y-6">

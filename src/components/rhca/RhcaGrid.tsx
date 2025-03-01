@@ -2,13 +2,13 @@
 import * as React from "react";
 import { SearchAndSort } from "@/components/issues/SearchAndSort";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { LayoutGrid, List } from "lucide-react";
+import { LayoutGrid, List, Loader2 } from "lucide-react";
 import { SORT_OPTIONS } from "@/types/sortOptions";
 import type { SortOption } from "@/types/sortOptions";
-import { mockArticles } from "./data/mockArticles";
 import { RhcaArticleList } from "./RhcaArticleList";
 import { motion } from "framer-motion";
 import { DateRange } from "react-day-picker";
+import { useRHCAArticles } from "./hooks/useRHCAArticles";
 
 export const RhcaGrid: React.FC = () => {
   // Group all state hooks at the top
@@ -16,6 +16,9 @@ export const RhcaGrid: React.FC = () => {
   const [sortBy, setSortBy] = React.useState<SortOption>("latest");
   const [viewMode, setViewMode] = React.useState<"grid" | "table">("grid");
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
+  
+  // Fetch RHCA articles from Supabase
+  const { data: articles = [], isLoading, error } = useRHCAArticles();
 
   // Memoize handler functions
   const handleSortChange = React.useCallback((value: SortOption) => {
@@ -24,7 +27,7 @@ export const RhcaGrid: React.FC = () => {
 
   // Memoize filtered articles computation
   const filteredArticles = React.useMemo(() => {
-    return mockArticles.filter(article => {
+    return articles.filter(article => {
       const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         article.abstract.toLowerCase().includes(searchTerm.toLowerCase()) ||
         article.authors.some(author => 
@@ -38,7 +41,7 @@ export const RhcaGrid: React.FC = () => {
 
       return matchesSearch && matchesDateRange;
     });
-  }, [searchTerm, dateRange]);
+  }, [articles, searchTerm, dateRange]);
 
   // Memoize sorted articles computation
   const sortedArticles = React.useMemo(() => {
@@ -49,6 +52,24 @@ export const RhcaGrid: React.FC = () => {
       return new Date(a.date).getTime() - new Date(b.date).getTime();
     });
   }, [filteredArticles, sortBy]);
+
+  if (isLoading) {
+    return (
+      <div className="w-full flex flex-col items-center justify-center p-12 space-y-4">
+        <Loader2 className="h-8 w-8 text-primary animate-spin" />
+        <p className="text-gray-500">Chargement des articles...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full p-8 bg-red-50 border border-red-200 rounded-lg">
+        <p className="text-red-600 font-medium">Une erreur est survenue lors du chargement des articles.</p>
+        <p className="text-red-500 text-sm mt-2">{error.message}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full space-y-6">
