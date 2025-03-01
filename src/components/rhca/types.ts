@@ -22,4 +22,9 @@ export interface RhcaVolume {
   editor?: string;
   pageCount?: string;
   availability?: "available" | "unavailable" | "coming_soon";
+  // Add missing properties that are referenced in code
+  description?: string;
+  articleCount?: number;
+  downloadCount?: number;
+  shareCount?: number;
 }

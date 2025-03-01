@@ -1,45 +1,39 @@
+import type { RhcaVolume } from "../../types";
 
-import { RhcaArticle } from "../../types";
-
-export const neurosurgeryArticles: RhcaArticle[] = [
+// Convert any numeric pageCount values to strings
+export const neurosurgeryData: RhcaVolume[] = [
   {
-    id: "neuro-1",
-    title: "Advances in Brain Surgery",
-    abstract: "Latest developments in neurosurgical procedures...",
-    authors: ["Dr. Smith", "Dr. Johnson"],
-    publicationDate: "2024-01-15",
-    date: "2024-01-15",
+    id: "ns-vol3-2023",
+    title: "Advances in Neurosurgical Procedures",
+    volume: "3",
+    issue: "12",
+    date: "2023-09-15",
+    year: "2023",
+    pageCount: "128", // Convert to string
     specialty: "Neurosurgery",
-    source: "RHCA",
-    volume: "12",
-    pageNumber: 1,
-    views: 150,
-    downloads: 75,
-    shares: 30,
-    citations: 12,
-    tags: ["brain", "surgery", "neurosurgery"],
-    imageUrl: "/images/brain.jpg",
-    pdfUrl: "/pdfs/brain-surgery-2024.pdf",
-    status: "published"
+    category: "Clinical Research",
+    institution: "National Neurosurgical Institute",
+    editor: "Dr. Maria Cortez",
+    description: "Explore the latest advancements in neurosurgical techniques and procedures.",
+    articleCount: 10,
+    downloadCount: 235,
+    shareCount: 87,
   },
   {
-    id: "neuro-2",
-    title: "Modern Approaches to Spine Surgery",
-    abstract: "Exploring new techniques in spinal procedures...",
-    authors: ["Dr. Wilson", "Dr. Brown"],
-    publicationDate: "2024-01-10",
-    date: "2024-01-10",
+    id: "ns-vol2-2023",
+    title: "Brain Tumor Surgical Approaches",
+    volume: "2",
+    issue: "8",
+    date: "2023-04-22",
+    year: "2023",
+    pageCount: "95", // Convert to string
     specialty: "Neurosurgery",
-    source: "RHCA",
-    volume: "12",
-    pageNumber: 15,
-    views: 200,
-    downloads: 100,
-    shares: 45,
-    citations: 8,
-    tags: ["spine", "surgery", "neurosurgery"],
-    imageUrl: "/images/spine.jpg",
-    pdfUrl: "/pdfs/spine-surgery-2024.pdf",
-    status: "published"
+    category: "Surgical Techniques",
+    institution: "University Neurosurgical Center",
+    editor: "Dr. Alexandre Dubois",
+    description: "A comprehensive review of surgical approaches for treating brain tumors.",
+    articleCount: 8,
+    downloadCount: 198,
+    shareCount: 62,
   }
 ];

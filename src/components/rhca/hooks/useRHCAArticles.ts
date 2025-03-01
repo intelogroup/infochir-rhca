@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { RhcaArticle } from "../types";
@@ -158,7 +157,7 @@ export const useRHCAArticles = () => {
             source: item.source || "RHCA",
             volume: item.volume || "",
             issue: item.issue || "",
-            pageNumber: item.page_number ? String(item.page_number) : "0",
+            pageNumber: item.page_number ? String(item.page_number) : "0", // Ensure this is a string
             views: item.views || 0,
             downloads: item.downloads || 0,
             shares: item.shares || 0,
