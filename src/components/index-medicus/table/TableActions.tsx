@@ -10,6 +10,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { 
+  checkFileExistsInBucket, 
+  extractFilenameFromUrl, 
+  openFileInNewTab, 
+  downloadFileFromStorage 
+} from "@/lib/pdf-utils";
 
 interface TableActionsProps {
   articleId: string;
@@ -19,56 +25,69 @@ interface TableActionsProps {
 export const TableActions = ({ articleId, pdfUrl }: TableActionsProps) => {
   const [isDownloading, setIsDownloading] = useState(false);
   const [fileExists, setFileExists] = useState<boolean | null>(null);
+  const BUCKET_NAME = 'article-pdfs';
 
+  // Extract filename from URL
+  const pdfFileName = extractFilenameFromUrl(pdfUrl);
+  
   // Check if file exists when component mounts
   useEffect(() => {
-    const checkFileExists = async () => {
-      if (!pdfUrl) {
+    const verifyFileExists = async () => {
+      // For external URLs assume they exist unless proven otherwise
+      if (!pdfFileName) {
         setFileExists(false);
         return;
       }
-
-      try {
-        // For URLs in Supabase storage
-        if (pdfUrl.includes('article-pdfs')) {
-          const fileName = pdfUrl.split('/').pop();
-          if (!fileName) {
-            setFileExists(false);
-            return;
-          }
-
-          const { data, error } = await supabase
-            .storage
-            .from('article-pdfs')
-            .list('', {
-              search: fileName
-            });
-
-          if (error) {
-            console.error('Error checking file existence:', error);
-            setFileExists(false);
-            return;
-          }
-
-          setFileExists(data && data.some(file => file.name === fileName));
-        } else {
-          // For external URLs, try a HEAD request
+      
+      if (pdfUrl?.includes('article-pdfs')) {
+        setFileExists(await checkFileExistsInBucket(BUCKET_NAME, pdfFileName));
+      } else if (pdfUrl) {
+        // For external URLs, try a HEAD request
+        try {
           const response = await fetch(pdfUrl, { method: 'HEAD' });
           setFileExists(response.ok);
+        } catch (err) {
+          console.error('Failed to check external URL:', err);
+          setFileExists(false);
         }
-      } catch (err) {
-        console.error('Failed to check file existence:', err);
+      } else {
         setFileExists(false);
       }
     };
 
-    checkFileExists();
-  }, [pdfUrl]);
+    verifyFileExists();
+  }, [pdfUrl, pdfFileName]);
+
+  // Function to increment counts
+  const incrementCounter = async (id: string, countType: 'downloads' | 'views') => {
+    try {
+      const { error } = await supabase.rpc('increment_count', { 
+        table_name: 'igm_articles_view',
+        column_name: countType,
+        row_id: id
+      });
+      
+      if (error) {
+        console.error(`Failed to increment ${countType} count:`, error);
+      }
+    } catch (error) {
+      console.error(`Error in increment counter:`, error);
+    }
+  };
 
   const handleShare = () => {
     const shareUrl = `${window.location.origin}/index-medicus/articles/${articleId}`;
     navigator.clipboard.writeText(shareUrl);
     toast.success("Lien copié dans le presse-papier");
+    
+    // Try to increment share count
+    supabase.rpc('increment_count', { 
+      table_name: 'igm_articles_view',
+      column_name: 'shares',
+      row_id: articleId
+    }).catch(error => {
+      console.error('Failed to increment share count:', error);
+    });
   };
 
   const handleOpenPdf = async () => {
@@ -77,39 +96,17 @@ export const TableActions = ({ articleId, pdfUrl }: TableActionsProps) => {
       return;
     }
 
-    if (fileExists === false) {
-      toast.error("Le fichier PDF n'existe pas dans notre stockage");
-      return;
-    }
-
     setIsDownloading(true);
+    
     try {
-      let finalUrl = pdfUrl;
-      
-      if (pdfUrl.includes('article-pdfs')) {
-        const { data: signedUrl, error } = await supabase
-          .storage
-          .from('article-pdfs')
-          .createSignedUrl(pdfUrl, 60);
-
-        if (error) throw error;
-        finalUrl = signedUrl.signedUrl;
+      if (pdfUrl.includes('article-pdfs') && pdfFileName) {
+        await openFileInNewTab(BUCKET_NAME, pdfFileName, articleId, incrementCounter);
+      } else {
+        // External URL handling
+        window.open(pdfUrl, '_blank');
+        await incrementCounter(articleId, 'views');
+        toast.success("Ouverture du PDF...");
       }
-      
-      window.open(finalUrl, '_blank');
-      
-      // Increment view counter
-      try {
-        await supabase.rpc('increment_count', { 
-          table_name: 'igm_articles_view',
-          column_name: 'views',
-          row_id: articleId
-        });
-      } catch (error) {
-        console.error('Failed to increment view count:', error);
-      }
-      
-      toast.success("Ouverture du PDF...");
     } catch (error) {
       console.error('PDF open error:', error);
       toast.error("Erreur lors de l'ouverture du PDF");
@@ -124,58 +121,37 @@ export const TableActions = ({ articleId, pdfUrl }: TableActionsProps) => {
       return;
     }
 
-    if (fileExists === false) {
-      toast.error("Le fichier PDF n'existe pas dans notre stockage");
-      return;
-    }
-
     setIsDownloading(true);
+    
     try {
-      let fileUrl = pdfUrl;
-      let fileName = pdfUrl.split('/').pop() || `article-${articleId}.pdf`;
-      
-      if (pdfUrl.includes('article-pdfs')) {
-        // For files in Supabase storage
-        const { data: signedUrl, error } = await supabase
-          .storage
-          .from('article-pdfs')
-          .createSignedUrl(pdfUrl, 60);
-
-        if (error) throw error;
-        fileUrl = signedUrl.signedUrl;
+      if (pdfUrl.includes('article-pdfs') && pdfFileName) {
+        await downloadFileFromStorage(BUCKET_NAME, pdfFileName, articleId, incrementCounter);
+      } else {
+        // Handle external URL download
+        const response = await fetch(pdfUrl);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const blob = await response.blob();
+        const fileName = pdfFileName || `article-${articleId}.pdf`;
+        
+        // Create an invisible link to download the file
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        
+        // Increment download counter
+        await incrementCounter(articleId, 'downloads');
+        
+        toast.success("Téléchargement réussi");
       }
-      
-      // Fetch the file
-      const response = await fetch(fileUrl);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const blob = await response.blob();
-      
-      // Create an invisible link to download the file
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-      
-      // Increment download counter
-      try {
-        await supabase.rpc('increment_count', { 
-          table_name: 'igm_articles_view',
-          column_name: 'downloads',
-          row_id: articleId
-        });
-      } catch (error) {
-        console.error('Failed to increment download count:', error);
-      }
-      
-      toast.success("Téléchargement réussi");
     } catch (error) {
       console.error('Download error:', error);
       toast.error("Erreur lors du téléchargement du PDF");

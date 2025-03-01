@@ -10,6 +10,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { 
+  checkFileExistsInBucket, 
+  openFileInNewTab, 
+  downloadFileFromStorage 
+} from "@/lib/pdf-utils";
 
 interface ArticleActionsProps {
   id: string;
@@ -24,39 +29,20 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
 }) => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [fileExists, setFileExists] = React.useState<boolean | null>(null);
+  const BUCKET_NAME = 'rhca-pdfs';
 
   // Check if the file exists in storage
   React.useEffect(() => {
-    const checkFileExists = async () => {
+    const verifyFileExists = async () => {
       if (!pdfFileName) {
         setFileExists(false);
         return;
       }
 
-      try {
-        // First try to get the head of the file to check if it exists
-        const { data, error } = await supabase
-          .storage
-          .from('rhca-pdfs')
-          .list('', {
-            search: pdfFileName
-          });
-
-        if (error) {
-          console.error('Error checking file existence:', error);
-          setFileExists(false);
-          return;
-        }
-
-        // If we found the file in the list, it exists
-        setFileExists(data && data.some(file => file.name === pdfFileName));
-      } catch (err) {
-        console.error('Failed to check file existence:', err);
-        setFileExists(false);
-      }
+      setFileExists(await checkFileExistsInBucket(BUCKET_NAME, pdfFileName));
     };
 
-    checkFileExists();
+    verifyFileExists();
   }, [pdfFileName]);
 
   // Function to increment download/view counter
@@ -79,18 +65,6 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
     }
   };
 
-  // Get the public URL for the PDF
-  const getPdfPublicUrl = (): string | null => {
-    if (!pdfFileName) return null;
-    
-    const { data } = supabase
-      .storage
-      .from('rhca-pdfs')
-      .getPublicUrl(pdfFileName);
-      
-    return data?.publicUrl || null;
-  };
-
   // Handle opening PDF in a new tab
   const handleOpenInNewTab = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -100,31 +74,9 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
       return;
     }
 
-    if (fileExists === false) {
-      toast.error("Le fichier PDF n'existe pas dans notre stockage");
-      return;
-    }
-
     setIsLoading(true);
-
     try {
-      const publicUrl = getPdfPublicUrl();
-      
-      if (!publicUrl) {
-        toast.error("Impossible d'ouvrir le PDF");
-        return;
-      }
-
-      // Open in new tab
-      window.open(publicUrl, '_blank');
-      
-      // Increment view counter
-      await incrementCounter('views');
-      
-      toast.success("PDF ouvert dans un nouvel onglet");
-    } catch (error) {
-      console.error('Error opening PDF:', error);
-      toast.error("Erreur lors de l'ouverture du PDF");
+      await openFileInNewTab(BUCKET_NAME, pdfFileName, id, incrementCounter);
     } finally {
       setIsLoading(false);
     }
@@ -139,56 +91,9 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
       return;
     }
 
-    if (fileExists === false) {
-      toast.error("Le fichier PDF n'existe pas dans notre stockage");
-      return;
-    }
-
     setIsLoading(true);
-
     try {
-      console.log(`[ArticleActions] Attempting to download PDF: ${pdfFileName}`);
-      
-      // Try using getPublicUrl and then downloading through that URL
-      // This is more reliable than using the storage.download method directly
-      const { data: urlData } = supabase
-        .storage
-        .from('rhca-pdfs')
-        .getPublicUrl(pdfFileName);
-        
-      if (!urlData || !urlData.publicUrl) {
-        toast.error("Impossible d'obtenir l'URL du PDF");
-        return;
-      }
-      
-      // Fetch the file using the public URL
-      const response = await fetch(urlData.publicUrl);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const blob = await response.blob();
-      
-      // Create URL and trigger download
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = pdfFileName;
-      document.body.appendChild(link);
-      link.click();
-      
-      // Cleanup
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(link);
-
-      // Update download count
-      await incrementCounter('downloads');
-
-      toast.success("Téléchargement réussi");
-    } catch (error) {
-      console.error('Download error:', error);
-      toast.error("Une erreur est survenue lors du téléchargement");
+      await downloadFileFromStorage(BUCKET_NAME, pdfFileName, id, incrementCounter);
     } finally {
       setIsLoading(false);
     }

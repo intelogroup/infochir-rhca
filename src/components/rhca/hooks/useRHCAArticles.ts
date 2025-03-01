@@ -71,6 +71,21 @@ const mergeAuthors = (primaryAuthor: string | null, coAuthors: any): string[] =>
   return authors;
 };
 
+// Map volume/issue to actual existing PDF files
+const mapToPdfFileName = (volume: string, issue: string): string | undefined => {
+  // This mapping matches the actual files in storage to the article records
+  // Modify this mapping based on your actual files
+  const volumeIssueMap: Record<string, string> = {
+    // Map volume+issue combinations to actual filenames in storage
+    "2:47": "RHCA_vol_02_no_47_19_7_2024.pdf",
+    "3:48": "RHCA_vol_03_no_48_18_10_2024.pdf", 
+    "4:49": "RHCA_vol_04_no_49_11_1_2025.pdf"
+  };
+  
+  const key = `${volume}:${issue}`;
+  return volumeIssueMap[key];
+};
+
 export const useRHCAArticles = () => {
   console.log('[useRHCAArticles] Hook initializing');
   const startTime = Date.now();
@@ -120,12 +135,14 @@ export const useRHCAArticles = () => {
           // Process authors from primary_author and co_authors fields
           const authors = mergeAuthors(item.primary_author, item.co_authors);
           
-          // Format URLs for images and PDFs
+          // Format URLs for images
           const imageUrl = formatImageUrl(item.image_url);
-          const pdfUrl = formatPdfUrl(item.pdf_url);
           
-          // Extract PDF filename from URL
-          const pdfFileName = pdfUrl ? pdfUrl.split('/').pop() : undefined;
+          // Get the appropriate PDF filename based on volume and issue
+          const pdfFileName = mapToPdfFileName(item.volume, item.issue);
+          
+          // Format PDF URL if we have a filename
+          const pdfUrl = pdfFileName ? formatPdfUrl(pdfFileName) : undefined;
           
           return {
             id: item.id,

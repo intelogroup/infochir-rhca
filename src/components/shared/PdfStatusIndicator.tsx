@@ -1,55 +1,42 @@
 
-import React from 'react';
+import { AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { AlertCircle, CheckCircle, HelpCircle, Loader2 } from 'lucide-react';
 
 interface PdfStatusIndicatorProps {
-  status: 'loading' | 'available' | 'unavailable' | 'unknown';
-  className?: string;
+  status: "checking" | "available" | "unavailable";
+  size?: "sm" | "md" | "lg";
 }
 
-export const PdfStatusIndicator: React.FC<PdfStatusIndicatorProps> = ({ 
-  status, 
-  className = "" 
-}) => {
-  let icon;
-  let tooltipText;
-  let color;
-
-  switch (status) {
-    case 'loading':
-      icon = <Loader2 className="h-4 w-4 animate-spin" />;
-      tooltipText = "Vérification de la disponibilité du PDF...";
-      color = "text-gray-400";
-      break;
-    case 'available':
-      icon = <CheckCircle className="h-4 w-4" />;
-      tooltipText = "PDF disponible";
-      color = "text-green-500";
-      break;
-    case 'unavailable':
-      icon = <AlertCircle className="h-4 w-4" />;
-      tooltipText = "PDF non disponible";
-      color = "text-red-500";
-      break;
-    case 'unknown':
-    default:
-      icon = <HelpCircle className="h-4 w-4" />;
-      tooltipText = "Statut PDF inconnu";
-      color = "text-yellow-500";
-      break;
-  }
-
+export const PdfStatusIndicator = ({ 
+  status,
+  size = "md" 
+}: PdfStatusIndicatorProps) => {
+  const sizeClass = {
+    sm: "h-3 w-3",
+    md: "h-4 w-4",
+    lg: "h-5 w-5"
+  }[size];
+  
+  const messages = {
+    checking: "Vérification de la disponibilité du PDF...",
+    available: "PDF disponible pour téléchargement",
+    unavailable: "PDF non disponible"
+  };
+  
+  const icons = {
+    checking: <Loader2 className={`${sizeClass} animate-spin text-gray-400`} />,
+    available: <CheckCircle className={`${sizeClass} text-green-500`} />,
+    unavailable: <AlertCircle className={`${sizeClass} text-red-400`} />
+  };
+  
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className={`${color} ${className}`}>
-            {icon}
-          </span>
+          <span className="cursor-help">{icons[status]}</span>
         </TooltipTrigger>
         <TooltipContent>
-          <p>{tooltipText}</p>
+          <p>{messages[status]}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
