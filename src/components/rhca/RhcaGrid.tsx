@@ -18,7 +18,7 @@ export const RhcaGrid: React.FC = () => {
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
   
   // Fetch RHCA articles from Supabase
-  const { data: articles = [], isLoading, error } = useRHCAArticles();
+  const { articles, loading, error } = useRHCAArticles();
 
   // Memoize handler functions
   const handleSortChange = React.useCallback((value: SortOption) => {
@@ -53,7 +53,7 @@ export const RhcaGrid: React.FC = () => {
     });
   }, [filteredArticles, sortBy]);
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="w-full flex flex-col items-center justify-center p-12 space-y-4">
         <Loader2 className="h-8 w-8 text-primary animate-spin" />

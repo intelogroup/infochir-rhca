@@ -25,7 +25,14 @@ export const useRHCAArticles = () => {
 
         if (data) {
           const mappedArticles = data.map(article => {
-            const mappedArticle = mapDatabaseArticleToArticle(article);
+            // First map the base article properties
+            const mappedArticle = mapDatabaseArticleToArticle({
+              ...article,
+              // Ensure cover_image property exists for the mapping function
+              cover_image: article.image_url
+            });
+            
+            // Then add RHCA-specific properties
             return {
               ...mappedArticle,
               pdfFileName: article.pdf_filename,
