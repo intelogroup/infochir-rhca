@@ -2,7 +2,6 @@
 import * as React from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { RhcaGrid } from "@/components/rhca/RhcaGrid";
-import BackToTop from "@/components/navigation/BackToTop";
 import { RHCAHeader } from "@/components/rhca/components/RHCAHeader";
 import { RHCASidebar } from "@/components/rhca/components/RHCASidebar";
 import { useSearchParams } from "react-router-dom";
@@ -78,6 +77,7 @@ const RHCA: React.FC = () => {
         <RHCAHeader />
         
         <div className="container mx-auto px-4 py-8 md:py-12">
+          {/* Admin panel section */}
           {isAdmin && (
             <div className="mb-8 p-6 bg-white shadow-sm rounded-lg border border-gray-200">
               <h2 className="text-xl font-semibold mb-4">Admin: Upload RHCA Files</h2>
@@ -166,7 +166,7 @@ const RHCA: React.FC = () => {
           </div>
         </div>
       </div>
-      <BackToTop />
+      {/* BackToTop component is now inside MainLayout */}
     </MainLayout>
   );
 };
