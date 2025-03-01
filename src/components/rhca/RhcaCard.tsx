@@ -30,25 +30,34 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article, onCardClick, classN
         coverImage: article.coverImage
       }));
       
-      if (!article.coverImageFileName) {
-        console.warn(`[RhcaCard:WARN] No coverImageFileName available for article ${article.id}`);
+      // Use the coverImageFileName if available, otherwise fallback to filename from imageUrl
+      let filenameToCheck = article.coverImageFileName;
+      
+      if (!filenameToCheck && article.imageUrl) {
+        // Try to extract filename from imageUrl
+        const urlParts = article.imageUrl.split('/');
+        filenameToCheck = urlParts[urlParts.length - 1];
+      }
+      
+      if (!filenameToCheck) {
+        console.warn(`[RhcaCard:WARN] No cover image filename available for article ${article.id}`);
         setCoverExists(false);
         return;
       }
       
-      console.log(`[RhcaCard:INFO] Checking cover image: ${article.coverImageFileName}`);
+      console.log(`[RhcaCard:INFO] Checking cover image: ${filenameToCheck}`);
       try {
-        const exists = await checkFileExistsInBucket('rhca_covers', article.coverImageFileName);
+        const exists = await checkFileExistsInBucket('rhca_covers', filenameToCheck);
         
-        console.log(`[RhcaCard:INFO] Cover image ${article.coverImageFileName} exists: ${exists}`);
+        console.log(`[RhcaCard:INFO] Cover image ${filenameToCheck} exists: ${exists}`);
         setCoverExists(exists);
         
         if (exists) {
-          const url = getFilePublicUrl('rhca_covers', article.coverImageFileName);
+          const url = getFilePublicUrl('rhca_covers', filenameToCheck);
           console.log(`[RhcaCard:INFO] Got public URL for cover: ${url}`);
           if (url) setCoverUrl(url);
         } else {
-          console.warn(`[RhcaCard:WARN] Cover image ${article.coverImageFileName} not found in storage bucket`);
+          console.warn(`[RhcaCard:WARN] Cover image ${filenameToCheck} not found in storage bucket`);
           // Fall back to the original image URL if available
           if (article.imageUrl) {
             console.log(`[RhcaCard:INFO] Using fallback imageUrl: ${article.imageUrl}`);

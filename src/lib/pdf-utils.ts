@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { formatRHCACoverImageFilename } from "@/lib/utils";
 
 export const checkFileExistsInBucket = async (bucketName: string, filePath: string): Promise<boolean> => {
   try {
@@ -237,35 +238,25 @@ export const mapToCoverImageFileName = async (volume: string, issue: string): Pr
     // First, try to get the specific cover_image_filename from the database
     const { data, error } = await supabase
       .from('rhca_articles_view')
-      .select('*')
+      .select('volume, issue, cover_image_filename')
       .eq('volume', volume)
       .eq('issue', issue)
       .maybeSingle();
       
     if (error) {
       console.error('[DB:ERROR] Error getting cover image filename:', error);
-      console.log('[DB:DEBUG] Available columns check:', data ? Object.keys(data) : 'No data');
       return null;
     }
     
-    // Check if data exists and log all available fields for debugging
-    if (data) {
-      console.log('[DB:DEBUG] Data retrieved for cover image:', data);
-      console.log('[DB:DEBUG] Available fields:', Object.keys(data));
-      
-      // Check for cover_image_filename field
-      if ('cover_image_filename' in data && data.cover_image_filename) {
-        console.log(`[DB:INFO] Found cover_image_filename in database: ${data.cover_image_filename}`);
-        return data.cover_image_filename as string; // Add type assertion here
-      } else {
-        console.warn('[DB:WARN] cover_image_filename not found in data or is null');
-      }
-    } else {
-      console.warn(`[DB:WARN] No data found for volume:${volume}, issue:${issue}`);
-    }
+    // Check if data exists and has a cover_image_filename
+    if (data && data.cover_image_filename) {
+      console.log(`[DB:INFO] Found cover_image_filename in database: ${data.cover_image_filename}`);
+      return data.cover_image_filename;
+    } 
     
-    // Fallback name generation logic
-    const fallbackName = `RHCA_vol_${volume.padStart(2, '0')}_no_${issue}_cover.png`;
+    // Fallback - generate a standard filename using the current date
+    const now = new Date();
+    const fallbackName = formatRHCACoverImageFilename(volume, issue, now);
     console.log(`[DB:INFO] Using fallback cover image filename: ${fallbackName}`);
     return fallbackName;
     
@@ -275,7 +266,7 @@ export const mapToCoverImageFileName = async (volume: string, issue: string): Pr
   }
 };
 
-// Add a new function to update cover image filenames similar to updatePdfFilenames
+// Add a new function to update cover image filenames
 export const updateCoverImageFilenames = async () => {
   try {
     console.log('[DB:INFO] Starting cover image filename update process');
@@ -301,13 +292,15 @@ export const updateCoverImageFilenames = async () => {
     // Iterate through each article and update the cover_image_filename
     for (const article of articles) {
       if (article.volume && article.issue) {
-        const coverImageFileName = `RHCA_vol_${String(article.volume).padStart(2, '0')}_no_${String(article.issue).padStart(2, '0')}_cover.png`;
+        // Get the current date to use in the filename
+        const now = new Date();
+        const coverImageFileName = formatRHCACoverImageFilename(article.volume, article.issue, now);
         console.log(`[DB:DEBUG] Updating article ${article.id} with cover image filename: ${coverImageFileName}`);
 
-        // Update the article in the database - specify only fields that are in the articles table
+        // Update the article in the database with the cover_image_filename
         const { error: updateError } = await supabase
           .from('articles')
-          .update({ pdf_filename: coverImageFileName })
+          .update({ cover_image_filename: coverImageFileName })
           .eq('id', article.id);
 
         if (updateError) {
@@ -321,7 +314,9 @@ export const updateCoverImageFilenames = async () => {
     }
 
     console.log('[DB:SUCCESS] Cover image filenames updated successfully!');
+    toast.success('Cover image filenames updated successfully!');
   } catch (err) {
     console.error('[DB:ERROR] Exception updating cover image filenames:', err);
+    toast.error('Error updating cover image filenames.');
   }
 };

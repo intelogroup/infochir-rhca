@@ -14,19 +14,18 @@ interface RhcaDatabaseArticle {
   source: string;
   category: string;
   tags: string[];
-  pdf_url: string; // Required to match DatabaseArticle
-  image_url: string; // Required to match DatabaseArticle
-  cover_image: string; // Required to match DatabaseArticle
-  views: number; // Making this required to match DatabaseArticle
-  downloads: number; // Required to match DatabaseArticle
-  shares: number; // Required to match DatabaseArticle
-  citations: number; // Required to match DatabaseArticle
+  pdf_url: string;
+  image_url: string;
+  cover_image: string;
+  views: number;
+  downloads: number;
+  shares: number;
+  citations: number;
   volume?: string;
   issue?: string;
   specialty?: string;
   pdf_filename?: string;
   cover_image_filename?: string;
-  // Add any other fields that might be in the database
   [key: string]: any;
 }
 
@@ -81,7 +80,7 @@ export const useRHCAArticles = () => {
             // Ensure required fields have default values to match DatabaseArticle type
             const articleWithDefaults: RhcaDatabaseArticle = {
               ...article,
-              // Ensure these fields have default values if they're undefined
+              // Ensure these fields are defined to match the DatabaseArticle type
               pdf_url: article.pdf_url || '',
               image_url: article.image_url || '',
               cover_image: article.cover_image || article.image_url || '',

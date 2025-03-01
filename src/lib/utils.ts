@@ -32,6 +32,16 @@ export function formatDateForFilename(date: Date): string {
 }
 
 /**
+ * Formats a date with the RHCA cover image naming convention: RHCA_vol_XX_no_XX_DD_MM_YYYY.png
+ */
+export function formatRHCACoverImageFilename(volume: string, issue: string, date: Date): string {
+  const paddedVolume = String(volume).padStart(2, '0');
+  const dateFormatted = formatDateForFilename(date);
+  
+  return `RHCA_vol_${paddedVolume}_no_${issue}_${dateFormatted}.png`;
+}
+
+/**
  * Extracts volume and issue numbers from RHCA filename
  * Supports both old format: RHCA_vol_2_no_48_31-10-24.pdf
  * And new format: RHCA_vol_04_no_49_14_1_2025.pdf

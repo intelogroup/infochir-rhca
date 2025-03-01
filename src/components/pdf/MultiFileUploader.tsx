@@ -1,10 +1,9 @@
-
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { FileUploadArea } from "./FileUploadArea";
 import { FileList } from "./FileList";
-import { formatDateForFilename } from "@/lib/utils";
+import { formatDateForFilename, formatRHCACoverImageFilename } from "@/lib/utils";
 
 interface MultiFileUploaderProps {
   bucket: string;
@@ -34,18 +33,22 @@ export const MultiFileUploader = ({
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
 
   const generateRHCAFilename = (originalName: string) => {
-    if ((!volumeInfo) || (bucket !== 'rhca-pdfs' && bucket !== 'rhca_covers')) {
+    if (!volumeInfo || (bucket !== 'rhca-pdfs' && bucket !== 'rhca_covers')) {
       return originalName;
     }
 
     const now = new Date();
-    const dateFormatted = formatDateForFilename(now);
-    const fileExt = originalName.split('.').pop() || (type === 'document' ? 'pdf' : 'jpg');
+    const fileExt = originalName.split('.').pop() || (type === 'document' ? 'pdf' : 'png');
     
-    // Format volume with leading zero if needed
-    const paddedVolume = volumeInfo.volume.padStart(2, '0');
-    
-    return `RHCA_vol_${paddedVolume}_no_${volumeInfo.issue}_${dateFormatted}.${fileExt}`;
+    if (bucket === 'rhca_covers') {
+      // Use the specialized cover image format
+      return formatRHCACoverImageFilename(volumeInfo.volume, volumeInfo.issue, now);
+    } else {
+      // For PDF documents
+      const dateFormatted = formatDateForFilename(now);
+      const paddedVolume = volumeInfo.volume.padStart(2, '0');
+      return `RHCA_vol_${paddedVolume}_no_${volumeInfo.issue}_${dateFormatted}.${fileExt}`;
+    }
   };
 
   const handleFileSelect = async (files: File[]) => {
