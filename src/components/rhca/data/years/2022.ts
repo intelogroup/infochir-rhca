@@ -1,55 +1,5 @@
+
 import type { RhcaVolume } from "../../types";
 
-export const data2022: RhcaVolume[] = [
-  {
-    id: "rhca-vol1-issue4-2022",
-    title: "Trauma Management Updates",
-    volume: "1",
-    issue: "4",
-    date: "2022-01-20",
-    year: "2022",
-    pageCount: "72", // Convert to string
-    specialty: "Trauma Surgery",
-    category: "Clinical Practice",
-    institution: "HUEH Trauma Center",
-    editor: "Dr. Marie Pierre",
-    description: "Updates on the latest techniques in trauma management.",
-    articleCount: 10,
-    downloadCount: 250,
-    shareCount: 75,
-  },
-  {
-    id: "rhca-vol1-issue3-2022",
-    title: "Infectious Disease Protocols",
-    volume: "1",
-    issue: "3",
-    date: "2022-04-15",
-    year: "2022",
-    pageCount: "80", // Convert to string
-    specialty: "Infectious Diseases",
-    category: "Clinical Practice",
-    institution: "GHESKIO Centers",
-    editor: "Dr. Jean William Pape",
-    description: "Protocols for managing infectious diseases in Haiti.",
-    articleCount: 12,
-    downloadCount: 300,
-    shareCount: 90,
-  },
-  {
-    id: "rhca-vol1-issue2-2022",
-    title: "Maternal and Child Health",
-    volume: "1",
-    issue: "2",
-    date: "2022-07-22",
-    year: "2022",
-    pageCount: "68", // Convert to string
-    specialty: "Obstetrics and Pediatrics",
-    category: "Public Health",
-    institution: "St. Damien Pediatric Hospital",
-    editor: "Dr. Jacqueline Gautier",
-    description: "Improving maternal and child health outcomes.",
-    articleCount: 9,
-    downloadCount: 220,
-    shareCount: 65,
-  },
-];
+// Either remove this file completely or provide real data from database
+export const volumes2022: RhcaVolume[] = [];

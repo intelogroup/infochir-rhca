@@ -1,4 +1,5 @@
 
+
 import type { Article } from "../index-medicus/types";
 
 export interface RhcaArticle extends Article {
@@ -28,3 +29,4 @@ export interface RhcaVolume {
   downloadCount?: number;
   shareCount?: number;
 }
+

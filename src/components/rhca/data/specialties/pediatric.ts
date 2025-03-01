@@ -1,55 +1,5 @@
+
 import type { RhcaVolume } from "../../types";
 
-export const pediatricData: RhcaVolume[] = [
-  {
-    id: "peds-vol3-2023",
-    title: "Pediatric Surgical Innovations",
-    volume: "3",
-    issue: "10",
-    date: "2023-11-05",
-    year: "2023",
-    pageCount: "86", // Convert to string
-    specialty: "Pediatric Surgery",
-    category: "Innovations",
-    institution: "Children's Surgical Institute",
-    editor: "Dr. Sofia Rodriguez",
-    description: "Explore the latest surgical innovations in pediatric care, featuring techniques and case studies from leading children's hospitals.",
-    articleCount: 12,
-    downloadCount: 450,
-    shareCount: 120,
-  },
-  {
-    id: "peds-vol2-2022",
-    title: "Advances in Neonatal Surgery",
-    volume: "2",
-    issue: "6",
-    date: "2022-07-12",
-    year: "2022",
-    pageCount: "92", // Convert to string
-    specialty: "Pediatric Surgery",
-    category: "Neonatal",
-    institution: "Neonatal Surgical Center",
-    editor: "Dr. Carlos Ramirez",
-    description: "A comprehensive look at surgical advances in neonatal care, covering a range of procedures and outcomes.",
-    articleCount: 15,
-    downloadCount: 520,
-    shareCount: 150,
-  },
-  {
-    id: "peds-vol1-2021",
-    title: "Congenital Anomaly Corrections",
-    volume: "1",
-    issue: "2",
-    date: "2021-03-28",
-    year: "2021",
-    pageCount: "78", // Convert to string
-    specialty: "Pediatric Surgery",
-    category: "Congenital Anomalies",
-    institution: "Pediatric Anomaly Clinic",
-    editor: "Dr. Emily Chen",
-    description: "Detailed insights into the surgical correction of congenital anomalies in pediatric patients.",
-    articleCount: 10,
-    downloadCount: 380,
-    shareCount: 95,
-  },
-];
+// Either remove this file completely or provide real data from database
+export const pediatricVolumes: RhcaVolume[] = [];
