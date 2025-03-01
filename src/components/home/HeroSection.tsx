@@ -1,3 +1,4 @@
+
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState, useRef } from "react";
@@ -75,7 +76,7 @@ export const HeroSection = () => {
   }, [cycleCount]);
 
   return (
-    <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(100vh-4rem)] pt-32 md:pt-40 z-0">
+    <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(100vh-4rem-20px)] pt-32 md:pt-40 z-0">
       <AnimatePresence mode="wait">
         <div
           key={currentIndex}
@@ -83,6 +84,7 @@ export const HeroSection = () => {
         >
           <div 
             className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-90 z-0`}
+            style={{ height: 'calc(100% - 20px)' }}
           />
           <motion.div 
             className="absolute bottom-0 right-0 w-1/2 h-4/5 md:h-3/4 lg:h-2/3 z-0"
@@ -97,13 +99,14 @@ export const HeroSection = () => {
               backgroundRepeat: 'no-repeat',
               opacity: 0.9,
               right: '10px',
-              paddingLeft: '5px'
+              paddingLeft: '5px',
+              height: 'calc(100% - 20px)'
             }}
           />
         </div>
       </AnimatePresence>
       
-      <div className="relative max-w-7xl mx-auto text-left z-10">
+      <div className="relative max-w-7xl mx-auto text-left z-10" style={{ height: 'calc(100% - 20px)' }}>
         <div className="max-w-xl lg:max-w-3xl">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-8 animate-fade-up tracking-tight md:whitespace-nowrap whitespace-normal">
             Votre espace scientifique<br className="md:hidden" /> en ligne
