@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FileText } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ImageOptimizerProps {
   src: string | undefined;
@@ -23,6 +24,12 @@ export const ImageOptimizer = ({
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [imageSrc, setImageSrc] = useState("");
+  
+  // Check if the image is from the Supabase rhca_covers bucket
+  const isRhcaCover = src && (
+    src.includes('rhca_covers') || 
+    (src.includes('supabase.co') && src.includes('RHCA_vol'))
+  );
 
   useEffect(() => {
     // Reset states when src changes
@@ -44,8 +51,8 @@ export const ImageOptimizer = ({
       setImageSrc(optimizedSrc);
     } 
     // Handle Supabase storage URLs
-    else if (src.includes('supabase.co') || src.includes('llxzstqejdrplmxdjxlu')) {
-      // Check if we need to add any cache busting or transformation params
+    else if (isRhcaCover || src.includes('supabase.co') || src.includes('llxzstqejdrplmxdjxlu')) {
+      // For Supabase images, use the original URL
       img.src = src;
       setImageSrc(src);
       console.log(`[ImageOptimizer] Loading Supabase image: ${src}`);
@@ -69,7 +76,7 @@ export const ImageOptimizer = ({
       img.onload = null;
       img.onerror = null;
     };
-  }, [src, width]);
+  }, [src, width, isRhcaCover]);
 
   if (isLoading) {
     return <Skeleton className={`${className} bg-muted`} style={{ width, height }} />;
