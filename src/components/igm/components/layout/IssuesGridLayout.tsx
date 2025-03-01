@@ -1,5 +1,5 @@
 
-import { IssuesSearch } from "../IssuesSearch";
+import { IssuesSearch } from "../../components/IssuesSearch";
 import { IssuesGridContent } from "@/components/igm/components/IssuesGridContent";
 import { useIssuesState } from "../../hooks/useIssuesState";
 import { SORT_OPTIONS } from "../../constants/sortOptions";
