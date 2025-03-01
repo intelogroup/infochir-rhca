@@ -30,16 +30,20 @@ export const ImageOptimizer = ({
     setHasError(false);
     
     if (!src) {
+      console.warn(`[ImageOptimizer:WARN] No source URL provided for image: ${alt}`);
       setHasError(true);
       setIsLoading(false);
       return;
     }
+
+    console.log(`[ImageOptimizer:INFO] Loading image from: ${src}, alt: ${alt}`);
 
     const img = new Image();
     
     // Add quality and resize parameters to the URL if it's an Unsplash image
     if (src.includes('unsplash.com')) {
       const optimizedSrc = `${src}&q=75&w=${width}&fit=crop`;
+      console.log(`[ImageOptimizer:DEBUG] Using optimized Unsplash URL: ${optimizedSrc}`);
       img.src = optimizedSrc;
       setImageSrc(optimizedSrc);
     } 
@@ -49,23 +53,33 @@ export const ImageOptimizer = ({
       const isRHCACover = src.includes('rhca_covers') || src.includes('rhca-covers') || src.includes('RHCA_vol_');
       
       if (isRHCACover) {
-        console.log(`[ImageOptimizer] Loading RHCA cover image: ${src}`);
+        console.log(`[ImageOptimizer:DEBUG] Loading RHCA cover image: ${src}`);
       }
       
       img.src = src;
       setImageSrc(src);
     } 
     else {
+      console.log(`[ImageOptimizer:DEBUG] Loading standard image: ${src}`);
       img.src = src;
       setImageSrc(src);
     }
 
     img.onload = () => {
+      console.log(`[ImageOptimizer:SUCCESS] Image loaded successfully: ${src}`);
       setIsLoading(false);
     };
 
-    img.onerror = () => {
-      console.error(`[ImageOptimizer] Failed to load image from: ${src}`);
+    img.onerror = (error) => {
+      console.error(`[ImageOptimizer:ERROR] Failed to load image from: ${src}`, error);
+      // Log more details about the error
+      if (error instanceof Event) {
+        console.error('[ImageOptimizer:ERROR] Image loading error details:', {
+          target: error.target,
+          type: error.type,
+          timeStamp: error.timeStamp
+        });
+      }
       setHasError(true);
       setIsLoading(false);
     };
@@ -74,13 +88,14 @@ export const ImageOptimizer = ({
       img.onload = null;
       img.onerror = null;
     };
-  }, [src, width]);
+  }, [src, width, alt]);
 
   if (isLoading) {
     return <Skeleton className={`${className} bg-muted`} style={{ width, height }} />;
   }
 
   if (hasError || !src) {
+    console.log(`[ImageOptimizer:INFO] Showing fallback for failed image: ${alt}`);
     return (
       <div 
         className={`${className} flex items-center justify-center bg-emerald-50/50 border border-emerald-100/50 rounded-lg`}
@@ -104,6 +119,10 @@ export const ImageOptimizer = ({
       width={width}
       height={height}
       loading="lazy"
+      onError={(e) => {
+        console.error(`[ImageOptimizer:ERROR] Runtime error loading image: ${src}`, e);
+        setHasError(true);
+      }}
     />
   );
 };

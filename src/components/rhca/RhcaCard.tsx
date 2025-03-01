@@ -21,22 +21,32 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article, onCardClick, classN
   
   useEffect(() => {
     const verifyCoverExists = async () => {
+      console.log(`[RhcaCard:DEBUG] Verifying cover for article: ${article.id}, title: ${article.title}`);
+      console.log(`[RhcaCard:DEBUG] Article data:`, article);
+      
       if (!article.coverImageFileName) {
+        console.warn(`[RhcaCard:WARN] No coverImageFileName available for article ${article.id}`);
         setCoverExists(false);
         return;
       }
       
+      console.log(`[RhcaCard:INFO] Checking cover image: ${article.coverImageFileName}`);
       const exists = await checkFileExistsInBucket('rhca_covers', article.coverImageFileName);
+      
+      console.log(`[RhcaCard:INFO] Cover image ${article.coverImageFileName} exists: ${exists}`);
       setCoverExists(exists);
       
       if (exists) {
         const url = getFilePublicUrl('rhca_covers', article.coverImageFileName);
+        console.log(`[RhcaCard:INFO] Got public URL for cover: ${url}`);
         if (url) setCoverUrl(url);
+      } else {
+        console.warn(`[RhcaCard:WARN] Cover image ${article.coverImageFileName} not found in storage bucket`);
       }
     };
     
     verifyCoverExists();
-  }, [article.coverImageFileName]);
+  }, [article.coverImageFileName, article.id, article.title]);
 
   const handleClick = () => {
     if (onCardClick) {
