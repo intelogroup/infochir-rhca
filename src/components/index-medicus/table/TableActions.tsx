@@ -20,7 +20,7 @@ import {
 import { Copy, Edit, MoreHorizontal, RotateCcw, Trash } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 
 interface TableActionsProps<TData> {
   row: {
@@ -32,7 +32,7 @@ export function TableActions<TData extends { id: string; title: string }>(
   props: TableActionsProps<TData>
 ) {
   const { row } = props;
-  const router = useRouter();
+  const navigate = useNavigate();
   const id = row.original.id;
   const title = row.original.title;
 
@@ -41,14 +41,13 @@ export function TableActions<TData extends { id: string; title: string }>(
 
   const handleCopyId = () => {
     navigator.clipboard.writeText(id);
-    toast({
-      title: "Copié!",
+    toast("Copié!", {
       description: "L'ID de l'article a été copié dans le presse-papier.",
     });
   };
 
   const handleEdit = () => {
-    router.push(`/dashboard/articles/edit/${id}`);
+    navigate(`/dashboard/articles/edit/${id}`);
   };
 
   const handleDelete = async () => {
@@ -62,8 +61,7 @@ export function TableActions<TData extends { id: string; title: string }>(
 
       if (authorError) {
         console.error("Error deleting article authors:", authorError);
-        toast({
-          title: "Erreur!",
+        toast("Erreur!", {
           description:
             "Une erreur est survenue lors de la suppression des auteurs de l'article.",
         });
@@ -78,24 +76,21 @@ export function TableActions<TData extends { id: string; title: string }>(
 
       if (articleError) {
         console.error("Error deleting article:", articleError);
-        toast({
-          title: "Erreur!",
+        toast("Erreur!", {
           description:
             "Une erreur est survenue lors de la suppression de l'article.",
         });
         return;
       }
 
-      toast({
-        title: "Succès!",
+      toast("Succès!", {
         description: "L'article a été supprimé avec succès.",
       });
       setOpen(false);
-      router.refresh();
+      navigate("/dashboard/articles");
     } catch (error) {
       console.error("Unexpected error:", error);
-      toast({
-        title: "Erreur!",
+      toast("Erreur!", {
         description: "Une erreur inattendue est survenue.",
       });
     } finally {

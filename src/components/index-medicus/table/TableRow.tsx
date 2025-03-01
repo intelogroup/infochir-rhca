@@ -88,9 +88,8 @@ export const ArticleTableRow: React.FC<ArticleTableRowProps> = ({ article }) => 
         </div>
       </TableCell>
       <TableCell className="text-right">
-        <TableActions articleId={article.id} pdfUrl={article.pdfUrl} />
+        <TableActions row={{ original: { id: article.id, title: article.title } }} />
       </TableCell>
     </TableRowBase>
   );
 };
-

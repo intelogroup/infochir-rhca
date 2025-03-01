@@ -1,38 +1,34 @@
 
-import type { RhcaArticle } from "../../types";
+import { RhcaArticle, RhcaVolume } from "../../types";
 
-export const cardiologyArticles: RhcaArticle[] = [
+export const cardiologyVolumes: RhcaVolume[] = [
   {
-    id: "card-1",
-    title: "Innovations in Cardiac Surgery",
-    abstract: "Latest developments in cardiac surgical procedures...",
-    authors: ["Dr. Jane Smith", "Dr. John Doe"],
-    publicationDate: "2024-01-15",
-    date: "2024-01-15",
-    specialty: "Cardiology",
-    category: "Research",
-    source: "RHCA",
+    id: "card-vol-12-4",
+    title: "Advanced Cardiac Surgery Techniques",
     volume: "12",
-    pageNumber: 1,
-    views: 250,
-    downloads: 120,
-    shares: 45,
-    citations: 15,
-    tags: ["cardiac surgery", "innovation", "research"],
-    imageUrl: "/images/cardiac-surgery.jpg",
-    pdfUrl: "/pdfs/cardiac-innovations-2024.pdf",
-    pdfFileName: "cardiac-innovations-2024.pdf"
+    issue: "4",
+    date: "2023-07-15",
+    year: "2023",
+    coverImage: "/images/journals/cardiology-12-4.jpg",
+    pdfUrl: "/pdfs/cardiology-vol-12-4.pdf",
+    specialty: "Cardiology",
+    category: "Surgery",
+    institution: "Institut de Cardiologie de Haïti",
+    editor: "Dr. Jean-Claude Michel",
+    pageCount: "128",
+    availability: "available"
+  },
+  {
+    id: "card-vol-12-3",
+    title: "Cardiovascular Disease Prevention",
+    volume: "12",
+    issue: "3",
+    date: "2023-04-10",
+    year: "2023",
+    coverImage: "/images/journals/cardiology-12-3.jpg",
+    specialty: "Cardiology",
+    category: "Prevention",
+    pageCount: "95",
+    availability: "available"
   }
 ];
-
-export const cardiologyVolumes = [{
-  id: "cv-2024-1",
-  volume: "12",
-  date: "2024-01",
-  description: "Cardiology advances in 2024",
-  articleCount: 15,
-  downloadCount: 450,
-  shareCount: 200,
-  articles: cardiologyArticles,
-  coverImage: "/images/cardiology-cover.jpg"
-}];

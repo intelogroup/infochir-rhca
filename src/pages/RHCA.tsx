@@ -12,6 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { InfoIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 import { checkFileExistsInBucket } from "@/lib/pdf-utils";
+import { supabase } from "@/integrations/supabase/client";
 
 const RHCA: React.FC = () => {
   const [searchParams] = useSearchParams();

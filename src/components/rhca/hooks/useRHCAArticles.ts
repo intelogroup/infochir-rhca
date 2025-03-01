@@ -158,7 +158,7 @@ export const useRHCAArticles = () => {
             source: item.source || "RHCA",
             volume: item.volume || "",
             issue: item.issue || "",
-            pageNumber: parseInt(item.page_number) || 0,
+            pageNumber: item.page_number ? String(item.page_number) : "0",
             views: item.views || 0,
             downloads: item.downloads || 0,
             shares: item.shares || 0,

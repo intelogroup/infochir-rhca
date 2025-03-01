@@ -5,3 +5,21 @@ export interface RhcaArticle extends Article {
   pdfFileName?: string;
   coverImageFileName?: string;
 }
+
+export interface RhcaVolume {
+  id: string;
+  title: string;
+  volume: string;
+  issue: string;
+  date: string;
+  year: string;
+  coverImage?: string;
+  pdfUrl?: string;
+  articles?: RhcaArticle[];
+  specialty?: string;
+  category?: string;
+  institution?: string;
+  editor?: string;
+  pageCount?: string;
+  availability?: "available" | "unavailable" | "coming_soon";
+}
