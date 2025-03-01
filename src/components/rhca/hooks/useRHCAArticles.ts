@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { RhcaArticle } from "../types";
 import { toast } from "sonner";
+import { mockRhcaArticles } from "../data/mockArticles";
 
 // Helper functions for URL formatting
 const formatPdfUrl = (pdfPath: string | null): string | undefined => {
@@ -81,6 +82,12 @@ export const useRHCAArticles = () => {
       console.log('[useRHCAArticles] Starting data fetch at:', Date.now() - startTime, 'ms');
 
       try {
+        // For now, use mock data to match our naming conventions
+        console.log('[useRHCAArticles] Using mock data for development');
+        return mockRhcaArticles;
+
+        // The following code would be used for the actual Supabase query
+        /*
         const { data, error } = await supabase
           .from("rhca_articles_view")
           .select('*')
@@ -161,6 +168,7 @@ export const useRHCAArticles = () => {
         });
 
         return articles;
+        */
       } catch (error) {
         console.error('[useRHCAArticles] Error in query function:', {
           error,
