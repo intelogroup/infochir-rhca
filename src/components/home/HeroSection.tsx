@@ -76,7 +76,7 @@ export const HeroSection = () => {
   }, [cycleCount]);
 
   return (
-    <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(100vh-4rem-20px)] pt-32 md:pt-40 z-0">
+    <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(100vh-4rem-40px)] pt-32 md:pt-40 z-0">
       <AnimatePresence mode="wait">
         <div
           key={currentIndex}
@@ -84,10 +84,10 @@ export const HeroSection = () => {
         >
           <div 
             className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-90 z-0`}
-            style={{ height: 'calc(100% - 20px)' }}
+            style={{ height: 'calc(100% - 40px)' }}
           />
           <motion.div 
-            className="absolute bottom-0 right-0 w-1/2 h-4/5 md:h-3/4 lg:h-2/3 z-0"
+            className="absolute bottom-0 right-0 w-1/2 h-[calc(4/5-20px)] md:h-[calc(3/4-20px)] lg:h-[calc(2/3-20px)] z-0"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -100,13 +100,13 @@ export const HeroSection = () => {
               opacity: 0.9,
               right: '10px',
               paddingLeft: '5px',
-              height: 'calc(100% - 20px)'
+              height: 'calc(100% - 40px)'
             }}
           />
         </div>
       </AnimatePresence>
       
-      <div className="relative max-w-7xl mx-auto text-left z-10" style={{ height: 'calc(100% - 20px)' }}>
+      <div className="relative max-w-7xl mx-auto text-left z-10" style={{ height: 'calc(100% - 40px)' }}>
         <div className="max-w-xl lg:max-w-3xl">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-8 animate-fade-up tracking-tight md:whitespace-nowrap whitespace-normal">
             Votre espace scientifique<br className="md:hidden" /> en ligne
