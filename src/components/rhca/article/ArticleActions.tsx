@@ -1,7 +1,7 @@
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import { Download, Loader2, ExternalLink } from "lucide-react";
+import { Download, Loader2, ExternalLink, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -23,6 +23,41 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
   pdfFileName
 }) => {
   const [isLoading, setIsLoading] = React.useState(false);
+  const [fileExists, setFileExists] = React.useState<boolean | null>(null);
+
+  // Check if the file exists in storage
+  React.useEffect(() => {
+    const checkFileExists = async () => {
+      if (!pdfFileName) {
+        setFileExists(false);
+        return;
+      }
+
+      try {
+        // First try to get the head of the file to check if it exists
+        const { data, error } = await supabase
+          .storage
+          .from('rhca-pdfs')
+          .list('', {
+            search: pdfFileName
+          });
+
+        if (error) {
+          console.error('Error checking file existence:', error);
+          setFileExists(false);
+          return;
+        }
+
+        // If we found the file in the list, it exists
+        setFileExists(data && data.some(file => file.name === pdfFileName));
+      } catch (err) {
+        console.error('Failed to check file existence:', err);
+        setFileExists(false);
+      }
+    };
+
+    checkFileExists();
+  }, [pdfFileName]);
 
   // Function to increment download/view counter
   const incrementCounter = async (countType: 'downloads' | 'views') => {
@@ -65,6 +100,11 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
       return;
     }
 
+    if (fileExists === false) {
+      toast.error("Le fichier PDF n'existe pas dans notre stockage");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -99,30 +139,39 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
       return;
     }
 
+    if (fileExists === false) {
+      toast.error("Le fichier PDF n'existe pas dans notre stockage");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       console.log(`[ArticleActions] Attempting to download PDF: ${pdfFileName}`);
       
-      // Download the file
-      const { data, error } = await supabase
+      // Try using getPublicUrl and then downloading through that URL
+      // This is more reliable than using the storage.download method directly
+      const { data: urlData } = supabase
         .storage
         .from('rhca-pdfs')
-        .download(pdfFileName);
-
-      if (error) {
-        console.error('Download error:', error);
-        toast.error("Erreur lors du téléchargement du fichier");
+        .getPublicUrl(pdfFileName);
+        
+      if (!urlData || !urlData.publicUrl) {
+        toast.error("Impossible d'obtenir l'URL du PDF");
         return;
       }
-
-      if (!data) {
-        toast.error("Le fichier PDF n'existe pas");
-        return;
+      
+      // Fetch the file using the public URL
+      const response = await fetch(urlData.publicUrl);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-
+      
+      const blob = await response.blob();
+      
       // Create URL and trigger download
-      const url = window.URL.createObjectURL(data);
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.download = pdfFileName;
@@ -145,8 +194,24 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
     }
   };
 
-  // If no PDF is available, show disabled button
-  if (!pdfFileName) {
+  // Show PDF download/view status
+  if (fileExists === null) {
+    return (
+      <Button
+        variant="outline"
+        size="sm"
+        className="flex-1 lg:flex-none gap-2 bg-white"
+        disabled
+        aria-label="Vérification de la disponibilité du PDF"
+      >
+        <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+        <span>Vérification...</span>
+      </Button>
+    );
+  }
+
+  // If no PDF is available or it doesn't exist in storage, show disabled button
+  if (!pdfFileName || fileExists === false) {
     return (
       <Button
         variant="outline"
@@ -155,8 +220,17 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
         disabled
         aria-label="PDF non disponible"
       >
-        <Download className="h-4 w-4" aria-hidden="true" />
-        <span>PDF non disponible</span>
+        {fileExists === false ? (
+          <>
+            <AlertCircle className="h-4 w-4" aria-hidden="true" />
+            <span>PDF manquant</span>
+          </>
+        ) : (
+          <>
+            <Download className="h-4 w-4" aria-hidden="true" />
+            <span>PDF non disponible</span>
+          </>
+        )}
       </Button>
     );
   }
