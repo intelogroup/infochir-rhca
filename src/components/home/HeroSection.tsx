@@ -10,10 +10,10 @@ export const HeroSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(80vh-4rem-30px)] pt-20 md:pt-28 z-0">
+    <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(100vh-4rem)] pt-20 md:pt-28 z-0">
       <div className="absolute inset-0 z-0">
         <div 
-          className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] opacity-70 z-0"
+          className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] opacity-50 z-0"
         />
         <div 
           className="absolute inset-0 z-0"
@@ -23,6 +23,8 @@ export const HeroSection = () => {
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
             mixBlendMode: 'multiply',
+            width: '100vw',
+            height: '100vh',
           }}
         />
       </div>
