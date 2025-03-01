@@ -172,7 +172,7 @@ const Donate = () => {
           </div>
         </div>
       </div>
-      <Toaster position="top-center" />
+      {/* We can remove the Toaster here as it's now provided globally in main.tsx */}
     </MainLayout>
   );
 };
