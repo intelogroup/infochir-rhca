@@ -2,7 +2,6 @@
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRef } from "react";
-import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 export const HeroSection = () => {
@@ -10,26 +9,36 @@ export const HeroSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(80vh-4rem-30px)] pt-20 md:pt-28 z-0">
-      <div className="absolute inset-0 z-0">
+    <section 
+      ref={sectionRef} 
+      className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(100vh-4rem)] pt-20 md:pt-28"
+    >
+      {/* Background container with proper z-index stacking */}
+      <div className="absolute inset-0 w-full h-full">
+        {/* Image layer */}
         <div 
-          className="absolute inset-0 z-10"
+          className="absolute inset-0 w-full h-full"
           style={{ 
-            backgroundImage: `url(/lovable-uploads/2cdc7a00-de30-4d15-94b2-b43fde942709.png)`,
+            backgroundImage: `url(/lovable-uploads/3f1d1dc5-06fa-401a-9ca6-3d4b49276253.png)`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
+            zIndex: 1,
           }}
         />
+        
+        {/* Gradient overlay */}
         <div 
-          className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] opacity-70 z-20"
+          className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] opacity-60"
           style={{ 
             mixBlendMode: 'multiply',
+            zIndex: 2,
           }}
         />
       </div>
       
-      <div className="relative max-w-7xl mx-auto text-left z-30">
+      {/* Content with highest z-index */}
+      <div className="relative max-w-7xl mx-auto text-left" style={{ zIndex: 10 }}>
         <div className="max-w-xl lg:max-w-3xl">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 animate-fade-up tracking-tight md:whitespace-nowrap whitespace-normal">
             Votre espace scientifique<br className="md:hidden" /> en ligne
