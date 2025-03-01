@@ -121,7 +121,7 @@ export const useRHCAArticles = () => {
           // Process authors from primary_author and co_authors fields
           const authors = mergeAuthors(item.primary_author, item.co_authors);
           
-          // Use pdf_filename directly from the database, no mapping needed
+          // Use pdf_filename directly from the database
           const pdfFileName = item.pdf_filename || null;
           console.log(`[useRHCAArticles] Article ${item.id} has pdf_filename: ${pdfFileName}`);
           
@@ -134,6 +134,8 @@ export const useRHCAArticles = () => {
           
           if (pdfFileName) {
             console.log(`[useRHCAArticles] Article ${item.id} mapped to PDF: ${pdfFileName}, URL: ${pdfUrl}`);
+          } else {
+            console.log(`[useRHCAArticles] Article ${item.id} has no PDF filename`);
           }
           
           if (coverImageFileName) {

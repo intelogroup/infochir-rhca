@@ -215,7 +215,6 @@ export const extractFilenameFromUrl = (url: string | undefined): string | undefi
 export const mapToCoverImageFileName = (volume: string, issue: string): string | undefined => {
   // This mapping matches the actual files in storage to the article records
   const volumeIssueMap: Record<string, string> = {
-    // Map volume+issue combinations to actual filenames in storage
     "2:47": "RHCA_vol_02_no_47_cover.jpg",
     "3:48": "RHCA_vol_03_no_48_cover.jpg", 
     "4:49": "RHCA_vol_04_no_49_cover.jpg"

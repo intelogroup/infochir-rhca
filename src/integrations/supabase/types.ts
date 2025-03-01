@@ -159,6 +159,7 @@ export type Database = {
           issue: string | null
           keywords: string[] | null
           page_number: string | null
+          pdf_filename: string | null
           pdf_url: string
           primary_author: string | null
           publication_date: string | null
@@ -193,6 +194,7 @@ export type Database = {
           issue?: string | null
           keywords?: string[] | null
           page_number?: string | null
+          pdf_filename?: string | null
           pdf_url?: string
           primary_author?: string | null
           publication_date?: string | null
@@ -227,6 +229,7 @@ export type Database = {
           issue?: string | null
           keywords?: string[] | null
           page_number?: string | null
+          pdf_filename?: string | null
           pdf_url?: string
           primary_author?: string | null
           publication_date?: string | null
@@ -833,6 +836,7 @@ export type Database = {
           issue: string | null
           keywords: string[] | null
           page_number: string | null
+          pdf_filename: string | null
           pdf_url: string | null
           primary_author: string | null
           publication_date: string | null
@@ -867,6 +871,7 @@ export type Database = {
           issue?: string | null
           keywords?: string[] | null
           page_number?: string | null
+          pdf_filename?: string | null
           pdf_url?: string | null
           primary_author?: string | null
           publication_date?: string | null
@@ -901,6 +906,7 @@ export type Database = {
           issue?: string | null
           keywords?: string[] | null
           page_number?: string | null
+          pdf_filename?: string | null
           pdf_url?: string | null
           primary_author?: string | null
           publication_date?: string | null
