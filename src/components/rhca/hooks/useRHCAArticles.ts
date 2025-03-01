@@ -17,10 +17,10 @@ interface RhcaDatabaseArticle {
   pdf_url: string; // Required to match DatabaseArticle
   image_url: string; // Required to match DatabaseArticle
   cover_image: string; // Required to match DatabaseArticle
-  views?: number;
-  downloads?: number;
-  shares?: number;
-  citations?: number;
+  views: number; // Making this required to match DatabaseArticle
+  downloads: number; // Required to match DatabaseArticle
+  shares: number; // Required to match DatabaseArticle
+  citations: number; // Required to match DatabaseArticle
   volume?: string;
   issue?: string;
   specialty?: string;
@@ -84,7 +84,11 @@ export const useRHCAArticles = () => {
               // Ensure these fields have default values if they're undefined
               pdf_url: article.pdf_url || '',
               image_url: article.image_url || '',
-              cover_image: article.cover_image || article.image_url || ''
+              cover_image: article.cover_image || article.image_url || '',
+              views: article.views || 0,
+              downloads: article.downloads || 0,
+              shares: article.shares || 0,
+              citations: article.citations || 0
             };
             
             // First map the base article properties

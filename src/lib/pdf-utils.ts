@@ -304,10 +304,10 @@ export const updateCoverImageFilenames = async () => {
         const coverImageFileName = `RHCA_vol_${String(article.volume).padStart(2, '0')}_no_${String(article.issue).padStart(2, '0')}_cover.png`;
         console.log(`[DB:DEBUG] Updating article ${article.id} with cover image filename: ${coverImageFileName}`);
 
-        // Update the article in the database
+        // Update the article in the database - specify only fields that are in the articles table
         const { error: updateError } = await supabase
           .from('articles')
-          .update({ cover_image_filename: coverImageFileName })
+          .update({ pdf_filename: coverImageFileName })
           .eq('id', article.id);
 
         if (updateError) {
