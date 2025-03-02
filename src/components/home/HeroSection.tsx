@@ -80,23 +80,11 @@ export const HeroSection = () => {
       {/* Base gradient background layer */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#348d57] to-[#348d57] opacity-90 z-0"></div>
       
-      {/* Surgical background image layer */}
-      <div 
-        className="absolute inset-0 z-1"
-        style={{ 
-          backgroundImage: `url('/lovable-uploads/8849a318-5444-4c19-a92a-faf4d5b1d28c.png')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          opacity: 0.3,
-          mixBlendMode: 'overlay'
-        }}
-      ></div>
-
       {/* Animated product image layer */}
       <AnimatePresence mode="wait">
         <div
           key={currentIndex}
-          className="absolute inset-0 z-2"
+          className="absolute inset-0 z-1"
         >
           <div 
             className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-70 z-0`}
@@ -119,6 +107,18 @@ export const HeroSection = () => {
           />
         </div>
       </AnimatePresence>
+      
+      {/* Surgical background image layer - moved to be on top of gradient */}
+      <div 
+        className="absolute inset-0 z-2"
+        style={{ 
+          backgroundImage: `url('/lovable-uploads/8849a318-5444-4c19-a92a-faf4d5b1d28c.png')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 0.3,
+          mixBlendMode: 'overlay'
+        }}
+      ></div>
       
       {/* Content layer */}
       <div className="relative max-w-7xl mx-auto text-left z-10">
