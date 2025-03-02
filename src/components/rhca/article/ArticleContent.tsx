@@ -17,7 +17,7 @@ export const ArticleContent: React.FC<ArticleContentProps> = ({ article }) => {
           {article.title}
         </h3>
         <div className="text-sm font-medium text-emerald-600/80 mt-1">
-          Volume {article.volume}
+          {article.volume ? `Volume ${article.volume}` : 'Volume -'} • {article.issue ? `No. ${article.issue}` : 'No. -'}
         </div>
         <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
           <Calendar className="h-4 w-4 flex-shrink-0" />

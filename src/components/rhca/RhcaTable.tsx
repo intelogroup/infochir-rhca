@@ -1,134 +1,123 @@
+import React from 'react';
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 
-import * as React from "react";
-import { Button } from "@/components/ui/button";
-import { Share2 } from "lucide-react";
-import { toast } from "sonner";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import type { RhcaArticle } from "./types";
-import { ArticleActions } from "./article/ArticleActions";
-import { supabase } from "@/integrations/supabase/client";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { RhcaArticle } from './types';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
 
 interface RhcaTableProps {
   articles: RhcaArticle[];
 }
 
 export const RhcaTable: React.FC<RhcaTableProps> = ({ articles }) => {
-  const handleShare = async (articleId: string) => {
-    const shareUrl = `${window.location.origin}/rhca/articles/${articleId}`;
-    
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      toast.success("Lien copié dans le presse-papier");
-      
-      // Update share count using increment_count function
-      const { error } = await supabase
-        .rpc('increment_count', { 
-          table_name: 'rhca_articles_view',
-          column_name: 'shares',
-          row_id: articleId
-        });
-        
-      if (error) {
-        console.error('Error updating share count:', error);
-      }
-    } catch (error) {
-      console.error('Share error:', error);
-      toast.error("Erreur lors de la copie du lien");
-    }
-  };
+  const columns: ColumnDef<RhcaArticle>[] = [
+    {
+      accessorKey: 'title',
+      header: 'Title',
+      cell: ({ row }) => (
+        <div className="max-w-[300px] truncate font-medium">
+          {row.getValue('title')}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'volume',
+      header: 'Volume',
+      cell: ({ row }) => (
+        <div>
+          {row.original.volume ? `Volume ${row.original.volume}` : 'Volume -'} • {row.original.issue ? `No. ${row.original.issue}` : 'No. -'}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'date',
+      header: 'Date',
+      cell: ({ row }) => {
+        try {
+          return format(new Date(row.original.date), 'dd MMMM yyyy', { locale: fr });
+        } catch (error) {
+          console.error('Error formatting date:', error);
+          return 'Date invalide';
+        }
+      },
+    },
+    {
+      accessorKey: 'specialty',
+      header: 'Specialty',
+    },
+    {
+      accessorKey: 'downloads',
+      header: 'Downloads',
+    },
+    {
+      accessorKey: 'shares',
+      header: 'Shares',
+    },
+  ];
+
+  const table = useReactTable({
+    data: articles,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   return (
-    <div 
-      className="w-full space-y-4 overflow-visible"
-      role="feed"
-      aria-label="Liste des articles"
-    >
-      {articles.map((article) => (
-        <div 
-          key={article.id}
-          className="relative bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 overflow-hidden"
-          role="article"
-          aria-labelledby={`article-title-${article.id}`}
-        >
-          <div className="flex flex-col lg:flex-row justify-between items-start gap-4 lg:gap-6">
-            <div className="flex-1 min-w-0 space-y-3">
-              <h3 
-                id={`article-title-${article.id}`}
-                className="text-xl font-semibold text-gray-900 line-clamp-2"
+    <div className="rounded-md border">
+      <Table>
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                return (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                );
+              })}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}
               >
-                {article.title}
-              </h3>
-              <p 
-                className="text-base text-gray-600"
-                aria-label={`Auteurs: ${article.authors.join(", ")}`}
-              >
-                {article.authors.join(", ")}
-              </p>
-              <div className="flex flex-col gap-3">
-                <div 
-                  className="flex flex-wrap items-center gap-2 sm:gap-4"
-                  aria-label="Informations de publication"
-                >
-                  <span className="text-sm text-gray-500">
-                    Page {article.pageNumber}
-                  </span>
-                  <span className="hidden sm:inline text-gray-300">•</span>
-                  <span className="text-sm text-gray-500">
-                    {format(new Date(article.date), 'dd MMMM yyyy', { locale: fr })}
-                  </span>
-                  {article.views && (
-                    <>
-                      <span className="hidden sm:inline text-gray-300">•</span>
-                      <span 
-                        className="text-sm text-gray-500"
-                        aria-label={`${article.views} vues`}
-                      >
-                        {article.views} vues
-                      </span>
-                    </>
-                  )}
-                </div>
-                {article.tags && article.tags.length > 0 && (
-                  <div 
-                    className="flex flex-wrap gap-2"
-                    role="list"
-                    aria-label="Tags de l'article"
-                  >
-                    {article.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-primary/5 text-primary"
-                        role="listitem"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="flex gap-3 w-full lg:w-auto self-end">
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex-1 lg:flex-none gap-2 bg-white hover:bg-gray-50"
-                onClick={() => handleShare(article.id)}
-                aria-label="Partager l'article"
-              >
-                <Share2 className="h-4 w-4" aria-hidden="true" />
-                <span>Partager</span>
-              </Button>
-              <ArticleActions
-                id={article.id}
-                volume={article.volume}
-                date={article.date}
-                pdfFileName={article.pdfFileName}
-              />
-            </div>
-          </div>
-        </div>
-      ))}
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-24 text-center">
+                Aucun résultat.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
     </div>
   );
 };
