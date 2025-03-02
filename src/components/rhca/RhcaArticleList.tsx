@@ -1,7 +1,7 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { CalendarIcon, Download, Share2 } from "lucide-react";
+import { CalendarIcon, Download, Share2, AlertCircle } from "lucide-react";
 import { RhcaArticle } from './types';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -16,6 +16,32 @@ interface RhcaArticleListProps {
 export const RhcaArticleList: React.FC<RhcaArticleListProps> = ({ articles }) => {
   const navigate = useNavigate();
   const [downloadingArticleId, setDownloadingArticleId] = useState<string | null>(null);
+  const [fileExistsMap, setFileExistsMap] = useState<Record<string, boolean>>({});
+  
+  // Check file existence for all articles when component mounts
+  useEffect(() => {
+    const checkFiles = async () => {
+      const existsMap: Record<string, boolean> = {};
+      
+      for (const article of articles) {
+        if (article.pdfFileName) {
+          try {
+            const exists = await checkFileExistsInBucket('rhca-pdfs', article.pdfFileName);
+            existsMap[article.id] = exists;
+          } catch (err) {
+            console.error(`[RhcaArticleList] Error checking file existence for ${article.id}:`, err);
+            existsMap[article.id] = false;
+          }
+        } else {
+          existsMap[article.id] = false;
+        }
+      }
+      
+      setFileExistsMap(existsMap);
+    };
+    
+    checkFiles();
+  }, [articles]);
   
   const handleArticleClick = (articleId: string) => {
     navigate(`/rhca/article/${articleId}`);
@@ -25,34 +51,40 @@ export const RhcaArticleList: React.FC<RhcaArticleListProps> = ({ articles }) =>
     e.stopPropagation();
     
     if (!article.pdfFileName) {
-      toast.error("Le fichier PDF n'est pas disponible pour cet article");
+      toast.error("Le fichier PDF n'est pas disponible pour cet article", {
+        icon: <AlertCircle className="h-5 w-5 text-red-500" />
+      });
+      return;
+    }
+    
+    // If we already checked and know the file doesn't exist
+    if (fileExistsMap[article.id] === false) {
+      toast.error(`Le fichier "${article.pdfFileName}" n'existe pas dans la bibliothèque`, {
+        description: "Contactez l'administrateur pour assistance",
+        icon: <AlertCircle className="h-5 w-5 text-red-500" />
+      });
       return;
     }
     
     try {
       setDownloadingArticleId(article.id);
       
-      // Check if file exists in bucket before attempting download
-      const bucketName = 'rhca-pdfs';
-      const fileExists = await checkFileExistsInBucket(bucketName, article.pdfFileName);
-      
-      if (!fileExists) {
-        toast.error(`Le fichier "${article.pdfFileName}" n'existe pas dans la bibliothèque`, {
-          description: "Contactez l'administrateur pour assistance"
-        });
-        return;
-      }
-      
-      await downloadFileFromStorage(bucketName, article.pdfFileName);
-      
-      // Increment downloads counter (would be handled server-side)
-      toast.success("Téléchargement démarré avec succès");
+      // Use our improved download function
+      await downloadFileFromStorage('rhca-pdfs', article.pdfFileName);
       
     } catch (err) {
       console.error("[RhcaArticleList:ERROR] Download failed:", err);
-      toast.error("Échec du téléchargement", {
-        description: err instanceof Error ? err.message : "Une erreur inattendue s'est produite"
-      });
+      
+      // More specific error messages based on error type
+      if (err instanceof Error && err.message.includes('network')) {
+        toast.error("Erreur de connexion réseau", {
+          description: "Vérifiez votre connexion et réessayez"
+        });
+      } else {
+        toast.error("Échec du téléchargement", {
+          description: err instanceof Error ? err.message : "Une erreur inattendue s'est produite"
+        });
+      }
     } finally {
       setDownloadingArticleId(null);
     }
@@ -71,6 +103,7 @@ export const RhcaArticleList: React.FC<RhcaArticleListProps> = ({ articles }) =>
         })();
         
         const isDownloading = downloadingArticleId === article.id;
+        const fileExists = fileExistsMap[article.id];
         
         return (
           <Card 
@@ -118,10 +151,21 @@ export const RhcaArticleList: React.FC<RhcaArticleListProps> = ({ articles }) =>
                   
                   <div className="flex items-center space-x-4 text-sm text-gray-500">
                     <button 
-                      className={`flex items-center ${isDownloading ? 'opacity-50 cursor-wait' : 'hover:text-emerald-600'}`}
+                      className={`flex items-center ${
+                        fileExists === false 
+                          ? 'text-gray-300 cursor-not-allowed' 
+                          : isDownloading 
+                            ? 'opacity-50 cursor-wait' 
+                            : 'hover:text-emerald-600'
+                      }`}
                       onClick={(e) => handleDownload(e, article)}
-                      disabled={isDownloading}
-                      title={article.pdfFileName ? "Télécharger le PDF" : "PDF non disponible"}
+                      disabled={isDownloading || fileExists === false}
+                      title={fileExists === false 
+                        ? "PDF non disponible sur le serveur" 
+                        : article.pdfFileName 
+                          ? "Télécharger le PDF" 
+                          : "PDF non disponible"
+                      }
                     >
                       <Download className={`h-3.5 w-3.5 mr-1 ${isDownloading ? 'animate-pulse' : ''}`} />
                       <span>{article.downloads || 0}</span>

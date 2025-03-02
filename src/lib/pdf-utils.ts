@@ -15,7 +15,8 @@ export const validateRHCAPdfFilename = (filename: string): boolean => {
 };
 
 /**
- * Checks if a file exists in the specified Supabase storage bucket
+ * Checks if a file exists in the specified Supabase storage bucket using direct access
+ * This method is more reliable than listing with search
  */
 export const checkFileExistsInBucket = async (bucketName: string, filePath: string): Promise<boolean> => {
   try {
@@ -31,41 +32,35 @@ export const checkFileExistsInBucket = async (bucketName: string, filePath: stri
       const isValid = validateRHCAPdfFilename(filePath);
       if (!isValid) {
         console.warn(`[Storage:WARN] Invalid RHCA PDF filename format: ${filePath}`);
-        // We'll still try to look for the file, but log the warning
       }
     }
     
-    // First attempt: direct download check (doesn't count as a download)
-    const { data: headData, error: headError } = await supabase.storage
-      .from(bucketName)
-      .createSignedUrl(filePath, 1);
-      
-    if (!headError && headData) {
-      console.log(`[Storage:INFO] File ${filePath} exists in bucket ${bucketName} (verified via signed URL)`);
-      return true;
-    }
-    
-    // Alternative check: list files in the bucket
+    // Direct method: try to get file metadata which is more reliable than listing
     const { data, error } = await supabase.storage
       .from(bucketName)
-      .list('', { search: filePath });
-
+      .getPublicUrl(filePath);
+      
     if (error) {
       console.error(`[Storage:ERROR] Error checking file existence in ${bucketName}:`, error);
-      if (error.message.includes('Permission denied')) {
-        console.warn(`[Storage:WARN] Permission denied when checking file existence. Check bucket policies.`);
-      }
       return false;
     }
-
-    const fileExists = data.some(file => file.name === filePath);
-    console.log(`[Storage:INFO] File ${filePath} exists in bucket ${bucketName}: ${fileExists} (verified via list)`);
     
-    if (!fileExists) {
-      console.warn(`[Storage:WARN] File ${filePath} not found in bucket ${bucketName}`);
+    // Verify the file actually exists by making a HEAD request to the URL
+    try {
+      const response = await fetch(data.publicUrl, { method: 'HEAD' });
+      const fileExists = response.ok;
+      
+      console.log(`[Storage:INFO] File ${filePath} exists in bucket ${bucketName}: ${fileExists} (verified via HEAD request)`);
+      
+      if (!fileExists) {
+        console.warn(`[Storage:WARN] File ${filePath} not found in bucket ${bucketName}`);
+      }
+      
+      return fileExists;
+    } catch (fetchErr) {
+      console.error(`[Storage:ERROR] Error verifying file existence via HEAD request:`, fetchErr);
+      return false;
     }
-    
-    return fileExists;
   } catch (err) {
     console.error(`[Storage:ERROR] Exception checking file existence in ${bucketName}:`, err);
     return false;
@@ -156,8 +151,11 @@ export const openFileInNewTab = async (bucketName: string, filePath: string): Pr
 
 /**
  * Downloads a file from Supabase storage to the user's device
+ * Improved with direct access and better error handling
  */
 export const downloadFileFromStorage = async (bucketName: string, filePath: string): Promise<void> => {
+  let toastId: string | number | undefined;
+  
   try {
     console.log(`[Storage:DEBUG] Downloading file: ${filePath} from bucket: ${bucketName}`);
     
@@ -180,7 +178,7 @@ export const downloadFileFromStorage = async (bucketName: string, filePath: stri
       }
     }
     
-    // Check if file exists before attempting download
+    // Check if file exists before attempting download - use our improved direct access method
     const fileExists = await checkFileExistsInBucket(bucketName, filePath);
     
     if (!fileExists) {
@@ -191,8 +189,10 @@ export const downloadFileFromStorage = async (bucketName: string, filePath: stri
       return;
     }
     
-    // Create a signed URL that expires in 60 seconds
-    toast.loading("Préparation du téléchargement...");
+    // Show loading toast with custom ID so we can dismiss it later
+    toastId = toast.loading("Préparation du téléchargement...", {
+      id: `download-${filePath.replace(/[^a-z0-9]/gi, '-')}`
+    });
     
     // Get the file download URL (signed URL for better security)
     const { data, error } = await supabase.storage
@@ -201,7 +201,7 @@ export const downloadFileFromStorage = async (bucketName: string, filePath: stri
     
     if (error || !data) {
       console.error(`[Storage:ERROR] Failed to create signed URL for ${filePath}:`, error);
-      toast.dismiss();
+      toast.dismiss(toastId);
       toast.error(`Erreur de création du lien de téléchargement`, {
         description: error?.message || 'Erreur inconnue'
       });
@@ -215,12 +215,17 @@ export const downloadFileFromStorage = async (bucketName: string, filePath: stri
     
     if (!response.ok) {
       console.error(`[Storage:ERROR] HTTP error downloading file: ${response.status} ${response.statusText}`);
-      toast.dismiss();
+      toast.dismiss(toastId);
       toast.error(`Erreur de téléchargement`, {
         description: `Erreur HTTP ${response.status}: ${response.statusText}`
       });
       return;
     }
+    
+    // Get content length if available for progress tracking
+    const contentLength = response.headers.get('content-length');
+    const totalBytes = contentLength ? parseInt(contentLength, 10) : undefined;
+    console.log(`[Storage:INFO] File size: ${totalBytes ? `${Math.round(totalBytes / 1024)} KB` : 'Unknown'}`);
     
     // Get the file as a blob
     const blob = await response.blob();
@@ -242,32 +247,43 @@ export const downloadFileFromStorage = async (bucketName: string, filePath: stri
     window.URL.revokeObjectURL(url);
     
     console.log(`[Storage:SUCCESS] Successfully downloaded file: ${filePath}`);
-    toast.dismiss();
+    toast.dismiss(toastId);
     toast.success('Téléchargement réussi', {
       description: `Le fichier ${filePath.split('/').pop()} a été téléchargé`
     });
     
-    // Attempt to increment download count in the database (would be handled better server-side)
+    // Track the download
     try {
       if (bucketName === 'rhca-pdfs') {
-        // This is a client-side approach, ideally this would be handled by a secure server function
         const { volume, issue } = extractVolumeAndIssueFromFilename(filePath);
         if (volume && issue) {
-          console.log(`[Storage:INFO] Attempting to increment download count for RHCA vol ${volume} issue ${issue}`);
+          console.log(`[Storage:INFO] Tracking download for RHCA vol ${volume} issue ${issue}`);
           
-          // This approach has race conditions and should be implemented server-side
-          // for demonstration purposes only
-          const { error: updateError } = await supabase.rpc(
-            'increment_count',
-            { 
-              table_name: 'articles',
-              column_name: 'downloads',
-              row_id: '00000000-0000-0000-0000-000000000000' // This is a placeholder, should be actual article ID
+          // Find article ID based on volume and issue
+          const { data: articleData, error: articleError } = await supabase
+            .from('rhca_articles_view')
+            .select('id')
+            .eq('volume', volume)
+            .eq('issue', issue)
+            .maybeSingle();
+          
+          if (articleError) {
+            console.error('[Storage:ERROR] Error finding article for tracking:', articleError);
+          } else if (articleData?.id) {
+            console.log(`[Storage:INFO] Incrementing download count for article ID: ${articleData.id}`);
+            
+            const { error: updateError } = await supabase.rpc(
+              'increment_count',
+              { 
+                table_name: 'articles',
+                column_name: 'downloads',
+                row_id: articleData.id
+              }
+            );
+            
+            if (updateError) {
+              console.error('[Storage:ERROR] Error incrementing download count:', updateError);
             }
-          );
-          
-          if (updateError) {
-            console.error('[Storage:ERROR] Error incrementing download count:', updateError);
           }
         }
       }
@@ -278,10 +294,18 @@ export const downloadFileFromStorage = async (bucketName: string, filePath: stri
     
   } catch (err) {
     console.error(`[Storage:ERROR] Error downloading file:`, err);
-    toast.dismiss();
-    toast.error(`Erreur de téléchargement`, {
-      description: err instanceof Error ? err.message : String(err)
-    });
+    if (toastId) toast.dismiss(toastId);
+    
+    // Provide specific error messages based on error type
+    if (err instanceof TypeError && err.message.includes('Failed to fetch')) {
+      toast.error(`Erreur de connexion`, {
+        description: "Vérifiez votre connexion internet et réessayez"
+      });
+    } else {
+      toast.error(`Erreur de téléchargement`, {
+        description: err instanceof Error ? err.message : String(err)
+      });
+    }
   }
 };
 

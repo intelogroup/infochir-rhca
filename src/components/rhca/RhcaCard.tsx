@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { CalendarIcon, Download, Share2 } from "lucide-react";
+import { CalendarIcon, Download, Share2, AlertCircle } from "lucide-react";
 import { RhcaArticle } from './types';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -16,6 +16,26 @@ interface RhcaCardProps {
 export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
   const navigate = useNavigate();
   const [isDownloading, setIsDownloading] = useState(false);
+  const [fileExists, setFileExists] = useState<boolean | null>(null);
+  
+  // Check if the file exists when the component mounts
+  React.useEffect(() => {
+    if (article.pdfFileName) {
+      const checkFile = async () => {
+        try {
+          const exists = await checkFileExistsInBucket('rhca-pdfs', article.pdfFileName!);
+          setFileExists(exists);
+        } catch (err) {
+          console.error("[RhcaCard] Error checking file existence:", err);
+          setFileExists(false);
+        }
+      };
+      
+      checkFile();
+    } else {
+      setFileExists(false);
+    }
+  }, [article.pdfFileName]);
   
   const handleClick = () => {
     navigate(`/rhca/article/${article.id}`);
@@ -26,34 +46,40 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
     
     // Prevent navigation when clicking the download icon
     if (!article.pdfFileName) {
-      toast.error("Le fichier PDF n'est pas disponible pour cet article");
+      toast.error("Le fichier PDF n'est pas disponible pour cet article", {
+        icon: <AlertCircle className="h-5 w-5 text-red-500" />
+      });
+      return;
+    }
+    
+    // If we already checked and know the file doesn't exist
+    if (fileExists === false) {
+      toast.error(`Le fichier "${article.pdfFileName}" n'existe pas dans la bibliothèque`, {
+        description: "Contactez l'administrateur pour assistance",
+        icon: <AlertCircle className="h-5 w-5 text-red-500" />
+      });
       return;
     }
     
     try {
       setIsDownloading(true);
       
-      // Check if file exists in bucket before attempting download
-      const bucketName = 'rhca-pdfs';
-      const fileExists = await checkFileExistsInBucket(bucketName, article.pdfFileName);
-      
-      if (!fileExists) {
-        toast.error(`Le fichier "${article.pdfFileName}" n'existe pas dans la bibliothèque`, {
-          description: "Contactez l'administrateur pour assistance"
-        });
-        return;
-      }
-      
-      await downloadFileFromStorage(bucketName, article.pdfFileName);
-      
-      // Increment downloads counter (would be handled server-side)
-      toast.success("Téléchargement démarré avec succès");
+      // Use our improved download function
+      await downloadFileFromStorage('rhca-pdfs', article.pdfFileName);
       
     } catch (err) {
       console.error("[RhcaCard:ERROR] Download failed:", err);
-      toast.error("Échec du téléchargement", {
-        description: err instanceof Error ? err.message : "Une erreur inattendue s'est produite"
-      });
+      
+      // More specific error messages based on error type
+      if (err instanceof Error && err.message.includes('network')) {
+        toast.error("Erreur de connexion réseau", {
+          description: "Vérifiez votre connexion et réessayez"
+        });
+      } else {
+        toast.error("Échec du téléchargement", {
+          description: err instanceof Error ? err.message : "Une erreur inattendue s'est produite"
+        });
+      }
     } finally {
       setIsDownloading(false);
     }
@@ -113,12 +139,23 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
           <div className="flex items-center justify-between pt-2 text-sm text-gray-500">
             <div className="flex items-center">
               <button 
-                className={`flex items-center ${isDownloading ? 'opacity-50 cursor-wait' : 'hover:text-emerald-600'}`}
+                className={`flex items-center ${
+                  fileExists === false 
+                    ? 'text-gray-300 cursor-not-allowed' 
+                    : isDownloading 
+                      ? 'opacity-50 cursor-wait' 
+                      : 'hover:text-emerald-600'
+                }`}
                 onClick={handleDownload}
-                disabled={isDownloading}
-                title={article.pdfFileName ? "Télécharger le PDF" : "PDF non disponible"}
+                disabled={isDownloading || fileExists === false}
+                title={fileExists === false 
+                  ? "PDF non disponible sur le serveur" 
+                  : article.pdfFileName 
+                    ? "Télécharger le PDF" 
+                    : "PDF non disponible"
+                }
               >
-                <Download className="h-3.5 w-3.5 mr-1" />
+                <Download className={`h-3.5 w-3.5 mr-1 ${isDownloading ? 'animate-pulse' : ''}`} />
                 <span>{article.downloads || 0} téléchargements</span>
               </button>
             </div>
