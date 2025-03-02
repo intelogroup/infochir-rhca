@@ -113,7 +113,7 @@ export const HeroSection = () => {
               backgroundPosition: 'right bottom',
               backgroundRepeat: 'no-repeat',
               opacity: 0.9,
-              right: '-35%',  // Move 35% more to the right (30% more than before)
+              right: '5%',  // Changed from -35% to 5%, moving it in the opposite direction
               paddingLeft: '5px'
             }}
           />
