@@ -1,125 +1,87 @@
 
 import React from 'react';
+import { CalendarIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { createColumnHelper } from "@tanstack/react-table";
-import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
-import { supabase } from "@/integrations/supabase/client";
-import type { RhcaArticle } from "../types";
+import { PdfStatusIndicator } from "@/components/shared/PdfStatusIndicator";
 import { RhcaTableActions } from "./RhcaTableActions";
+import type { RhcaArticle } from "../types";
 
-const columnHelper = createColumnHelper<RhcaArticle>();
+// Define a column type that closely matches what RhcaTable expects
+export type RhcaTableColumn = {
+  id: string;
+  header: string | React.ReactNode | (() => React.ReactNode);
+  cell: (props: { row: { original: RhcaArticle } }) => React.ReactNode;
+  size?: number;
+};
 
-export const useRhcaTableColumns = () => {
+export const useRhcaTableColumns = (): RhcaTableColumn[] => {
   return [
-    columnHelper.accessor('coverImageFileName', {
-      header: '',
-      cell: ({ row }) => {
-        const article = row.original;
-        if (article.coverImageFileName) {
-          const { data } = supabase.storage
-            .from('rhca_covers')
-            .getPublicUrl(article.coverImageFileName);
-          
-          console.log('[RhcaTable:DEBUG] Cover image URL:', data.publicUrl);
-          
-          return (
-            <div className="w-12 h-12 relative rounded overflow-hidden">
-              <ImageOptimizer
-                src={data.publicUrl}
-                alt={`Couverture du volume ${article.volume}, numéro ${article.issue}`}
-                className="w-full h-full object-cover"
-                width={48}
-                height={48}
-                fallbackText=""
-              />
-            </div>
-          );
-        } else if (article.image_url) {
-          // Fallback to image_url if available
-          return (
-            <div className="w-12 h-12 relative rounded overflow-hidden">
-              <ImageOptimizer
-                src={article.image_url}
-                alt={`Couverture du volume ${article.volume}, numéro ${article.issue}`}
-                className="w-full h-full object-cover"
-                width={48}
-                height={48}
-                fallbackText=""
-              />
-            </div>
-          );
-        }
-        
-        return null;
-      },
-      size: 50,
-    }),
-    columnHelper.accessor('title', {
-      header: 'Title',
-      cell: ({ row }) => {
-        const article = row.original;
-        return (
-          <div className="max-w-md">
-            <p className="font-medium line-clamp-2">{article.title}</p>
-            <div className="flex flex-wrap gap-1 mt-1">
-              {article.tags && article.tags.slice(0, 2).map((tag, index) => (
-                <Badge key={index} variant="outline" className="px-1.5 py-0 text-xs">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        );
-      },
-      size: 300,
-    }),
-    columnHelper.accessor('authors', {
-      header: 'Auteurs',
-      cell: ({ row }) => {
-        const article = row.original;
-        return (
-          <div className="max-w-[200px]">
-            <p className="text-sm line-clamp-2">
-              {article.authors?.join(', ') || 'Non spécifié'}
-            </p>
-          </div>
-        );
-      },
-      size: 150,
-    }),
-    columnHelper.accessor('publicationDate', {
-      header: 'Date',
-      cell: ({ row }) => {
-        const article = row.original;
-        return (
-          <div className="text-sm">
-            {article.publicationDate 
-              ? new Date(article.publicationDate).toLocaleDateString('fr-FR') 
-              : 'Non spécifié'}
-          </div>
-        );
-      },
-      size: 100,
-    }),
-    columnHelper.accessor('volume', {
-      header: 'Volume/Issue',
-      cell: ({ row }) => {
-        const article = row.original;
-        return (
-          <div className="text-sm">
-            {article.volume ? `Vol ${article.volume}` : ''}
-            {article.volume && article.issue ? ', ' : ''}
-            {article.issue ? `No ${article.issue}` : ''}
-          </div>
-        );
-      },
-      size: 100,
-    }),
-    columnHelper.display({
-      id: 'actions',
-      header: '',
+    {
+      id: "title",
+      header: "Titre",
+      cell: ({ row }) => <div className="font-medium">{row.original.title}</div>,
+      size: 300
+    },
+    {
+      id: "publication_date",
+      header: "Date",
+      cell: ({ row }) => (
+        <div className="flex items-center text-muted-foreground">
+          <CalendarIcon className="mr-1 h-3 w-3" />
+          <span>
+            {row.original.publicationDate 
+              ? new Date(row.original.publicationDate).toLocaleDateString('fr-FR') 
+              : '-'}
+          </span>
+        </div>
+      ),
+      size: 120
+    },
+    {
+      id: "authors",
+      header: "Auteurs",
+      cell: ({ row }) => (
+        <div className="text-sm text-muted-foreground">
+          {row.original.authors && row.original.authors.length > 0
+            ? row.original.authors.slice(0, 2).join(", ") + 
+              (row.original.authors.length > 2 ? ", et al." : "")
+            : "Auteur inconnu"}
+        </div>
+      ),
+      size: 200
+    },
+    {
+      id: "tags",
+      header: "Tags",
+      cell: ({ row }) => (
+        <div className="flex flex-wrap gap-1">
+          {row.original.tags && row.original.tags.slice(0, 2).map((tag, i) => (
+            <Badge key={i} variant="outline" className="px-1.5 py-0 text-xs">
+              {tag}
+            </Badge>
+          ))}
+        </div>
+      ),
+      size: 150
+    },
+    {
+      id: "pdf",
+      header: "PDF",
+      cell: ({ row }) => (
+        <div className="flex justify-center">
+          <PdfStatusIndicator 
+            status={row.original.pdfFileName ? "available" : "unavailable"} 
+            size="md"
+          />
+        </div>
+      ),
+      size: 60
+    },
+    {
+      id: "actions",
+      header: "",
       cell: ({ row }) => <RhcaTableActions article={row.original} />,
-      size: 50,
-    }),
+      size: 80
+    }
   ];
 };

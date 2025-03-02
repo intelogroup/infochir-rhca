@@ -1,82 +1,64 @@
 
 import React from 'react';
 import { IssueCard } from '../IssueCard';
-import { Issue, IssueGroup } from '../types';
-import IssueCardSkeleton from './IssueCardSkeleton';
-import { sortOptions } from '../constants/sortOptions';
-import { ArchiveIcon } from 'lucide-react';
+import { Issue } from '../types';
+import { IssueCardSkeleton } from './IssueCardSkeleton';
 
-interface IssueGridLayoutProps {
-  isLoading: boolean;
-  issueGroups: IssueGroup[];
-  sortBy: string;
-  searchTerm: string;
-  activeYear: string | null;
-  selectedIssue: Issue | null;
-  handleIssueClick: (issue: Issue) => void;
+interface IssuesGridLayoutProps {
+  issues: Issue[];
+  loading: boolean;
+  selectedIssueId: string | null;
+  onIssueSelect: (issue: Issue) => void;
+  filter: (issue: Issue) => boolean;
 }
 
-export const IssuesGridLayout: React.FC<IssueGridLayoutProps> = ({
-  isLoading,
-  issueGroups,
-  sortBy,
-  searchTerm,
-  activeYear,
-  selectedIssue,
-  handleIssueClick,
+export const IssuesGridLayout: React.FC<IssuesGridLayoutProps> = ({
+  issues,
+  loading,
+  selectedIssueId,
+  onIssueSelect,
+  filter
 }) => {
-  // Loading state with skeletons
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {Array.from({ length: 6 }).map((_, index) => (
-          <IssueCardSkeleton key={index} />
-        ))}
-      </div>
-    );
-  }
+  // Generate skeleton cards for loading state
+  const renderSkeletons = () => {
+    return Array(8)
+      .fill(0)
+      .map((_, index) => (
+        <IssueCardSkeleton key={`skeleton-${index}`} />
+      ));
+  };
 
-  // No issues found state
-  if (issueGroups.length === 0 || issueGroups.every(group => group.issues.length === 0)) {
-    return (
-      <div className="flex flex-col items-center justify-center p-12 text-center">
-        <ArchiveIcon className="h-12 w-12 text-gray-400 mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 mb-1">Aucun numéro trouvé</h3>
-        <p className="text-gray-500 max-w-md">
-          {searchTerm
-            ? `Aucun numéro ne correspond à "${searchTerm}"`
-            : "Aucun numéro n'est disponible pour cette période."}
-        </p>
-      </div>
-    );
-  }
+  // Filter issues
+  const filteredIssues = issues.filter(filter);
 
-  // Display filtered issues
-  return (
-    <div className="space-y-8">
-      {issueGroups.map((group) => (
-        <div key={group.year}>
-          {group.issues.length > 0 && (
-            <div className="space-y-4">
-              {!activeYear && (
-                <h2 className="text-xl font-bold text-gray-900 mb-4">
-                  {group.year}
-                </h2>
-              )}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {group.issues.map((issue) => (
-                  <IssueCard
-                    key={issue.id}
-                    issue={issue}
-                    onClick={() => handleIssueClick(issue)}
-                    isSelected={selectedIssue?.id === issue.id}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
+  // Render issue cards
+  const renderIssueCards = () => {
+    if (filteredIssues.length === 0) {
+      return (
+        <div className="col-span-full flex flex-col items-center justify-center p-8 text-center">
+          <p className="text-lg font-medium text-muted-foreground mb-2">
+            Aucun numéro ne correspond à votre recherche
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Essayez de modifier vos critères de recherche ou de filtrage
+          </p>
         </div>
-      ))}
+      );
+    }
+
+    return filteredIssues.map((issue) => (
+      <IssueCard
+        key={issue.id}
+        issue={issue}
+        onSelect={() => onIssueSelect(issue)}
+        isSelected={issue.id === selectedIssueId}
+      />
+    ));
+  };
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {loading ? renderSkeletons() : renderIssueCards()}
     </div>
   );
 };
