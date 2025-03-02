@@ -1,223 +1,134 @@
 
-import React, { useState } from 'react';
-import { useRHCAArticles } from './hooks/useRHCAArticles';
-import { RhcaCard } from './RhcaCard';
-import { RhcaTable } from './RhcaTable';
-import { RhcaArticleList } from './RhcaArticleList';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Search, Grid, ListFilter, Table as TableIcon } from 'lucide-react';
-import { 
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuCheckboxItem,
-  DropdownMenuSeparator
-} from '@/components/ui/dropdown-menu';
+import * as React from "react";
+import { SearchAndSort } from "@/components/issues/SearchAndSort";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { LayoutGrid, List, Loader2 } from "lucide-react";
+import { SORT_OPTIONS } from "@/types/sortOptions";
+import type { SortOption } from "@/types/sortOptions";
+import { RhcaArticleList } from "./RhcaArticleList";
+import { motion } from "framer-motion";
+import { DateRange } from "react-day-picker";
+import { useRHCAArticles } from "./hooks/useRHCAArticles";
 
-const RhcaGrid: React.FC = () => {
+export const RhcaGrid: React.FC = () => {
+  // Group all state hooks at the top
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const [sortBy, setSortBy] = React.useState<SortOption>("latest");
+  const [viewMode, setViewMode] = React.useState<"grid" | "table">("grid");
+  const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
+  
+  // Fetch RHCA articles from Supabase
   const { articles, loading, error } = useRHCAArticles();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'table'>('grid');
-  const [selectedVolume, setSelectedVolume] = useState<string | null>(null);
-  const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(null);
-  
-  // Extract unique volumes and specialties for filters
-  const volumes = React.useMemo(() => {
-    const uniqueVolumes = Array.from(new Set(articles.map(article => article.volume)));
-    return uniqueVolumes.filter(Boolean).sort((a, b) => Number(b) - Number(a)); // Sort descending
-  }, [articles]);
-  
-  const specialties = React.useMemo(() => {
-    const uniqueSpecialties = Array.from(new Set(articles.map(article => article.specialty)));
-    return uniqueSpecialties.filter(Boolean).sort();
-  }, [articles]);
-  
-  // Filter articles based on search term, volume, and specialty
+
+  // Memoize handler functions
+  const handleSortChange = React.useCallback((value: SortOption) => {
+    setSortBy(value);
+  }, []);
+
+  // Memoize filtered articles computation
   const filteredArticles = React.useMemo(() => {
     return articles.filter(article => {
-      const matchesSearch = searchTerm === '' || 
-        article.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        article.abstract?.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesVolume = !selectedVolume || article.volume === selectedVolume;
-      const matchesSpecialty = !selectedSpecialty || article.specialty === selectedSpecialty;
-      
-      return matchesSearch && matchesVolume && matchesSpecialty;
+      const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        article.abstract.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        article.authors.some(author => 
+          typeof author === 'string' && author.toLowerCase().includes(searchTerm.toLowerCase())
+        ) ||
+        article.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+
+      const matchesDateRange = !dateRange?.from && !dateRange?.to ? true :
+        new Date(article.date) >= (dateRange?.from || new Date(0)) &&
+        new Date(article.date) <= (dateRange?.to || new Date());
+
+      return matchesSearch && matchesDateRange;
     });
-  }, [articles, searchTerm, selectedVolume, selectedSpecialty]);
-  
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
-  
-  const handleVolumeChange = (volume: string | null) => {
-    setSelectedVolume(volume === selectedVolume ? null : volume);
-  };
-  
-  const handleSpecialtyChange = (specialty: string | null) => {
-    setSelectedSpecialty(specialty === selectedSpecialty ? null : specialty);
-  };
-  
-  const handleClearFilters = () => {
-    setSelectedVolume(null);
-    setSelectedSpecialty(null);
-    setSearchTerm('');
-  };
-  
+  }, [articles, searchTerm, dateRange]);
+
+  // Memoize sorted articles computation
+  const sortedArticles = React.useMemo(() => {
+    return [...filteredArticles].sort((a, b) => {
+      if (sortBy === "latest") {
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      }
+      return new Date(a.date).getTime() - new Date(b.date).getTime();
+    });
+  }, [filteredArticles, sortBy]);
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
+      <div className="w-full flex flex-col items-center justify-center p-12 space-y-4">
+        <Loader2 className="h-8 w-8 text-primary animate-spin" />
+        <p className="text-gray-500">Chargement des articles...</p>
       </div>
     );
   }
-  
+
   if (error) {
     return (
-      <div className="text-center py-10 text-red-500">
-        <p>Erreur lors du chargement des articles: {error.message}</p>
+      <div className="w-full p-8 bg-red-50 border border-red-200 rounded-lg">
+        <p className="text-red-600 font-medium">Une erreur est survenue lors du chargement des articles.</p>
+        <p className="text-red-500 text-sm mt-2">{error.message}</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        <div className="relative w-full sm:w-72">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-          <Input
-            type="search"
-            placeholder="Rechercher des articles..."
-            className="pl-9"
-            value={searchTerm}
-            onChange={handleSearch}
+    <div className="w-full space-y-6">
+      <motion.div 
+        className="bg-white rounded-lg sm:rounded-xl border border-gray-200 p-4 sm:p-6 shadow-sm"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <SearchAndSort
+            searchTerm={searchTerm}
+            sortBy={sortBy}
+            onSearch={setSearchTerm}
+            onSort={handleSortChange}
+            sortOptions={SORT_OPTIONS}
+            className="flex-1 min-w-0"
+            dateRange={dateRange}
+            onDateRangeChange={setDateRange}
           />
-        </div>
-        
-        <div className="flex items-center space-x-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-9">
-                <ListFilter className="h-4 w-4 mr-2" />
-                Filtres
-                {(selectedVolume || selectedSpecialty) && (
-                  <span className="ml-1 w-4 h-4 bg-emerald-500 text-white rounded-full text-xs flex items-center justify-center">
-                    {(selectedVolume ? 1 : 0) + (selectedSpecialty ? 1 : 0)}
-                  </span>
-                )}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <div className="font-medium text-sm p-2">Volume</div>
-              {volumes.map(volume => (
-                <DropdownMenuCheckboxItem
-                  key={`vol-${volume}`}
-                  checked={selectedVolume === volume}
-                  onCheckedChange={() => handleVolumeChange(volume)}
-                >
-                  Volume {volume}
-                </DropdownMenuCheckboxItem>
-              ))}
-              
-              <DropdownMenuSeparator />
-              
-              <div className="font-medium text-sm p-2">Spécialité</div>
-              {specialties.map(specialty => (
-                <DropdownMenuCheckboxItem
-                  key={`spec-${specialty}`}
-                  checked={selectedSpecialty === specialty}
-                  onCheckedChange={() => handleSpecialtyChange(specialty)}
-                >
-                  {specialty}
-                </DropdownMenuCheckboxItem>
-              ))}
-              
-              {(selectedVolume || selectedSpecialty) && (
-                <>
-                  <DropdownMenuSeparator />
-                  <div className="p-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full text-xs"
-                      onClick={handleClearFilters}
-                    >
-                      Réinitialiser les filtres
-                    </Button>
-                  </div>
-                </>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
           
-          <div className="flex bg-muted rounded-md p-1">
-            <Button
-              variant={viewMode === 'grid' ? 'default' : 'ghost'}
+          <ToggleGroup 
+            type="single" 
+            value={viewMode} 
+            onValueChange={(value) => value && setViewMode(value as "grid" | "table")}
+            className="self-end sm:self-auto bg-gray-50/80 p-1.5 rounded-lg border border-gray-200"
+          >
+            <ToggleGroupItem 
+              value="grid" 
               size="sm"
-              className="h-8 w-8 p-0"
-              onClick={() => setViewMode('grid')}
-              title="Vue grille"
+              className="data-[state=on]:bg-white data-[state=on]:text-primary data-[state=on]:shadow-sm px-3 py-2"
+              aria-label="Vue grille"
             >
-              <Grid className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={viewMode === 'list' ? 'default' : 'ghost'}
+              <LayoutGrid className="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem 
+              value="table" 
               size="sm"
-              className="h-8 w-8 p-0"
-              onClick={() => setViewMode('list')}
-              title="Vue liste"
+              className="data-[state=on]:bg-white data-[state=on]:text-primary data-[state=on]:shadow-sm px-3 py-2"
+              aria-label="Vue liste"
             >
-              <ListFilter className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={viewMode === 'table' ? 'default' : 'ghost'}
-              size="sm"
-              className="h-8 w-8 p-0"
-              onClick={() => setViewMode('table')}
-              title="Vue tableau"
-            >
-              <TableIcon className="h-4 w-4" />
-            </Button>
-          </div>
+              <List className="h-4 w-4" />
+            </ToggleGroupItem>
+          </ToggleGroup>
         </div>
+      </motion.div>
+
+      <div className="px-2 sm:px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <RhcaArticleList
+            articles={sortedArticles}
+            viewMode={viewMode}
+          />
+        </motion.div>
       </div>
-      
-      {filteredArticles.length === 0 ? (
-        <div className="text-center py-16 text-gray-500">
-          <p>Aucun article trouvé</p>
-          {(searchTerm || selectedVolume || selectedSpecialty) && (
-            <Button 
-              variant="link" 
-              onClick={handleClearFilters}
-              className="mt-2"
-            >
-              Réinitialiser les filtres
-            </Button>
-          )}
-        </div>
-      ) : (
-        <>
-          {viewMode === 'grid' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredArticles.map(article => (
-                <RhcaCard key={article.id} article={article} />
-              ))}
-            </div>
-          )}
-          
-          {viewMode === 'list' && (
-            <RhcaArticleList articles={filteredArticles} />
-          )}
-          
-          {viewMode === 'table' && (
-            <RhcaTable articles={filteredArticles} />
-          )}
-        </>
-      )}
     </div>
   );
 };
-
-export default RhcaGrid;
