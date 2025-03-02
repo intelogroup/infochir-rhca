@@ -5,11 +5,13 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 interface PdfStatusIndicatorProps {
   status: "checking" | "available" | "unavailable";
   size?: "sm" | "md" | "lg";
+  className?: string;
 }
 
 export const PdfStatusIndicator = ({ 
   status,
-  size = "md" 
+  size = "md",
+  className = ""
 }: PdfStatusIndicatorProps) => {
   const sizeClass = {
     sm: "h-3 w-3",
@@ -24,9 +26,9 @@ export const PdfStatusIndicator = ({
   };
   
   const icons = {
-    checking: <Loader2 className={`${sizeClass} animate-spin text-gray-400`} />,
-    available: <CheckCircle className={`${sizeClass} text-green-500`} />,
-    unavailable: <AlertCircle className={`${sizeClass} text-red-400`} />
+    checking: <Loader2 className={`${sizeClass} animate-spin text-gray-400 ${className}`} />,
+    available: <CheckCircle className={`${sizeClass} text-green-500 ${className}`} />,
+    unavailable: <AlertCircle className={`${sizeClass} text-red-400 ${className}`} />
   };
   
   return (

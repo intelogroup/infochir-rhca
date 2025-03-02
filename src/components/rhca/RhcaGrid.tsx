@@ -5,9 +5,8 @@ import { RhcaTable } from './RhcaTable';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ViewGrid, List } from 'lucide-react';
+import { LayoutGrid, List, Loader2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Loader2 } from 'lucide-react';
 
 // Keep the component as a named export for internal use
 export const RhcaGrid: React.FC = () => {
@@ -76,7 +75,7 @@ export const RhcaGrid: React.FC = () => {
           onClick={() => setViewMode('grid')}
           className="w-10 h-10 p-0"
         >
-          <ViewGrid className="h-4 w-4" />
+          <LayoutGrid className="h-4 w-4" />
         </Button>
         <Button
           variant={viewMode === 'table' ? 'default' : 'outline'}

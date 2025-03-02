@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 
 export const checkFileExistsInBucket = async (bucketName: string, fileName: string) => {
@@ -5,15 +6,10 @@ export const checkFileExistsInBucket = async (bucketName: string, fileName: stri
     console.log(`[PDFUtils] Checking if ${fileName} exists in ${bucketName}`);
     
     // Get public URL but don't throw if file doesn't exist
-    const { data, error } = await supabase.storage
+    const { data } = await supabase.storage
       .from(bucketName)
       .getPublicUrl(fileName);
       
-    if (error) {
-      console.error(`[PDFUtils] Error checking file ${fileName} in ${bucketName}:`, error);
-      return false;
-    }
-    
     // Try to fetch the file to verify it exists
     try {
       const response = await fetch(data.publicUrl, { method: 'HEAD' });
@@ -45,15 +41,21 @@ export const debugDatabaseTables = async () => {
       console.log('[PDFUtils] Articles table:', articles);
     }
 
-    // Debugging rhca_volumes table
-    const { data: rhcaVolumes, error: rhcaVolumesError } = await supabase
-      .from('rhca_volumes')
-      .select('*');
-
-    if (rhcaVolumesError) {
-      console.error('[PDFUtils] Error fetching rhca_volumes:', rhcaVolumesError);
-    } else {
-      console.log('[PDFUtils] rhca_volumes table:', rhcaVolumes);
+    // Check if the rhca_volumes view or table exists
+    try {
+      const { data: rhcaVolumes, error: rhcaVolumesError } = await supabase
+        .from('articles')
+        .select('*')
+        .eq('source', 'RHCA')
+        .limit(5);
+  
+      if (rhcaVolumesError) {
+        console.error('[PDFUtils] Error fetching RHCA volumes:', rhcaVolumesError);
+      } else {
+        console.log('[PDFUtils] RHCA volumes sample:', rhcaVolumes);
+      }
+    } catch (error) {
+      console.error('[PDFUtils] Error accessing RHCA volumes:', error);
     }
 
     console.log('[PDFUtils] Database debug complete.');
@@ -154,5 +156,49 @@ export const mapToCoverImageFileName = (volume: string, issue: string) => {
   } catch (error) {
     console.error('[PDFUtils] Error generating cover image filename:', error);
     return '';
+  }
+};
+
+// New utility function to get a file's public URL from Supabase storage
+export const getFilePublicUrl = (bucketName: string, fileName: string) => {
+  if (!fileName) return null;
+  
+  const { data } = supabase.storage
+    .from(bucketName)
+    .getPublicUrl(fileName);
+    
+  return data.publicUrl;
+};
+
+// New utility function to download a file from Supabase storage
+export const downloadFileFromStorage = async (bucketName: string, fileName: string, articleId?: string) => {
+  try {
+    if (!fileName) {
+      throw new Error("Filename is required");
+    }
+    
+    const { data } = supabase.storage
+      .from(bucketName)
+      .getPublicUrl(fileName);
+      
+    window.open(data.publicUrl, '_blank');
+    
+    // Track download if articleId is provided
+    if (articleId) {
+      try {
+        await supabase.rpc('increment_count', { 
+          table_name: 'articles', 
+          column_name: 'downloads', 
+          row_id: articleId 
+        });
+      } catch (error) {
+        console.error('[PDFUtils] Error incrementing download count:', error);
+      }
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('[PDFUtils] Error downloading file:', error);
+    return false;
   }
 };
