@@ -3,6 +3,9 @@ import React, { useMemo } from 'react';
 import { RhcaCard } from './RhcaCard';
 import { RhcaTable } from './RhcaTable';
 import type { RhcaArticle } from './types';
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface RhcaGridProps {
   articles: RhcaArticle[];
@@ -34,13 +37,57 @@ export const RhcaGrid: React.FC<RhcaGridProps> = ({
     );
   }, [articles, searchQuery]);
 
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 gap-6">
       {viewMode === "grid" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredArticles.map((article) => (
-            <RhcaCard key={article.id} article={article} />
-          ))}
+        <div className="relative">
+          <Button
+            variant="outline"
+            size="icon"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-md"
+            onClick={scrollLeft}
+            aria-label="Scroll left"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          
+          <ScrollArea className="w-full" orientation="horizontal">
+            <div 
+              ref={scrollRef}
+              className="flex space-x-6 py-4 px-8 overflow-x-auto" 
+              style={{ minWidth: "100%" }}
+            >
+              {filteredArticles.map((article) => (
+                <div key={article.id} className="w-[300px] flex-shrink-0">
+                  <RhcaCard article={article} />
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+          
+          <Button
+            variant="outline"
+            size="icon"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-md"
+            onClick={scrollRight}
+            aria-label="Scroll right"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
         </div>
       ) : (
         <RhcaTable 
