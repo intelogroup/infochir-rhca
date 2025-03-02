@@ -12,9 +12,9 @@ const images = [
 ];
 
 const gradients = [
-  'from-[#1E40AF] via-[#41b06e] to-[#41b06e]',
-  'from-[#1E3A8A] via-[#4caf50] to-[#4caf50]',
-  'from-[#0C4A6E] via-[#45a049] to-[#45a049]'
+  'from-[#1E40AF] via-[#348d57] to-[#348d57]',
+  'from-[#1E3A8A] via-[#2e7d4b] to-[#2e7d4b]',
+  'from-[#0C4A6E] via-[#307045] to-[#307045]'
 ];
 
 export const HeroSection = () => {
@@ -78,7 +78,7 @@ export const HeroSection = () => {
   return (
     <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(80vh-4rem-30px)] pt-20 md:pt-28 z-0">
       {/* Base gradient background layer */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] opacity-90 z-0"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#348d57] to-[#348d57] opacity-90 z-0"></div>
       
       {/* Surgical background image layer */}
       <div 
