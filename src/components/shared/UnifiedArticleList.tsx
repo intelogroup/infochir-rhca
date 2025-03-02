@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { RhcaCard } from "@/components/rhca/RhcaCard";
 import { RhcaTable } from "@/components/rhca/RhcaTable";
@@ -36,7 +37,7 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
 }) => {
   if (isLoading) {
     return (
-      <div className="py-8">
+      <div className="py-8 mt-[50px]">
         <LoadingSpinner variant="fun" text={variant === 'index-medicus' ? "Chargement des publications..." : "Chargement des données..."} />
       </div>
     );

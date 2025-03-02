@@ -3,6 +3,7 @@ import { BookOpen, Loader2, Sparkles } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LoadingSpinner as UILoadingSpinner } from "@/components/ui/loading-spinner";
 import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 export const LoadingSkeleton = () => {
   const [highlightedIndex, setHighlightedIndex] = useState(0);
@@ -51,10 +52,6 @@ export const LoadingSkeleton = () => {
   );
 };
 
-function cn(...classes: string[]) {
-  return classes.filter(Boolean).join(' ');
-}
-
 export const LoadingSpinner = () => {
   const [showFunnyMessage, setShowFunnyMessage] = useState(false);
   
@@ -68,7 +65,7 @@ export const LoadingSpinner = () => {
   }, []);
   
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mt-[50px]">
       <div className="flex flex-col items-center justify-center gap-2 py-8">
         <UILoadingSpinner 
           size="lg" 
