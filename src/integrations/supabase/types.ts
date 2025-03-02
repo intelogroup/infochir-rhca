@@ -781,7 +781,7 @@ export type Database = {
         Row: {
           abstract: string | null
           article_count: number | null
-          articles: Json[] | null
+          articles: Json | null
           cover_image: string | null
           downloads: number | null
           id: string | null
