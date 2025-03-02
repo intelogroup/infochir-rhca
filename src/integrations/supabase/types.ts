@@ -415,6 +415,7 @@ export type Database = {
           authors: string[] | null
           category: string | null
           citations: number | null
+          cover_image_filename: string | null
           created_at: string | null
           downloads: number | null
           id: string
@@ -422,6 +423,7 @@ export type Database = {
           institution: string | null
           issue: string | null
           page_number: string | null
+          pdf_filename: string | null
           pdf_url: string | null
           publication_date: string | null
           shares: number | null
@@ -439,6 +441,7 @@ export type Database = {
           authors?: string[] | null
           category?: string | null
           citations?: number | null
+          cover_image_filename?: string | null
           created_at?: string | null
           downloads?: number | null
           id?: string
@@ -446,6 +449,7 @@ export type Database = {
           institution?: string | null
           issue?: string | null
           page_number?: string | null
+          pdf_filename?: string | null
           pdf_url?: string | null
           publication_date?: string | null
           shares?: number | null
@@ -463,6 +467,7 @@ export type Database = {
           authors?: string[] | null
           category?: string | null
           citations?: number | null
+          cover_image_filename?: string | null
           created_at?: string | null
           downloads?: number | null
           id?: string
@@ -470,6 +475,7 @@ export type Database = {
           institution?: string | null
           issue?: string | null
           page_number?: string | null
+          pdf_filename?: string | null
           pdf_url?: string | null
           publication_date?: string | null
           shares?: number | null
