@@ -10,18 +10,25 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { Article } from "../types";
 
 export interface ArticleActionsProps {
-  title: string;
+  title?: string;
   pdfUrl?: string;
-  onCitation: (format: "APA" | "MLA" | "Chicago" | "Harvard") => void;
+  hideDownload?: boolean;
+  showViewButton?: boolean;
+  article?: Article;
+  onCitation?: (format: "APA" | "MLA" | "Chicago" | "Harvard") => void;
   onShare?: () => void;
 }
 
 export const ArticleActions: React.FC<ArticleActionsProps> = ({
-  title,
+  title = "",
   pdfUrl,
-  onCitation,
+  hideDownload = false,
+  showViewButton = false,
+  article,
+  onCitation = () => {},
   onShare = () => {},
 }) => {
   const [isLoading, setIsLoading] = React.useState(false);
@@ -177,6 +184,10 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
 
   // Display PDF verification state
   const renderPdfButton = () => {
+    if (hideDownload) {
+      return null;
+    }
+    
     if (fileExists === null && pdfUrl) {
       return (
         <Button
@@ -236,6 +247,25 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
     );
   };
 
+  // Add a view button for article details
+  const renderViewButton = () => {
+    if (!showViewButton || !article) {
+      return null;
+    }
+    
+    return (
+      <Button
+        variant="outline"
+        size="sm"
+        className="gap-2"
+        onClick={() => window.location.href = `/articles/${article.id}`}
+      >
+        <ExternalLink className="h-4 w-4" />
+        Voir
+      </Button>
+    );
+  };
+
   return (
     <div className="flex gap-2">
       <Button
@@ -249,6 +279,7 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
       </Button>
 
       {renderPdfButton()}
+      {renderViewButton()}
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
