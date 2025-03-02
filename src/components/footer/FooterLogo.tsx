@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Heart } from "lucide-react";
@@ -6,14 +7,18 @@ export const FooterLogo = () => {
   return (
     <div className="space-y-6">
       <Link to="/" className="group flex items-center space-x-3">
-        <div className="relative h-10 w-10 overflow-hidden rounded-xl">
+        <motion.div 
+          className="relative h-10 w-10 overflow-hidden rounded-full shadow-md"
+          whileHover={{ scale: 1.05 }}
+          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+        >
           <img 
             src="/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png"
             alt="Info Chir Logo"
             className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-110"
           />
-        </div>
-        <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-xl font-bold">
+        </motion.div>
+        <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-xl font-bold transition-colors duration-300 group-hover:text-primary">
           INFOCHIR/RHCA
         </span>
       </Link>
@@ -26,10 +31,10 @@ export const FooterLogo = () => {
       >
         <Link
           to="/donate"
-          className="inline-flex items-center px-4 py-2 text-sm rounded-full bg-primary hover:bg-primary/90 transition-colors duration-200 text-white"
+          className="inline-flex items-center px-4 py-2 text-sm rounded-full bg-gradient-to-r from-primary to-primary-light hover:from-primary-light hover:to-primary transition-all duration-300 text-white shadow-sm hover:shadow-md"
         >
           Faire un don
-          <Heart className="ml-2 h-4 w-4 text-secondary fill-secondary" />
+          <Heart className="ml-2 h-4 w-4 text-white fill-white/20" />
         </Link>
       </motion.div>
     </div>

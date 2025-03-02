@@ -11,14 +11,14 @@ export const ArticleCategories = ({ source, category }: ArticleCategoriesProps) 
   return (
     <div className="flex flex-wrap gap-2">
       <div className="flex items-center gap-1.5 transition-transform hover:scale-105">
-        <BookOpen className="h-3.5 w-3.5 text-primary" />
-        <Badge variant="secondary" className="font-semibold text-xs px-2.5 py-0.5 bg-secondary/20 text-secondary-dark hover:bg-secondary/30 transition-colors">
+        <BookOpen className="h-3.5 w-3.5 text-primary/90" />
+        <Badge variant="secondary" className="font-semibold text-xs px-2.5 py-0.5 bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
           {source}
         </Badge>
       </div>
       <div className="flex items-center gap-1.5 transition-transform hover:scale-105">
-        <LayoutGrid className="h-3.5 w-3.5 text-gray-500" />
-        <Badge variant="outline" className="text-gray-600 text-xs font-medium border-gray-300 hover:bg-gray-100 transition-colors">
+        <LayoutGrid className="h-3.5 w-3.5 text-secondary/90" />
+        <Badge variant="outline" className="text-secondary-dark text-xs font-medium border-secondary/20 hover:bg-secondary/5 transition-colors">
           {category}
         </Badge>
       </div>

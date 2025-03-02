@@ -6,12 +6,12 @@ import { LoadingSpinner as UILoadingSpinner } from "@/components/ui/loading-spin
 export const LoadingSkeleton = () => (
   <div className="space-y-4">
     {Array.from({ length: 5 }).map((_, i) => (
-      <div key={i} className="relative overflow-hidden rounded-md group hover:shadow-md transition-all duration-300">
-        <Skeleton className="w-full h-32 bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 animate-pulse" />
-        <div className="absolute left-0 top-0 h-full w-1.5 bg-gradient-to-b from-primary/60 to-secondary/60"></div>
+      <div key={i} className="relative overflow-hidden rounded-lg group hover:shadow-md transition-all duration-300 border border-gray-100">
+        <Skeleton className="w-full h-32 bg-gradient-to-r from-gray-50 via-gray-100 to-gray-50 animate-pulse" />
+        <div className="absolute left-0 top-0 h-full w-1.5 bg-gradient-to-b from-primary/60 to-ocean/60"></div>
         <div className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center">
-            <BookOpen className="h-3 w-3 text-primary/40" />
+            <BookOpen className="h-3 w-3 text-primary/60" />
           </div>
         </div>
       </div>

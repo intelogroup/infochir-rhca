@@ -1,3 +1,4 @@
+
 import { TableHead, TableRow } from "@/components/ui/table";
 import { ArrowUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -13,8 +14,8 @@ interface TableHeaderProps {
 export const TableHeader = ({ sortField, sortDirection, onSort }: TableHeaderProps) => {
   const headerClasses = (field: SortField) => 
     cn(
-      "transition-colors hover:bg-muted/50 cursor-pointer select-none",
-      sortField === field && "bg-muted/50"
+      "transition-colors hover:bg-primary/5 cursor-pointer select-none",
+      sortField === field && "bg-primary/10"
     );
 
   const SortIcon = ({ field }: { field: SortField }) => (
@@ -27,37 +28,37 @@ export const TableHeader = ({ sortField, sortDirection, onSort }: TableHeaderPro
   );
 
   return (
-    <TableRow className="border-b border-gray-200 bg-gray-50/50">
+    <TableRow className="border-b border-gray-200 bg-gray-50/80">
       <TableHead 
         onClick={() => onSort('id')}
         className={cn("w-20", headerClasses('id'))}
       >
         <div className="flex items-center gap-2">
-          <span>ID</span>
+          <span className="font-semibold">ID</span>
           <SortIcon field="id" />
         </div>
       </TableHead>
       
-      <TableHead className="w-24">Photo</TableHead>
+      <TableHead className="w-24 font-semibold">Photo</TableHead>
       
       <TableHead 
         onClick={() => onSort('name')}
         className={cn("w-1/3", headerClasses('name'))}
       >
         <div className="flex items-center gap-2">
-          <span>Nom</span>
+          <span className="font-semibold">Nom</span>
           <SortIcon field="name" />
         </div>
       </TableHead>
       
-      <TableHead className="hidden sm:table-cell w-1/4">Téléphone</TableHead>
+      <TableHead className="hidden sm:table-cell w-1/4 font-semibold">Téléphone</TableHead>
       
       <TableHead 
         onClick={() => onSort('email')}
         className={cn("hidden md:table-cell w-1/3", headerClasses('email'))}
       >
         <div className="flex items-center gap-2">
-          <span>Email</span>
+          <span className="font-semibold">Email</span>
           <SortIcon field="email" />
         </div>
       </TableHead>

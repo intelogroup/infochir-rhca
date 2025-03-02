@@ -11,7 +11,7 @@ export interface MainLayoutProps {
 
 export const MainLayout = ({ children }: MainLayoutProps) => {
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
+    <div className="min-h-screen bg-gradient-to-b from-[#f8fafc] to-white">
       <Navbar />
       <main className="relative min-h-[calc(100vh-4rem)]">
         {children || <Outlet />}

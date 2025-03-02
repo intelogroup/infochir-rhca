@@ -53,7 +53,7 @@ export const DonateHeader = () => {
       <motion.h1 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent relative cursor-pointer"
+        className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-ocean bg-clip-text text-transparent relative cursor-pointer"
         onClick={triggerAnimation}
       >
         Support INFOCHIR/RHCA
@@ -80,7 +80,7 @@ export const DonateHeader = () => {
               }}
             >
               <svg
-                className="w-4 h-4 sm:w-5 sm:h-5 text-[#ea384c] fill-[#ea384c]"
+                className="w-4 h-4 sm:w-5 sm:h-5 text-red-500 fill-red-500"
                 viewBox="0 0 24 24"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -98,9 +98,9 @@ export const DonateHeader = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto backdrop-blur-sm bg-white/30 p-4 rounded-xl border border-gray-100/20 shadow-xl"
+        className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto bg-white/80 backdrop-blur-sm p-4 rounded-xl border border-gray-100 shadow-xl"
       >
-        Your donation helps advance medical research in Haiti. Together, we can improve healthcare quality and support the next generation of doctors.
+        Votre don contribue à faire avancer la recherche médicale en Haïti. Ensemble, nous pouvons améliorer la qualité des soins et soutenir la prochaine génération de médecins.
       </motion.p>
     </div>
   );

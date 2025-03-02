@@ -1,3 +1,4 @@
+
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
@@ -16,7 +17,7 @@ export const IGMHeader = () => {
     <div ref={ref} className="relative overflow-hidden">
       {/* Gradient background with subtle animation */}
       <div 
-        className="absolute inset-0 bg-gradient-to-br from-primary/5 via-primary/10 to-transparent animate-gradient"
+        className="absolute inset-0 bg-gradient-to-br from-primary/5 via-primary/10 to-transparent"
         style={{
           backgroundSize: "200% 200%",
           animation: "gradient 15s ease infinite",
@@ -39,11 +40,11 @@ export const IGMHeader = () => {
           style={{ y, opacity, scale }}
           className="space-y-8"
         >
-          <div className="inline-flex items-center justify-center w-32 h-32 rounded-full bg-white shadow-lg mb-6 overflow-hidden">
+          <div className="inline-flex items-center justify-center mb-6">
             <motion.img 
               src="/lovable-uploads/990cb3a8-bdd0-46d9-8fe7-b258ccd9c691.png"
               alt="IGM Logo"
-              className="h-20 w-20 object-contain"
+              className="h-24 w-24 object-contain"
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 300 }}
             />

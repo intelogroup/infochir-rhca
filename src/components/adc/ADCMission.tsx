@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { BookOpen, Users, Target, Search, Globe, Award } from "lucide-react";
 
@@ -44,7 +45,7 @@ export const ADCMission = () => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl font-bold text-secondary mb-4">Notre Mission</h2>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-secondary to-green-500 bg-clip-text text-transparent mb-4">Notre Mission</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Fournir aux professionnels de santé les outils et ressources nécessaires pour exceller dans leur pratique quotidienne.
           </p>
@@ -60,12 +61,12 @@ export const ADCMission = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-xl p-8 shadow-sm hover:shadow-md transition-shadow border border-gray-100"
+                className="bg-white rounded-xl p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-secondary/20 group"
               >
-                <div className="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center mb-6">
+                <div className="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center mb-6 group-hover:bg-secondary/20 transition-colors">
                   <Icon className="h-6 w-6 text-secondary" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">{feature.title}</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4 group-hover:text-secondary transition-colors">{feature.title}</h3>
                 <p className="text-gray-600">{feature.description}</p>
               </motion.div>
             );

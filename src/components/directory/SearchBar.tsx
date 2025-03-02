@@ -1,3 +1,4 @@
+
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
@@ -14,7 +15,7 @@ export const SearchBar = ({ value, onChange }: SearchBarProps) => {
         placeholder="Rechercher un membre..."
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="pl-10 bg-white border-gray-200 focus:border-primary/50 focus:ring-primary/50 transition-colors"
+        className="pl-10 bg-white border-gray-200 focus:border-primary/50 focus:ring-primary/50 transition-colors focus:shadow-sm"
       />
     </div>
   );

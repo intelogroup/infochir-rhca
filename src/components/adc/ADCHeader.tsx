@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { BookText, Search, Users, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -8,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 const LazyImage = lazy(() => import("./LazyImage"));
 
 const LoadingSkeleton = () => (
-  <Skeleton className="h-32 w-32 rounded-full" />
+  <Skeleton className="h-28 w-28 rounded-full" />
 );
 
 export const ADCHeader = () => {
@@ -33,13 +34,13 @@ export const ADCHeader = () => {
               <LazyImage 
                 src="/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png"
                 alt="Atlas ADC Logo"
-                className="h-32 w-32 object-contain"
+                className="h-28 w-28 object-contain"
               />
             </Suspense>
           </div>
           
           <div className="space-y-4">
-            <h1 className="text-5xl font-bold text-secondary">
+            <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-secondary to-secondary-light bg-clip-text text-transparent">
               Atlas de Diagnostic Chirurgical
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -52,7 +53,7 @@ export const ADCHeader = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
-              className="flex items-center gap-3 px-6 py-3 rounded-full bg-white shadow-md text-gray-600"
+              className="flex items-center gap-3 px-6 py-3 rounded-full bg-white shadow-md text-gray-600 hover:shadow-lg hover:bg-gray-50 transition-all duration-300"
             >
               <BookText className="h-5 w-5 text-secondary" />
               <span>Plus de 500 cas cliniques</span>
@@ -62,7 +63,7 @@ export const ADCHeader = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
-              className="flex items-center gap-3 px-6 py-3 rounded-full bg-white shadow-md text-gray-600"
+              className="flex items-center gap-3 px-6 py-3 rounded-full bg-white shadow-md text-gray-600 hover:shadow-lg hover:bg-gray-50 transition-all duration-300"
             >
               <Users className="h-5 w-5 text-secondary" />
               <span>Collaboration internationale</span>
@@ -72,7 +73,7 @@ export const ADCHeader = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 }}
-              className="flex items-center gap-3 px-6 py-3 rounded-full bg-white shadow-md text-gray-600"
+              className="flex items-center gap-3 px-6 py-3 rounded-full bg-white shadow-md text-gray-600 hover:shadow-lg hover:bg-gray-50 transition-all duration-300"
             >
               <Search className="h-5 w-5 text-secondary" />
               <span>Recherche avancée</span>

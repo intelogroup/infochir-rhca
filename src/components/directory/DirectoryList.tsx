@@ -7,11 +7,15 @@ import { useState, useMemo, useCallback, FC } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const LoadingSkeleton: FC = () => (
   <div className="space-y-4">
+    <div className="flex justify-center py-8">
+      <LoadingSpinner size="lg" variant="medical" text="Chargement de l'annuaire..." />
+    </div>
     {Array.from({ length: 5 }).map((_, i) => (
-      <Skeleton key={i} className="w-full h-16" />
+      <Skeleton key={i} className="w-full h-16 bg-gradient-to-r from-gray-100/50 via-gray-100 to-gray-100/50" />
     ))}
   </div>
 );
@@ -102,7 +106,7 @@ const DirectoryList: FC<DirectoryListProps> = () => {
     <div className="space-y-6">
       <SearchBar value={searchTerm} onChange={handleSearch} />
       
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+      <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
         <Table>
           <TableHeader 
             sortField={sortField}
@@ -115,6 +119,16 @@ const DirectoryList: FC<DirectoryListProps> = () => {
             ))}
           </TableBody>
         </Table>
+        
+        {sortedMembers.length === 0 && (
+          <div className="p-8 text-center">
+            <p className="text-gray-500">Aucun membre trouvé</p>
+          </div>
+        )}
+      </div>
+      
+      <div className="text-right text-sm text-gray-500">
+        {sortedMembers.length} membre{sortedMembers.length !== 1 ? 's' : ''} trouvé{sortedMembers.length !== 1 ? 's' : ''}
       </div>
     </div>
   );
