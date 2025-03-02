@@ -84,7 +84,7 @@ export const HeroSection = () => {
       <div 
         className="absolute inset-0 z-1"
         style={{ 
-          backgroundImage: `url('/lovable-uploads/8821672c-9173-4a9c-b526-9c7c11b0b158.png')`,
+          backgroundImage: `url('/lovable-uploads/8849a318-5444-4c19-a92a-faf4d5b1d28c.png')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           opacity: 0.3,
@@ -113,7 +113,7 @@ export const HeroSection = () => {
               backgroundPosition: 'right bottom',
               backgroundRepeat: 'no-repeat',
               opacity: 0.9,
-              right: '5%',  // Changed from -35% to 5%, moving it in the opposite direction
+              right: '5%',
               paddingLeft: '5px'
             }}
           />
