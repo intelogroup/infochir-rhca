@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { MainLayout } from "@/components/layouts/MainLayout";
-import BackToTop from "@/components/navigation/BackToTop";
 import { IGMHeader } from "@/components/igm/components/IGMHeader";
 import { IGMSidebar } from "@/components/igm/components/IGMSidebar";
 import { IssuesGridLayout } from "@/components/igm/components/layout/IssuesGridLayout";
@@ -19,7 +18,6 @@ const IGM = () => {
           </div>
         </div>
       </div>
-      <BackToTop />
     </MainLayout>
   );
 };
