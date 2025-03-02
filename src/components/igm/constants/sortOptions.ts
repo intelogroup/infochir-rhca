@@ -1,3 +1,4 @@
+
 export const SORT_OPTIONS = [
   { value: "latest", label: "Plus récents" },
   { value: "year", label: "Par année" },

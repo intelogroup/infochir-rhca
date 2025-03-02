@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Issue, DatabaseIssue } from "../types";
 import { toast } from "sonner";
+import { mapDatabaseIssueToIssue } from "../types";
 
 export const useIGMIssues = () => {
   console.log('[useIGMIssues] Hook initializing');
@@ -45,38 +46,7 @@ export const useIGMIssues = () => {
           lastItem: data[data.length - 1]
         });
 
-        const issues = data.map((item: DatabaseIssue) => {
-          let dateString: string;
-
-          if (item.publication_date instanceof Date) {
-            dateString = item.publication_date.toISOString();
-          } else {
-            const parsedDate = new Date(item.publication_date);
-            dateString = parsedDate.toISOString();
-          }
-
-          return {
-            id: item.id,
-            title: item.title,
-            volume: item.volume,
-            issue: item.issue,
-            date: dateString,
-            abstract: item.abstract,
-            coverImage: item.cover_image || undefined,
-            articleCount: item.article_count,
-            downloads: item.downloads,
-            shares: item.shares,
-            articles: item.articles.map(article => ({
-              id: article.id,
-              title: article.title,
-              authors: article.authors,
-              pageNumber: Number(article.pageNumber) || 0,
-              abstract: article.abstract,
-              tags: article.tags
-            })),
-            categories: item.category ? [item.category] : []
-          };
-        });
+        const issues = data.map((item: DatabaseIssue) => mapDatabaseIssueToIssue(item));
 
         console.log('[useIGMIssues] Mapped issues:', {
           count: issues.length,
