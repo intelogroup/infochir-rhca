@@ -70,15 +70,17 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
   }, [article]);
   
   return (
-    <Card className="overflow-hidden transition-all hover:shadow-md">
-      <CoverImage 
-        article={article} 
-        coverUrl={coverUrl} 
-        pdfUrl={pdfUrl} 
-        imageLoading={imageLoading} 
-      />
+    <Card className="overflow-hidden transition-all hover:shadow-md flex h-[220px]">
+      <div className="w-[35%] flex-shrink-0">
+        <CoverImage 
+          article={article} 
+          coverUrl={coverUrl} 
+          pdfUrl={pdfUrl} 
+          imageLoading={imageLoading} 
+        />
+      </div>
       
-      <CardContentUI className="p-4">
+      <CardContentUI className="p-4 w-[65%] flex-grow overflow-hidden">
         <CardContent article={article} pdfUrl={pdfUrl} />
       </CardContentUI>
     </Card>

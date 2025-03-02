@@ -18,7 +18,7 @@ export const CoverImage: React.FC<CoverImageProps> = ({
   // imageLoading is still in the props but not used directly in the component
 }) => {
   return (
-    <div className="relative w-full aspect-[4/3] rounded-t-md overflow-hidden bg-gray-100">
+    <div className="relative w-full h-full bg-gray-100">
       <ImageOptimizer
         src={coverUrl || ''}
         alt={article.title}
