@@ -1,57 +1,66 @@
 
-import * as React from "react";
+import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
-import type { Issue } from "./types";
-import { motion } from "framer-motion";
-import { IssueCardCover } from "./components/card/IssueCardCover";
+import { Issue } from "./types";
 import { IssueCardContent } from "./components/card/IssueCardContent";
+import { IssueCardCover } from "./components/card/IssueCardCover";
 import { IssueCardActions } from "./components/card/IssueCardActions";
+import { IssueModal } from "@/components/shared/DocumentModal";
+import { motion } from "framer-motion";
 
 interface IssueCardProps {
   issue: Issue;
 }
 
 export const IssueCard: React.FC<IssueCardProps> = ({ issue }) => {
+  const [modalOpen, setModalOpen] = useState(false);
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
-      className="h-full w-full"
-      layout
-    >
-      <Card 
-        className="group hover:shadow-md transition-all duration-300 cursor-pointer h-full transform hover:-translate-y-1 bg-white border border-gray-200"
+    <>
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        whileHover={{ y: -5 }}
+        className="h-full"
       >
-        <div className="flex gap-4 p-4">
-          <div className="w-20 flex-shrink-0">
-            <IssueCardCover 
-              coverImage={issue.coverImage}
-              title={issue.title}
-            />
+        <Card 
+          className="overflow-hidden group cursor-pointer h-full flex border border-gray-200 hover:shadow-md transition-all"
+          onClick={() => setModalOpen(true)}
+        >
+          <div className="shrink-0 w-1/3 md:w-1/4 h-full">
+            <IssueCardCover image={issue.coverImage} />
           </div>
           
-          <div className="flex flex-col flex-1 min-w-0">
-            <div className="flex justify-between items-start gap-4">
+          <div className="flex-1 flex flex-col p-4">
+            <div className="flex-1">
               <IssueCardContent issue={issue} />
-              <div className="hidden sm:block">
-                <IssueCardActions
-                  pdfUrl={issue.pdfUrl}
-                  id={issue.id}
-                />
-              </div>
             </div>
-            <div className="mt-3 sm:hidden">
-              <IssueCardActions
-                pdfUrl={issue.pdfUrl}
+            
+            <div className="flex justify-end mt-2">
+              <IssueCardActions 
+                pdfUrl={issue.pdfUrl} 
                 id={issue.id}
+                title={issue.title}
               />
             </div>
           </div>
-        </div>
-      </Card>
-    </motion.div>
+        </Card>
+      </motion.div>
+
+      <IssueModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={issue.title}
+        content={issue.abstract}
+        documentUrl={issue.pdfUrl}
+        metadata={{
+          volume: issue.volume,
+          issue: issue.issue,
+          date: issue.date,
+          articles: issue.articleCount
+        }}
+      />
+    </>
   );
 };
-
-IssueCard.displayName = 'IssueCard';

@@ -17,56 +17,62 @@ export const useArticlesQuery = (page = 0) => {
 
       console.log('Executing Supabase query with range:', { start, end });
 
-      const { data, error, count } = await supabase
-        .from("unified_content")
-        .select("*", { count: 'exact' })
-        .in('source', ['IGM', 'RHCA', 'ADC'])
-        .range(start, end)
-        .order("publication_date", { ascending: false });
+      try {
+        const { data, error, count } = await supabase
+          .from("articles")
+          .select("*", { count: 'exact' })
+          .order("publication_date", { ascending: false })
+          .range(start, end);
 
-      console.log('Supabase response:', { data, error, count });
+        console.log('Supabase response:', { dataCount: data?.length, error, count });
 
-      if (error) {
-        console.error("Supabase query error:", error);
+        if (error) {
+          console.error("Supabase query error:", error);
+          toast.error("Erreur lors du chargement des articles");
+          throw error;
+        }
+
+        if (!data || data.length === 0) {
+          console.log('No data returned from query');
+          return { articles: [], totalPages: 0 };
+        }
+
+        const articles: Article[] = data.map((item) => ({
+          id: item.id,
+          title: item.title,
+          abstract: item.abstract,
+          date: item.publication_date,
+          publicationDate: item.publication_date,
+          source: item.source as Article['source'],
+          category: item.category,
+          authors: Array.isArray(item.authors) ? item.authors : [],
+          tags: Array.isArray(item.tags) ? item.tags : [],
+          imageUrl: item.image_url,
+          views: item.views || 0,
+          citations: item.citations || 0,
+          pdfUrl: item.pdf_url,
+          downloads: item.downloads || 0,
+          institution: item.institution,
+          status: (item.status === 'published' || item.status === 'pending' || item.status === 'draft') 
+            ? item.status as 'published' | 'pending' | 'draft'
+            : 'published',
+          shares: item.shares || 0,
+          volume: item.volume,
+          issue: item.issue,
+          pageNumber: item.page_number,
+          specialty: item.specialty,
+          articleType: item.source as Article['source']
+        }));
+
+        const totalPages = Math.ceil((count || 0) / PAGE_SIZE);
+        console.log('Processed articles:', { count: articles.length, totalPages });
+
+        return { articles, totalPages };
+      } catch (err) {
+        console.error('Error fetching articles:', err);
         toast.error("Erreur lors du chargement des articles");
-        throw error;
+        throw err;
       }
-
-      if (!data) {
-        console.log('No data returned from query');
-        return { articles: [], totalPages: 0 };
-      }
-
-      const articles: Article[] = data.map((item) => ({
-        id: item.id,
-        title: item.title,
-        abstract: item.abstract,
-        date: item.publication_date,
-        publicationDate: item.publication_date,
-        source: item.source as Article['source'],
-        category: item.category,
-        authors: Array.isArray(item.authors) ? item.authors : [],
-        tags: Array.isArray(item.tags) ? item.tags : [],
-        imageUrl: item.image_url,
-        views: item.views || 0,
-        citations: item.citations || 0,
-        pdfUrl: item.pdf_url,
-        downloads: item.downloads || 0,
-        institution: item.institution,
-        status: (item.status === 'published' || item.status === 'pending' || item.status === 'draft') 
-          ? item.status as 'published' | 'pending' | 'draft'
-          : 'published',
-        shares: item.shares || 0,
-        volume: item.volume,
-        issue: item.issue,
-        pageNumber: item.page_number,
-        specialty: item.specialty,
-        articleType: item.source as Article['source']
-      }));
-
-      const totalPages = Math.ceil((count || 0) / PAGE_SIZE);
-
-      return { articles, totalPages };
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 30 * 60 * 1000, // 30 minutes
