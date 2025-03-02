@@ -108,11 +108,11 @@ export const HeroSection = () => {
         </div>
       </AnimatePresence>
       
-      {/* Surgical background image layer - moved to be on top of gradient */}
+      {/* Surgical background image layer - correct image URL */}
       <div 
         className="absolute inset-0 z-2"
         style={{ 
-          backgroundImage: `url('/lovable-uploads/8849a318-5444-4c19-a92a-faf4d5b1d28c.png')`,
+          backgroundImage: `url('/image_bg.jpg')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           opacity: 0.3,
