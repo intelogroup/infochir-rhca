@@ -9,6 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { CheckboxWithLabel } from "@/components/ui/checkbox-with-label";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 interface IssuesSearchProps {
   searchTerm: string;
@@ -35,6 +37,8 @@ export function IssuesSearch({
   onCategoryChange,
   availableCategories = [],
 }: IssuesSearchProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   const handleCategoryToggle = (category: string) => {
     if (!onCategoryChange) return;
     
@@ -87,48 +91,56 @@ export function IssuesSearch({
         </div>
 
         {availableCategories.length > 0 && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-gray-900">Catégories</h3>
-              {selectedCategories.length > 0 && (
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={clearCategories}
-                  className="h-8 px-2 text-sm"
-                >
-                  Effacer
-                </Button>
-              )}
-            </div>
-            <ScrollArea className="h-24 w-full rounded-md border">
-              <div className="p-4 grid grid-cols-2 gap-2">
-                {availableCategories.map((category) => (
-                  <CheckboxWithLabel
-                    key={category}
-                    checked={selectedCategories.includes(category)}
-                    onCheckedChange={() => handleCategoryToggle(category)}
-                    label={category}
-                  />
-                ))}
-              </div>
-            </ScrollArea>
-            {selectedCategories.length > 0 && (
-              <div className="flex flex-wrap gap-2 pt-2">
-                {selectedCategories.map((category) => (
-                  <Badge
-                    key={category}
-                    variant="secondary"
-                    className="cursor-pointer"
-                    onClick={() => handleCategoryToggle(category)}
-                  >
-                    {category}
-                    <span className="ml-1">×</span>
-                  </Badge>
-                ))}
-              </div>
-            )}
-          </div>
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="categories">
+              <AccordionTrigger className="text-sm font-medium text-gray-900">
+                Catégories ({selectedCategories.length > 0 ? `${selectedCategories.length} sélectionnées` : "Filtrer par catégorie"})
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    {selectedCategories.length > 0 && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={clearCategories}
+                        className="h-8 px-2 text-sm"
+                      >
+                        Effacer tout
+                      </Button>
+                    )}
+                  </div>
+                  <ScrollArea className="h-32 w-full rounded-md border">
+                    <div className="p-4 grid grid-cols-2 md:grid-cols-3 gap-2">
+                      {availableCategories.map((category) => (
+                        <CheckboxWithLabel
+                          key={category}
+                          checked={selectedCategories.includes(category)}
+                          onCheckedChange={() => handleCategoryToggle(category)}
+                          label={category}
+                        />
+                      ))}
+                    </div>
+                  </ScrollArea>
+                  {selectedCategories.length > 0 && (
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      {selectedCategories.map((category) => (
+                        <Badge
+                          key={category}
+                          variant="secondary"
+                          className="cursor-pointer"
+                          onClick={() => handleCategoryToggle(category)}
+                        >
+                          {category}
+                          <span className="ml-1">×</span>
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         )}
       </div>
     </div>
