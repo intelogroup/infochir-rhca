@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { ArticleActions } from "@/components/index-medicus/article/ArticleActions";
 import { Article } from "@/components/index-medicus/types";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
+import { useScrollToTop } from "@/hooks/useScrollToTop";
 
 const ArticleDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { toast } = useToast();
+  useScrollToTop();
+  
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,14 +36,19 @@ const ArticleDetail = () => {
           authors: ["Dr. Exemple Auteur", "Dr. Autre Auteur"],
           abstract: "Résumé détaillé de l'article qui serait normalement chargé à partir d'une API.",
           date: new Date().toISOString(),
-          journal: "Journal de Médecine",
-          volume: "42",
-          issue: "3",
-          pages: "123-145",
-          doi: "10.1234/exemple",
-          pdfUrl: "#",
-          categories: ["Recherche", "Clinique"],
+          publicationDate: new Date().toISOString(),
+          source: "RHCA",
           tags: ["chirurgie", "innovation"],
+          category: "Recherche",
+          specialty: "Clinique",
+          pdfUrl: "#",
+          status: "published",
+          imageUrl: "",
+          coverImage: "",
+          views: 0,
+          citations: 0,
+          downloads: 0,
+          shares: 0
         };
         
         setArticle(mockArticle);
@@ -64,7 +71,7 @@ const ArticleDetail = () => {
       setError("ID d'article non valide");
       setLoading(false);
     }
-  }, [id, toast]);
+  }, [id]);
 
   const handleGoBack = () => {
     navigate(-1);
@@ -120,38 +127,33 @@ const ArticleDetail = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div>
-                <h3 className="font-medium text-gray-500">Journal</h3>
-                <p>{article.journal}</p>
+                <h3 className="font-medium text-gray-500">Source</h3>
+                <p>{article.source}</p>
               </div>
               <div>
                 <h3 className="font-medium text-gray-500">Date de publication</h3>
-                <p>{new Date(article.date).toLocaleDateString()}</p>
+                <p>{new Date(article.publicationDate).toLocaleDateString()}</p>
               </div>
-              <div>
-                <h3 className="font-medium text-gray-500">Volume/Issue</h3>
-                <p>{article.volume}, {article.issue}</p>
-              </div>
-              <div>
-                <h3 className="font-medium text-gray-500">Pages</h3>
-                <p>{article.pages}</p>
-              </div>
-              {article.doi && (
+              {article.volume && article.issue && (
                 <div>
-                  <h3 className="font-medium text-gray-500">DOI</h3>
-                  <p>{article.doi}</p>
+                  <h3 className="font-medium text-gray-500">Volume/Issue</h3>
+                  <p>{article.volume}, {article.issue}</p>
+                </div>
+              )}
+              {article.pageNumber && (
+                <div>
+                  <h3 className="font-medium text-gray-500">Pages</h3>
+                  <p>{article.pageNumber}</p>
                 </div>
               )}
             </div>
             
             <div className="flex flex-wrap gap-2 mb-6">
-              {article.categories.map((category, index) => (
-                <span 
-                  key={index} 
-                  className="bg-secondary/10 text-secondary px-3 py-1 rounded-full text-sm"
-                >
-                  {category}
+              {article.category && (
+                <span className="bg-secondary/10 text-secondary px-3 py-1 rounded-full text-sm">
+                  {article.category}
                 </span>
-              ))}
+              )}
               
               {article.tags.map((tag, index) => (
                 <span 

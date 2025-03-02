@@ -17,12 +17,17 @@ export const ViewAction: React.FC<ViewActionProps> = ({ article, showViewButton 
     return null;
   }
   
+  const handleViewClick = () => {
+    navigate(`/articles/${article.id}`);
+    console.log(`Navigating to article detail: ${article.id}`);
+  };
+  
   return (
     <Button
       variant="outline"
       size="sm"
       className="gap-2"
-      onClick={() => navigate(`/articles/${article.id}`)}
+      onClick={handleViewClick}
     >
       <ExternalLink className="h-4 w-4" />
       Voir
