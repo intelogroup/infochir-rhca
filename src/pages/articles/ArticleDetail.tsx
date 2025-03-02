@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/layouts/MainLayout";
@@ -6,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { ArticleActions } from "@/components/index-medicus/article/ArticleActions";
 import { Article } from "@/components/index-medicus/types";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 
 const ArticleDetail = () => {
@@ -55,10 +54,7 @@ const ArticleDetail = () => {
       } catch (err) {
         console.error("Error fetching article:", err);
         setError("Impossible de charger les détails de l'article");
-        toast({
-          description: "Impossible de charger les détails de l'article",
-          variant: "destructive",
-        });
+        toast.error("Impossible de charger les détails de l'article");
       } finally {
         setLoading(false);
       }

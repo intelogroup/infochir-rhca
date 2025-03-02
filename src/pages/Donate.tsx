@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { motion } from "framer-motion";
@@ -5,8 +6,7 @@ import { DonateHeader } from "@/components/donate/DonateHeader";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { getStripe } from "@/lib/stripe";
+import { createCheckoutSession } from "@/lib/stripe";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { DonationAmountSelector } from "@/components/donate/form/DonationAmountSelector";
@@ -40,49 +40,36 @@ const Donate = () => {
         return;
       }
 
+      // Input validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        toast.error("Please enter a valid email address");
+        return;
+      }
+
       const amount = customAmount ? Number(customAmount) : selectedAmount;
-      if (!amount) {
+      if (!amount || amount <= 0) {
         toast.error("Please select or enter a donation amount");
+        return;
+      }
+
+      // Prevent very large amounts as a protection measure
+      if (amount > 50000) {
+        toast.error("Please contact us directly for large donations");
         return;
       }
 
       setIsProcessing(true);
 
-      const { data: sessionData, error: sessionError } = await supabase.functions.invoke('stripe-checkout', {
-        body: {
-          amount,
-          currency: 'usd',
-          donor_info: {
-            name,
-            email,
-            is_anonymous: !name,
-            message: '' // Include empty message field
-          }
+      // Use the secure helper function
+      await createCheckoutSession(amount, {
+        donor_info: {
+          name,
+          email,
+          is_anonymous: !name,
+          message: '' // Include empty message field
         }
       });
-
-      if (sessionError) {
-        console.error("[Donate] Session creation error:", sessionError);
-        throw new Error(sessionError.message || "Failed to create checkout session");
-      }
-
-      if (!sessionData?.session_id) {
-        throw new Error("No session ID returned from server");
-      }
-
-      const stripe = await getStripe();
-      if (!stripe) {
-        throw new Error("Stripe failed to initialize");
-      }
-
-      const { error: redirectError } = await stripe.redirectToCheckout({
-        sessionId: sessionData.session_id
-      });
-
-      if (redirectError) {
-        console.error("[Donate] Redirect error:", redirectError);
-        throw redirectError;
-      }
 
     } catch (error: any) {
       console.error('[Donate] Payment error:', error);
@@ -170,7 +157,6 @@ const Donate = () => {
           </div>
         </div>
       </div>
-      {/* We can remove the Toaster here as it's now provided globally in main.tsx */}
     </MainLayout>
   );
 };

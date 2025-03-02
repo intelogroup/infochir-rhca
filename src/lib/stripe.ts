@@ -70,8 +70,21 @@ export const getStripe = async () => {
 export const createCheckoutSession = async (amount: number, metadata: any = {}) => {
   try {
     console.log('[Stripe] Creating checkout session...');
+    
+    // Validate amount
+    if (!amount || amount <= 0) {
+      throw new Error('Invalid donation amount');
+    }
+    
+    // Security: Validate the amount on server side too - client validation is not enough
     const { data: sessionData, error: sessionError } = await supabase.functions.invoke('stripe-checkout', {
-      body: { amount, metadata }
+      body: { 
+        amount, 
+        currency: 'usd',
+        metadata,
+        // Add CSRF protection token if implemented
+        // csrf_token: getCsrfToken() 
+      }
     });
 
     if (sessionError) {
@@ -88,6 +101,7 @@ export const createCheckoutSession = async (amount: number, metadata: any = {}) 
       throw new Error('Stripe failed to initialize');
     }
 
+    // Security: Use redirectToCheckout with sessionId, never construct URLs manually
     return stripe.redirectToCheckout({
       sessionId: sessionData.session_id
     });
@@ -95,5 +109,26 @@ export const createCheckoutSession = async (amount: number, metadata: any = {}) 
     console.error('[Stripe] Checkout session creation failed:', error);
     toast.error("Failed to initialize payment. Please try again later.");
     throw error;
+  }
+};
+
+// Validate payment status
+export const verifyPaymentStatus = async (sessionId: string) => {
+  if (!sessionId) return false;
+  
+  try {
+    const { data, error } = await supabase.functions.invoke('verify-stripe-session', {
+      body: { session_id: sessionId }
+    });
+    
+    if (error) {
+      console.error('[Stripe] Payment verification error:', error);
+      return false;
+    }
+    
+    return data?.status === 'complete';
+  } catch (err) {
+    console.error('[Stripe] Payment verification failed:', err);
+    return false;
   }
 };
