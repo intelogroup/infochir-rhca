@@ -52,7 +52,7 @@ export const RhcaContent: React.FC = () => {
         </div>
         
         {loading ? (
-          <div className="py-12 mt-[50px]">
+          <div className="py-12 mt-[100px]">
             <LoadingSpinner variant="medical" text="Chargement des articles RHCA..." />
           </div>
         ) : error ? (

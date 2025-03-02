@@ -63,10 +63,10 @@ export const RhcaGrid: React.FC<RhcaGridProps> = ({
                 <div className="px-2 sm:px-4 py-2 sm:py-3">
                   <ScrollArea className="w-full max-h-[70vh]">
                     <div 
-                      className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 py-2 sm:py-4 px-2 sm:px-4" 
+                      className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 py-2 sm:py-4 px-2 sm:px-4" 
                     >
                       {articlesByYear[year]?.map((article) => (
-                        <div key={article.id}>
+                        <div key={article.id} className="w-full flex justify-center">
                           <RhcaCard article={article} />
                         </div>
                       ))}
