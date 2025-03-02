@@ -11,7 +11,7 @@ interface ArticleTagsProps {
 export const ArticleTags = ({ tags, onTagClick, selectedTags = [] }: ArticleTagsProps) => {
   return (
     <div className="flex flex-wrap gap-2 items-center">
-      <Tag className="h-4 w-4 text-primary" />
+      <Tag className="h-4 w-4 text-primary animate-pulse" />
       {tags.map((tag) => (
         <Badge
           key={tag}
@@ -21,6 +21,7 @@ export const ArticleTags = ({ tags, onTagClick, selectedTags = [] }: ArticleTags
             ${selectedTags.includes(tag) 
               ? 'bg-primary text-white hover:bg-primary-light scale-105 shadow-sm' 
               : 'bg-secondary/10 text-secondary-dark hover:bg-secondary/20'}
+            hover:shadow-md hover:scale-105
           `}
           onClick={() => onTagClick?.(tag)}
         >

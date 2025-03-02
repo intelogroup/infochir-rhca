@@ -30,9 +30,9 @@ export const LoadingSpinner = ({
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="h-full w-full rounded-full border-t-2 border-b-2 border-primary/30 animate-spin"></div>
           </div>
-          <div className="animate-pulse bg-primary/5 rounded-full p-3 absolute inset-0 flex items-center justify-center">
+          <div className="animate-pulse bg-primary/10 rounded-full p-3 absolute inset-0 flex items-center justify-center">
             <BookOpen className={cn(
-              "text-primary/40",
+              "text-primary/60",
               size === "sm" ? "h-3 w-3" : size === "md" ? "h-5 w-5" : "h-7 w-7"
             )} />
           </div>
@@ -65,20 +65,20 @@ export const LoadingSpinner = ({
 
   if (fullScreen) {
     return (
-      <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center z-50">
+      <div className="fixed inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center z-50">
         {renderLoader()}
         {text && (
-          <p className="mt-4 text-primary/80 font-medium text-sm">{text}</p>
+          <p className="mt-4 text-primary font-medium text-sm animate-pulse">{text}</p>
         )}
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center justify-center py-4">
+    <div className="flex flex-col items-center justify-center py-6">
       {renderLoader()}
       {text && (
-        <p className="mt-3 text-primary/80 font-medium text-sm">{text}</p>
+        <p className="mt-3 text-primary/80 font-medium text-sm animate-pulse">{text}</p>
       )}
     </div>
   );

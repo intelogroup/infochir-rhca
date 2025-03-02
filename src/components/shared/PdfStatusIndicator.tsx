@@ -36,26 +36,26 @@ export const PdfStatusIndicator = ({
     checking: (
       <div className="relative">
         <Loader2 className={cn(`${sizeClass} animate-spin text-ocean`, className)} />
-        <span className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-ocean rounded-full"></span>
+        <span className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-ocean rounded-full animate-ping"></span>
       </div>
     ),
     available: (
       <div className="relative">
-        <FileCheck className={cn(`${sizeClass} ${colors.available}`, className)} />
+        <FileCheck className={cn(`${sizeClass} ${colors.available} transition-all duration-300 hover:scale-110`, className)} />
         <span className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-green-500 rounded-full"></span>
       </div>
     ),
-    unavailable: <FileX className={cn(`${sizeClass} ${colors.unavailable}`, className)} />
+    unavailable: <FileX className={cn(`${sizeClass} ${colors.unavailable} transition-all duration-300 hover:text-gray-400`, className)} />
   };
   
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className="cursor-help">{icons[status]}</span>
+          <span className="cursor-help transition-transform duration-200 hover:scale-110">{icons[status]}</span>
         </TooltipTrigger>
         <TooltipContent className="bg-white border border-gray-200 shadow-md">
-          <p className={cn("text-sm", colors[status])}>{messages[status]}</p>
+          <p className={cn("text-sm font-medium", colors[status])}>{messages[status]}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
