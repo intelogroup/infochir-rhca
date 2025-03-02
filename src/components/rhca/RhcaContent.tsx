@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { RHCASidebar } from './components/RHCASidebar';
-import RhcaGrid from './RhcaGrid';
+import { RhcaGrid } from './RhcaGrid';
 
 export const RhcaContent: React.FC = () => {
   return (
