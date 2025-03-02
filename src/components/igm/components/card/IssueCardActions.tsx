@@ -1,7 +1,7 @@
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import { Download, Share2, ExternalLink } from "lucide-react";
+import { Download, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { downloadPDF } from "@/lib/analytics/download-analytics";

@@ -10,24 +10,30 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { checkFileExists, downloadPDF } from "@/lib/analytics/download-analytics";
+import { createLogger } from "@/lib/error-logger";
+
+const logger = createLogger('PdfActions');
 
 interface PdfActionsProps {
   title?: string;
   pdfUrl?: string;
   hideDownload?: boolean;
+  articleId?: string;
 }
 
 export const PdfActions: React.FC<PdfActionsProps> = ({
   title = "",
   pdfUrl,
   hideDownload = false,
+  articleId,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [fileExists, setFileExists] = useState<boolean | null>(null);
 
   // Check if file exists when component mounts
   useEffect(() => {
-    const checkFileExists = async () => {
+    const validateFile = async () => {
       if (!pdfUrl) {
         setFileExists(false);
         return;
@@ -42,33 +48,21 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
             setFileExists(false);
             return;
           }
-
-          const { data, error } = await supabase
-            .storage
-            .from(bucketName)
-            .list('', {
-              search: fileName
-            });
-
-          if (error) {
-            console.error('Error checking file existence:', error);
-            setFileExists(false);
-            return;
-          }
-
-          setFileExists(data && data.some(file => file.name === fileName));
+          
+          const exists = await checkFileExists(bucketName, fileName);
+          setFileExists(exists);
         } else {
           // For external URLs, try a HEAD request
           const response = await fetch(pdfUrl, { method: 'HEAD' });
           setFileExists(response.ok);
         }
       } catch (err) {
-        console.error('Failed to check file existence:', err);
+        logger.error(err, { action: 'validateFile', pdfUrl });
         setFileExists(false);
       }
     };
 
-    checkFileExists();
+    validateFile();
   }, [pdfUrl]);
 
   const handleOpenPdf = (e: React.MouseEvent) => {
@@ -84,6 +78,17 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
     }
     
     window.open(pdfUrl, '_blank');
+    
+    // Track the view event if we have an article ID
+    if (articleId) {
+      // We could add a separate tracking function for views if needed
+      supabase.rpc('increment_count', {
+        table_name: 'articles',
+        column_name: 'views',
+        row_id: articleId
+      });
+    }
+    
     toast.success("PDF ouvert dans un nouvel onglet");
   };
   
@@ -102,71 +107,22 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
     setIsLoading(true);
     
     try {
-      // For Supabase storage URLs
-      if (pdfUrl.includes('article-pdfs') || pdfUrl.includes('rhca-pdfs')) {
-        const bucketName = pdfUrl.includes('article-pdfs') ? 'article-pdfs' : 'rhca-pdfs';
-        const fileName = pdfUrl.split('/').pop();
-        
-        if (!fileName) {
-          throw new Error("Invalid file name");
-        }
-        
-        // Get a signed URL or public URL
-        const { data: urlData, error: urlError } = await supabase
-          .storage
-          .from(bucketName)
-          .createSignedUrl(fileName, 60);
-        
-        if (urlError || !urlData) {
-          throw urlError || new Error("Failed to get URL");
-        }
-        
-        // Fetch the file using the signed URL
-        const response = await fetch(urlData.signedUrl);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const blob = await response.blob();
-        
-        // Create URL and trigger download
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        
-        // Cleanup
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(link);
-        
-        toast.success("Téléchargement réussi");
-      } else {
-        // External URL - direct download
-        // Create an invisible link to download the file
-        const fileName = title ? `${title.slice(0, 30)}.pdf` : 'article.pdf';
-        const response = await fetch(pdfUrl);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-        
-        toast.success("Téléchargement réussi");
+      const fileName = title ? `${title.slice(0, 30)}.pdf` : 'article.pdf';
+      
+      // Use our enhanced download function with tracking
+      const success = await downloadPDF({
+        url: pdfUrl,
+        fileName: fileName,
+        documentId: articleId || 'unknown',
+        documentType: 'article',
+        trackingEnabled: !!articleId
+      });
+      
+      if (!success) {
+        throw new Error('Download failed');
       }
     } catch (error) {
-      console.error('Download error:', error);
+      logger.error(error, { action: 'handleDownloadPdf', pdfUrl, articleId });
       toast.error("Une erreur est survenue lors du téléchargement");
     } finally {
       setIsLoading(false);

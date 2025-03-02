@@ -4,6 +4,10 @@ export const getErrorMessage = (error: Error) => {
   const isStripeError = error.message.includes('Stripe') || 
                        error.message.includes('stripe.com') || 
                        error.message.includes('ERR_BLOCKED_BY_CLIENT');
+  const isDownloadError = error.message.includes('download') || 
+                          error.message.includes('fetch') ||
+                          error.message.includes('network') ||
+                          error.message.includes('Failed to fetch');
 
   if (isChunkError) {
     return {
@@ -22,6 +26,19 @@ export const getErrorMessage = (error: Error) => {
         "Vérifiez que votre bloqueur de publicités est désactivé",
         "Vérifiez votre connexion internet",
         "Rafraîchissez la page"
+      ]
+    };
+  }
+  
+  if (isDownloadError) {
+    return {
+      title: "Erreur de téléchargement",
+      message: "Le téléchargement du fichier a échoué. Veuillez vérifier votre connexion et réessayer.",
+      type: "download_error",
+      details: [
+        "Vérifiez votre connexion internet",
+        "Assurez-vous que le fichier existe toujours",
+        "Essayez de rafraîchir la page et réessayez"
       ]
     };
   }

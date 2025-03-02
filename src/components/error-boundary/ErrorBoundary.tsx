@@ -55,9 +55,9 @@ export class ErrorBoundary extends React.Component<Props, State> {
       componentStack: errorInfo.componentStack || 'No component stack available'
     }, boundaryName);
 
-    // Add specific error handling for payment flows
-    if (error.message.includes('Stripe') || error.message.includes('stripe.com')) {
-      console.error("[ErrorBoundary] Payment error detected:", {
+    // Add specific error handling for downloads
+    if (error.message.includes('download') || error.message.includes('fetch')) {
+      console.error("[ErrorBoundary] Download error detected:", {
         message: error.message,
         network: {
           online: navigator.onLine,
@@ -88,7 +88,10 @@ export class ErrorBoundary extends React.Component<Props, State> {
     // Handle specific error recoveries
     if (error.message.includes('must be used within')) {
       this.setState({ hasError: false, error: undefined, errorInfo: undefined });
-    } else if (errorDetails.type === 'stripe_error') {
+    } else if (error.message.includes('download') || error.message.includes('fetch')) {
+      // For download errors, just reset the component state
+      this.setState({ hasError: false, error: undefined, errorInfo: undefined });
+    } else if (errorDetails.type === 'download_error') {
       this.setState({ hasError: false, error: undefined, errorInfo: undefined });
     } else {
       window.location.reload();
