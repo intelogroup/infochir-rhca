@@ -46,12 +46,37 @@ export const useIGMIssues = () => {
           lastItem: data[data.length - 1]
         });
 
-        const issues = data.map((item) => mapDatabaseIssueToIssue(item as DatabaseIssue));
+        // Process the issue data with correct bucket references
+        const issues = data.map((item) => {
+          const mappedIssue = mapDatabaseIssueToIssue(item as DatabaseIssue);
+          
+          // Add PDF URL if a cover image filename exists
+          if (mappedIssue.coverImage && !mappedIssue.coverImage.startsWith('http')) {
+            const { data: coverData } = supabase.storage
+              .from('igm_covers')
+              .getPublicUrl(mappedIssue.coverImage);
+              
+            mappedIssue.coverImage = coverData.publicUrl;
+          }
+          
+          // Add PDF URL if available (assuming a standard naming convention)
+          if (mappedIssue.volume && mappedIssue.issue) {
+            const pdfFilename = `IGM_vol_${mappedIssue.volume}_no_${mappedIssue.issue}.pdf`;
+            const { data: pdfData } = supabase.storage
+              .from('igm-pdfs')
+              .getPublicUrl(pdfFilename);
+              
+            mappedIssue.pdfUrl = pdfData.publicUrl;
+          }
+          
+          return mappedIssue;
+        });
 
-        console.log('[useIGMIssues] Mapped issues:', {
+        console.log('[useIGMIssues] Mapped issues with URLs:', {
           count: issues.length,
           timing: Date.now() - startTime,
-          'ms': 'since initialization'
+          'ms': 'since initialization',
+          firstIssue: issues[0]
         });
 
         return issues;
