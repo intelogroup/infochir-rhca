@@ -48,11 +48,11 @@ export const IndexMedicusCard: React.FC<IndexMedicusCardProps> = ({
       `}>
         <CardContent className="p-5 flex flex-col h-full">
           <div className="flex justify-between mb-3">
-            <Badge variant="outline" className="text-xs bg-secondary/10 hover:bg-secondary/20 font-medium px-2.5 py-0.5">
+            <Badge variant="outline" className="text-xs bg-secondary/10 hover:bg-secondary/20 font-medium px-2.5 py-0.5 text-secondary">
               {article.source}
             </Badge>
             {article.specialty && (
-              <Badge variant="secondary" className="text-xs font-semibold px-2.5 py-0.5">
+              <Badge variant="secondary" className="text-xs font-semibold px-2.5 py-0.5 bg-secondary/20 text-secondary-dark">
                 {article.specialty}
               </Badge>
             )}
@@ -86,7 +86,7 @@ export const IndexMedicusCard: React.FC<IndexMedicusCardProps> = ({
             pageNumber={article.pageNumber}
           />
           
-          <p className="text-sm text-gray-600 mt-4 mb-4 line-clamp-3 flex-grow leading-relaxed bg-gradient-to-b from-gray-700 to-gray-500 bg-clip-text">
+          <p className="text-sm text-gray-600 mt-4 mb-4 line-clamp-3 flex-grow leading-relaxed">
             {article.abstract}
           </p>
           

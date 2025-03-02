@@ -1,7 +1,7 @@
 
 import { BookOpen, Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { LoadingSpinner as UILoadingSpinner } from "@/components/ui/loading-spinner";
 
 export const LoadingSkeleton = () => (
   <div className="space-y-4">
@@ -17,13 +17,11 @@ export const LoadingSkeleton = () => (
 export const LoadingSpinner = () => (
   <div className="space-y-6">
     <div className="flex flex-col items-center justify-center gap-2 py-4">
-      <div className="relative">
-        <div className="animate-pulse bg-primary/5 rounded-full p-2 absolute inset-0 flex items-center justify-center">
-          <BookOpen className="h-6 w-6 text-primary/20" />
-        </div>
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-      </div>
-      <p className="text-primary/80 font-medium mt-3">Chargement des articles scientifiques...</p>
+      <UILoadingSpinner 
+        size="lg" 
+        variant="medical" 
+        text="Chargement des articles scientifiques..."
+      />
     </div>
     <LoadingSkeleton />
   </div>

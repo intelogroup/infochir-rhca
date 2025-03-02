@@ -33,8 +33,18 @@ export const PdfStatusIndicator = ({
   };
   
   const icons = {
-    checking: <Loader2 className={cn(`${sizeClass} animate-spin text-ocean`, className)} />,
-    available: <FileCheck className={cn(`${sizeClass} ${colors.available}`, className)} />,
+    checking: (
+      <div className="relative">
+        <Loader2 className={cn(`${sizeClass} animate-spin text-ocean`, className)} />
+        <span className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-ocean rounded-full"></span>
+      </div>
+    ),
+    available: (
+      <div className="relative">
+        <FileCheck className={cn(`${sizeClass} ${colors.available}`, className)} />
+        <span className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+      </div>
+    ),
     unavailable: <FileX className={cn(`${sizeClass} ${colors.unavailable}`, className)} />
   };
   
