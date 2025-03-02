@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import {
   ColumnDef,
@@ -22,6 +21,8 @@ import { Download, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { downloadFileFromStorage, checkFileExistsInBucket } from '@/lib/pdf-utils';
 import { useNavigate } from 'react-router-dom';
+import { ImageOptimizer } from '@/components/shared/ImageOptimizer';
+import { supabase } from '@/integrations/supabase/client';
 
 interface RhcaTableProps {
   articles: RhcaArticle[];
@@ -103,6 +104,35 @@ export const RhcaTable: React.FC<RhcaTableProps> = ({ articles }) => {
   };
 
   const columns: ColumnDef<RhcaArticle>[] = [
+    {
+      accessorKey: 'coverImage',
+      header: '',
+      cell: ({ row }) => {
+        const article = row.original;
+        
+        if (article.coverImageFileName) {
+          const { data } = supabase.storage
+            .from('rhca_covers')
+            .getPublicUrl(article.coverImageFileName);
+            
+          return (
+            <div className="w-12 h-12 relative rounded overflow-hidden">
+              <ImageOptimizer
+                src={data.publicUrl}
+                alt={`Couverture du volume ${article.volume}, numéro ${article.issue}`}
+                className="w-full h-full object-cover"
+                width={48}
+                height={48}
+                fallbackText=""
+              />
+            </div>
+          );
+        }
+        
+        return null;
+      },
+      size: 50,
+    },
     {
       accessorKey: 'title',
       header: 'Title',

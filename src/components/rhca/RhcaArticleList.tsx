@@ -8,6 +8,8 @@ import { fr } from 'date-fns/locale';
 import { useNavigate } from 'react-router-dom';
 import { downloadFileFromStorage, checkFileExistsInBucket } from '@/lib/pdf-utils';
 import { toast } from 'sonner';
+import { ImageOptimizer } from '@/components/shared/ImageOptimizer';
+import { supabase } from '@/integrations/supabase/client';
 
 interface RhcaArticleListProps {
   articles: RhcaArticle[];
@@ -17,6 +19,7 @@ export const RhcaArticleList: React.FC<RhcaArticleListProps> = ({ articles }) =>
   const navigate = useNavigate();
   const [downloadingArticleId, setDownloadingArticleId] = useState<string | null>(null);
   const [fileExistsMap, setFileExistsMap] = useState<Record<string, boolean>>({});
+  const [coverImageUrlMap, setCoverImageUrlMap] = useState<Record<string, string>>({});
   
   // Check file existence for all articles when component mounts
   useEffect(() => {
@@ -41,6 +44,31 @@ export const RhcaArticleList: React.FC<RhcaArticleListProps> = ({ articles }) =>
     };
     
     checkFiles();
+  }, [articles]);
+  
+  // Get cover image URLs for all articles when component mounts
+  useEffect(() => {
+    const getCoverImageUrls = async () => {
+      const urlMap: Record<string, string> = {};
+      
+      for (const article of articles) {
+        if (article.coverImageFileName) {
+          try {
+            const { data } = supabase.storage
+              .from('rhca_covers')
+              .getPublicUrl(article.coverImageFileName);
+              
+            urlMap[article.id] = data.publicUrl;
+          } catch (err) {
+            console.error(`[RhcaArticleList] Error getting cover image URL for ${article.id}:`, err);
+          }
+        }
+      }
+      
+      setCoverImageUrlMap(urlMap);
+    };
+    
+    getCoverImageUrls();
   }, [articles]);
   
   const handleArticleClick = (articleId: string) => {
@@ -104,6 +132,7 @@ export const RhcaArticleList: React.FC<RhcaArticleListProps> = ({ articles }) =>
         
         const isDownloading = downloadingArticleId === article.id;
         const fileExists = fileExistsMap[article.id];
+        const coverImageUrl = coverImageUrlMap[article.id];
         
         return (
           <Card 
@@ -111,69 +140,90 @@ export const RhcaArticleList: React.FC<RhcaArticleListProps> = ({ articles }) =>
             className="w-full overflow-hidden transition-all duration-300 hover:shadow-md cursor-pointer group border border-gray-200"
             onClick={() => handleArticleClick(article.id)}
           >
-            <CardContent className="p-4 sm:p-5">
-              <div className="space-y-2">
-                <div>
-                  <h3 className="text-lg font-semibold group-hover:text-emerald-600 transition-colors">
-                    {article.title}
-                  </h3>
-                  
-                  <div className="flex flex-wrap items-center text-sm text-gray-500 gap-y-1 mt-2">
-                    <div className="flex items-center mr-3">
-                      {article.volume && article.issue ? (
-                        <span>Volume {article.volume} • No. {article.issue}</span>
-                      ) : article.volume ? (
-                        <span>Volume {article.volume}</span>
-                      ) : (
-                        <span>Numéro non spécifié</span>
-                      )}
-                    </div>
-                    
-                    <div className="flex items-center">
-                      <CalendarIcon className="h-3.5 w-3.5 mr-1" />
-                      <span>{formattedDate}</span>
+            <CardContent className="p-0">
+              <div className="flex flex-col md:flex-row">
+                {/* Cover Image Section */}
+                {coverImageUrl && (
+                  <div className="md:w-1/4 relative">
+                    <div className="w-full aspect-[4/3] md:h-full overflow-hidden bg-gray-100">
+                      <ImageOptimizer
+                        src={coverImageUrl}
+                        alt={`Couverture du volume ${article.volume}, numéro ${article.issue}`}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        width={300}
+                        height={225}
+                        fallbackText={`Vol. ${article.volume}, N° ${article.issue}`}
+                      />
                     </div>
                   </div>
-                </div>
+                )}
                 
-                <p className="text-sm text-gray-600 line-clamp-2">
-                  {article.abstract}
-                </p>
-                
-                <div className="flex flex-wrap items-center justify-between pt-1">
-                  <div className="flex items-center space-x-3">
-                    {article.category && (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-                        {article.category}
-                      </span>
-                    )}
-                  </div>
-                  
-                  <div className="flex items-center space-x-4 text-sm text-gray-500">
-                    <button 
-                      className={`flex items-center ${
-                        fileExists === false 
-                          ? 'text-gray-300 cursor-not-allowed' 
-                          : isDownloading 
-                            ? 'opacity-50 cursor-wait' 
-                            : 'hover:text-emerald-600'
-                      }`}
-                      onClick={(e) => handleDownload(e, article)}
-                      disabled={isDownloading || fileExists === false}
-                      title={fileExists === false 
-                        ? "PDF non disponible sur le serveur" 
-                        : article.pdfFileName 
-                          ? "Télécharger le PDF" 
-                          : "PDF non disponible"
-                      }
-                    >
-                      <Download className={`h-3.5 w-3.5 mr-1 ${isDownloading ? 'animate-pulse' : ''}`} />
-                      <span>{article.downloads || 0}</span>
-                    </button>
+                {/* Content Section */}
+                <div className={`${coverImageUrl ? 'md:w-3/4' : 'w-full'} p-4 sm:p-5`}>
+                  <div className="space-y-2">
+                    <div>
+                      <h3 className="text-lg font-semibold group-hover:text-emerald-600 transition-colors">
+                        {article.title}
+                      </h3>
+                      
+                      <div className="flex flex-wrap items-center text-sm text-gray-500 gap-y-1 mt-2">
+                        <div className="flex items-center mr-3">
+                          {article.volume && article.issue ? (
+                            <span>Volume {article.volume} • No. {article.issue}</span>
+                          ) : article.volume ? (
+                            <span>Volume {article.volume}</span>
+                          ) : (
+                            <span>Numéro non spécifié</span>
+                          )}
+                        </div>
+                        
+                        <div className="flex items-center">
+                          <CalendarIcon className="h-3.5 w-3.5 mr-1" />
+                          <span>{formattedDate}</span>
+                        </div>
+                      </div>
+                    </div>
                     
-                    <div className="flex items-center">
-                      <Share2 className="h-3.5 w-3.5 mr-1" />
-                      <span>{article.shares || 0}</span>
+                    <p className="text-sm text-gray-600 line-clamp-2">
+                      {article.abstract}
+                    </p>
+                    
+                    <div className="flex flex-wrap items-center justify-between pt-1">
+                      <div className="flex items-center space-x-3">
+                        {article.category && (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                            {article.category}
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="flex items-center space-x-4 text-sm text-gray-500">
+                        <button 
+                          className={`flex items-center ${
+                            fileExists === false 
+                              ? 'text-gray-300 cursor-not-allowed' 
+                              : isDownloading 
+                                ? 'opacity-50 cursor-wait' 
+                                : 'hover:text-emerald-600'
+                          }`}
+                          onClick={(e) => handleDownload(e, article)}
+                          disabled={isDownloading || fileExists === false}
+                          title={fileExists === false 
+                            ? "PDF non disponible sur le serveur" 
+                            : article.pdfFileName 
+                              ? "Télécharger le PDF" 
+                              : "PDF non disponible"
+                          }
+                        >
+                          <Download className={`h-3.5 w-3.5 mr-1 ${isDownloading ? 'animate-pulse' : ''}`} />
+                          <span>{article.downloads || 0}</span>
+                        </button>
+                        
+                        <div className="flex items-center">
+                          <Share2 className="h-3.5 w-3.5 mr-1" />
+                          <span>{article.shares || 0}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -185,3 +235,4 @@ export const RhcaArticleList: React.FC<RhcaArticleListProps> = ({ articles }) =>
     </div>
   );
 };
+

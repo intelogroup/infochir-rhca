@@ -25,6 +25,7 @@ interface RhcaDatabaseArticle {
   issue?: string;
   specialty?: string;
   pdf_filename?: string;
+  cover_image_filename?: string;
   // We don't access cover_image_filename directly from the database response
   // as it might not exist in the view yet, instead we generate it
   [key: string]: any;
@@ -96,7 +97,8 @@ export const useRHCAArticles = () => {
               views: article.views || 0,
               downloads: article.downloads || 0,
               shares: article.shares || 0,
-              citations: article.citations || 0
+              citations: article.citations || 0,
+              cover_image_filename: coverImageFilename
             };
             
             // First map the base article properties
@@ -130,3 +132,4 @@ export const useRHCAArticles = () => {
 
   return { articles, loading, error };
 };
+
