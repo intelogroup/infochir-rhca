@@ -1,15 +1,16 @@
 
-import { IssuesSearch } from "../IssuesSearch";
-import { IssuesGridContent } from "@/components/igm/components/IssuesGridContent";
-import { useIssuesState } from "../../hooks/useIssuesState";
-import { SORT_OPTIONS } from "../../constants/sortOptions";
 import { useState } from "react";
+import IssuesSearch from "@/components/igm/IssuesSearch";
+import { IssuesGridContent } from "@/components/igm/components/IssuesGridContent";
+import { useIssuesState } from "@/components/igm/hooks/useIssuesState";
+import { SORT_OPTIONS } from "@/components/igm/constants/sortOptions";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
-import type { SortOption } from "@/types/sortOptions";
+import type { SortOption } from "@/components/igm/types";
 import { DateRange } from "react-day-picker";
-import { useIGMIssues } from "../../hooks/useIGMIssues";
-import { Loader2 } from "lucide-react";
+import { useIGMIssues } from "@/components/igm/hooks/useIGMIssues";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle, Loader2 } from "lucide-react";
 
 interface IssuesGridLayoutProps {
   viewMode?: "grid" | "table";
@@ -23,7 +24,7 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
   const [displayCount, setDisplayCount] = useState(6);
   const isMobile = useIsMobile();
 
-  const { data: issues = [], isLoading, error } = useIGMIssues();
+  const { data: issues = [], isLoading, error, isError } = useIGMIssues();
 
   const { 
     sortedIssues, 
@@ -41,12 +42,37 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
     setDisplayCount(prev => prev + (isMobile ? 3 : 6));
   };
 
-  if (error) {
+  if (isLoading) {
     return (
-      <div className="p-8 bg-red-50 border border-red-200 rounded-lg">
-        <p className="text-red-600 font-medium">Une erreur est survenue lors du chargement des numéros.</p>
-        <p className="text-red-500 text-sm mt-2">{error.message}</p>
+      <div className="flex flex-col items-center justify-center p-8 bg-white rounded-lg shadow-sm">
+        <Loader2 className="w-10 h-10 text-primary animate-spin mb-4" />
+        <p className="text-lg font-medium">Chargement des numéros...</p>
       </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Alert variant="destructive" className="mb-4">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Erreur</AlertTitle>
+        <AlertDescription>
+          Une erreur est survenue lors du chargement des numéros.
+          {error instanceof Error ? ` ${error.message}` : ''}
+        </AlertDescription>
+      </Alert>
+    );
+  }
+
+  if (issues.length === 0) {
+    return (
+      <Alert className="mb-4">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Aucun numéro trouvé</AlertTitle>
+        <AlertDescription>
+          Aucun numéro n'a été trouvé. Veuillez réessayer ultérieurement.
+        </AlertDescription>
+      </Alert>
     );
   }
 
@@ -64,7 +90,7 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
           setSortBy={setSortBy}
           dateRange={dateRange}
           setDateRange={setDateRange}
-          sortOptions={[...SORT_OPTIONS]}
+          sortOptions={SORT_OPTIONS}
           selectedCategories={selectedCategories}
           onCategoryChange={setSelectedCategories}
           availableCategories={availableCategories}

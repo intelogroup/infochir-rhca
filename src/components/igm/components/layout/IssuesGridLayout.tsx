@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { IssuesSearch } from "@/components/igm/components/IssuesSearch";
+import IssuesSearch from "@/components/igm/IssuesSearch";
 import { IssuesGridContent } from "@/components/igm/components/IssuesGridContent";
 import { useIssuesState } from "@/components/igm/hooks/useIssuesState";
 import { SORT_OPTIONS } from "@/components/igm/constants/sortOptions";
