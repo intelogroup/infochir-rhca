@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { CalendarIcon, Download, Share2, AlertCircle } from "lucide-react";

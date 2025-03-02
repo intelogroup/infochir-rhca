@@ -1,7 +1,7 @@
 
 import * as React from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
-import { RhcaGrid } from "@/components/rhca/RhcaGrid";
+import RhcaGrid from "@/components/rhca/RhcaGrid"; // Fix the import statement
 import { RHCAHeader } from "@/components/rhca/components/RHCAHeader";
 import { RHCASidebar } from "@/components/rhca/components/RHCASidebar";
 import { useSearchParams } from "react-router-dom";

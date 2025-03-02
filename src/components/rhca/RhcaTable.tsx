@@ -115,40 +115,40 @@ export const RhcaTable: React.FC<RhcaTableProps> = ({ articles }) => {
             .from('rhca_covers')
             .getPublicUrl(article.coverImageFileName);
           
-        console.log('[RhcaTable:DEBUG] Cover image URL:', data.publicUrl);
+          console.log('[RhcaTable:DEBUG] Cover image URL:', data.publicUrl);
+          
+          return (
+            <div className="w-12 h-12 relative rounded overflow-hidden">
+              <ImageOptimizer
+                src={data.publicUrl}
+                alt={`Couverture du volume ${article.volume}, numéro ${article.issue}`}
+                className="w-full h-full object-cover"
+                width={48}
+                height={48}
+                fallbackText=""
+              />
+            </div>
+          );
+        } else if (article.image_url) {
+          // Fallback to image_url if available
+          return (
+            <div className="w-12 h-12 relative rounded overflow-hidden">
+              <ImageOptimizer
+                src={article.image_url}
+                alt={`Couverture du volume ${article.volume}, numéro ${article.issue}`}
+                className="w-full h-full object-cover"
+                width={48}
+                height={48}
+                fallbackText=""
+              />
+            </div>
+          );
+        }
         
-        return (
-          <div className="w-12 h-12 relative rounded overflow-hidden">
-            <ImageOptimizer
-              src={data.publicUrl}
-              alt={`Couverture du volume ${article.volume}, numéro ${article.issue}`}
-              className="w-full h-full object-cover"
-              width={48}
-              height={48}
-              fallbackText=""
-            />
-          </div>
-        );
-      } else if (article.image_url) {
-        // Fallback to image_url if available
-        return (
-          <div className="w-12 h-12 relative rounded overflow-hidden">
-            <ImageOptimizer
-              src={article.image_url}
-              alt={`Couverture du volume ${article.volume}, numéro ${article.issue}`}
-              className="w-full h-full object-cover"
-              width={48}
-              height={48}
-              fallbackText=""
-            />
-          </div>
-        );
-      }
-      
-      return null;
+        return null;
+      },
+      size: 50,
     },
-    size: 50,
-  },
     {
       accessorKey: 'title',
       header: 'Title',

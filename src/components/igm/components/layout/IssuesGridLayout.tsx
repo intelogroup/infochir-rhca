@@ -31,7 +31,8 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
     issuesByYear, 
     sortedYears,
     availableCategories 
-  } = useIssuesState(issues, {
+  } = useIssuesState({
+    issues,
     searchTerm,
     sortBy,
     dateRange,

@@ -106,7 +106,8 @@ export const useRHCAArticles = () => {
             return {
               ...mappedArticle,
               pdfFileName: article.pdf_filename || undefined,
-              coverImageFileName: coverImageFilename || undefined
+              coverImageFileName: coverImageFilename || undefined,
+              image_url: article.image_url || undefined
             } as RhcaArticle;
           });
           
