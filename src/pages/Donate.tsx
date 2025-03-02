@@ -1,11 +1,10 @@
-
 import { useState } from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { motion } from "framer-motion";
 import { DonateHeader } from "@/components/donate/DonateHeader";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Heart } from "lucide-react";
 import { createCheckoutSession } from "@/lib/stripe";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -150,7 +149,10 @@ const Donate = () => {
                     Processing...
                   </span>
                 ) : (
-                  <span>Continue to Payment</span>
+                  <span className="flex items-center justify-center gap-2">
+                    Continue to Payment
+                    <Heart className="h-4 w-4" />
+                  </span>
                 )}
               </Button>
             </motion.div>

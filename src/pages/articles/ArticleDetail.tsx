@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { ArticleActions } from "@/components/index-medicus/article/ArticleActions";
 import { Article } from "@/components/index-medicus/types";
 import { toast } from "sonner";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const ArticleDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -86,8 +87,7 @@ const ArticleDetail = () => {
 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-            <p className="text-muted-foreground">Chargement de l'article...</p>
+            <LoadingSpinner size="md" text="Chargement de l'article..." />
           </div>
         ) : error ? (
           <div className="p-6 border border-destructive/20 bg-destructive/10 rounded-lg text-center">

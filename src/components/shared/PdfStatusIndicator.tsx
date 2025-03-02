@@ -1,6 +1,7 @@
 
-import { AlertCircle, CheckCircle, FileText, Loader2 } from "lucide-react";
+import { AlertCircle, FileCheck, FileX, Loader2 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 interface PdfStatusIndicatorProps {
   status: "checking" | "available" | "unavailable";
@@ -26,9 +27,9 @@ export const PdfStatusIndicator = ({
   };
   
   const icons = {
-    checking: <Loader2 className={`${sizeClass} animate-spin text-gray-400 ${className}`} />,
-    available: <FileText className={`${sizeClass} text-green-500 ${className}`} />,
-    unavailable: <FileText className={`${sizeClass} text-gray-300 ${className}`} />
+    checking: <Loader2 className={cn(`${sizeClass} animate-spin text-gray-400`, className)} />,
+    available: <FileCheck className={cn(`${sizeClass} text-green-500`, className)} />,
+    unavailable: <FileX className={cn(`${sizeClass} text-gray-300`, className)} />
   };
   
   return (

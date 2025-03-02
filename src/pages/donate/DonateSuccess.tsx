@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle2, AlertCircle } from "lucide-react";
 import { verifyPaymentStatus } from "@/lib/stripe";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const DonateSuccess = () => {
   const navigate = useNavigate();
@@ -51,7 +51,7 @@ const DonateSuccess = () => {
     return (
       <MainLayout>
         <div className="flex items-center justify-center min-h-screen">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <LoadingSpinner size="md" text="Vérification de votre paiement..." />
         </div>
       </MainLayout>
     );
