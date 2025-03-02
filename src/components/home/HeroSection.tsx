@@ -13,7 +13,7 @@ export const HeroSection = () => {
       ref={sectionRef} 
       className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(100vh-4rem)] pt-20 md:pt-28"
     >
-      {/* Direct background image - simplify structure */}
+      {/* Background image */}
       <img 
         src="/lovable-uploads/86c46dd1-7e7a-44bc-bbf5-e3727e954bb7.png"
         alt="Medical background" 
@@ -26,7 +26,7 @@ export const HeroSection = () => {
         }}
       />
       
-      {/* Single gradient overlay */}
+      {/* Gradient overlay */}
       <div 
         className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] opacity-60"
         style={{ 
@@ -35,8 +35,8 @@ export const HeroSection = () => {
         }}
       />
       
-      {/* Content with highest z-index */}
-      <div className="relative max-w-7xl mx-auto text-left" style={{ zIndex: 10 }}>
+      {/* Content container - removing 'relative' class to prevent new stacking context */}
+      <div className="max-w-7xl mx-auto text-left" style={{ position: 'relative', zIndex: 3 }}>
         <div className="max-w-xl lg:max-w-3xl">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 animate-fade-up tracking-tight md:whitespace-nowrap whitespace-normal">
             Votre espace scientifique<br className="md:hidden" /> en ligne
