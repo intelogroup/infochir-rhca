@@ -1,11 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
 
+import React, { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -13,103 +7,91 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { RhcaArticle } from './types';
-import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
-import { Download, AlertCircle } from 'lucide-react';
-import { toast } from 'sonner';
-import { downloadFileFromStorage, checkFileExistsInBucket } from '@/lib/pdf-utils';
-import { useNavigate } from 'react-router-dom';
-import { ImageOptimizer } from '@/components/shared/ImageOptimizer';
-import { supabase } from '@/integrations/supabase/client';
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Download, Share2, MoreVertical } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import type { RhcaArticle } from "./types";
+import { createColumnHelper } from "@tanstack/react-table";
+import { ImageOptimizer } from "../shared/ImageOptimizer";
 
 interface RhcaTableProps {
   articles: RhcaArticle[];
 }
 
 export const RhcaTable: React.FC<RhcaTableProps> = ({ articles }) => {
-  const navigate = useNavigate();
-  const [downloadingId, setDownloadingId] = useState<string | null>(null);
-  const [fileExistsMap, setFileExistsMap] = useState<Record<string, boolean>>({});
+  const columnHelper = createColumnHelper<RhcaArticle>();
   
-  // Check file existence for all articles when component mounts
-  useEffect(() => {
-    const checkFiles = async () => {
-      const existsMap: Record<string, boolean> = {};
-      
-      for (const article of articles) {
-        if (article.pdfFileName) {
-          try {
-            const exists = await checkFileExistsInBucket('rhca-pdfs', article.pdfFileName);
-            existsMap[article.id] = exists;
-          } catch (err) {
-            console.error(`[RhcaTable] Error checking file existence for ${article.id}:`, err);
-            existsMap[article.id] = false;
-          }
-        } else {
-          existsMap[article.id] = false;
-        }
-      }
-      
-      setFileExistsMap(existsMap);
-    };
-    
-    checkFiles();
-  }, [articles]);
-  
+  // For simplicity, just define a handleDownload function here without tracking
   const handleDownload = async (article: RhcaArticle) => {
-    if (!article.pdfFileName) {
-      toast.error("Le fichier PDF n'est pas disponible pour cet article", {
-        icon: <AlertCircle className="h-5 w-5 text-red-500" />
-      });
-      return;
-    }
-    
-    // If we already checked and know the file doesn't exist
-    if (fileExistsMap[article.id] === false) {
-      toast.error(`Le fichier "${article.pdfFileName}" n'existe pas dans la bibliothèque`, {
-        description: "Contactez l'administrateur pour assistance",
-        icon: <AlertCircle className="h-5 w-5 text-red-500" />
-      });
-      return;
-    }
-    
     try {
-      setDownloadingId(article.id);
-      
-      // Use our improved download function
-      await downloadFileFromStorage('rhca-pdfs', article.pdfFileName);
-      
-    } catch (err) {
-      console.error("[RhcaTable:ERROR] Download failed:", err);
-      
-      // More specific error messages based on error type
-      if (err instanceof Error && err.message.includes('network')) {
-        toast.error("Erreur de connexion réseau", {
-          description: "Vérifiez votre connexion et réessayez"
-        });
+      if (article.pdfFileName) {
+        const { data } = await supabase.storage
+          .from('rhca-pdfs')
+          .getPublicUrl(article.pdfFileName);
+          
+        window.open(data.publicUrl, '_blank');
+        
+        // Track download
+        try {
+          await supabase.rpc('increment_count', { 
+            table_name: 'articles', 
+            column_name: 'downloads', 
+            row_id: article.id 
+          });
+        } catch (error) {
+          console.error('[RhcaTable] Error incrementing download count:', error);
+        }
       } else {
-        toast.error("Échec du téléchargement", {
-          description: err instanceof Error ? err.message : "Une erreur inattendue s'est produite"
-        });
+        toast.error("PDF non disponible");
       }
-    } finally {
-      setDownloadingId(null);
+    } catch (error) {
+      console.error('[RhcaTable] Error downloading PDF:', error);
+      toast.error("Erreur lors du téléchargement");
     }
   };
   
-  const handleRowClick = (articleId: string) => {
-    navigate(`/rhca/article/${articleId}`);
+  const handleShare = (article: RhcaArticle) => {
+    if (navigator.share) {
+      navigator.share({
+        title: article.title,
+        text: article.abstract || "Découvrez cet article de la RHCA",
+        url: window.location.href
+      }).catch(error => {
+        console.error('[RhcaTable] Error sharing:', error);
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success("Lien copié dans le presse-papier");
+    }
+    
+    // Track share
+    try {
+      supabase.rpc('increment_count', { 
+        table_name: 'articles', 
+        column_name: 'shares', 
+        row_id: article.id 
+      });
+    } catch (error) {
+      console.error('[RhcaTable] Error incrementing share count:', error);
+    }
   };
-
-  const columns: ColumnDef<RhcaArticle>[] = [
-    {
-      accessorKey: 'coverImage',
+  
+  const columns = [
+    columnHelper.accessor('coverImageFileName', {
       header: '',
       cell: ({ row }) => {
         const article = row.original;
-        
         if (article.coverImageFileName) {
           const { data } = supabase.storage
             .from('rhca_covers')
@@ -152,144 +134,123 @@ export const RhcaTable: React.FC<RhcaTableProps> = ({ articles }) => {
     {
       accessorKey: 'title',
       header: 'Title',
-      cell: ({ row }) => (
-        <div className="max-w-[300px] truncate font-medium">
-          {row.getValue('title')}
-        </div>
-      ),
-    },
-    {
-      accessorKey: 'volume',
-      header: 'Volume',
-      cell: ({ row }) => (
-        <div>
-          {row.original.volume ? `Volume ${row.original.volume}` : 'Volume -'} • {row.original.issue ? `No. ${row.original.issue}` : 'No. -'}
-        </div>
-      ),
-    },
-    {
-      accessorKey: 'date',
-      header: 'Date',
       cell: ({ row }) => {
-        try {
-          return format(new Date(row.original.date), 'dd MMMM yyyy', { locale: fr });
-        } catch (error) {
-          console.error('Error formatting date:', error);
-          return 'Date invalide';
-        }
-      },
-    },
-    {
-      accessorKey: 'category',
-      header: 'Catégorie',
-      cell: ({ row }) => {
+        const article = row.original;
         return (
-          <div>
-            {row.original.category || '-'}
+          <div className="max-w-md">
+            <p className="font-medium line-clamp-2">{article.title}</p>
+            <div className="flex flex-wrap gap-1 mt-1">
+              {article.tags && article.tags.slice(0, 2).map((tag, index) => (
+                <Badge key={index} variant="outline" className="px-1.5 py-0 text-xs">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
           </div>
         );
       },
+      size: 300,
     },
     {
-      accessorKey: 'specialty',
-      header: 'Specialty',
-      cell: ({ row }) => (
-        <div>
-          {row.original.specialty || '-'}
-        </div>
-      ),
-    },
-    {
-      accessorKey: 'downloads',
-      header: 'Downloads',
+      accessorKey: 'authors',
+      header: 'Auteurs',
       cell: ({ row }) => {
         const article = row.original;
-        const isDownloading = downloadingId === article.id;
-        const fileExists = fileExistsMap[article.id];
-        
         return (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDownload(article);
-            }}
-            disabled={isDownloading || fileExists === false || !article.pdfFileName}
-            className={`flex items-center ${
-              fileExists === false || !article.pdfFileName
-                ? 'text-gray-300 cursor-not-allowed' 
-                : isDownloading 
-                  ? 'text-gray-400 cursor-wait' 
-                  : 'text-gray-600 hover:text-emerald-600'
-            }`}
-            title={fileExists === false 
-              ? "PDF non disponible sur le serveur" 
-              : article.pdfFileName 
-                ? "Télécharger le PDF" 
-                : "PDF non disponible"
-            }
-          >
-            <Download className={`h-4 w-4 mr-1.5 ${isDownloading ? 'animate-pulse' : ''}`} />
-            <span>{article.downloads || 0}</span>
-          </button>
+          <div className="max-w-[200px]">
+            <p className="text-sm line-clamp-2">
+              {article.authors?.join(', ') || 'Non spécifié'}
+            </p>
+          </div>
         );
       },
+      size: 150,
     },
     {
-      accessorKey: 'shares',
-      header: 'Shares',
+      accessorKey: 'publication_date',
+      header: 'Date',
+      cell: ({ row }) => {
+        const article = row.original;
+        return (
+          <div className="text-sm">
+            {article.publication_date 
+              ? new Date(article.publication_date).toLocaleDateString('fr-FR') 
+              : 'Non spécifié'}
+          </div>
+        );
+      },
+      size: 100,
+    },
+    {
+      accessorKey: 'volume',
+      header: 'Volume/Issue',
+      cell: ({ row }) => {
+        const article = row.original;
+        return (
+          <div className="text-sm">
+            {article.volume ? `Vol ${article.volume}` : ''}
+            {article.volume && article.issue ? ', ' : ''}
+            {article.issue ? `No ${article.issue}` : ''}
+          </div>
+        );
+      },
+      size: 100,
+    },
+    {
+      id: 'actions',
+      header: '',
+      cell: ({ row }) => {
+        const article = row.original;
+        return (
+          <div className="flex justify-end">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Options</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => handleDownload(article)}>
+                  <Download className="h-4 w-4 mr-2" />
+                  Télécharger PDF
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleShare(article)}>
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Partager
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        );
+      },
+      size: 50,
     },
   ];
-
-  const table = useReactTable({
-    data: articles,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
-
+  
   return (
-    <div className="rounded-md border">
+    <div className="overflow-hidden rounded-md border">
       <Table>
         <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
+          <TableRow>
+            {columns.map((column) => (
+              <TableHead key={column.id} style={{ width: `${column.size}px` }}>
+                {column.header as React.ReactNode}
+              </TableHead>
+            ))}
+          </TableRow>
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-                onClick={() => handleRowClick(row.original.id)}
-                className="cursor-pointer hover:bg-gray-50"
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                Aucun résultat.
-              </TableCell>
+          {articles.map((article) => (
+            <TableRow key={article.id}>
+              {columns.map((column) => (
+                <TableCell key={column.id}>
+                  {column.cell({ row: { original: article } } as any)}
+                </TableCell>
+              ))}
             </TableRow>
-          )}
+          ))}
         </TableBody>
       </Table>
     </div>
