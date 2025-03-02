@@ -4,8 +4,6 @@ import { RhcaCard } from './RhcaCard';
 import { RhcaTable } from './RhcaTable';
 import type { RhcaArticle } from './types';
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useArticlesState } from './hooks/useArticlesState';
 import { 
   Accordion,
@@ -47,28 +45,6 @@ export const RhcaGrid: React.FC<RhcaGridProps> = ({
   // Group articles by year
   const { articlesByYear, years } = useArticlesState(filteredArticles);
 
-  // Scroll functionality for each year's horizontal article list
-  const scrollRefs = React.useRef<Record<string, HTMLDivElement | null>>({});
-
-  const scrollLeft = (year: string) => {
-    const ref = scrollRefs.current[year];
-    if (ref) {
-      ref.scrollBy({ left: -400, behavior: 'smooth' });
-    }
-  };
-
-  const scrollRight = (year: string) => {
-    const ref = scrollRefs.current[year];
-    if (ref) {
-      ref.scrollBy({ left: 400, behavior: 'smooth' });
-    }
-  };
-
-  // Register a scroll ref for a specific year
-  const registerScrollRef = (year: string, ref: HTMLDivElement | null) => {
-    scrollRefs.current[year] = ref;
-  };
-
   return (
     <div className="grid grid-cols-1 gap-6">
       {viewMode === "grid" ? (
@@ -84,40 +60,18 @@ export const RhcaGrid: React.FC<RhcaGridProps> = ({
                 </div>
               </AccordionTrigger>
               <AccordionContent>
-                <div className="relative px-4 py-3">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white shadow-md"
-                    onClick={() => scrollLeft(year.toString())}
-                    aria-label="Scroll left"
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  
+                <div className="px-4 py-3">
                   <ScrollArea className="w-full">
                     <div 
-                      ref={ref => registerScrollRef(year.toString(), ref)}
-                      className="flex space-x-6 py-4 px-8 overflow-x-auto" 
-                      style={{ minWidth: "100%" }}
+                      className="flex space-x-6 py-4 px-6 overflow-x-auto min-w-full" 
                     >
                       {articlesByYear[year]?.map((article) => (
-                        <div key={article.id} className="w-[600px] flex-shrink-0">
+                        <div key={article.id} className="flex-shrink-0">
                           <RhcaCard article={article} />
                         </div>
                       ))}
                     </div>
                   </ScrollArea>
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white shadow-md"
-                    onClick={() => scrollRight(year.toString())}
-                    aria-label="Scroll right"
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
                 </div>
               </AccordionContent>
             </AccordionItem>

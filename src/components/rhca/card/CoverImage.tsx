@@ -15,18 +15,20 @@ export const CoverImage: React.FC<CoverImageProps> = ({
   article, 
   coverUrl, 
   pdfUrl,
-  // imageLoading is still in the props but not used directly in the component
+  imageLoading 
 }) => {
   return (
-    <div className="relative w-full h-full bg-gray-100">
-      <ImageOptimizer
-        src={coverUrl || ''}
-        alt={article.title}
-        width={320}
-        height={240}
-        className="w-full h-full object-cover"
-        fallbackText={article.title}
-      />
+    <div className="relative w-full h-full flex items-center justify-center">
+      <div className="w-full h-full max-h-[280px] flex items-center justify-center bg-gray-50 rounded-md overflow-hidden">
+        <ImageOptimizer
+          src={coverUrl || ''}
+          alt={article.title}
+          width={240}
+          height={320}
+          className="w-auto h-auto max-w-full max-h-full object-contain"
+          fallbackText={article.title}
+        />
+      </div>
       
       <PdfStatusIndicator 
         status={pdfUrl ? "available" : "unavailable"} 

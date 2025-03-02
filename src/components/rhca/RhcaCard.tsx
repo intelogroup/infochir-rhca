@@ -70,8 +70,8 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
   }, [article]);
   
   return (
-    <Card className="overflow-hidden transition-all hover:shadow-md flex h-[220px]">
-      <div className="w-[35%] flex-shrink-0">
+    <Card className="overflow-hidden transition-all hover:shadow-md flex h-[320px] w-[600px]">
+      <div className="w-[35%] flex-shrink-0 p-3 flex items-center justify-center">
         <CoverImage 
           article={article} 
           coverUrl={coverUrl} 
