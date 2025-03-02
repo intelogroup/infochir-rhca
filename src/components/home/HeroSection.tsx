@@ -77,16 +77,32 @@ export const HeroSection = () => {
 
   return (
     <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(80vh-4rem-30px)] pt-20 md:pt-28 z-0">
+      {/* Base gradient background layer */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] opacity-90 z-0"></div>
+      
+      {/* Surgical background image layer */}
+      <div 
+        className="absolute inset-0 z-1"
+        style={{ 
+          backgroundImage: `url('/lovable-uploads/8821672c-9173-4a9c-b526-9c7c11b0b158.png')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 0.3,
+          mixBlendMode: 'overlay'
+        }}
+      ></div>
+
+      {/* Animated product image layer */}
       <AnimatePresence mode="wait">
         <div
           key={currentIndex}
-          className="absolute inset-0 z-0"
+          className="absolute inset-0 z-2"
         >
           <div 
-            className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-90 z-0`}
+            className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-70 z-0`}
           />
           <motion.div 
-            className="absolute bottom-0 right-0 w-[65%] h-[calc(4/5*104%-30px)] md:h-[calc(3/4*104%-30px)] lg:h-[calc(2/3*104%-30px)] z-0"
+            className="absolute bottom-0 right-0 w-[65%] h-[calc(4/5*104%-30px)] md:h-[calc(3/4*104%-30px)] lg:h-[calc(2/3*104%-30px)] z-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -104,6 +120,7 @@ export const HeroSection = () => {
         </div>
       </AnimatePresence>
       
+      {/* Content layer */}
       <div className="relative max-w-7xl mx-auto text-left z-10">
         <div className="max-w-xl lg:max-w-3xl">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 animate-fade-up tracking-tight md:whitespace-nowrap whitespace-normal">

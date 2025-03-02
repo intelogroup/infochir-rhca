@@ -1,7 +1,6 @@
 
 import * as React from "react";
 import { HeroSection } from "@/components/home/HeroSection";
-import { ProductsSection } from "@/components/home/ProductsSection";
 import { CarouselSection } from "@/components/home/CarouselSection";
 import { FoundersSection } from "@/components/home/FoundersSection";
 import { SponsorsSection } from "@/components/home/SponsorsSection";
@@ -12,7 +11,6 @@ const Home = () => {
   return (
     <>
       <HeroSection />
-      <ProductsSection />
       <CarouselSection />
       <FoundersSection />
       <SponsorsSection />
