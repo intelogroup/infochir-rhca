@@ -95,7 +95,7 @@ export const ImageOptimizer = ({
         // If this is an RHCA cover, try to see if the file exists with a slightly different name
         if (src.includes('RHCA_vol_')) {
           const urlParts = src.split('/');
-          const filename = urlParts[urlParts.length - 1];
+          const filename = urlParts[urlParts.length - 1].split('?')[0]; // Remove query params
           
           // Try with and without date format
           if (filename.match(/RHCA_vol_\d+_no_\d+_\d+_\d+_\d+/)) {
@@ -111,8 +111,28 @@ export const ImageOptimizer = ({
               setImageSrc(newSrc);
             }, 500);
           } else {
-            setHasError(true);
-            setIsLoading(false);
+            // Try with current date added
+            const now = new Date();
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            
+            const parts = filename.replace('.png', '').split('_');
+            if (parts.length >= 4) {
+              const dateFilename = `${parts[0]}_${parts[1]}_${parts[2]}_${parts[3]}_${day}_${month}_${year}.png`;
+              const newSrc = src.replace(filename, dateFilename);
+              console.log(`[ImageOptimizer:DEBUG] Retrying with dated filename: ${newSrc}`);
+              
+              setRetryCount(prev => prev + 1);
+              setTimeout(() => {
+                const newImg = new Image();
+                newImg.src = newSrc;
+                setImageSrc(newSrc);
+              }, 500);
+            } else {
+              setHasError(true);
+              setIsLoading(false);
+            }
           }
         } else {
           setHasError(true);

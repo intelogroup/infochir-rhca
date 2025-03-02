@@ -49,6 +49,7 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
             .from('rhca_covers')
             .getPublicUrl(article.coverImageFileName!);
             
+          console.log('[RhcaCard:INFO] Generated cover image URL:', data.publicUrl);
           setCoverImageUrl(data.publicUrl);
         } catch (err) {
           console.error("[RhcaCard] Error getting cover image URL:", err);
@@ -57,8 +58,12 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
       };
       
       getCoverImageUrl();
+    } else if (article.image_url) {
+      // Fallback to image_url if available
+      console.log('[RhcaCard:INFO] Using fallback image URL:', article.image_url);
+      setCoverImageUrl(article.image_url);
     }
-  }, [article.coverImageFileName]);
+  }, [article.coverImageFileName, article.image_url]);
   
   const handleClick = () => {
     navigate(`/rhca/article/${article.id}`);
@@ -214,4 +219,3 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
     </Card>
   );
 };
-

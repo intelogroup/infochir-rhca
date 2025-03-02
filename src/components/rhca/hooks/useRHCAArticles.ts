@@ -26,8 +26,6 @@ interface RhcaDatabaseArticle {
   specialty?: string;
   pdf_filename?: string;
   cover_image_filename?: string;
-  // We don't access cover_image_filename directly from the database response
-  // as it might not exist in the view yet, instead we generate it
   [key: string]: any;
 }
 
@@ -42,19 +40,20 @@ export const useRHCAArticles = () => {
         setLoading(true);
         console.log('[RHCA:INFO] Fetching RHCA articles from database');
         
-        // Use the view we created to get articles
+        // Use the articles table directly instead of the view to ensure we get all fields
         const { data, error } = await supabase
-          .from('rhca_articles_view')
+          .from('articles')
           .select('*')
+          .eq('source', 'RHCA')
           .order('publication_date', { ascending: false });
 
         if (error) {
-          console.error('[RHCA:ERROR] Error fetching from rhca_articles_view:', error);
+          console.error('[RHCA:ERROR] Error fetching RHCA articles:', error);
           throw error;
         }
 
         if (data) {
-          console.log(`[RHCA:INFO] Retrieved ${data.length} articles from rhca_articles_view`);
+          console.log(`[RHCA:INFO] Retrieved ${data.length} RHCA articles`);
           
           // Log first article for debugging column names
           if (data.length > 0) {
@@ -65,12 +64,11 @@ export const useRHCAArticles = () => {
           const mappedArticles = data.map((article: any) => {
             console.log(`[RHCA:DEBUG] Processing article: ${article.id}, title: ${article.title}`);
             
-            // Generate cover image filename based on volume and issue if not present
+            // Get cover image filename from database or generate one if not present
             let coverImageFilename = article.cover_image_filename;
             
             if (!coverImageFilename && article.volume && article.issue) {
               // Try to build a cover image filename based on the format RHCA_vol_XX_no_XX_DD_MM_YYYY.png
-              // For now we'll use a simplified version without the date
               const paddedVolume = String(article.volume).padStart(2, '0');
               const issueDate = new Date(article.publication_date);
               
@@ -115,7 +113,7 @@ export const useRHCAArticles = () => {
           console.log(`[RHCA:INFO] Processed ${mappedArticles.length} articles`);
           setArticles(mappedArticles);
         } else {
-          console.warn('[RHCA:WARN] No data returned from rhca_articles_view');
+          console.warn('[RHCA:WARN] No data returned from articles table');
         }
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : String(err);
@@ -132,4 +130,3 @@ export const useRHCAArticles = () => {
 
   return { articles, loading, error };
 };
-

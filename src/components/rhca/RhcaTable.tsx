@@ -114,25 +114,41 @@ export const RhcaTable: React.FC<RhcaTableProps> = ({ articles }) => {
           const { data } = supabase.storage
             .from('rhca_covers')
             .getPublicUrl(article.coverImageFileName);
-            
-          return (
-            <div className="w-12 h-12 relative rounded overflow-hidden">
-              <ImageOptimizer
-                src={data.publicUrl}
-                alt={`Couverture du volume ${article.volume}, numéro ${article.issue}`}
-                className="w-full h-full object-cover"
-                width={48}
-                height={48}
-                fallbackText=""
-              />
-            </div>
-          );
-        }
+          
+        console.log('[RhcaTable:DEBUG] Cover image URL:', data.publicUrl);
         
-        return null;
-      },
-      size: 50,
+        return (
+          <div className="w-12 h-12 relative rounded overflow-hidden">
+            <ImageOptimizer
+              src={data.publicUrl}
+              alt={`Couverture du volume ${article.volume}, numéro ${article.issue}`}
+              className="w-full h-full object-cover"
+              width={48}
+              height={48}
+              fallbackText=""
+            />
+          </div>
+        );
+      } else if (article.image_url) {
+        // Fallback to image_url if available
+        return (
+          <div className="w-12 h-12 relative rounded overflow-hidden">
+            <ImageOptimizer
+              src={article.image_url}
+              alt={`Couverture du volume ${article.volume}, numéro ${article.issue}`}
+              className="w-full h-full object-cover"
+              width={48}
+              height={48}
+              fallbackText=""
+            />
+          </div>
+        );
+      }
+      
+      return null;
     },
+    size: 50,
+  },
     {
       accessorKey: 'title',
       header: 'Title',
