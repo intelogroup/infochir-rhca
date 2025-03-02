@@ -108,14 +108,15 @@ export const HeroSection = () => {
         </div>
       </AnimatePresence>
       
-      {/* Surgical background image layer - moved above gradient with higher z-index */}
+      {/* Surgical background pattern - replacing the missing image with a pattern */}
       <div 
         className="absolute inset-0 z-3"
         style={{ 
-          backgroundImage: `url('/image_bg.jpg')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          opacity: 0.3,
+          backgroundImage: `radial-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px), 
+                            radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px)`,
+          backgroundSize: '20px 20px, 30px 30px',
+          backgroundPosition: '0 0, 15px 15px',
+          opacity: 0.4,
           mixBlendMode: 'overlay'
         }}
       ></div>

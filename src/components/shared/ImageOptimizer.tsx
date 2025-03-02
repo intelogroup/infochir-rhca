@@ -10,6 +10,7 @@ interface ImageOptimizerProps {
   width?: number;
   height?: number;
   fallbackText?: string;
+  priority?: boolean;
 }
 
 export const ImageOptimizer = ({ 
@@ -18,7 +19,8 @@ export const ImageOptimizer = ({
   className = "", 
   width = 400,
   height = 300,
-  fallbackText
+  fallbackText,
+  priority = false
 }: ImageOptimizerProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -42,6 +44,11 @@ export const ImageOptimizer = ({
 
     const loadImage = () => {
       const img = new Image();
+      
+      // Preload critical images with higher priority
+      if (priority) {
+        img.fetchPriority = 'high';
+      }
       
       // Add quality and resize parameters to the URL if it's an Unsplash image
       if (src.includes('unsplash.com')) {
@@ -146,7 +153,7 @@ export const ImageOptimizer = ({
     return () => {
       // Clean up
     };
-  }, [src, width, alt, retryCount]);
+  }, [src, width, alt, retryCount, priority]);
 
   if (isLoading) {
     return <Skeleton className={`${className} bg-muted`} style={{ width, height }} />;
@@ -176,7 +183,8 @@ export const ImageOptimizer = ({
       className={className}
       width={width}
       height={height}
-      loading="lazy"
+      loading={priority ? "eager" : "lazy"}
+      decoding={priority ? "sync" : "async"}
       onError={(e) => {
         console.error(`[ImageOptimizer:ERROR] Runtime error loading image: ${src}`, e);
         setHasError(true);

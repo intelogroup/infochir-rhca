@@ -24,13 +24,18 @@ export const LoadingSpinner = ({
   if (fullScreen) {
     return (
       <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center z-50">
-        <Loader2 
-          className={cn(
-            "animate-spin text-primary",
-            sizeClasses[size],
-            className
-          )} 
-        />
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="h-full w-full rounded-full border-t-2 border-b-2 border-primary/30"></div>
+          </div>
+          <Loader2 
+            className={cn(
+              "animate-spin text-primary relative z-10",
+              sizeClasses[size],
+              className
+            )} 
+          />
+        </div>
         {text && (
           <p className="mt-4 text-primary/80 font-medium text-sm">{text}</p>
         )}
@@ -40,13 +45,18 @@ export const LoadingSpinner = ({
 
   return (
     <div className="flex flex-col items-center justify-center py-4">
-      <Loader2
-        className={cn(
-          "animate-spin text-primary",
-          sizeClasses[size],
-          className
-        )}
-      />
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="h-full w-full rounded-full border-t-2 border-b-2 border-primary/20"></div>
+        </div>
+        <Loader2
+          className={cn(
+            "animate-spin text-primary relative z-10",
+            sizeClasses[size],
+            className
+          )}
+        />
+      </div>
       {text && (
         <p className="mt-2 text-primary/80 font-medium text-sm">{text}</p>
       )}
