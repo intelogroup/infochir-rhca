@@ -13,8 +13,12 @@ const IGM = () => {
 
         <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 lg:py-8">
           <div className="mt-6 sm:mt-8 space-y-4 sm:space-y-6 lg:space-y-0 lg:grid lg:grid-cols-[1fr,350px] lg:gap-6">
-            <IssuesGridLayout />
-            <IGMSidebar />
+            <div className="order-1">
+              <IssuesGridLayout />
+            </div>
+            <div className="order-2 lg:order-2">
+              <IGMSidebar />
+            </div>
           </div>
         </div>
       </div>

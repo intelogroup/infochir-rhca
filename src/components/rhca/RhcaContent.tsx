@@ -19,7 +19,8 @@ export const RhcaContent: React.FC = () => {
   
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-8">
-      <div className="lg:col-span-3 order-2 lg:order-1">
+      {/* Main content - Order 2 on desktop, Order 1 on mobile */}
+      <div className="lg:col-span-3 order-1 lg:order-1">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
           <h2 className="text-xl sm:text-2xl font-bold text-[#41b06e]">Articles RHCA</h2>
           
@@ -70,7 +71,8 @@ export const RhcaContent: React.FC = () => {
         )}
       </div>
       
-      <div className="lg:col-span-1 order-1 lg:order-2 mb-6 lg:mb-0">
+      {/* Sidebar - Order 1 on desktop, Order 2 on mobile */}
+      <div className="lg:col-span-1 order-2 lg:order-2 mb-6 lg:mb-0">
         <RHCASidebar />
       </div>
     </div>
