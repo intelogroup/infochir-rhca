@@ -108,9 +108,9 @@ export const HeroSection = () => {
         </div>
       </AnimatePresence>
       
-      {/* Surgical background image layer - correct image URL */}
+      {/* Surgical background image layer - moved above gradient with higher z-index */}
       <div 
-        className="absolute inset-0 z-2"
+        className="absolute inset-0 z-3"
         style={{ 
           backgroundImage: `url('/image_bg.jpg')`,
           backgroundSize: 'cover',
@@ -120,7 +120,7 @@ export const HeroSection = () => {
         }}
       ></div>
       
-      {/* Content layer */}
+      {/* Content layer - increased z-index to stay on top */}
       <div className="relative max-w-7xl mx-auto text-left z-10">
         <div className="max-w-xl lg:max-w-3xl">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 animate-fade-up tracking-tight md:whitespace-nowrap whitespace-normal">
