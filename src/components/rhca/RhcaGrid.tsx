@@ -57,7 +57,7 @@ export const RhcaGrid: React.FC<RhcaGridProps> = ({
         <div className="relative">
           <Button
             variant="outline"
-            size="icon"
+            size="sm"
             className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-md"
             onClick={scrollLeft}
             aria-label="Scroll left"
@@ -65,7 +65,7 @@ export const RhcaGrid: React.FC<RhcaGridProps> = ({
             <ChevronLeft className="h-4 w-4" />
           </Button>
           
-          <ScrollArea className="w-full" orientation="horizontal">
+          <ScrollArea className="w-full">
             <div 
               ref={scrollRef}
               className="flex space-x-6 py-4 px-8 overflow-x-auto" 
@@ -81,7 +81,7 @@ export const RhcaGrid: React.FC<RhcaGridProps> = ({
           
           <Button
             variant="outline"
-            size="icon"
+            size="sm"
             className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-md"
             onClick={scrollRight}
             aria-label="Scroll right"
