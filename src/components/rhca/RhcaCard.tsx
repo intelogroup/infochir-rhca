@@ -1,194 +1,217 @@
 
-import * as React from "react";
-import { Card } from "@/components/ui/card";
-import type { RhcaArticle } from "./types";
-import { ArticleContent } from "./article/ArticleContent";
-import { ArticleActions } from "./article/ArticleActions";
-import { motion } from "framer-motion";
-import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
-import { useState, useEffect } from "react";
-import { checkFileExistsInBucket, getFilePublicUrl } from "@/lib/pdf-utils";
-import { supabase } from "@/integrations/supabase/client";
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent } from "@/components/ui/card";
+import { CalendarIcon, Download, Share2, AlertCircle } from "lucide-react";
+import { RhcaArticle } from './types';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
+import { useNavigate } from 'react-router-dom';
+import { downloadFileFromStorage, checkFileExistsInBucket } from '@/lib/pdf-utils';
+import { toast } from 'sonner';
+import { ImageOptimizer } from '@/components/shared/ImageOptimizer';
+import { supabase } from '@/integrations/supabase/client';
 
 interface RhcaCardProps {
   article: RhcaArticle;
-  onCardClick?: () => void;
-  className?: string;
 }
 
-export const RhcaCard: React.FC<RhcaCardProps> = ({ article, onCardClick, className }) => {
-  const [coverExists, setCoverExists] = useState<boolean | null>(null);
-  const [coverUrl, setCoverUrl] = useState<string | undefined>(article.imageUrl);
+export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
+  const navigate = useNavigate();
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [fileExists, setFileExists] = useState<boolean | null>(null);
+  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
   
-  useEffect(() => {
-    const verifyCoverExists = async () => {
-      console.log(`[RhcaCard:DEBUG] Verifying cover for article: ${article.id}, title: ${article.title}`);
-      console.log(`[RhcaCard:DEBUG] Article data:`, JSON.stringify({
-        id: article.id,
-        title: article.title,
-        coverImageFileName: article.coverImageFileName,
-        imageUrl: article.imageUrl,
-        coverImage: article.coverImage
-      }));
-      
-      // Use the coverImageFileName if available
-      let filenameToCheck = article.coverImageFileName;
-      
-      // If we don't have a coverImageFileName, try to generate one based on volume and issue
-      if (!filenameToCheck && article.volume && article.issue) {
-        const paddedVolume = String(article.volume).padStart(2, '0');
-        filenameToCheck = `RHCA_vol_${paddedVolume}_no_${article.issue}.png`;
-        console.log(`[RhcaCard:DEBUG] Generated cover image filename: ${filenameToCheck}`);
-      }
-      
-      // Still no filename? Try to extract from imageUrl
-      if (!filenameToCheck && article.imageUrl) {
-        const urlParts = article.imageUrl.split('/');
-        filenameToCheck = urlParts[urlParts.length - 1];
-        console.log(`[RhcaCard:DEBUG] Extracted filename from imageUrl: ${filenameToCheck}`);
-      }
-      
-      if (!filenameToCheck) {
-        console.warn(`[RhcaCard:WARN] No cover image filename available for article ${article.id}`);
-        setCoverExists(false);
-        return;
-      }
-      
-      // Update article in database with generated filename if it doesn't have one yet
-      if (!article.coverImageFileName && filenameToCheck) {
+  // Check if the file exists when the component mounts
+  React.useEffect(() => {
+    if (article.pdfFileName) {
+      const checkFile = async () => {
         try {
-          const { error } = await supabase
-            .from('articles')
-            .update({ cover_image_filename: filenameToCheck })
-            .eq('id', article.id);
-            
-          if (error) {
-            console.error(`[RhcaCard:ERROR] Failed to update cover_image_filename:`, error);
-          } else {
-            console.log(`[RhcaCard:INFO] Updated article ${article.id} with cover_image_filename: ${filenameToCheck}`);
-          }
-        } catch (error) {
-          console.error(`[RhcaCard:ERROR] Error updating article:`, error);
+          const exists = await checkFileExistsInBucket('rhca-pdfs', article.pdfFileName!);
+          setFileExists(exists);
+        } catch (err) {
+          console.error("[RhcaCard] Error checking file existence:", err);
+          setFileExists(false);
         }
-      }
+      };
       
-      console.log(`[RhcaCard:INFO] Checking cover image: ${filenameToCheck}`);
-      try {
-        const exists = await checkFileExistsInBucket('rhca_covers', filenameToCheck);
-        
-        console.log(`[RhcaCard:INFO] Cover image ${filenameToCheck} exists: ${exists}`);
-        setCoverExists(exists);
-        
-        if (exists) {
-          const url = getFilePublicUrl('rhca_covers', filenameToCheck);
-          console.log(`[RhcaCard:INFO] Got public URL for cover: ${url}`);
-          if (url) setCoverUrl(url);
-        } else if (article.coverImageFileName) {
-          console.warn(`[RhcaCard:WARN] Cover image ${filenameToCheck} not found in storage bucket`);
-          
-          // Get a list of files in the bucket to help debug
-          const { data: files, error } = await supabase.storage
+      checkFile();
+    } else {
+      setFileExists(false);
+    }
+  }, [article.pdfFileName]);
+  
+  // Get the cover image URL when the component mounts
+  React.useEffect(() => {
+    if (article.coverImageFileName) {
+      const getCoverImageUrl = async () => {
+        try {
+          const { data } = supabase.storage
             .from('rhca_covers')
-            .list();
+            .getPublicUrl(article.coverImageFileName!);
             
-          if (error) {
-            console.error(`[RhcaCard:ERROR] Error listing files in rhca_covers:`, error);
-          } else if (files && files.length > 0) {
-            console.log(`[RhcaCard:DEBUG] Files in rhca_covers bucket:`, files.map(f => f.name));
-            
-            // Check if there's a file with a similar name
-            const similarFile = files.find(f => 
-              f.name.startsWith(`RHCA_vol_${article.volume}_`) || 
-              f.name.includes(`_no_${article.issue}_`)
-            );
-            
-            if (similarFile) {
-              console.log(`[RhcaCard:INFO] Found similar file: ${similarFile.name}`);
-              const url = getFilePublicUrl('rhca_covers', similarFile.name);
-              if (url) setCoverUrl(url);
-            }
-          } else {
-            console.log(`[RhcaCard:DEBUG] No files found in rhca_covers bucket`);
-          }
-          
-          // Fall back to the original image URL if available
-          if (article.imageUrl) {
-            console.log(`[RhcaCard:INFO] Using fallback imageUrl: ${article.imageUrl}`);
-            setCoverUrl(article.imageUrl);
-          } else if (article.coverImage) {
-            console.log(`[RhcaCard:INFO] Using fallback coverImage: ${article.coverImage}`);
-            setCoverUrl(article.coverImage);
-          }
+          setCoverImageUrl(data.publicUrl);
+        } catch (err) {
+          console.error("[RhcaCard] Error getting cover image URL:", err);
+          setCoverImageUrl(null);
         }
-      } catch (error) {
-        console.error(`[RhcaCard:ERROR] Error verifying cover image:`, error);
-        setCoverExists(false);
-      }
-    };
-    
-    verifyCoverExists();
-  }, [article.coverImageFileName, article.id, article.title, article.imageUrl, article.coverImage, article.volume, article.issue]);
-
+      };
+      
+      getCoverImageUrl();
+    }
+  }, [article.coverImageFileName]);
+  
   const handleClick = () => {
-    if (onCardClick) {
-      onCardClick();
+    navigate(`/rhca/article/${article.id}`);
+  };
+  
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    // Prevent navigation when clicking the download icon
+    if (!article.pdfFileName) {
+      toast.error("Le fichier PDF n'est pas disponible pour cet article", {
+        icon: <AlertCircle className="h-5 w-5 text-red-500" />
+      });
+      return;
+    }
+    
+    // If we already checked and know the file doesn't exist
+    if (fileExists === false) {
+      toast.error(`Le fichier "${article.pdfFileName}" n'existe pas dans la bibliothèque`, {
+        description: "Contactez l'administrateur pour assistance",
+        icon: <AlertCircle className="h-5 w-5 text-red-500" />
+      });
+      return;
+    }
+    
+    try {
+      setIsDownloading(true);
+      
+      // Use our improved download function
+      await downloadFileFromStorage('rhca-pdfs', article.pdfFileName);
+      
+    } catch (err) {
+      console.error("[RhcaCard:ERROR] Download failed:", err);
+      
+      // More specific error messages based on error type
+      if (err instanceof Error && err.message.includes('network')) {
+        toast.error("Erreur de connexion réseau", {
+          description: "Vérifiez votre connexion et réessayez"
+        });
+      } else {
+        toast.error("Échec du téléchargement", {
+          description: err instanceof Error ? err.message : "Une erreur inattendue s'est produite"
+        });
+      }
+    } finally {
+      setIsDownloading(false);
     }
   };
+  
+  const formattedDate = (() => {
+    try {
+      return format(new Date(article.date), 'dd MMMM yyyy', { locale: fr });
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Date invalide';
+    }
+  })();
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="h-full w-full"
+    <Card 
+      className="w-full h-full overflow-hidden transition-all duration-300 hover:shadow-md cursor-pointer group border border-gray-200 flex flex-col"
+      onClick={handleClick}
     >
-      <Card 
-        className="group hover:shadow-md transition-all duration-300 cursor-pointer h-full transform hover:-translate-y-1 bg-white border border-gray-200"
-        onClick={handleClick}
-      >
-        <div className="flex gap-4 p-4">
-          <div className="w-20 flex-shrink-0">
-            {coverUrl ? (
-              <div className="aspect-[3/4] relative overflow-hidden rounded-lg border border-gray-100">
-                <ImageOptimizer 
-                  src={coverUrl} 
-                  alt={article.title}
-                  className="object-cover w-full h-full"
-                  width={80}
-                  height={120}
-                  fallbackText="RHCA"
-                />
+      {/* Cover Image Section */}
+      {coverImageUrl && (
+        <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-100">
+          <ImageOptimizer
+            src={coverImageUrl}
+            alt={`Couverture du volume ${article.volume}, numéro ${article.issue}`}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            width={400}
+            height={300}
+            fallbackText={`Vol. ${article.volume}, N° ${article.issue}`}
+          />
+          
+          {article.category && (
+            <div className="absolute top-3 right-3">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 bg-opacity-90">
+                {article.category}
+              </span>
+            </div>
+          )}
+        </div>
+      )}
+      
+      <CardContent className={`p-5 flex-grow flex flex-col ${!coverImageUrl ? 'h-full' : ''}`}>
+        <div className="space-y-4 flex-grow">
+          <div>
+            <h3 className="text-lg font-semibold line-clamp-2 group-hover:text-emerald-600 transition-colors">
+              {article.title}
+            </h3>
+            
+            <div className="flex flex-wrap items-center text-sm text-gray-500 gap-y-1 mt-2">
+              <div className="flex items-center mr-3">
+                {article.volume && article.issue ? (
+                  <span>Volume {article.volume} • No. {article.issue}</span>
+                ) : article.volume ? (
+                  <span>Volume {article.volume}</span>
+                ) : (
+                  <span>Numéro non spécifié</span>
+                )}
               </div>
-            ) : (
-              <div className="aspect-[3/4] bg-emerald-50/50 rounded-lg border border-emerald-100/50 flex items-center justify-center">
-                <span className="text-emerald-600/30 text-lg font-semibold">RHCA</span>
+              
+              <div className="flex items-center">
+                <CalendarIcon className="h-3.5 w-3.5 mr-1" />
+                <span>{formattedDate}</span>
               </div>
-            )}
+            </div>
           </div>
           
-          <div className="flex flex-col flex-1 min-w-0">
-            <div className="flex justify-between items-start gap-4">
-              <ArticleContent article={article} />
-              <div className="hidden sm:block">
-                <ArticleActions 
-                  id={article.id}
-                  volume={article.volume}
-                  date={article.date}
-                  pdfFileName={article.pdfFileName}
-                />
-              </div>
+          <p className="text-sm text-gray-600 line-clamp-3">
+            {article.abstract}
+          </p>
+          
+          {!coverImageUrl && article.category && (
+            <div className="pt-1">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                {article.category}
+              </span>
             </div>
-            <div className="mt-3 sm:hidden">
-              <ArticleActions 
-                id={article.id}
-                volume={article.volume}
-                date={article.date}
-                pdfFileName={article.pdfFileName}
-              />
-            </div>
+          )}
+        </div>
+        
+        <div className="flex items-center justify-between pt-2 text-sm text-gray-500 mt-auto">
+          <div className="flex items-center">
+            <button 
+              className={`flex items-center ${
+                fileExists === false 
+                  ? 'text-gray-300 cursor-not-allowed' 
+                  : isDownloading 
+                    ? 'opacity-50 cursor-wait' 
+                    : 'hover:text-emerald-600'
+              }`}
+              onClick={handleDownload}
+              disabled={isDownloading || fileExists === false}
+              title={fileExists === false 
+                ? "PDF non disponible sur le serveur" 
+                : article.pdfFileName 
+                  ? "Télécharger le PDF" 
+                  : "PDF non disponible"
+              }
+            >
+              <Download className={`h-3.5 w-3.5 mr-1 ${isDownloading ? 'animate-pulse' : ''}`} />
+              <span>{article.downloads || 0} téléchargements</span>
+            </button>
+          </div>
+          <div className="flex items-center">
+            <Share2 className="h-3.5 w-3.5 mr-1" />
+            <span>{article.shares || 0} partages</span>
           </div>
         </div>
-      </Card>
-    </motion.div>
+      </CardContent>
+    </Card>
   );
 };
+

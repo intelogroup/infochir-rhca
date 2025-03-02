@@ -2,6 +2,22 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { formatRHCACoverImageFilename } from "@/lib/utils";
 
+/**
+ * Validates if a PDF filename follows the RHCA naming convention
+ * Expected format: RHCA_vol_XX_no_YY.pdf or RHCA_vol_XX_no_YY_DD_MM_YYYY.pdf
+ */
+export const validateRHCAPdfFilename = (filename: string): boolean => {
+  if (!filename) return false;
+  
+  // Check basic format with or without date
+  const basicFormatRegex = /^RHCA_vol_\d+_no_\d+(_\d+_\d+_\d+)?\.pdf$/i;
+  return basicFormatRegex.test(filename);
+};
+
+/**
+ * Checks if a file exists in the specified Supabase storage bucket using direct access
+ * This method is more reliable than listing with search
+ */
 export const checkFileExistsInBucket = async (bucketName: string, filePath: string): Promise<boolean> => {
   try {
     console.log(`[Storage:DEBUG] Checking if file exists in bucket: ${bucketName}, path: ${filePath}`);
@@ -11,28 +27,49 @@ export const checkFileExistsInBucket = async (bucketName: string, filePath: stri
       return false;
     }
     
+    // Validate RHCA PDF filename if it's a PDF in the rhca-pdfs bucket
+    if (bucketName === 'rhca-pdfs' && filePath.toLowerCase().endsWith('.pdf')) {
+      const isValid = validateRHCAPdfFilename(filePath);
+      if (!isValid) {
+        console.warn(`[Storage:WARN] Invalid RHCA PDF filename format: ${filePath}`);
+      }
+    }
+    
+    // Direct method: try to get file metadata which is more reliable than listing
     const { data, error } = await supabase.storage
       .from(bucketName)
-      .list('', { search: filePath });
-
+      .getPublicUrl(filePath);
+      
     if (error) {
       console.error(`[Storage:ERROR] Error checking file existence in ${bucketName}:`, error);
       return false;
     }
-
-    const fileExists = data.some(file => file.name === filePath);
-    console.log(`[Storage:INFO] File ${filePath} exists in bucket ${bucketName}: ${fileExists}`);
-    if (!fileExists) {
-      console.warn(`[Storage:WARN] File ${filePath} not found in bucket ${bucketName}`);
-    }
     
-    return fileExists;
+    // Verify the file actually exists by making a HEAD request to the URL
+    try {
+      const response = await fetch(data.publicUrl, { method: 'HEAD' });
+      const fileExists = response.ok;
+      
+      console.log(`[Storage:INFO] File ${filePath} exists in bucket ${bucketName}: ${fileExists} (verified via HEAD request)`);
+      
+      if (!fileExists) {
+        console.warn(`[Storage:WARN] File ${filePath} not found in bucket ${bucketName}`);
+      }
+      
+      return fileExists;
+    } catch (fetchErr) {
+      console.error(`[Storage:ERROR] Error verifying file existence via HEAD request:`, fetchErr);
+      return false;
+    }
   } catch (err) {
     console.error(`[Storage:ERROR] Exception checking file existence in ${bucketName}:`, err);
     return false;
   }
 };
 
+/**
+ * Gets the public URL for a file in a Supabase storage bucket
+ */
 export const getFilePublicUrl = (bucketName: string, filePath: string): string | null => {
   try {
     console.log(`[Storage:DEBUG] Getting public URL for file: ${filePath} in bucket: ${bucketName}`);
@@ -54,13 +91,40 @@ export const getFilePublicUrl = (bucketName: string, filePath: string): string |
   }
 };
 
+/**
+ * Opens a file from Supabase storage in a new browser tab
+ */
 export const openFileInNewTab = async (bucketName: string, filePath: string): Promise<void> => {
   try {
     console.log(`[Storage:DEBUG] Opening file in new tab: ${filePath} from bucket: ${bucketName}`);
     
     if (!filePath) {
       console.warn('[Storage:WARN] No file path provided for opening in new tab');
-      toast.error("File not available");
+      toast.error("Fichier non disponible", {
+        description: "Aucun chemin de fichier fourni"
+      });
+      return;
+    }
+    
+    // For RHCA PDFs, validate the filename format
+    if (bucketName === 'rhca-pdfs' && filePath.toLowerCase().endsWith('.pdf')) {
+      const isValid = validateRHCAPdfFilename(filePath);
+      if (!isValid) {
+        console.warn(`[Storage:WARN] Invalid RHCA PDF filename format: ${filePath}`);
+        toast.warning("Format de nom de fichier non standard", {
+          description: "Le fichier pourrait ne pas s'ouvrir correctement"
+        });
+      }
+    }
+    
+    // Check if file exists before attempting to open
+    const fileExists = await checkFileExistsInBucket(bucketName, filePath);
+    
+    if (!fileExists) {
+      console.error(`[Storage:ERROR] File ${filePath} not found in bucket ${bucketName}`);
+      toast.error("Fichier introuvable", {
+        description: "Le fichier demandé n'existe pas dans la bibliothèque"
+      });
       return;
     }
     
@@ -68,7 +132,9 @@ export const openFileInNewTab = async (bucketName: string, filePath: string): Pr
     
     if (!publicUrl) {
       console.error(`[Storage:ERROR] Failed to get public URL for ${filePath}`);
-      toast.error("Could not retrieve file URL");
+      toast.error("URL de fichier invalide", {
+        description: "Impossible de récupérer l'URL du fichier"
+      });
       return;
     }
     
@@ -77,19 +143,56 @@ export const openFileInNewTab = async (bucketName: string, filePath: string): Pr
     
   } catch (err) {
     console.error(`[Storage:ERROR] Error opening file in new tab:`, err);
-    toast.error(`Error opening file: ${err instanceof Error ? err.message : String(err)}`);
+    toast.error(`Erreur d'ouverture du fichier`, {
+      description: err instanceof Error ? err.message : String(err)
+    });
   }
 };
 
+/**
+ * Downloads a file from Supabase storage to the user's device
+ * Improved with direct access and better error handling
+ */
 export const downloadFileFromStorage = async (bucketName: string, filePath: string): Promise<void> => {
+  let toastId: string | number | undefined;
+  
   try {
     console.log(`[Storage:DEBUG] Downloading file: ${filePath} from bucket: ${bucketName}`);
     
     if (!filePath) {
       console.warn('[Storage:WARN] No file path provided for download');
-      toast.error("File not available for download");
+      toast.error("Téléchargement impossible", {
+        description: "Aucun fichier spécifié"
+      });
       return;
     }
+    
+    // For RHCA PDFs, validate the filename format
+    if (bucketName === 'rhca-pdfs' && filePath.toLowerCase().endsWith('.pdf')) {
+      const isValid = validateRHCAPdfFilename(filePath);
+      if (!isValid) {
+        console.warn(`[Storage:WARN] Invalid RHCA PDF filename format: ${filePath}`);
+        toast.warning("Format de nom de fichier non standard", {
+          description: "Le téléchargement pourrait échouer"
+        });
+      }
+    }
+    
+    // Check if file exists before attempting download - use our improved direct access method
+    const fileExists = await checkFileExistsInBucket(bucketName, filePath);
+    
+    if (!fileExists) {
+      console.error(`[Storage:ERROR] File ${filePath} not found in bucket ${bucketName}`);
+      toast.error("Fichier introuvable", {
+        description: "Le fichier demandé n'existe pas dans la bibliothèque"
+      });
+      return;
+    }
+    
+    // Show loading toast with custom ID so we can dismiss it later
+    toastId = toast.loading("Préparation du téléchargement...", {
+      id: `download-${filePath.replace(/[^a-z0-9]/gi, '-')}`
+    });
     
     // Get the file download URL (signed URL for better security)
     const { data, error } = await supabase.storage
@@ -98,7 +201,10 @@ export const downloadFileFromStorage = async (bucketName: string, filePath: stri
     
     if (error || !data) {
       console.error(`[Storage:ERROR] Failed to create signed URL for ${filePath}:`, error);
-      toast.error(`Error creating download link: ${error?.message || 'Unknown error'}`);
+      toast.dismiss(toastId);
+      toast.error(`Erreur de création du lien de téléchargement`, {
+        description: error?.message || 'Erreur inconnue'
+      });
       return;
     }
     
@@ -109,9 +215,17 @@ export const downloadFileFromStorage = async (bucketName: string, filePath: stri
     
     if (!response.ok) {
       console.error(`[Storage:ERROR] HTTP error downloading file: ${response.status} ${response.statusText}`);
-      toast.error(`Download error: HTTP status ${response.status}`);
+      toast.dismiss(toastId);
+      toast.error(`Erreur de téléchargement`, {
+        description: `Erreur HTTP ${response.status}: ${response.statusText}`
+      });
       return;
     }
+    
+    // Get content length if available for progress tracking
+    const contentLength = response.headers.get('content-length');
+    const totalBytes = contentLength ? parseInt(contentLength, 10) : undefined;
+    console.log(`[Storage:INFO] File size: ${totalBytes ? `${Math.round(totalBytes / 1024)} KB` : 'Unknown'}`);
     
     // Get the file as a blob
     const blob = await response.blob();
@@ -133,12 +247,87 @@ export const downloadFileFromStorage = async (bucketName: string, filePath: stri
     window.URL.revokeObjectURL(url);
     
     console.log(`[Storage:SUCCESS] Successfully downloaded file: ${filePath}`);
-    toast.success('Download successful');
+    toast.dismiss(toastId);
+    toast.success('Téléchargement réussi', {
+      description: `Le fichier ${filePath.split('/').pop()} a été téléchargé`
+    });
+    
+    // Track the download
+    try {
+      if (bucketName === 'rhca-pdfs') {
+        const { volume, issue } = extractVolumeAndIssueFromFilename(filePath);
+        if (volume && issue) {
+          console.log(`[Storage:INFO] Tracking download for RHCA vol ${volume} issue ${issue}`);
+          
+          // Find article ID based on volume and issue
+          const { data: articleData, error: articleError } = await supabase
+            .from('rhca_articles_view')
+            .select('id')
+            .eq('volume', volume)
+            .eq('issue', issue)
+            .maybeSingle();
+          
+          if (articleError) {
+            console.error('[Storage:ERROR] Error finding article for tracking:', articleError);
+          } else if (articleData?.id) {
+            console.log(`[Storage:INFO] Incrementing download count for article ID: ${articleData.id}`);
+            
+            const { error: updateError } = await supabase.rpc(
+              'increment_count',
+              { 
+                table_name: 'articles',
+                column_name: 'downloads',
+                row_id: articleData.id
+              }
+            );
+            
+            if (updateError) {
+              console.error('[Storage:ERROR] Error incrementing download count:', updateError);
+            }
+          }
+        }
+      }
+    } catch (countErr) {
+      console.error('[Storage:ERROR] Error tracking download:', countErr);
+      // Don't show this error to the user since the download was successful
+    }
     
   } catch (err) {
     console.error(`[Storage:ERROR] Error downloading file:`, err);
-    toast.error(`Download error: ${err instanceof Error ? err.message : String(err)}`);
+    if (toastId) toast.dismiss(toastId);
+    
+    // Provide specific error messages based on error type
+    if (err instanceof TypeError && err.message.includes('Failed to fetch')) {
+      toast.error(`Erreur de connexion`, {
+        description: "Vérifiez votre connexion internet et réessayez"
+      });
+    } else {
+      toast.error(`Erreur de téléchargement`, {
+        description: err instanceof Error ? err.message : String(err)
+      });
+    }
   }
+};
+
+/**
+ * Extracts volume and issue numbers from an RHCA PDF filename
+ */
+export const extractVolumeAndIssueFromFilename = (filename: string): { volume: string | null; issue: string | null } => {
+  if (!filename) {
+    return { volume: null, issue: null };
+  }
+  
+  // Match pattern: RHCA_vol_X_no_Y or RHCA_vol_XX_no_YY_DD_MM_YYYY.pdf
+  const match = filename.match(/RHCA_vol_(\d+)_no_(\d+)/i);
+  
+  if (match && match.length >= 3) {
+    return {
+      volume: match[1],
+      issue: match[2]
+    };
+  }
+  
+  return { volume: null, issue: null };
 };
 
 export const debugDatabaseTables = async () => {
