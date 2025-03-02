@@ -24,7 +24,7 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue }) => {
         className="overflow-hidden group cursor-pointer h-full flex border border-gray-200 hover:shadow-md transition-all"
       >
         <div className="shrink-0 w-1/3 md:w-1/4 h-full">
-          <IssueCardCover image={issue.coverImage} />
+          <IssueCardCover coverImage={issue.coverImage} title={issue.title} />
         </div>
         
         <div className="flex-1 flex flex-col p-4">
