@@ -1,5 +1,6 @@
 
 import { DateRange } from "react-day-picker";
+import { Json } from "@/integrations/supabase/types";
 
 export interface IgmArticle {
   id: string;
@@ -37,7 +38,7 @@ export interface DatabaseIssue {
   article_count: number;
   downloads: number;
   shares: number;
-  articles: any[];
+  articles: Json;
   category?: string;
 }
 
@@ -69,6 +70,31 @@ export const mapDatabaseIssueToIssue = (dbIssue: DatabaseIssue): Issue => {
     }
   }
 
+  // Safely parse the articles JSON
+  let parsedArticles: IgmArticle[] = [];
+  try {
+    // If articles is a string, parse it, otherwise assume it's already a JSON object
+    const articlesData = typeof dbIssue.articles === 'string' 
+      ? JSON.parse(dbIssue.articles) 
+      : dbIssue.articles;
+    
+    // Ensure it's an array
+    if (Array.isArray(articlesData)) {
+      parsedArticles = articlesData.map(article => ({
+        id: article.id || `temp-${Math.random().toString(36).substring(2, 9)}`,
+        title: article.title || 'Untitled',
+        authors: Array.isArray(article.authors) ? article.authors : [],
+        pageNumber: Number(article.pageNumber) || 0,
+        abstract: article.abstract,
+        tags: Array.isArray(article.tags) ? article.tags : []
+      }));
+    } else {
+      console.error('Articles data is not an array:', articlesData);
+    }
+  } catch (error) {
+    console.error('Failed to parse articles JSON:', error);
+  }
+
   return {
     id: dbIssue.id,
     title: dbIssue.title,
@@ -80,14 +106,7 @@ export const mapDatabaseIssueToIssue = (dbIssue: DatabaseIssue): Issue => {
     articleCount: dbIssue.article_count,
     downloads: dbIssue.downloads,
     shares: dbIssue.shares,
-    articles: dbIssue.articles.map(article => ({
-      id: article.id,
-      title: article.title,
-      authors: article.authors,
-      pageNumber: Number(article.pageNumber) || 0,
-      abstract: article.abstract,
-      tags: article.tags
-    })),
+    articles: parsedArticles,
     categories: dbIssue.category ? [dbIssue.category] : []
   };
 };

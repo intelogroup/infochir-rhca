@@ -35,7 +35,7 @@ export const useIGMIssues = () => {
           throw error;
         }
 
-        if (!data) {
+        if (!data || data.length === 0) {
           console.log('[useIGMIssues] No data returned from Supabase');
           return [];
         }
@@ -46,7 +46,7 @@ export const useIGMIssues = () => {
           lastItem: data[data.length - 1]
         });
 
-        const issues = data.map((item: DatabaseIssue) => mapDatabaseIssueToIssue(item));
+        const issues = data.map((item) => mapDatabaseIssueToIssue(item as DatabaseIssue));
 
         console.log('[useIGMIssues] Mapped issues:', {
           count: issues.length,
@@ -61,6 +61,9 @@ export const useIGMIssues = () => {
           message: error instanceof Error ? error.message : 'Unknown error',
           stack: error instanceof Error ? error.stack : undefined,
           timing: Date.now() - startTime
+        });
+        toast.error("Erreur lors du chargement des numéros", {
+          description: error instanceof Error ? error.message : 'Une erreur inconnue est survenue'
         });
         throw error;
       }
