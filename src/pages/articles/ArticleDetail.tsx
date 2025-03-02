@@ -56,7 +56,6 @@ const ArticleDetail = () => {
         console.error("Error fetching article:", err);
         setError("Impossible de charger les détails de l'article");
         toast({
-          title: "Erreur",
           description: "Impossible de charger les détails de l'article",
           variant: "destructive",
         });
