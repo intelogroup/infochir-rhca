@@ -18,9 +18,9 @@ export const YearGroupList = ({ issuesByYear, sortedYears }: YearGroupListProps)
       {sortedYears.map((year) => (
         <div key={year} className="mb-10">
           <h3 className="text-lg font-semibold mb-4">{year}</h3>
-          <div className="flex flex-col sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="flex flex-col gap-6">
             {issuesByYear[year].map((issue) => (
-              <div key={issue.id} className="mb-6 sm:mb-0">
+              <div key={issue.id}>
                 <IssueCard key={issue.id} issue={issue} />
               </div>
             ))}
