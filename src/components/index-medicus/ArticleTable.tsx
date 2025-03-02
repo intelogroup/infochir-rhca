@@ -9,10 +9,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Article } from "./types";
-import { ArticleMetadata } from "./article/ArticleMetadata";
 import { ArticleActions } from "./article/ArticleActions";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
+import { PdfStatusIndicator } from "@/components/shared/PdfStatusIndicator";
 
 interface ArticleTableProps {
   articles: Article[];
@@ -24,7 +24,7 @@ export function ArticleTable({ articles, onTagClick, selectedTags = [] }: Articl
   return (
     <div className="w-full overflow-auto rounded-md border">
       <Table>
-        <TableHeader className="bg-primary/5">
+        <TableHeader className="bg-gradient-to-r from-primary/10 to-primary/5">
           <TableRow>
             <TableHead className="w-[400px] font-semibold text-primary">Titre</TableHead>
             <TableHead className="font-semibold text-primary">Auteurs</TableHead>
@@ -45,45 +45,61 @@ export function ArticleTable({ articles, onTagClick, selectedTags = [] }: Articl
           {articles.map((article) => (
             <TableRow 
               key={article.id} 
-              className="group border-b border-gray-100 hover:bg-primary/[0.02] transition-colors"
+              className="group border-b border-gray-100 hover:bg-[#F1F0FB]/50 transition-all duration-200 ease-in-out"
             >
-              <TableCell className="font-medium py-4">
-                <div className="flex flex-col gap-1">
-                  <span className="font-semibold text-primary/90 group-hover:text-primary transition-colors">
-                    {article.title}
-                  </span>
+              <TableCell className="font-medium py-5">
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex items-center gap-2">
+                    {article.pdfUrl && (
+                      <PdfStatusIndicator 
+                        status={article.pdfUrl ? "available" : "unavailable"} 
+                        size="sm" 
+                        className="mt-0.5"
+                      />
+                    )}
+                    <span className="font-semibold text-primary/90 group-hover:text-primary transition-colors">
+                      {article.title}
+                    </span>
+                  </div>
                   {article.abstract && (
-                    <p className="text-xs text-muted-foreground line-clamp-2">
+                    <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                       {article.abstract}
                     </p>
                   )}
                 </div>
               </TableCell>
               
-              <TableCell className="py-4">
-                <div className="max-w-[200px] truncate">
+              <TableCell className="py-5">
+                <div className="max-w-[200px]">
                   {Array.isArray(article.authors) && article.authors.length > 0 
-                    ? article.authors.join(", ")
-                    : "—"}
+                    ? (
+                      <span className="text-sm font-medium text-gray-700">
+                        {article.authors.join(", ")}
+                      </span>
+                    )
+                    : <span className="text-gray-400">—</span>}
                 </div>
               </TableCell>
               
-              <TableCell className="py-4">
-                <Badge variant="outline" className="capitalize bg-secondary/5 hover:bg-secondary/10">
+              <TableCell className="py-5">
+                <Badge variant="outline" className="capitalize bg-secondary/5 hover:bg-secondary/10 font-medium">
                   {article.source}
                 </Badge>
                 {article.volume && article.issue && (
-                  <div className="text-xs text-muted-foreground mt-1">
+                  <div className="text-xs text-muted-foreground mt-1.5 font-medium">
                     Vol. {article.volume}, No. {article.issue}
                   </div>
                 )}
               </TableCell>
               
-              <TableCell className="py-4">
-                {article.publicationDate ? formatDate(article.publicationDate) : "—"}
+              <TableCell className="py-5">
+                <span className="text-sm text-gray-600 font-medium">
+                  {article.publicationDate ? formatDate(article.publicationDate) : 
+                    <span className="text-gray-400">—</span>}
+                </span>
               </TableCell>
               
-              <TableCell className="text-right py-4">
+              <TableCell className="text-right py-5">
                 <ArticleActions 
                   pdfUrl={article.pdfUrl}
                   hideDownload={!article.pdfUrl}

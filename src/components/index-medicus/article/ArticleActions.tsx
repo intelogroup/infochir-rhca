@@ -207,11 +207,11 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
         <Button
           variant="outline"
           size="sm"
-          className="gap-2 opacity-60"
+          className="gap-2 opacity-40 cursor-not-allowed"
           disabled
         >
-          <AlertCircle className="h-4 w-4" />
-          <span>PDF indisponible</span>
+          <Download className="h-4 w-4" />
+          <span>PDF</span>
         </Button>
       );
     }

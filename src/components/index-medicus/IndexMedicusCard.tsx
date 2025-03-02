@@ -6,6 +6,7 @@ import { ArticleActions } from './article/ArticleActions';
 import type { Article } from './types';
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
+import { PdfStatusIndicator } from '@/components/shared/PdfStatusIndicator';
 
 interface IndexMedicusCardProps {
   article: Article;
@@ -40,7 +41,7 @@ export const IndexMedicusCard: React.FC<IndexMedicusCardProps> = ({
       transition={{ duration: 0.3 }}
       className="h-full"
     >
-      <Card className={`group h-full flex flex-col transition-all duration-200 border hover:shadow-md overflow-hidden ${isSelected ? 'ring-2 ring-primary border-primary' : ''}`}>
+      <Card className={`group h-full flex flex-col transition-all duration-300 border hover:shadow-md hover:border-primary/20 overflow-hidden ${isSelected ? 'ring-2 ring-primary border-primary' : ''}`}>
         <CardContent className="p-5 flex flex-col h-full">
           <div className="flex justify-between mb-2">
             <Badge variant="outline" className="text-xs bg-secondary/10 hover:bg-secondary/20">
@@ -53,9 +54,17 @@ export const IndexMedicusCard: React.FC<IndexMedicusCardProps> = ({
             )}
           </div>
           
-          <h3 className="text-lg font-semibold mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-            {article.title}
-          </h3>
+          <div className="flex items-center gap-2 mb-2">
+            {article.pdfUrl && (
+              <PdfStatusIndicator 
+                status={article.pdfUrl ? "available" : "unavailable"} 
+                size="sm"
+              />
+            )}
+            <h3 className="text-lg font-semibold line-clamp-2 group-hover:text-primary transition-colors">
+              {article.title}
+            </h3>
+          </div>
           
           <ArticleMetadata 
             authors={article.authors}
@@ -69,7 +78,7 @@ export const IndexMedicusCard: React.FC<IndexMedicusCardProps> = ({
             pageNumber={article.pageNumber}
           />
           
-          <p className="text-sm text-gray-600 mt-4 mb-4 line-clamp-3 flex-grow">
+          <p className="text-sm text-gray-600 mt-4 mb-4 line-clamp-3 flex-grow leading-relaxed">
             {article.abstract}
           </p>
           

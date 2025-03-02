@@ -1,5 +1,5 @@
 
-import { AlertCircle, CheckCircle, Loader2 } from "lucide-react";
+import { AlertCircle, CheckCircle, FileText, Loader2 } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface PdfStatusIndicatorProps {
@@ -27,8 +27,8 @@ export const PdfStatusIndicator = ({
   
   const icons = {
     checking: <Loader2 className={`${sizeClass} animate-spin text-gray-400 ${className}`} />,
-    available: <CheckCircle className={`${sizeClass} text-green-500 ${className}`} />,
-    unavailable: <AlertCircle className={`${sizeClass} text-red-400 ${className}`} />
+    available: <FileText className={`${sizeClass} text-green-500 ${className}`} />,
+    unavailable: <FileText className={`${sizeClass} text-gray-300 ${className}`} />
   };
   
   return (
