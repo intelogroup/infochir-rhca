@@ -3,9 +3,11 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const BackToTop: React.FC = () => {
   const [isVisible, setIsVisible] = React.useState(false);
+  const isMobile = useIsMobile();
 
   React.useEffect(() => {
     const toggleVisibility = () => {
@@ -45,15 +47,15 @@ const BackToTop: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 20 }}
-          className="fixed bottom-4 right-4 z-50"
+          className={`fixed ${isMobile ? 'bottom-6 right-6' : 'bottom-4 right-4'} z-50`}
         >
           <Button
             onClick={scrollToTop}
-            size="sm"
-            className="rounded-full shadow-lg bg-primary/90 hover:bg-primary h-10 w-10"
+            size={isMobile ? "default" : "sm"}
+            className={`rounded-full shadow-lg bg-primary/90 hover:bg-primary ${isMobile ? 'h-12 w-12' : 'h-10 w-10'}`}
             aria-label="Retour en haut"
           >
-            <ArrowUp className="h-4 w-4" />
+            <ArrowUp className={`${isMobile ? 'h-5 w-5' : 'h-4 w-4'}`} />
           </Button>
         </motion.div>
       )}

@@ -19,18 +19,18 @@ export const RhcaContent: React.FC = () => {
   };
   
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-      <div className="lg:col-span-3">
-        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
-          <h2 className="text-2xl font-bold text-[#41b06e]">Articles RHCA</h2>
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-8">
+      <div className="lg:col-span-3 order-2 lg:order-1">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-[#41b06e]">Articles RHCA</h2>
           
-          <div className="flex flex-col md:flex-row gap-2 md:items-center">
-            <div className="relative">
+          <div className="flex flex-col sm:flex-row gap-2 sm:items-center w-full sm:w-auto">
+            <div className="relative flex-1 sm:w-64 md:w-72">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
                 placeholder="Rechercher des articles..."
-                className="w-full pl-8 pr-4 py-2 rounded-md border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary"
+                className="w-full pl-8 pr-4 py-2 rounded-md border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary text-sm"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -41,7 +41,7 @@ export const RhcaContent: React.FC = () => {
               size="sm"
               onClick={toggleViewMode}
               aria-label={viewMode === "grid" ? "Switch to table view" : "Switch to grid view"}
-              className="md:ml-2 h-9 px-2.5 py-1.5 border-gray-200 hover:bg-gray-50 transition-colors"
+              className="sm:ml-2 h-9 px-2.5 py-1.5 border-gray-200 hover:bg-gray-50 transition-colors flex-shrink-0"
             >
               {viewMode === "grid" ? (
                 <List className="h-4 w-4 text-gray-600" />
@@ -71,7 +71,7 @@ export const RhcaContent: React.FC = () => {
         )}
       </div>
       
-      <div className="lg:col-span-1">
+      <div className="lg:col-span-1 order-1 lg:order-2 mb-6 lg:mb-0">
         <RHCASidebar />
       </div>
     </div>

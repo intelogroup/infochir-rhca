@@ -51,19 +51,19 @@ export const RhcaGrid: React.FC<RhcaGridProps> = ({
         <Accordion type="multiple" defaultValue={years.map(year => year.toString())} className="space-y-4">
           {years.map(year => (
             <AccordionItem key={year} value={year.toString()} className="border rounded-lg overflow-hidden">
-              <AccordionTrigger className="px-4 py-3 hover:bg-gray-50">
+              <AccordionTrigger className="px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-gray-50">
                 <div className="flex items-center">
-                  <span className="text-lg font-semibold">{year}</span>
-                  <span className="ml-2 text-sm text-muted-foreground">
+                  <span className="text-base sm:text-lg font-semibold">{year}</span>
+                  <span className="ml-2 text-xs sm:text-sm text-muted-foreground">
                     ({articlesByYear[year]?.length || 0} articles)
                   </span>
                 </div>
               </AccordionTrigger>
               <AccordionContent>
-                <div className="px-4 py-3">
-                  <ScrollArea className="w-full">
+                <div className="px-2 sm:px-4 py-2 sm:py-3">
+                  <ScrollArea className="w-full max-h-[70vh]">
                     <div 
-                      className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4 px-4" 
+                      className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 py-2 sm:py-4 px-2 sm:px-4" 
                     >
                       {articlesByYear[year]?.map((article) => (
                         <div key={article.id}>

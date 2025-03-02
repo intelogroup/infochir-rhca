@@ -76,7 +76,7 @@ export const HeroSection = () => {
   }, [cycleCount]);
 
   return (
-    <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(80vh-4rem-30px)] pt-20 md:pt-28 z-0">
+    <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(70vh-4rem)] sm:min-h-[calc(80vh-4rem-30px)] pt-16 sm:pt-20 md:pt-28 z-0">
       {/* Base gradient background layer */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#348d57] to-[#348d57] opacity-90 z-0"></div>
       
@@ -90,7 +90,7 @@ export const HeroSection = () => {
             className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-70 z-0`}
           />
           <motion.div 
-            className="absolute bottom-0 right-0 w-[75%] h-[calc(4/5*120%-30px)] md:h-[calc(3/4*120%-30px)] lg:h-[calc(2/3*120%-30px)] z-2"
+            className="absolute bottom-0 right-0 w-[85%] sm:w-[75%] h-[calc(4/5*120%-30px)] md:h-[calc(3/4*120%-30px)] lg:h-[calc(2/3*120%-30px)] z-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -124,25 +124,25 @@ export const HeroSection = () => {
       {/* Content layer - increased z-index to stay on top */}
       <div className="relative max-w-7xl mx-auto text-left z-10">
         <div className="max-w-xl lg:max-w-3xl">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 animate-fade-up tracking-tight md:whitespace-nowrap whitespace-normal">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 animate-fade-up tracking-tight md:whitespace-nowrap whitespace-normal">
             Votre espace scientifique<br className="md:hidden" /> en ligne
           </h1>
-          <p className="text-base sm:text-lg text-white/90 mb-8 animate-fade-up leading-relaxed">
+          <p className="text-sm sm:text-base md:text-lg text-white/90 mb-6 sm:mb-8 animate-fade-up leading-relaxed">
             La plateforme de référence pour les professionnels de santé en Haïti
           </p>
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-3 sm:gap-4">
             <Button 
-              size="lg" 
+              size="default"
               variant="secondary" 
-              className="group bg-white hover:bg-white/90 text-[#122db0] font-medium"
+              className="group bg-white hover:bg-white/90 text-[#122db0] font-medium text-xs sm:text-sm md:text-base py-1.5 sm:py-2"
               onClick={() => navigate('/submission')}
             >
               Soumettre votre article
-              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="ml-1.5 sm:ml-2 h-3.5 w-3.5 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform" />
             </Button>
             <Button 
-              size="lg" 
-              className="bg-transparent hover:bg-white/10 text-white border-white border"
+              size="default"
+              className="bg-transparent hover:bg-white/10 text-white border-white border text-xs sm:text-sm md:text-base py-1.5 sm:py-2"
               onClick={() => navigate('/about')}
             >
               En savoir plus
