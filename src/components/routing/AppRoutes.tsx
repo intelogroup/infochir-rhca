@@ -8,10 +8,12 @@ import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { RouteWrapper } from "./RouteWrapper";
 import { AdminRouteWrapper } from "./AdminRouteWrapper";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
+import { useScrollToTop } from "@/hooks/useScrollToTop";
 import * as LazyComponents from "@/config/routes";
 
 export const AppRoutes = () => {
   const location = useLocation();
+  useScrollToTop();
 
   return (
     <ErrorBoundary>
@@ -22,6 +24,7 @@ export const AppRoutes = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
           >
             <Routes location={location}>
               {/* Public Routes */}
@@ -40,6 +43,8 @@ export const AppRoutes = () => {
                 <Route path="/jobs" element={<RouteWrapper component={LazyComponents.Opportunities} />} />
                 <Route path="/adc" element={<RouteWrapper component={LazyComponents.ADC} />} />
                 <Route path="/index-medicus" element={<RouteWrapper component={LazyComponents.IndexMedicus} />} />
+                {/* Add specific article route */}
+                <Route path="/articles/:id" element={<RouteWrapper component={LazyComponents.ArticleDetail} />} />
               </Route>
 
               {/* Admin Routes */}

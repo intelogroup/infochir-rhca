@@ -1,11 +1,14 @@
 
 import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 export const useScrollToTop = () => {
+  const { pathname } = useLocation();
+  
   useEffect(() => {
     const performScroll = () => {
       try {
-        console.log("[useScrollToTop] Attempting to scroll to top");
+        console.log("[useScrollToTop] Attempting to scroll to top for path:", pathname);
         
         window.scrollTo({
           top: 0,
@@ -25,16 +28,7 @@ export const useScrollToTop = () => {
       }
     };
 
-    // Execute scroll on mount
+    // Execute scroll on route change
     performScroll();
-
-    // Listen for route changes via URL
-    const handleRouteChange = () => {
-      console.log("[useScrollToTop] Route change detected");
-      performScroll();
-    };
-
-    window.addEventListener('popstate', handleRouteChange);
-    return () => window.removeEventListener('popstate', handleRouteChange);
-  }, []);
+  }, [pathname]);
 };

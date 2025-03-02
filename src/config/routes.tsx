@@ -16,6 +16,7 @@ export const Annuaire = lazy(() => import("@/pages/Annuaire"));
 export const Opportunities = lazy(() => import("@/pages/Opportunities"));
 export const RHCADirectives = lazy(() => import("@/pages/rhca/Directives"));
 export const IGMDirectives = lazy(() => import("@/pages/igm/Directives"));
+export const ArticleDetail = lazy(() => import("@/pages/articles/ArticleDetail"));
 
 // Admin routes
 export const AdminDashboard = lazy(() => import("@/pages/admin/Dashboard"));

@@ -3,6 +3,7 @@ import React from "react";
 import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Article } from "../../types";
+import { useNavigate } from "react-router-dom";
 
 interface ViewActionProps {
   article?: Article;
@@ -10,6 +11,8 @@ interface ViewActionProps {
 }
 
 export const ViewAction: React.FC<ViewActionProps> = ({ article, showViewButton = false }) => {
+  const navigate = useNavigate();
+  
   if (!showViewButton || !article) {
     return null;
   }
@@ -19,7 +22,7 @@ export const ViewAction: React.FC<ViewActionProps> = ({ article, showViewButton 
       variant="outline"
       size="sm"
       className="gap-2"
-      onClick={() => window.location.href = `/articles/${article.id}`}
+      onClick={() => navigate(`/articles/${article.id}`)}
     >
       <ExternalLink className="h-4 w-4" />
       Voir

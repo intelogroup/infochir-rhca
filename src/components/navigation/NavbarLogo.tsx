@@ -1,9 +1,12 @@
 
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 export const NavbarLogo = () => {
+  const navigate = useNavigate();
+  
   const handleLogoClick = () => {
-    window.location.href = '/';
+    navigate('/');
   };
   
   return (

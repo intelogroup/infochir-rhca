@@ -23,11 +23,14 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
   showViewButton = false,
   article,
   onCitation = () => {},
-  onShare = () => {},
+  onShare,
 }) => {
   return (
     <div className="flex gap-2">
-      <ShareAction onShare={onShare} />
+      <ShareAction 
+        onShare={onShare} 
+        articleId={article?.id}
+      />
       <PdfActions 
         title={title}
         pdfUrl={pdfUrl}
