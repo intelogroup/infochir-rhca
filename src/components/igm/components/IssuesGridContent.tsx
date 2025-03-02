@@ -61,14 +61,10 @@ export const IssuesGridContent = ({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
-      {viewMode === "grid" ? (
-        <YearGroupList 
-          issuesByYear={issuesByYear}
-          sortedYears={sortedYears}
-        />
-      ) : (
-        <IssuesTable issues={sortedIssues} />
-      )}
+      <YearGroupList 
+        issuesByYear={issuesByYear}
+        sortedYears={sortedYears}
+      />
 
       {hasMore && (
         <div className="flex justify-center mt-8">

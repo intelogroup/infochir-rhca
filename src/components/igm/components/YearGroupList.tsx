@@ -1,7 +1,5 @@
-
 import React from "react";
 import { Issue } from "../types";
-import { IssueCard } from "../IssueCard";
 
 interface YearGroupListProps {
   issuesByYear: Record<number, Issue[]>;
@@ -19,7 +17,9 @@ export const YearGroupList = ({ issuesByYear, sortedYears }: YearGroupListProps)
         <div key={year} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {issuesByYear[year].map((issue) => (
-              <IssueCard key={issue.id} issue={issue} />
+              <div key={issue.id}>
+                {/* Issue card would be rendered here */}
+              </div>
             ))}
           </div>
         </div>
