@@ -1,42 +1,110 @@
 
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRef } from "react";
+import { useEffect, useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
+const images = [
+  '/lovable-uploads/75589792-dc14-4d53-9aae-5796c76a3b39.png',
+  '/lovable-uploads/4e3c1f79-c9cc-4d01-8520-1af84d350a2a.png',
+  '/lovable-uploads/745435b6-9abc-4051-b168-cf77c96ed9a0.png'
+];
+
+const gradients = [
+  'from-[#1E40AF] via-[#41b06e] to-[#41b06e]',
+  'from-[#1E3A8A] via-[#4caf50] to-[#4caf50]',
+  'from-[#0C4A6E] via-[#45a049] to-[#45a049]'
+];
+
 export const HeroSection = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [cycleCount, setCycleCount] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
   const sectionRef = useRef(null);
+  const intervalRef = useRef(null);
   const navigate = useNavigate();
 
+  const startImageCycle = () => {
+    if (cycleCount >= 3) return;
+    
+    intervalRef.current = setInterval(() => {
+      setCurrentIndex((prev) => {
+        const nextIndex = (prev + 1) % images.length;
+        if (nextIndex === 0) {
+          setCycleCount(count => count + 1);
+        }
+        return nextIndex;
+      });
+    }, 6000);
+  };
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+        if (entry.isIntersecting) {
+          setCycleCount(0);
+          startImageCycle();
+        } else {
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+          }
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+    };
+  }, [isVisible]);
+
+  useEffect(() => {
+    if (cycleCount >= 3 && intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+  }, [cycleCount]);
+
   return (
-    <section 
-      ref={sectionRef} 
-      className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(100vh-4rem)] pt-20 md:pt-28"
-    >
-      {/* Background image */}
-      <img 
-        src="/lovable-uploads/86c46dd1-7e7a-44bc-bbf5-e3727e954bb7.png"
-        alt="Medical background" 
-        className="absolute inset-0 w-full h-full object-cover object-center"
-        style={{ zIndex: 1 }}
-        onError={(e) => {
-          console.error("Hero image failed to load:", e);
-          e.currentTarget.style.display = 'none';
-          e.currentTarget.parentElement.style.backgroundColor = '#f0f0f0';
-        }}
-      />
+    <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(80vh-4rem-30px)] pt-20 md:pt-28 z-0">
+      <AnimatePresence mode="wait">
+        <div
+          key={currentIndex}
+          className="absolute inset-0 z-0"
+        >
+          <div 
+            className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-90 z-0`}
+          />
+          <motion.div 
+            className="absolute bottom-0 right-0 w-[65%] h-[calc(4/5*104%-30px)] md:h-[calc(3/4*104%-30px)] lg:h-[calc(2/3*104%-30px)] z-0"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            style={{ 
+              backgroundImage: `url(${images[currentIndex]})`,
+              backgroundSize: 'contain',
+              backgroundPosition: 'right bottom',
+              backgroundRepeat: 'no-repeat',
+              opacity: 0.9,
+              right: '-5%',  // Move 5% more to the right
+              paddingLeft: '5px'
+            }}
+          />
+        </div>
+      </AnimatePresence>
       
-      {/* Gradient overlay */}
-      <div 
-        className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] opacity-60"
-        style={{ 
-          mixBlendMode: 'multiply',
-          zIndex: 2,
-        }}
-      />
-      
-      {/* Content container - removing 'relative' class to prevent new stacking context */}
-      <div className="max-w-7xl mx-auto text-left" style={{ position: 'relative', zIndex: 3 }}>
+      <div className="relative max-w-7xl mx-auto text-left z-10">
         <div className="max-w-xl lg:max-w-3xl">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 animate-fade-up tracking-tight md:whitespace-nowrap whitespace-normal">
             Votre espace scientifique<br className="md:hidden" /> en ligne
