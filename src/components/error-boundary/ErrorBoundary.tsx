@@ -49,8 +49,11 @@ export class ErrorBoundary extends React.Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     const boundaryName = this.props.name || 'unnamed';
     
-    // Use our enhanced error logger
-    logReactError(error, errorInfo, boundaryName);
+    // Use our enhanced error logger with proper typing
+    // Ensuring the componentStack is always available
+    logReactError(error, {
+      componentStack: errorInfo.componentStack || 'No component stack available'
+    }, boundaryName);
 
     // Add specific error handling for payment flows
     if (error.message.includes('Stripe') || error.message.includes('stripe.com')) {

@@ -298,6 +298,48 @@ export type Database = {
         }
         Relationships: []
       }
+      download_events: {
+        Row: {
+          created_at: string | null
+          document_id: string
+          document_type: string
+          error_details: string | null
+          file_name: string
+          id: string
+          ip_address: string | null
+          referrer: string | null
+          screen_size: string | null
+          status: string
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          document_id: string
+          document_type: string
+          error_details?: string | null
+          file_name: string
+          id?: string
+          ip_address?: string | null
+          referrer?: string | null
+          screen_size?: string | null
+          status: string
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          document_id?: string
+          document_type?: string
+          error_details?: string | null
+          file_name?: string
+          id?: string
+          ip_address?: string | null
+          referrer?: string | null
+          screen_size?: string | null
+          status?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       members: {
         Row: {
           avatar_url: string | null
@@ -941,6 +983,28 @@ export type Database = {
           currency: string
         }
         Returns: Json
+      }
+      get_document_download_stats: {
+        Args: {
+          doc_id: string
+        }
+        Returns: {
+          total_downloads: number
+          successful_downloads: number
+          failed_downloads: number
+          last_download_time: string
+        }[]
+      }
+      get_download_stats_by_type: {
+        Args: {
+          doc_type: string
+        }
+        Returns: {
+          total_downloads: number
+          successful_downloads: number
+          failed_downloads: number
+          unique_documents: number
+        }[]
       }
       has_role: {
         Args: {
