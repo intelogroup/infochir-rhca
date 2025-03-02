@@ -130,7 +130,7 @@ export const RhcaTable: React.FC<RhcaTableProps> = ({ articles }) => {
         return null;
       },
       size: 50,
-    },
+    }),
     {
       accessorKey: 'title',
       header: 'Title',
