@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   ColumnDef,
   flexRender,
@@ -18,12 +18,55 @@ import {
 import { RhcaArticle } from './types';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { Download } from 'lucide-react';
+import { toast } from 'sonner';
+import { downloadFileFromStorage, checkFileExistsInBucket } from '@/lib/pdf-utils';
+import { useNavigate } from 'react-router-dom';
 
 interface RhcaTableProps {
   articles: RhcaArticle[];
 }
 
 export const RhcaTable: React.FC<RhcaTableProps> = ({ articles }) => {
+  const navigate = useNavigate();
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  
+  const handleDownload = async (article: RhcaArticle) => {
+    if (!article.pdfFileName) {
+      toast.error("Le fichier PDF n'est pas disponible pour cet article");
+      return;
+    }
+    
+    try {
+      setDownloadingId(article.id);
+      
+      // Check if file exists in bucket before attempting download
+      const bucketName = 'rhca-pdfs';
+      const fileExists = await checkFileExistsInBucket(bucketName, article.pdfFileName);
+      
+      if (!fileExists) {
+        toast.error(`Le fichier "${article.pdfFileName}" n'existe pas dans la bibliothèque`, {
+          description: "Contactez l'administrateur pour assistance"
+        });
+        return;
+      }
+      
+      await downloadFileFromStorage(bucketName, article.pdfFileName);
+      
+    } catch (err) {
+      console.error("[RhcaTable:ERROR] Download failed:", err);
+      toast.error("Échec du téléchargement", {
+        description: err instanceof Error ? err.message : "Une erreur inattendue s'est produite"
+      });
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+  
+  const handleRowClick = (articleId: string) => {
+    navigate(`/rhca/article/${articleId}`);
+  };
+
   const columns: ColumnDef<RhcaArticle>[] = [
     {
       accessorKey: 'title',
@@ -69,10 +112,37 @@ export const RhcaTable: React.FC<RhcaTableProps> = ({ articles }) => {
     {
       accessorKey: 'specialty',
       header: 'Specialty',
+      cell: ({ row }) => (
+        <div>
+          {row.original.specialty || '-'}
+        </div>
+      ),
     },
     {
       accessorKey: 'downloads',
       header: 'Downloads',
+      cell: ({ row }) => {
+        const article = row.original;
+        const isDownloading = downloadingId === article.id;
+        
+        return (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDownload(article);
+            }}
+            disabled={isDownloading || !article.pdfFileName}
+            className={`flex items-center ${
+              !article.pdfFileName ? 'text-gray-400 cursor-not-allowed' : 
+              isDownloading ? 'text-gray-400 cursor-wait' : 'text-gray-600 hover:text-emerald-600'
+            }`}
+            title={article.pdfFileName ? "Télécharger le PDF" : "PDF non disponible"}
+          >
+            <Download className={`h-4 w-4 mr-1.5 ${isDownloading ? 'animate-pulse' : ''}`} />
+            <span>{article.downloads || 0}</span>
+          </button>
+        );
+      },
     },
     {
       accessorKey: 'shares',
@@ -113,6 +183,8 @@ export const RhcaTable: React.FC<RhcaTableProps> = ({ articles }) => {
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
+                onClick={() => handleRowClick(row.original.id)}
+                className="cursor-pointer hover:bg-gray-50"
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
