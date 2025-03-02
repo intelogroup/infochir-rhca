@@ -1,9 +1,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import type { Issue, DatabaseIssue } from "../types";
+import type { Issue } from "../types";
 import { toast } from "sonner";
-import { mapDatabaseIssueToIssue } from "../types";
 
 export const useIGMIssues = () => {
   console.log('[useIGMIssues] Hook initializing');
