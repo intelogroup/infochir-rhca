@@ -46,11 +46,11 @@ export const useIGMIssues = () => {
           lastItem: data[data.length - 1]
         });
 
-        // Process the issue data with correct bucket references
+        // Process the issue data with standardized bucket references
         const issues = data.map((item) => {
           const mappedIssue = mapDatabaseIssueToIssue(item as DatabaseIssue);
           
-          // Add PDF URL if a cover image filename exists
+          // Process coverImage URL if it's a filename rather than a full URL
           if (mappedIssue.coverImage && !mappedIssue.coverImage.startsWith('http')) {
             const { data: coverData } = supabase.storage
               .from('igm_covers')
@@ -59,9 +59,9 @@ export const useIGMIssues = () => {
             mappedIssue.coverImage = coverData.publicUrl;
           }
           
-          // Add PDF URL if available (assuming a standard naming convention)
-          if (mappedIssue.volume && mappedIssue.issue) {
-            const pdfFilename = `IGM_vol_${mappedIssue.volume}_no_${mappedIssue.issue}.pdf`;
+          // Process PDF URL using standard naming convention if needed
+          if (!mappedIssue.pdfUrl && mappedIssue.volume && mappedIssue.issue) {
+            const pdfFilename = `IGM_vol_${mappedIssue.volume.padStart(2, '0')}_no_${mappedIssue.issue}.pdf`;
             const { data: pdfData } = supabase.storage
               .from('igm-pdfs')
               .getPublicUrl(pdfFilename);
