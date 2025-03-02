@@ -37,7 +37,7 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
             {issue.title || 'Sans titre'}
           </h3>
           <div className="text-sm font-medium text-gray-700 mt-1">
-            {issue.volume || 'Vol. -'} • {issue.issue || 'No. -'}
+            {issue.volume ? `Vol. ${issue.volume}` : 'Vol. -'} • {issue.issue ? `No. ${issue.issue}` : 'No. -'}
           </div>
           <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
             <Calendar className="h-4 w-4 flex-shrink-0" />
