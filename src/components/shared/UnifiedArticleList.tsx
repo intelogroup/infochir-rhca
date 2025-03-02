@@ -4,6 +4,7 @@ import { RhcaCard } from "@/components/rhca/RhcaCard";
 import { RhcaTable } from "@/components/rhca/RhcaTable";
 import { IssueCard } from "@/components/igm/IssueCard";
 import { IndexMedicusCard } from "@/components/index-medicus/IndexMedicusCard";
+import { ArticleTable } from "@/components/index-medicus/ArticleTable";
 import type { RhcaArticle } from "@/components/rhca/types";
 import type { Issue } from "@/components/igm/types";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -61,12 +62,11 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
               ))}
             </div>
           ) : (
-            <div className="overflow-hidden border border-gray-200 rounded-lg">
-              {/* Table view for Index Medicus articles can be implemented here */}
-              <div className="bg-white p-6 text-center">
-                <p>Table view not yet implemented for Index Medicus</p>
-              </div>
-            </div>
+            <ArticleTable 
+              articles={articles}
+              onTagClick={onTagClick}
+              selectedTags={selectedTags}
+            />
           )}
         </div>
       )}
