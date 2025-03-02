@@ -104,7 +104,7 @@ export function ArticleTable({ articles, onTagClick, selectedTags = [] }: Articl
                   pdfUrl={article.pdfUrl}
                   hideDownload={!article.pdfUrl}
                   article={article}
-                  showViewButton
+                  showViewButton={true}
                 />
               </TableCell>
             </TableRow>
