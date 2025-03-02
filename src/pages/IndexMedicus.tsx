@@ -23,11 +23,11 @@ const IndexMedicus = () => {
           </div>
 
           <div className="text-center mb-8 sm:mb-12 lg:mb-16 animate-fade-up">
-            <div className="bg-gradient-to-r from-primary to-secondary inline-flex rounded-full p-2 mb-6">
+            <div className="inline-flex rounded-full p-2 mb-6">
               <img 
                 src="/lovable-uploads/f2409464-47cf-4348-ada0-e328e86be01b.png"
                 alt="Index Medicus Logo"
-                className="h-12 w-12 sm:h-16 sm:w-16 lg:h-24 lg:w-24 mx-auto mb-2 sm:mb-4 object-contain bg-white rounded-full p-1 shadow-md"
+                className="h-12 w-12 sm:h-16 sm:w-16 lg:h-24 lg:w-24 mx-auto mb-2 sm:mb-4 object-contain bg-white rounded-full p-1 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
               />
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-4">
@@ -68,7 +68,7 @@ const IndexMedicus = () => {
             
             <TabsContent value="articles" className="mt-6">
               <div className="bg-white rounded-lg p-4 sm:p-6 lg:p-8 shadow-md border border-gray-100">
-                <Suspense fallback={<LoadingSpinner variant="medical" text="Chargement des articles..." />}>
+                <Suspense fallback={<LoadingSpinner variant="fun" text="Chargement des articles..." />}>
                   <ArticleGrid viewMode="table" />
                 </Suspense>
               </div>

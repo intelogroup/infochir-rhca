@@ -12,7 +12,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 const LoadingSkeleton: FC = () => (
   <div className="space-y-4">
     <div className="flex justify-center py-8">
-      <LoadingSpinner size="lg" variant="medical" text="Chargement de l'annuaire..." />
+      <LoadingSpinner size="lg" variant="fun" text="Chargement de l'annuaire..." />
     </div>
     {Array.from({ length: 5 }).map((_, i) => (
       <Skeleton key={i} className="w-full h-16 bg-gradient-to-r from-gray-100/50 via-gray-100 to-gray-100/50" />

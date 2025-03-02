@@ -6,6 +6,7 @@ import { AlertTriangle, RefreshCcw } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export const StatsSection = () => {
   const { data: statsData, isLoading, error, refetch } = useQuery({
@@ -54,6 +55,9 @@ export const StatsSection = () => {
     return (
       <section className="py-12 bg-white" aria-label="Statistiques">
         <div className="container mx-auto px-4">
+          <div className="text-center mb-8">
+            <LoadingSpinner variant="fun" text="Chargement des statistiques" />
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="p-6 bg-gray-50 rounded-xl">

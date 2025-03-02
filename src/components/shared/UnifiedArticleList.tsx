@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { RhcaCard } from "@/components/rhca/RhcaCard";
 import { RhcaTable } from "@/components/rhca/RhcaTable";
@@ -10,6 +9,7 @@ import type { Issue } from "@/components/igm/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 interface UnifiedArticleListProps {
   rhcaArticles?: RhcaArticle[];
@@ -36,12 +36,8 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
 }) => {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {Array.from({ length: 6 }).map((_, index) => (
-          <div key={index} className="flex flex-col space-y-3">
-            <Skeleton className="h-[250px] w-full rounded-xl" />
-          </div>
-        ))}
+      <div className="py-8">
+        <LoadingSpinner variant="fun" text={variant === 'index-medicus' ? "Chargement des publications..." : "Chargement des données..."} />
       </div>
     );
   }

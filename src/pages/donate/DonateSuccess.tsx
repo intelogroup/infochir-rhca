@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { Card, CardContent } from "@/components/ui/card";
@@ -51,7 +52,7 @@ const DonateSuccess = () => {
     return (
       <MainLayout>
         <div className="flex items-center justify-center min-h-screen">
-          <LoadingSpinner size="md" text="Vérification de votre paiement..." />
+          <LoadingSpinner size="lg" variant="fun" text="Vérification de votre paiement..." />
         </div>
       </MainLayout>
     );
