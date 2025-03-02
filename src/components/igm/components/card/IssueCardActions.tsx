@@ -4,6 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Download, Share2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { downloadPDF } from "@/lib/analytics/download-analytics";
+import { createLogger } from "@/lib/error-logger";
+
+const logger = createLogger('IssueCardActions');
 
 interface IssueCardActionsProps {
   pdfUrl?: string;
@@ -16,6 +20,8 @@ export const IssueCardActions: React.FC<IssueCardActionsProps> = ({
   id,
   title
 }) => {
+  const [isDownloading, setIsDownloading] = React.useState(false);
+
   const handleDownload = async (e: React.MouseEvent) => {
     e.stopPropagation();
     
@@ -25,21 +31,26 @@ export const IssueCardActions: React.FC<IssueCardActionsProps> = ({
     }
     
     try {
-      // Increment the download count in the database
-      await supabase.rpc('increment_count', {
-        table_name: 'articles',
-        column_name: 'downloads',
-        row_id: id
+      setIsDownloading(true);
+      
+      // Use our enhanced download function
+      const success = await downloadPDF({
+        url: pdfUrl,
+        fileName: `IGM_${title.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`,
+        documentId: id,
+        documentType: 'igm'
       });
       
-      // Open the PDF in a new tab
-      window.open(pdfUrl, '_blank');
-      toast.success("Téléchargement du PDF en cours...");
+      if (!success) {
+        logger.error(new Error('Download failed'), { id, pdfUrl });
+      }
     } catch (error) {
-      console.error("Error incrementing download count:", error);
-      // Still open the PDF even if the count update fails
-      window.open(pdfUrl, '_blank');
-      toast.success("Téléchargement du PDF en cours...");
+      logger.error(error, { action: 'handleDownload', id, pdfUrl });
+      toast.error("Erreur lors du téléchargement", {
+        description: "Veuillez réessayer plus tard"
+      });
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -71,7 +82,7 @@ export const IssueCardActions: React.FC<IssueCardActionsProps> = ({
         row_id: id
       });
     } catch (error) {
-      console.error("Error sharing:", error);
+      logger.error(error, { action: 'handleShare', id });
       if (error instanceof Error && error.name !== 'AbortError') {
         toast.error("Erreur lors du partage");
       }
@@ -93,9 +104,9 @@ export const IssueCardActions: React.FC<IssueCardActionsProps> = ({
         size="sm"
         className="h-7 w-7 p-0"
         onClick={handleDownload}
-        disabled={!pdfUrl}
+        disabled={!pdfUrl || isDownloading}
       >
-        <Download className="h-3.5 w-3.5" />
+        <Download className={`h-3.5 w-3.5 ${isDownloading ? 'animate-pulse' : ''}`} />
       </Button>
     </div>
   );

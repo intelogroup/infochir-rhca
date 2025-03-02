@@ -8,10 +8,14 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "sonner";
+import { createLogger } from "@/lib/error-logger";
+
+// Create application-level logger
+const appLogger = createLogger('Application');
 
 // Enhanced browser compatibility detection
 const browserCompatibilityCheck = () => {
-  console.log("[Initialization] Starting browser compatibility check");
+  appLogger.log("Starting browser compatibility check");
   
   const requiredFeatures = {
     fetch: 'fetch' in window,
@@ -20,12 +24,12 @@ const browserCompatibilityCheck = () => {
     Map: 'Map' in window
   };
 
-  console.log("[Compatibility] Feature detection results:", requiredFeatures);
+  appLogger.log("Feature detection results:", requiredFeatures);
 
   const isModernBrowser = Object.values(requiredFeatures).every(Boolean);
   
   if (!isModernBrowser) {
-    console.warn('[Compatibility] Browser missing required features:', 
+    appLogger.warn('Browser missing required features:', 
       Object.entries(requiredFeatures)
         .filter(([, supported]) => !supported)
         .map(([feature]) => feature)
@@ -37,10 +41,9 @@ const browserCompatibilityCheck = () => {
 
 // Enhanced error handling function - doesn't use direct toast
 const handleInitializationError = (error: Error) => {
-  console.error('[Initialization Error]', {
-    message: error.message,
-    stack: error.stack,
-    timestamp: new Date().toISOString()
+  appLogger.error(error, {
+    timestamp: new Date().toISOString(),
+    phase: 'initialization'
   });
 
   // Create error message in DOM instead of using toast
@@ -67,7 +70,7 @@ const AppWithProviders = () => {
   
   return (
     <React.StrictMode>
-      <ErrorBoundary>
+      <ErrorBoundary name="AppRoot">
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>
             {!isModernBrowser && (
@@ -87,7 +90,7 @@ const AppWithProviders = () => {
 
 // Initialize application with enhanced logging and error handling
 const initializeApp = async () => {
-  console.log("[Initialization] Starting application initialization");
+  appLogger.log("Starting application initialization");
   console.time("App Initialization");
 
   try {
@@ -96,18 +99,17 @@ const initializeApp = async () => {
       throw new Error('[Critical] Root element not found in DOM');
     }
 
-    console.log("[Initialization] Creating React root");
+    appLogger.log("Creating React root");
     const root = ReactDOM.createRoot(rootElement);
 
-    console.log("[Initialization] Rendering application");
+    appLogger.log("Rendering application");
     root.render(<AppWithProviders />);
 
     console.timeEnd("App Initialization");
-    console.log("[Initialization] Application successfully mounted");
+    appLogger.log("Application successfully mounted");
 
   } catch (error) {
-    console.error('[Critical Initialization Error]', {
-      error,
+    appLogger.error(error, {
       timestamp: new Date().toISOString(),
       userAgent: navigator.userAgent,
       url: window.location.href
@@ -118,17 +120,15 @@ const initializeApp = async () => {
 
 // Wrap the entire initialization in error boundary
 try {
-  console.log("[Bootstrap] Starting application bootstrap");
+  appLogger.log("Starting application bootstrap");
   initializeApp().catch(error => {
-    console.error('[Async Initialization Error]', {
-      error,
+    appLogger.error(error, {
       timestamp: new Date().toISOString()
     });
     handleInitializationError(error as Error);
   });
 } catch (error) {
-  console.error('[Bootstrap Error]', {
-    error,
+  appLogger.error(error, {
     timestamp: new Date().toISOString()
   });
   handleInitializationError(error as Error);
@@ -136,12 +136,11 @@ try {
 
 // Add global error handler for uncaught errors
 window.onerror = function(msg, url, lineNo, columnNo, error) {
-  console.error('[Uncaught Error]', {
+  appLogger.error(error || new Error(String(msg)), {
     message: msg,
     url,
     lineNo,
     columnNo,
-    error,
     timestamp: new Date().toISOString()
   });
   return false;
@@ -149,8 +148,26 @@ window.onerror = function(msg, url, lineNo, columnNo, error) {
 
 // Add handler for unhandled promise rejections
 window.addEventListener('unhandledrejection', event => {
-  console.error('[Unhandled Promise Rejection]', {
-    reason: event.reason,
+  appLogger.error(event.reason, {
+    type: 'unhandledRejection',
     timestamp: new Date().toISOString()
   });
 });
+
+// Performance measurements
+if (process.env.NODE_ENV !== 'production') {
+  // Monitor long tasks
+  const observer = new PerformanceObserver((list) => {
+    for (const entry of list.getEntries()) {
+      if (entry.duration > 100) { // Tasks longer than 100ms
+        appLogger.warn('Long task detected:', {
+          duration: `${entry.duration.toFixed(2)}ms`,
+          name: entry.name,
+          startTime: entry.startTime
+        });
+      }
+    }
+  });
+  
+  observer.observe({ entryTypes: ['longtask'] });
+}

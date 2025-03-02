@@ -9,10 +9,12 @@ import {
 } from "@/components/ui/alert";
 import { getLoadingDiagnostics } from "./utils/diagnostics";
 import { getErrorMessage } from "./utils/errorMessages";
+import { logReactError } from "@/lib/error-logger";
 
 interface Props {
   children: React.ReactNode;
   fallback?: React.ReactNode;
+  name?: string;
 }
 
 interface State {
@@ -24,7 +26,7 @@ interface State {
 export class ErrorBoundary extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    console.log("[ErrorBoundary] Initializing");
+    console.log(`[ErrorBoundary:${props.name || 'unnamed'}] Initializing`);
     this.state = { hasError: false };
   }
 
@@ -45,14 +47,10 @@ export class ErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error("[ErrorBoundary] Error caught:", {
-      error,
-      message: error.message,
-      stack: error.stack,
-      name: error.name,
-      componentStack: errorInfo.componentStack,
-      errorInfo
-    });
+    const boundaryName = this.props.name || 'unnamed';
+    
+    // Use our enhanced error logger
+    logReactError(error, errorInfo, boundaryName);
 
     // Add specific error handling for payment flows
     if (error.message.includes('Stripe') || error.message.includes('stripe.com')) {
@@ -70,6 +68,9 @@ export class ErrorBoundary extends React.Component<Props, State> {
     if (error.message.includes('Failed to fetch dynamically imported module')) {
       console.error("[ErrorBoundary] Chunk loading diagnostic:", getLoadingDiagnostics());
     }
+    
+    // Set error info in state
+    this.setState({ errorInfo });
   }
 
   handleRetry = () => {

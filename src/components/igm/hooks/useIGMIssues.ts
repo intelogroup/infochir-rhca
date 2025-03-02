@@ -3,15 +3,18 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Issue } from "../types";
 import { toast } from "sonner";
+import { createLogger } from "@/lib/error-logger";
+
+const logger = createLogger('useIGMIssues');
 
 export const useIGMIssues = () => {
-  console.log('[useIGMIssues] Hook initializing');
+  logger.log('Hook initializing');
   const startTime = Date.now();
 
   return useQuery({
     queryKey: ["igm-issues"],
     queryFn: async () => {
-      console.log('[useIGMIssues] Starting data fetch at:', Date.now() - startTime, 'ms');
+      logger.log(`Starting data fetch at: ${Date.now() - startTime}ms`);
 
       try {
         // Fetch IGM articles from the articles table instead of igm_unified_view
@@ -21,15 +24,15 @@ export const useIGMIssues = () => {
           .eq('source', 'IGM')
           .order('publication_date', { ascending: false });
 
-        console.log('[useIGMIssues] Supabase query completed at:', Date.now() - startTime, 'ms');
+        logger.log(`Supabase query completed at: ${Date.now() - startTime}ms`);
 
         if (error) {
-          console.error("[useIGMIssues] Supabase error:", {
-            error,
+          logger.error(error, {
             message: error.message,
             details: error.details,
             hint: error.hint
           });
+          
           toast.error("Erreur lors du chargement des numéros", {
             description: error.message
           });
@@ -37,11 +40,11 @@ export const useIGMIssues = () => {
         }
 
         if (!data || data.length === 0) {
-          console.log('[useIGMIssues] No data returned from Supabase');
+          logger.log('No data returned from Supabase');
           return [];
         }
 
-        console.log('[useIGMIssues] Raw data from Supabase:', {
+        logger.log('Raw data from Supabase:', {
           count: data.length,
           firstItem: data[0],
           lastItem: data[data.length - 1]
@@ -90,7 +93,7 @@ export const useIGMIssues = () => {
         // Convert map to array
         const issues = Array.from(issuesMap.values());
 
-        console.log('[useIGMIssues] Processed issues:', {
+        logger.log('Processed issues:', {
           count: issues.length,
           timing: Date.now() - startTime,
           'ms': 'since initialization',
@@ -99,12 +102,12 @@ export const useIGMIssues = () => {
 
         return issues;
       } catch (error) {
-        console.error('[useIGMIssues] Error in query function:', {
-          error,
+        logger.error(error, {
           message: error instanceof Error ? error.message : 'Unknown error',
           stack: error instanceof Error ? error.stack : undefined,
           timing: Date.now() - startTime
         });
+        
         toast.error("Erreur lors du chargement des numéros", {
           description: error instanceof Error ? error.message : 'Une erreur inconnue est survenue'
         });
@@ -113,6 +116,19 @@ export const useIGMIssues = () => {
     },
     meta: {
       errorMessage: "Erreur lors du chargement des numéros"
-    }
+    },
+    // Add proper retry and stale time configuration
+    retry: (failureCount, error) => {
+      // Only retry network/timeout errors, not data errors
+      if (error instanceof Error && 
+          (error.message.includes('network') || 
+           error.message.includes('timeout'))) {
+        return failureCount < 3;
+      }
+      return false;
+    },
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000 // 10 minutes
   });
 };
