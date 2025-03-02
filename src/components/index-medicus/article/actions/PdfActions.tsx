@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Download, ExternalLink, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { checkFileExists, downloadPDF } from "@/lib/analytics/download-analytics";
+import { checkFileExists, downloadPDF } from "@/lib/analytics/download";
 import { createLogger } from "@/lib/error-logger";
 
 const logger = createLogger('PdfActions');
@@ -129,7 +128,6 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
     }
   };
 
-  // Display PDF verification state
   if (hideDownload) {
     return null;
   }

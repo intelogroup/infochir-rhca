@@ -1,10 +1,9 @@
-
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { downloadPDF } from "@/lib/analytics/download-analytics";
+import { downloadPDF } from "@/lib/analytics/download";
 import { createLogger } from "@/lib/error-logger";
 
 const logger = createLogger('IssueCardActions');
