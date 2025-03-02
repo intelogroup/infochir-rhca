@@ -3,7 +3,7 @@ import { useState } from "react";
 import IssuesSearch from "@/components/igm/IssuesSearch";
 import { IssuesGridContent } from "@/components/igm/components/IssuesGridContent";
 import { useIssuesState } from "@/components/igm/hooks/useIssuesState";
-import { SORT_OPTIONS } from "@/components/igm/constants/sortOptions";
+import { sortOptions } from "@/components/igm/constants/sortOptions";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import type { SortOption } from "@/components/igm/types";
@@ -90,7 +90,7 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
           setSortBy={setSortBy}
           dateRange={dateRange}
           setDateRange={setDateRange}
-          sortOptions={SORT_OPTIONS}
+          sortOptions={sortOptions}
           selectedCategories={selectedCategories}
           onCategoryChange={setSelectedCategories}
           availableCategories={availableCategories}

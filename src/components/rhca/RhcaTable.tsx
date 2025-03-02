@@ -56,6 +56,17 @@ export const RhcaTable: React.FC<RhcaTableProps> = ({ articles }) => {
       },
     },
     {
+      accessorKey: 'category',
+      header: 'Catégorie',
+      cell: ({ row }) => {
+        return (
+          <div>
+            {row.original.category || '-'}
+          </div>
+        );
+      },
+    },
+    {
       accessorKey: 'specialty',
       header: 'Specialty',
     },

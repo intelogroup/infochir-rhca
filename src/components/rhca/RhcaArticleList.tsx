@@ -1,133 +1,95 @@
-import * as React from "react";
-import { RhcaCard } from "./RhcaCard";
-import { RhcaTable } from "./RhcaTable";
-import type { RhcaArticle } from "./types";
-import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, FileText, ChevronDown } from "lucide-react";
+
+import React from 'react';
+import { Card, CardContent } from "@/components/ui/card";
+import { CalendarIcon, Download, Share2 } from "lucide-react";
+import { RhcaArticle } from './types';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
+import { useNavigate } from 'react-router-dom';
 
 interface RhcaArticleListProps {
   articles: RhcaArticle[];
-  viewMode: "grid" | "table";
 }
 
-export const RhcaArticleList: React.FC<RhcaArticleListProps> = ({ articles = [], viewMode }) => {
-  const [expandedYears, setExpandedYears] = React.useState<number[]>([]);
-
-  const articlesByYear = articles.reduce((acc, article) => {
-    const year = new Date(article.date).getFullYear();
-    if (!acc[year]) {
-      acc[year] = [];
-    }
-    acc[year].push(article);
-    return acc;
-  }, {} as Record<number, RhcaArticle[]>);
-
-  const sortedYears = Object.keys(articlesByYear)
-    .map(Number)
-    .sort((a, b) => b - a);
-
-  // Set the most recent year as expanded by default
-  React.useEffect(() => {
-    if (sortedYears.length > 0 && expandedYears.length === 0) {
-      setExpandedYears([sortedYears[0]]);
-    }
-  }, [sortedYears]);
-
-  const toggleYear = (year: number) => {
-    setExpandedYears(prev => 
-      prev.includes(year) 
-        ? prev.filter(y => y !== year)
-        : [...prev, year]
-    );
+export const RhcaArticleList: React.FC<RhcaArticleListProps> = ({ articles }) => {
+  const navigate = useNavigate();
+  
+  const handleArticleClick = (articleId: string) => {
+    navigate(`/rhca/article/${articleId}`);
   };
-
-  if (!articles?.length) {
-    return (
-      <div className="w-full flex items-center justify-center py-8">
-        <p className="text-gray-500 text-center">
-          Aucun article trouvé
-        </p>
-      </div>
-    );
-  }
-
-  if (viewMode === "grid") {
-    return (
-      <div className="space-y-8">
-        {sortedYears.map((year) => (
-          <motion.div 
-            key={year}
-            className="space-y-6 bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
+  
+  return (
+    <div className="space-y-4">
+      {articles.map((article) => {
+        const formattedDate = (() => {
+          try {
+            return format(new Date(article.date), 'dd MMMM yyyy', { locale: fr });
+          } catch (error) {
+            console.error('Error formatting date:', error);
+            return 'Date invalide';
+          }
+        })();
+        
+        return (
+          <Card 
+            key={article.id}
+            className="w-full overflow-hidden transition-all duration-300 hover:shadow-md cursor-pointer group border border-gray-200"
+            onClick={() => handleArticleClick(article.id)}
           >
-            <button
-              onClick={() => toggleYear(year)}
-              className="w-full"
-              aria-expanded={expandedYears.includes(year)}
-              aria-controls={`year-content-${year}`}
-            >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-200 pb-4 gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="bg-primary/5 p-2 rounded-lg">
-                    <Calendar className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 tracking-tight">
-                      {year}
-                    </h2>
-                    <p className="text-sm text-gray-600 mt-0.5">
-                      {articlesByYear[year].length} article{articlesByYear[year].length !== 1 ? 's' : ''}
-                    </p>
+            <CardContent className="p-4 sm:p-5">
+              <div className="space-y-2">
+                <div>
+                  <h3 className="text-lg font-semibold group-hover:text-emerald-600 transition-colors">
+                    {article.title}
+                  </h3>
+                  
+                  <div className="flex flex-wrap items-center text-sm text-gray-500 gap-y-1 mt-2">
+                    <div className="flex items-center mr-3">
+                      {article.volume && article.issue ? (
+                        <span>Volume {article.volume} • No. {article.issue}</span>
+                      ) : article.volume ? (
+                        <span>Volume {article.volume}</span>
+                      ) : (
+                        <span>Numéro non spécifié</span>
+                      )}
+                    </div>
+                    
+                    <div className="flex items-center">
+                      <CalendarIcon className="h-3.5 w-3.5 mr-1" />
+                      <span>{formattedDate}</span>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2 bg-secondary/15 px-4 py-2 rounded-full">
-                    <FileText className="h-4 w-4 text-gray-700" />
-                    <span className="text-sm font-medium text-gray-700">
-                      {articlesByYear[year].reduce((acc, article) => acc + Number(article.downloads || "0"), 0)} téléchargements
-                    </span>
+                
+                <p className="text-sm text-gray-600 line-clamp-2">
+                  {article.abstract}
+                </p>
+                
+                <div className="flex flex-wrap items-center justify-between pt-1">
+                  <div className="flex items-center space-x-3">
+                    {article.category && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                        {article.category}
+                      </span>
+                    )}
                   </div>
-                  <ChevronDown 
-                    className={`h-5 w-5 text-gray-500 transition-transform duration-200 ${
-                      expandedYears.includes(year) ? 'rotate-180' : ''
-                    }`}
-                  />
+                  
+                  <div className="flex items-center space-x-4 text-sm text-gray-500">
+                    <div className="flex items-center">
+                      <Download className="h-3.5 w-3.5 mr-1" />
+                      <span>{article.downloads || 0}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Share2 className="h-3.5 w-3.5 mr-1" />
+                      <span>{article.shares || 0}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </button>
-            
-            <AnimatePresence>
-              {expandedYears.includes(year) && (
-                <motion.div
-                  id={`year-content-${year}`}
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="overflow-hidden"
-                >
-                  <div className="grid grid-cols-1 gap-4 pt-4">
-                    {articlesByYear[year].map((article) => (
-                      <motion.div
-                        key={article.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <RhcaCard article={article} />
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        ))}
-      </div>
-    );
-  }
-
-  return <RhcaTable articles={articles} />;
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
+  );
 };
