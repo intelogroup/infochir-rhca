@@ -3,7 +3,6 @@ import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { ArticleMetadata } from './article/ArticleMetadata';
 import { ArticleActions } from './article/ArticleActions';
-import { ArticleTags } from './article/ArticleTags';
 import type { Article } from './types';
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
@@ -75,12 +74,6 @@ export const IndexMedicusCard: React.FC<IndexMedicusCardProps> = ({
           </p>
           
           <div className="mt-auto">
-            <ArticleTags 
-              tags={article.tags} 
-              onTagClick={onTagClick}
-              selectedTags={[]}
-            />
-            
             <div className="mt-4 flex justify-between items-center">
               <ArticleActions 
                 title={article.title}
