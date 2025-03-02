@@ -26,10 +26,16 @@ export const PdfStatusIndicator = ({
     unavailable: "PDF non disponible"
   };
   
+  const colors = {
+    checking: "text-ocean-light animate-pulse",
+    available: "text-green-500",
+    unavailable: "text-gray-300"
+  };
+  
   const icons = {
-    checking: <Loader2 className={cn(`${sizeClass} animate-spin text-primary/60`, className)} />,
-    available: <FileCheck className={cn(`${sizeClass} text-green-500`, className)} />,
-    unavailable: <FileX className={cn(`${sizeClass} text-gray-300`, className)} />
+    checking: <Loader2 className={cn(`${sizeClass} animate-spin text-ocean`, className)} />,
+    available: <FileCheck className={cn(`${sizeClass} ${colors.available}`, className)} />,
+    unavailable: <FileX className={cn(`${sizeClass} ${colors.unavailable}`, className)} />
   };
   
   return (
@@ -38,8 +44,8 @@ export const PdfStatusIndicator = ({
         <TooltipTrigger asChild>
           <span className="cursor-help">{icons[status]}</span>
         </TooltipTrigger>
-        <TooltipContent>
-          <p>{messages[status]}</p>
+        <TooltipContent className="bg-white border border-gray-200 shadow-md">
+          <p className={cn("text-sm", colors[status])}>{messages[status]}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

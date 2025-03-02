@@ -1,3 +1,4 @@
+
 import { Badge } from "@/components/ui/badge";
 import { Tag } from "lucide-react";
 
@@ -10,14 +11,16 @@ interface ArticleTagsProps {
 export const ArticleTags = ({ tags, onTagClick, selectedTags = [] }: ArticleTagsProps) => {
   return (
     <div className="flex flex-wrap gap-2 items-center">
-      <Tag className="h-4 w-4 text-gray-400" />
+      <Tag className="h-4 w-4 text-primary/50" />
       {tags.map((tag) => (
         <Badge
           key={tag}
           variant={selectedTags.includes(tag) ? "default" : "secondary"}
           className={`
-            cursor-pointer hover:bg-primary/10 transition-colors
-            ${selectedTags.includes(tag) ? 'bg-primary/20' : 'bg-primary/5'}
+            cursor-pointer transition-all duration-200 font-medium text-xs px-2.5 py-0.5
+            ${selectedTags.includes(tag) 
+              ? 'bg-primary text-white hover:bg-primary-light scale-105' 
+              : 'bg-secondary/10 text-secondary-dark hover:bg-secondary/20'}
           `}
           onClick={() => onTagClick?.(tag)}
         >

@@ -7,6 +7,7 @@ import type { Article } from './types';
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { PdfStatusIndicator } from '@/components/shared/PdfStatusIndicator';
+import { BookOpen, Bookmark } from "lucide-react";
 
 interface IndexMedicusCardProps {
   article: Article;
@@ -41,27 +42,34 @@ export const IndexMedicusCard: React.FC<IndexMedicusCardProps> = ({
       transition={{ duration: 0.3 }}
       className="h-full"
     >
-      <Card className={`group h-full flex flex-col transition-all duration-300 border hover:shadow-md hover:border-primary/20 overflow-hidden ${isSelected ? 'ring-2 ring-primary border-primary' : ''}`}>
+      <Card className={`group h-full flex flex-col transition-all duration-300 border hover:shadow-md hover:border-primary/20 overflow-hidden 
+        ${isSelected ? 'ring-2 ring-primary border-primary shadow-lg' : ''}
+        ${article.specialty ? 'border-l-4 border-l-secondary' : ''}
+      `}>
         <CardContent className="p-5 flex flex-col h-full">
-          <div className="flex justify-between mb-2">
-            <Badge variant="outline" className="text-xs bg-secondary/10 hover:bg-secondary/20">
+          <div className="flex justify-between mb-3">
+            <Badge variant="outline" className="text-xs bg-secondary/10 hover:bg-secondary/20 font-medium px-2.5 py-0.5">
               {article.source}
             </Badge>
             {article.specialty && (
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="secondary" className="text-xs font-semibold px-2.5 py-0.5">
                 {article.specialty}
               </Badge>
             )}
           </div>
           
-          <div className="flex items-center gap-2 mb-2">
-            {article.pdfUrl && (
-              <PdfStatusIndicator 
-                status={article.pdfUrl ? "available" : "unavailable"} 
-                size="sm"
-              />
-            )}
-            <h3 className="text-lg font-semibold line-clamp-2 group-hover:text-primary transition-colors">
+          <div className="flex items-start gap-2 mb-3">
+            <div className="mt-1 flex-shrink-0">
+              {article.pdfUrl ? (
+                <PdfStatusIndicator 
+                  status="available" 
+                  size="sm"
+                />
+              ) : (
+                <BookOpen className="h-4 w-4 text-gray-400" />
+              )}
+            </div>
+            <h3 className="text-lg font-bold text-primary line-clamp-2 group-hover:text-primary-light transition-colors">
               {article.title}
             </h3>
           </div>
@@ -78,18 +86,25 @@ export const IndexMedicusCard: React.FC<IndexMedicusCardProps> = ({
             pageNumber={article.pageNumber}
           />
           
-          <p className="text-sm text-gray-600 mt-4 mb-4 line-clamp-3 flex-grow leading-relaxed">
+          <p className="text-sm text-gray-600 mt-4 mb-4 line-clamp-3 flex-grow leading-relaxed bg-gradient-to-b from-gray-700 to-gray-500 bg-clip-text">
             {article.abstract}
           </p>
           
-          <div className="mt-auto">
-            <div className="mt-4 flex justify-between items-center">
+          <div className="mt-auto pt-3 border-t border-gray-100">
+            <div className="flex justify-between items-center">
               <ArticleActions 
                 title={article.title}
                 pdfUrl={article.pdfUrl}
                 onCitation={handleCitation}
                 onShare={handleShare}
               />
+              
+              <button 
+                className="text-gray-400 hover:text-primary transition-colors"
+                aria-label="Bookmark"
+              >
+                <Bookmark className="h-5 w-5" />
+              </button>
             </div>
           </div>
         </CardContent>
