@@ -1,8 +1,15 @@
 
 import { useMemo, useCallback } from "react";
-import type { Issue, IssuesStateOptions } from "../types";
+import type { Issue } from "../types";
 import { DateRange } from "react-day-picker";
 import { isValidDate } from "../types";
+
+interface IssuesStateOptions {
+  searchTerm: string;
+  sortBy: string;
+  dateRange?: DateRange;
+  selectedCategories: string[];
+}
 
 interface IssuesStateResult {
   sortedIssues: Issue[];
@@ -11,12 +18,19 @@ interface IssuesStateResult {
   availableCategories: string[];
 }
 
-export const useIssuesState = (
-  issues: Issue[],
-  options: IssuesStateOptions
-): IssuesStateResult => {
-  const { searchTerm, sortBy, dateRange, selectedCategories } = options;
-
+export const useIssuesState = ({
+  issues,
+  searchTerm,
+  sortBy,
+  dateRange,
+  selectedCategories
+}: {
+  issues: Issue[];
+  searchTerm: string;
+  sortBy: string;
+  dateRange?: DateRange;
+  selectedCategories: string[];
+}): IssuesStateResult => {
   // Extract all unique categories
   const availableCategories = useMemo(() => {
     const categories = new Set<string>();
@@ -84,7 +98,7 @@ export const useIssuesState = (
   const sortedIssues = useMemo(() => {
     const sorted = [...filteredIssues];
     
-    const sortFunctions = {
+    const sortFunctions: Record<string, (a: Issue, b: Issue) => number> = {
       latest: (a: Issue, b: Issue) => new Date(b.date).getTime() - new Date(a.date).getTime(),
       year: (a: Issue, b: Issue) => {
         const yearDiff = new Date(b.date).getFullYear() - new Date(a.date).getFullYear();
@@ -94,7 +108,7 @@ export const useIssuesState = (
       shares: (a: Issue, b: Issue) => (b.shares || 0) - (a.shares || 0),
     };
 
-    sorted.sort(sortFunctions[sortBy]);
+    sorted.sort(sortFunctions[sortBy] || sortFunctions.latest);
     return sorted;
   }, [filteredIssues, sortBy]);
 
