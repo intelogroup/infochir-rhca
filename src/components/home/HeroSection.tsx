@@ -102,7 +102,7 @@ export const HeroSection = () => {
             className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-70 z-0`}
           />
           <motion.div 
-            className="absolute bottom-0 right-0 w-[65%] h-[calc(4/5*104%-30px)] md:h-[calc(3/4*104%-30px)] lg:h-[calc(2/3*104%-30px)] z-2"
+            className="absolute bottom-0 right-0 w-[75%] h-[calc(4/5*120%-30px)] md:h-[calc(3/4*120%-30px)] lg:h-[calc(2/3*120%-30px)] z-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -113,7 +113,7 @@ export const HeroSection = () => {
               backgroundPosition: 'right bottom',
               backgroundRepeat: 'no-repeat',
               opacity: 0.9,
-              right: '-5%',  // Move 5% more to the right
+              right: '-35%',  // Move 35% more to the right (30% more than before)
               paddingLeft: '5px'
             }}
           />
