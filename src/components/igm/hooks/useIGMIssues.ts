@@ -15,9 +15,11 @@ export const useIGMIssues = () => {
       console.log('[useIGMIssues] Starting data fetch at:', Date.now() - startTime, 'ms');
 
       try {
+        // Fetch IGM articles from the articles table instead of igm_unified_view
         const { data, error } = await supabase
-          .from("igm_unified_view")
+          .from("articles")
           .select('*')
+          .eq('source', 'IGM')
           .order('publication_date', { ascending: false });
 
         console.log('[useIGMIssues] Supabase query completed at:', Date.now() - startTime, 'ms');
@@ -46,37 +48,54 @@ export const useIGMIssues = () => {
           lastItem: data[data.length - 1]
         });
 
-        // Process the issue data with standardized bucket references
-        const issues = data.map((item) => {
-          const mappedIssue = mapDatabaseIssueToIssue(item as DatabaseIssue);
+        // Group articles by volume and issue
+        const issuesMap = new Map();
+
+        data.forEach(article => {
+          if (!article.volume || !article.issue) return;
           
-          // Process coverImage URL if it's a filename rather than a full URL
-          if (mappedIssue.coverImage && !mappedIssue.coverImage.startsWith('http')) {
-            const { data: coverData } = supabase.storage
-              .from('igm_covers')
-              .getPublicUrl(mappedIssue.coverImage);
-              
-            mappedIssue.coverImage = coverData.publicUrl;
+          const key = `${article.volume}-${article.issue}`;
+          
+          if (!issuesMap.has(key)) {
+            issuesMap.set(key, {
+              id: `igm-${article.volume}-${article.issue}`,
+              title: `IGM Volume ${article.volume}, No. ${article.issue}`,
+              volume: article.volume,
+              issue: article.issue,
+              date: article.publication_date,
+              abstract: article.abstract || "Information Gynéco-Médicale Volume " + article.volume + ", Numéro " + article.issue,
+              pdfUrl: article.pdf_url || "",
+              coverImage: article.image_url || "",
+              articleCount: 0,
+              downloads: article.downloads || 0,
+              shares: article.shares || 0,
+              articles: [],
+              categories: article.category ? [article.category] : []
+            });
           }
           
-          // Process PDF URL using standard naming convention if needed
-          if (!mappedIssue.pdfUrl && mappedIssue.volume && mappedIssue.issue) {
-            const pdfFilename = `IGM_vol_${mappedIssue.volume.padStart(2, '0')}_no_${mappedIssue.issue}.pdf`;
-            const { data: pdfData } = supabase.storage
-              .from('igm-pdfs')
-              .getPublicUrl(pdfFilename);
-              
-            mappedIssue.pdfUrl = pdfData.publicUrl;
-          }
+          // Add article to the issue
+          const issue = issuesMap.get(key);
+          issue.articles.push({
+            id: article.id,
+            title: article.title,
+            authors: article.authors || [],
+            pageNumber: article.page_number ? Number(article.page_number) : 0,
+            abstract: article.abstract,
+            tags: article.tags || []
+          });
           
-          return mappedIssue;
+          issue.articleCount = issue.articles.length;
         });
 
-        console.log('[useIGMIssues] Mapped issues with URLs:', {
+        // Convert map to array
+        const issues = Array.from(issuesMap.values());
+
+        console.log('[useIGMIssues] Processed issues:', {
           count: issues.length,
           timing: Date.now() - startTime,
           'ms': 'since initialization',
-          firstIssue: issues[0]
+          firstIssue: issues.length > 0 ? issues[0] : null
         });
 
         return issues;

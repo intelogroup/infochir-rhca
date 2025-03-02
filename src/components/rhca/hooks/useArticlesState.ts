@@ -1,34 +1,43 @@
 
-import { useMemo } from "react";
-import type { RhcaArticle } from "../types";
+import { useMemo } from 'react';
+import type { RhcaArticle } from '../types';
 
 export const useArticlesState = (articles: RhcaArticle[]) => {
+  // Group articles by year
   const articlesByYear = useMemo(() => {
-    return articles.reduce((acc, article) => {
-      // Extract year from publication date
-      const date = article.publicationDate ? new Date(article.publicationDate) : null;
-      const year = date && !isNaN(date.getTime()) 
-        ? date.getFullYear() 
-        : 'Unknown';
-        
-      if (!acc[year]) {
-        acc[year] = [];
+    const byYear: Record<number, RhcaArticle[]> = {};
+    
+    articles.forEach(article => {
+      const date = new Date(article.publicationDate);
+      if (isNaN(date.getTime())) return;
+      
+      const year = date.getFullYear();
+      if (!byYear[year]) {
+        byYear[year] = [];
       }
-      acc[year].push(article);
-      return acc;
-    }, {} as Record<string | number, RhcaArticle[]>);
+      
+      byYear[year].push(article);
+    });
+
+    // Sort articles within each year by date, most recent first
+    Object.keys(byYear).forEach(year => {
+      byYear[Number(year)].sort((a, b) => {
+        return new Date(b.publicationDate).getTime() - new Date(a.publicationDate).getTime();
+      });
+    });
+    
+    return byYear;
   }, [articles]);
 
+  // Get sorted years (descending order)
   const years = useMemo(() => {
     return Object.keys(articlesByYear)
-      .filter(year => year !== 'Unknown')
-      .map(year => parseInt(year, 10))
+      .map(Number)
       .sort((a, b) => b - a);
   }, [articlesByYear]);
 
   return {
     articlesByYear,
-    years,
-    unknownYearArticles: articlesByYear['Unknown'] || []
+    years
   };
 };
