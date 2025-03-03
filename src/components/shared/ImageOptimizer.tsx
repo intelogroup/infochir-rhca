@@ -1,7 +1,8 @@
 
-import { useState, useEffect } from "react";
+import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { FileText } from "lucide-react";
+import { useImageLoader } from "@/hooks/useImageLoader";
+import { ImageFallback } from "./ImageFallback";
 
 interface ImageOptimizerProps {
   src: string | undefined;
@@ -22,164 +23,27 @@ export const ImageOptimizer = ({
   fallbackText,
   priority = false
 }: ImageOptimizerProps) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false);
-  const [imageSrc, setImageSrc] = useState("");
-  const [retryCount, setRetryCount] = useState(0);
-
-  useEffect(() => {
-    // Reset states when src changes
-    setIsLoading(true);
-    setHasError(false);
-    setRetryCount(0);
-    
-    if (!src) {
-      console.warn(`[ImageOptimizer:WARN] No source URL provided for image: ${alt}`);
-      setHasError(true);
-      setIsLoading(false);
-      return;
-    }
-
-    console.log(`[ImageOptimizer:INFO] Loading image from: ${src}, alt: ${alt}`);
-
-    const loadImage = () => {
-      const img = new Image();
-      
-      // Preload critical images with higher priority
-      if (priority) {
-        img.fetchPriority = 'high';
-      }
-      
-      // Add quality and resize parameters to the URL if it's an Unsplash image
-      if (src.includes('unsplash.com')) {
-        const optimizedSrc = `${src}&q=75&w=${width}&h=${height}&fit=crop`;
-        console.log(`[ImageOptimizer:DEBUG] Using optimized Unsplash URL: ${optimizedSrc}`);
-        img.src = optimizedSrc;
-        setImageSrc(optimizedSrc);
-      } 
-      // Handle Supabase storage URLs for RHCA covers
-      else if (src.includes('supabase.co') || src.includes('llxzstqejdrplmxdjxlu')) {
-        // Check if this is an RHCA cover image
-        const isRHCACover = src.includes('rhca_covers') || 
-                          src.includes('rhca-covers') || 
-                          src.includes('RHCA_vol_');
-        
-        if (isRHCACover) {
-          console.log(`[ImageOptimizer:DEBUG] Loading RHCA cover image: ${src}`);
-          // Add size parameters and cache-busting parameter
-          const cacheBuster = `?t=${Date.now()}`;
-          const sizeParams = `&width=${width}&height=${height}`;
-          const cacheBustedSrc = `${src}${cacheBuster}${sizeParams}`;
-          console.log(`[ImageOptimizer:DEBUG] Using optimized URL: ${cacheBustedSrc}`);
-          img.src = cacheBustedSrc;
-          setImageSrc(cacheBustedSrc);
-        } else {
-          // Add size parameters but no cache busting for other Supabase images
-          const sizeParams = src.includes('?') ? `&width=${width}&height=${height}` : `?width=${width}&height=${height}`;
-          const optimizedSrc = `${src}${sizeParams}`;
-          img.src = optimizedSrc;
-          setImageSrc(optimizedSrc);
-        }
-      } 
-      else {
-        console.log(`[ImageOptimizer:DEBUG] Loading standard image: ${src}`);
-        // Try to add size parameters for other images if they don't have query params
-        const sizeParams = src.includes('?') ? `&w=${width}&h=${height}` : `?w=${width}&h=${height}`;
-        const optimizedSrc = `${src}${sizeParams}`;
-        img.src = optimizedSrc;
-        setImageSrc(optimizedSrc);
-      }
-
-      img.onload = () => {
-        console.log(`[ImageOptimizer:SUCCESS] Image loaded successfully: ${src}`);
-        setIsLoading(false);
-        setHasError(false);
-      };
-
-      img.onerror = (error) => {
-        console.error(`[ImageOptimizer:ERROR] Failed to load image from: ${src}`, error);
-        
-        // If we've already retried 3 times, give up
-        if (retryCount >= 2) {
-          setHasError(true);
-          setIsLoading(false);
-          return;
-        }
-        
-        // If this is an RHCA cover, try to see if the file exists with a slightly different name
-        if (src.includes('RHCA_vol_')) {
-          const urlParts = src.split('/');
-          const filename = urlParts[urlParts.length - 1].split('?')[0]; // Remove query params
-          
-          // Try with and without date format
-          if (filename.match(/RHCA_vol_\d+_no_\d+_\d+_\d+_\d+/)) {
-            // Has date format, try without date
-            const baseFilename = filename.replace(/(_\d+_\d+_\d+)\.png.*/, '.png');
-            const newSrc = src.replace(filename, baseFilename);
-            console.log(`[ImageOptimizer:DEBUG] Retrying with simplified filename: ${newSrc}`);
-            
-            setRetryCount(prev => prev + 1);
-            setTimeout(() => {
-              const newImg = new Image();
-              newImg.src = newSrc;
-              setImageSrc(newSrc);
-            }, 500);
-          } else {
-            // Try with current date added
-            const now = new Date();
-            const day = String(now.getDate()).padStart(2, '0');
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const year = now.getFullYear();
-            
-            const parts = filename.replace('.png', '').split('_');
-            if (parts.length >= 4) {
-              const dateFilename = `${parts[0]}_${parts[1]}_${parts[2]}_${parts[3]}_${day}_${month}_${year}.png`;
-              const newSrc = src.replace(filename, dateFilename);
-              console.log(`[ImageOptimizer:DEBUG] Retrying with dated filename: ${newSrc}`);
-              
-              setRetryCount(prev => prev + 1);
-              setTimeout(() => {
-                const newImg = new Image();
-                newImg.src = newSrc;
-                setImageSrc(newSrc);
-              }, 500);
-            } else {
-              setHasError(true);
-              setIsLoading(false);
-            }
-          }
-        } else {
-          setHasError(true);
-          setIsLoading(false);
-        }
-      };
-    };
-
-    loadImage();
-
-    return () => {
-      // Clean up
-    };
-  }, [src, width, height, alt, retryCount, priority]);
+  const { isLoading, hasError, imageSrc, setHasError } = useImageLoader({
+    src,
+    alt,
+    width,
+    height,
+    priority
+  });
 
   if (isLoading) {
     return <Skeleton className={`${className} bg-muted`} style={{ width, height }} />;
   }
 
   if (hasError || !src) {
-    console.log(`[ImageOptimizer:INFO] Showing fallback for failed image: ${alt}`);
     return (
-      <div 
-        className={`${className} flex items-center justify-center bg-emerald-50/50 border border-emerald-100/50 rounded-lg`}
-        style={{ width, height }}
-        role="img"
-        aria-label={alt}
-      >
-        <div className="flex flex-col items-center text-emerald-600/50">
-          <FileText className="h-8 w-8 mb-2" />
-          <span className="text-sm font-medium">{fallbackText || "Image non disponible"}</span>
-        </div>
-      </div>
+      <ImageFallback
+        alt={alt}
+        width={width}
+        height={height}
+        className={className}
+        fallbackText={fallbackText}
+      />
     );
   }
 
