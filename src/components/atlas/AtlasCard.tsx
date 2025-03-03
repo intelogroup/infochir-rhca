@@ -37,7 +37,7 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
       // Track the download event
       await trackDownload({
         document_id: chapter.id,
-        document_type: 'adc',
+        document_type: "article", // Changed from "adc" to "article" to match allowed types
         file_name: chapter.pdfUrl.split('/').pop() || 'document.pdf',
         status: 'success'
       });
@@ -52,7 +52,7 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
       // Track the failed download
       trackDownload({
         document_id: chapter.id,
-        document_type: 'adc',
+        document_type: "article", // Changed from "adc" to "article" to match allowed types
         file_name: chapter.pdfUrl.split('/').pop() || 'document.pdf',
         status: 'failed',
         error_details: error instanceof Error ? error.message : 'Unknown error'

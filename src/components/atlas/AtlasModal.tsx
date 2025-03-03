@@ -3,6 +3,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { motion, AnimatePresence } from "framer-motion";
 import { AtlasChapter } from "./types";
+import { AtlasCategory } from "./data/atlasCategories"; // Added import for AtlasCategory
 import { Calendar, User, Eye, Share2, Download, BookOpen, ArrowUpRight, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -38,7 +39,7 @@ export const AtlasModal = ({ chapter, category, open, onOpenChange }: AtlasModal
       // Track the download event
       await trackDownload({
         document_id: chapter.id,
-        document_type: 'adc',
+        document_type: "article", // Changed from "adc" to "article" to match allowed types
         file_name: chapter.pdfUrl.split('/').pop() || 'document.pdf',
         status: 'success'
       });
@@ -53,7 +54,7 @@ export const AtlasModal = ({ chapter, category, open, onOpenChange }: AtlasModal
       // Track the failed download
       trackDownload({
         document_id: chapter.id,
-        document_type: 'adc',
+        document_type: "article", // Changed from "adc" to "article" to match allowed types
         file_name: chapter.pdfUrl.split('/').pop() || 'document.pdf',
         status: 'failed',
         error_details: error instanceof Error ? error.message : 'Unknown error'
