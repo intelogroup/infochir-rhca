@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface UnifiedArticleListProps {
   rhcaArticles?: RhcaArticle[];
@@ -92,11 +93,13 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
         <div>
           <h2 className="text-xl font-semibold mb-4">RHCA Articles</h2>
           {viewMode === "grid" ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {rhcaArticles.map((article) => (
-                <RhcaCard key={article.id} article={article} />
-              ))}
-            </div>
+            <ScrollArea className="h-[600px] pr-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-4">
+                {rhcaArticles.map((article) => (
+                  <RhcaCard key={article.id} article={article} />
+                ))}
+              </div>
+            </ScrollArea>
           ) : (
             <RhcaTable 
               articles={rhcaArticles}

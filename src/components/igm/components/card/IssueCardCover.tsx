@@ -24,10 +24,10 @@ export const IssueCardCover = ({ coverImage, title }: IssueCardCoverProps) => {
             )}
           />
           <img 
-            src={`${coverImage}?w=180&h=240&fit=cover&q=80`} 
+            src={`${coverImage}?w=120&h=160&fit=cover&q=80`} 
             alt={`Couverture ${title}`}
-            width={180}
-            height={240}
+            width={120}
+            height={160}
             className={cn(
               "w-full h-full object-cover transition-all duration-300 group-hover:scale-105",
               imageLoaded ? "opacity-100" : "opacity-0"
@@ -44,11 +44,11 @@ export const IssueCardCover = ({ coverImage, title }: IssueCardCoverProps) => {
         <div className="w-full h-full bg-secondary/5 flex items-center justify-center flex-col">
           {imageError ? (
             <>
-              <AlertCircle className="h-8 w-8 text-secondary/30 mb-2" />
-              <span className="text-secondary/30 text-sm font-medium">Image non disponible</span>
+              <AlertCircle className="h-6 w-6 text-secondary/30 mb-1" />
+              <span className="text-secondary/30 text-xs font-medium">Image non disponible</span>
             </>
           ) : (
-            <span className="text-secondary/20 text-xl font-bold">PDF</span>
+            <span className="text-secondary/20 text-sm font-bold">PDF</span>
           )}
         </div>
       )}

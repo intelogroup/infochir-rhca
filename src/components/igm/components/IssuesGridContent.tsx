@@ -6,6 +6,7 @@ import type { Issue } from "../types";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface IssuesGridContentProps {
   viewMode: "grid" | "table";
@@ -55,30 +56,46 @@ export const IssuesGridContent = ({
 
   return (
     <motion.div 
-      className="space-y-8"
+      className="space-y-6"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
       {viewMode === "grid" ? (
-        <YearGroupList 
-          issuesByYear={issuesByYear}
-          sortedYears={sortedYears}
-        />
+        <ScrollArea className="h-[700px] pr-4">
+          <YearGroupList 
+            issuesByYear={issuesByYear}
+            sortedYears={sortedYears}
+          />
+          
+          {hasMore && (
+            <div className="flex justify-center mt-6 pb-4">
+              <Button 
+                variant="outline"
+                onClick={onLoadMore}
+                className="gap-2"
+              >
+                Charger plus
+              </Button>
+            </div>
+          )}
+        </ScrollArea>
       ) : (
-        <IssuesTable issues={sortedIssues} />
-      )}
-
-      {hasMore && (
-        <div className="flex justify-center mt-8">
-          <Button 
-            variant="outline"
-            onClick={onLoadMore}
-            className="gap-2"
-          >
-            Charger plus
-          </Button>
-        </div>
+        <>
+          <IssuesTable issues={sortedIssues} />
+          
+          {hasMore && (
+            <div className="flex justify-center mt-6">
+              <Button 
+                variant="outline"
+                onClick={onLoadMore}
+                className="gap-2"
+              >
+                Charger plus
+              </Button>
+            </div>
+          )}
+        </>
       )}
     </motion.div>
   );
