@@ -1,6 +1,6 @@
 
 import { motion } from "framer-motion";
-import { BookText, Search, Users, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Suspense, lazy } from "react";
@@ -46,38 +46,6 @@ export const ADCHeader = () => {
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Une ressource visuelle complète pour le diagnostic chirurgical, conçue pour les professionnels de santé.
             </p>
-          </div>
-
-          <div className="flex flex-wrap justify-center gap-6">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-              className="flex items-center gap-3 px-6 py-3 rounded-full bg-white shadow-md text-gray-600 hover:shadow-lg hover:bg-gray-50 transition-all duration-300"
-            >
-              <BookText className="h-5 w-5 text-secondary" />
-              <span>Plus de 500 cas cliniques</span>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
-              className="flex items-center gap-3 px-6 py-3 rounded-full bg-white shadow-md text-gray-600 hover:shadow-lg hover:bg-gray-50 transition-all duration-300"
-            >
-              <Users className="h-5 w-5 text-secondary" />
-              <span>Collaboration internationale</span>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4 }}
-              className="flex items-center gap-3 px-6 py-3 rounded-full bg-white shadow-md text-gray-600 hover:shadow-lg hover:bg-gray-50 transition-all duration-300"
-            >
-              <Search className="h-5 w-5 text-secondary" />
-              <span>Recherche avancée</span>
-            </motion.div>
           </div>
         </motion.div>
       </div>

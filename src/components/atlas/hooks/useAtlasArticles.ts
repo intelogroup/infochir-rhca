@@ -13,7 +13,7 @@ export const useAtlasArticles = () => {
       logger.log('Fetching Atlas chapters from articles table');
       
       const { data, error } = await supabase
-        .from("articles")  // Changed from unified_content to articles
+        .from("articles")  // Using the articles table for ADC content
         .select("*")
         .eq('source', 'ADC')
         .order("publication_date", { ascending: false });
