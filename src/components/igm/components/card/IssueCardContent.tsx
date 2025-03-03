@@ -13,9 +13,20 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
   // Safely format the date
   const formattedDate = (() => {
     try {
-      return format(new Date(issue.date), 'dd MMMM yyyy', { locale: fr });
+      // Create a new Date object from the ISO string
+      const date = new Date(issue.date);
+      
+      // Use UTC to avoid timezone issues 
+      const year = date.getUTCFullYear();
+      const month = date.getUTCMonth();
+      const day = date.getUTCDate();
+      
+      // Create a new date with UTC values but interpret them as local
+      const localDate = new Date(year, month, day);
+      
+      return format(localDate, 'dd MMMM yyyy', { locale: fr });
     } catch (error) {
-      console.error('Error formatting date:', error);
+      console.error('Error formatting date:', error, issue.date);
       return 'Date invalide';
     }
   })();

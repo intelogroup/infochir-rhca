@@ -65,7 +65,7 @@ export const mapDatabaseIssueToIssue = (dbIssue: DatabaseIssue): Issue => {
     if (isValidDate(parsedDate)) {
       dateString = parsedDate.toISOString();
     } else {
-      console.error(`Invalid date format for issue ${dbIssue.id}`);
+      console.error(`Invalid date format for issue ${dbIssue.id}`, dbIssue.publication_date);
       dateString = new Date().toISOString();
     }
   }
@@ -114,11 +114,21 @@ export const mapDatabaseIssueToIssue = (dbIssue: DatabaseIssue): Issue => {
 export const formatIssueDate = (dateString: string): string => {
   const date = new Date(dateString);
   if (!isValidDate(date)) {
-    console.error('Invalid date provided to formatIssueDate');
+    console.error('Invalid date provided to formatIssueDate:', dateString);
     return 'Date invalide';
   }
-  return date.toLocaleDateString('fr-FR', {
+  
+  // Ensure consistent date formatting by using UTC date components
+  const year = date.getUTCFullYear();
+  const month = date.getUTCMonth();
+  const day = date.getUTCDate();
+  
+  // Create a new date with UTC values but interpret them as local
+  const localDate = new Date(year, month, day);
+  
+  return localDate.toLocaleDateString('fr-FR', {
     year: 'numeric',
     month: 'long',
+    day: 'numeric'
   });
 };
