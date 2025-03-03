@@ -7,13 +7,20 @@ interface PdfStatusIndicatorProps {
   status: "checking" | "available" | "unavailable";
   size?: "sm" | "md" | "lg";
   className?: string;
+  showStatusIcon?: boolean;
 }
 
 export const PdfStatusIndicator = ({ 
   status,
   size = "md",
-  className = ""
+  className = "",
+  showStatusIcon = false
 }: PdfStatusIndicatorProps) => {
+  // If showStatusIcon is false, don't render anything
+  if (!showStatusIcon) {
+    return null;
+  }
+  
   const sizeClass = {
     sm: "h-3 w-3",
     md: "h-4 w-4",

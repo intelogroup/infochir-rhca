@@ -65,19 +65,6 @@ export const useRhcaTableColumns = (): RhcaTableColumn[] => {
       size: 150
     },
     {
-      id: "pdf",
-      header: "PDF",
-      cell: ({ row }) => (
-        <div className="flex justify-center">
-          <PdfStatusIndicator 
-            status={row.original.pdfFileName ? "available" : "unavailable"} 
-            size="md"
-          />
-        </div>
-      ),
-      size: 60
-    },
-    {
       id: "actions",
       header: "",
       cell: ({ row }) => <RhcaTableActions article={row.original} />,

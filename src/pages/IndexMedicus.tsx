@@ -25,11 +25,13 @@ const IndexMedicus = () => {
           <div className="flex flex-col">
             <div className="order-2 mb-8 sm:mb-12 lg:mb-16 animate-fade-up">
               <div className="inline-flex rounded-full p-2 mb-6">
-                <img 
-                  src="/lovable-uploads/f2409464-47cf-4348-ada0-e328e86be01b.png"
-                  alt="Index Medicus Logo"
-                  className="h-12 w-12 sm:h-16 sm:w-16 lg:h-24 lg:w-24 mx-auto mb-2 sm:mb-4 object-contain bg-white rounded-full p-1 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
-                />
+                <div className="flex items-center justify-center h-16 w-16 sm:h-20 sm:w-20 lg:h-28 lg:w-28 bg-white rounded-full p-4 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
+                  <img 
+                    src="/lovable-uploads/f2409464-47cf-4348-ada0-e328e86be01b.png"
+                    alt="Index Medicus Logo"
+                    className="h-full w-full object-contain"
+                  />
+                </div>
               </div>
               <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-4">
                 Index Medicus

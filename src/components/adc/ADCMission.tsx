@@ -61,13 +61,18 @@ export const ADCMission = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-xl p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-secondary/20 group"
+                className="bg-white rounded-xl p-8 shadow-md border border-gray-100 hover:shadow-lg transition-shadow relative overflow-hidden"
               >
-                <div className="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center mb-6 group-hover:bg-secondary/20 transition-colors">
-                  <Icon className="h-6 w-6 text-secondary" />
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-secondary via-green-400 to-secondary"></div>
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 flex-shrink-0">
+                    <Icon className="h-6 w-6 text-secondary" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-secondary mb-3">{feature.title}</h3>
+                    <p className="text-gray-600">{feature.description}</p>
+                  </div>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4 group-hover:text-secondary transition-colors">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
               </motion.div>
             );
           })}

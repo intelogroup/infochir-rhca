@@ -30,9 +30,11 @@ export const CoverImage: React.FC<CoverImageProps> = ({
         />
       </div>
       
+      {/* PDF indicator is hidden by default now */}
       <PdfStatusIndicator 
         status={pdfUrl ? "available" : "unavailable"} 
-        className="absolute top-2 right-2" 
+        className="absolute top-2 right-2"
+        showStatusIcon={false}
       />
     </div>
   );
