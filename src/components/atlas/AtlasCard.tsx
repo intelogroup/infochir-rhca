@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, User, Eye, Share2, Download, BookOpen } from "lucide-react";
@@ -69,6 +68,8 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
   };
 
   const coverImage = chapter.coverImage || defaultCoverImages[chapter.id as keyof typeof defaultCoverImages] || defaultCoverImages["0"];
+  // Add query parameters to optimize the cover image size
+  const optimizedCoverImage = `${coverImage}?w=320&h=240&fit=cover&q=80`;
 
   return (
     <>
@@ -84,8 +85,10 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
               <Skeleton className="absolute inset-0 w-full h-full" />
             )}
             <img
-              src={coverImage}
+              src={optimizedCoverImage}
               alt={chapter.title}
+              width={320}
+              height={240}
               className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${
                 !imageLoaded ? 'opacity-0' : 'opacity-100'
               }`}

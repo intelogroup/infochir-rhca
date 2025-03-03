@@ -52,7 +52,7 @@ export const ImageOptimizer = ({
       
       // Add quality and resize parameters to the URL if it's an Unsplash image
       if (src.includes('unsplash.com')) {
-        const optimizedSrc = `${src}&q=75&w=${width}&fit=crop`;
+        const optimizedSrc = `${src}&q=75&w=${width}&h=${height}&fit=crop`;
         console.log(`[ImageOptimizer:DEBUG] Using optimized Unsplash URL: ${optimizedSrc}`);
         img.src = optimizedSrc;
         setImageSrc(optimizedSrc);
@@ -66,21 +66,28 @@ export const ImageOptimizer = ({
         
         if (isRHCACover) {
           console.log(`[ImageOptimizer:DEBUG] Loading RHCA cover image: ${src}`);
-          // Add cache-busting parameter to ensure fresh image load
+          // Add size parameters and cache-busting parameter
           const cacheBuster = `?t=${Date.now()}`;
-          const cacheBustedSrc = `${src}${cacheBuster}`;
-          console.log(`[ImageOptimizer:DEBUG] Using cache-busted URL: ${cacheBustedSrc}`);
+          const sizeParams = `&width=${width}&height=${height}`;
+          const cacheBustedSrc = `${src}${cacheBuster}${sizeParams}`;
+          console.log(`[ImageOptimizer:DEBUG] Using optimized URL: ${cacheBustedSrc}`);
           img.src = cacheBustedSrc;
           setImageSrc(cacheBustedSrc);
         } else {
-          img.src = src;
-          setImageSrc(src);
+          // Add size parameters but no cache busting for other Supabase images
+          const sizeParams = src.includes('?') ? `&width=${width}&height=${height}` : `?width=${width}&height=${height}`;
+          const optimizedSrc = `${src}${sizeParams}`;
+          img.src = optimizedSrc;
+          setImageSrc(optimizedSrc);
         }
       } 
       else {
         console.log(`[ImageOptimizer:DEBUG] Loading standard image: ${src}`);
-        img.src = src;
-        setImageSrc(src);
+        // Try to add size parameters for other images if they don't have query params
+        const sizeParams = src.includes('?') ? `&w=${width}&h=${height}` : `?w=${width}&h=${height}`;
+        const optimizedSrc = `${src}${sizeParams}`;
+        img.src = optimizedSrc;
+        setImageSrc(optimizedSrc);
       }
 
       img.onload = () => {
@@ -153,7 +160,7 @@ export const ImageOptimizer = ({
     return () => {
       // Clean up
     };
-  }, [src, width, alt, retryCount, priority]);
+  }, [src, width, height, alt, retryCount, priority]);
 
   if (isLoading) {
     return <Skeleton className={`${className} bg-muted`} style={{ width, height }} />;

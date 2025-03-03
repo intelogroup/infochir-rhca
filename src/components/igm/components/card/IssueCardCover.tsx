@@ -24,8 +24,10 @@ export const IssueCardCover = ({ coverImage, title }: IssueCardCoverProps) => {
             )}
           />
           <img 
-            src={coverImage} 
+            src={`${coverImage}?w=180&h=240&fit=cover&q=80`} 
             alt={`Couverture ${title}`}
+            width={180}
+            height={240}
             className={cn(
               "w-full h-full object-cover transition-all duration-300 group-hover:scale-105",
               imageLoaded ? "opacity-100" : "opacity-0"
@@ -35,6 +37,7 @@ export const IssueCardCover = ({ coverImage, title }: IssueCardCoverProps) => {
               console.error(`Failed to load image: ${coverImage}`);
               setImageError(true);
             }}
+            loading="lazy"
           />
         </div>
       ) : (

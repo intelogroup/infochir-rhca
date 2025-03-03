@@ -35,6 +35,8 @@ export const ADCHeader = () => {
                 src="/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png"
                 alt="Atlas ADC Logo"
                 className="h-28 w-28 object-contain"
+                width={112}
+                height={112}
               />
             </Suspense>
           </div>
