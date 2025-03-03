@@ -59,13 +59,16 @@ export const useIGMIssues = () => {
           const key = `${article.volume}-${article.issue}`;
           
           if (!issuesMap.has(key)) {
+            // Use the exact title from the database if available
+            const issueTitle = article.title || `INFO GAZETTE MÉDICALE Volume ${article.volume}, No. ${article.issue}`;
+            
             issuesMap.set(key, {
               id: `igm-${article.volume}-${article.issue}`,
-              title: `Volume ${article.volume}, No. ${article.issue} - ${article.title || "Information Gynéco-Médicale"}`,
+              title: issueTitle,
               volume: article.volume,
               issue: article.issue,
               date: article.publication_date,
-              abstract: article.abstract || "Information Gynéco-Médicale Volume " + article.volume + ", Numéro " + article.issue,
+              abstract: article.abstract || `Information Gynéco-Médicale Volume ${article.volume}, Numéro ${article.issue}`,
               pdfUrl: article.pdf_url || "",
               coverImage: article.image_url || "",
               articleCount: 0,
@@ -89,8 +92,10 @@ export const useIGMIssues = () => {
           
           issue.articleCount = issue.articles.length;
           
-          // If the issue doesn't have a good abstract, use the first article's abstract
-          if (issue.abstract.startsWith("Information Gynéco-Médicale Volume") && article.abstract) {
+          // If the current article has a more detailed abstract, use it for the issue
+          if (article.abstract && 
+             (issue.abstract.startsWith("Information Gynéco-Médicale Volume") || 
+              article.abstract.length > issue.abstract.length)) {
             issue.abstract = article.abstract;
           }
         });

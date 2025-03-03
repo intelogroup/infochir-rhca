@@ -50,7 +50,7 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
   })();
 
   return (
-    <div className="flex-1 min-w-0 space-y-1.5">
+    <div className="flex-1 min-w-0 space-y-2">
       <div className="flex justify-between items-start gap-2">
         <div className="min-w-0">
           <h3 className="text-base font-semibold text-gray-900 leading-tight tracking-tight truncate">
@@ -68,23 +68,23 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
         </div>
       </div>
       
-      <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
+      {getTags.length > 0 && (
+        <div className="flex flex-wrap gap-1 mt-1 mb-1">
+          <ArticleTags tags={getTags} />
+        </div>
+      )}
+      
+      <p className="text-sm text-gray-600 leading-relaxed">
         {issue.abstract || 'Aucun résumé disponible'}
       </p>
       
-      {getTags.length > 0 ? (
-        <div className="flex flex-wrap gap-1 mt-1">
-          <ArticleTags tags={getTags} />
-        </div>
-      ) : (
-        <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600">
-          <span className="bg-secondary/10 px-2 py-0.5 rounded-full font-medium">
-            {issue.articles?.length || 0} article{(issue.articles?.length || 0) !== 1 ? 's' : ''}
-          </span>
-          <span>{issue.downloads || 0} téléchargements</span>
-          <span>{issue.shares || 0} partages</span>
-        </div>
-      )}
+      <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600 mt-1">
+        <span className="bg-secondary/10 px-2 py-0.5 rounded-full font-medium">
+          {issue.articles?.length || 0} article{(issue.articles?.length || 0) !== 1 ? 's' : ''}
+        </span>
+        <span>{issue.downloads || 0} téléchargements</span>
+        <span>{issue.shares || 0} partages</span>
+      </div>
     </div>
   );
 };
