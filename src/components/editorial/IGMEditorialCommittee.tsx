@@ -1,151 +1,67 @@
 
+import * as React from "react";
 import { motion } from "framer-motion";
-import { Users, BookOpen, Heart, Building, Coffee, BookText, MessageSquare, FileText } from "lucide-react";
-import { DirectiveSection } from "@/components/directives/DirectiveSection";
-import { Card } from "@/components/ui/card";
+import { Users, Star, Award } from "lucide-react";
+import { igmEditorialData, igmEditorInChief } from "./igmEditorialData";
 
-interface EditorialMember {
-  name: string;
-  role?: string;
-}
-
-interface EditorialSection {
-  title: string;
-  coordinator?: string;
-  members: EditorialMember[];
-  icon: React.ReactNode;
-}
-
-export const IGMEditorialCommittee = () => {
-  const sections: EditorialSection[] = [
-    {
-      title: "Rédaction et de l'Éditorial",
-      coordinator: "Michel Dodard",
-      members: [
-        { name: "Maxime Coles", role: "conseiller" },
-      ],
-      icon: <Users className="h-6 w-6 text-primary" />
-    },
-    {
-      title: "Lu pour vous",
-      coordinator: "Michel Dodard",
-      members: [
-        { name: "Ernst Jean Baptiste", role: "membre" },
-        { name: "Henry Jean-Baptiste", role: "membre" },
-      ],
-      icon: <BookOpen className="h-6 w-6 text-primary" />
-    },
-    {
-      title: "Santé Publique",
-      coordinator: "Pavel Desrosiers",
-      members: [
-        { name: "Franck Généus", role: "membre" },
-        { name: "Guirlaine Raymond", role: "membre" },
-        { name: "Chesnel Norcéide", role: "membre" },
-        { name: "Mario Laroche", role: "membre" },
-      ],
-      icon: <Heart className="h-6 w-6 text-primary" />
-    },
-    {
-      title: "Actualités Intra Hospitalières",
-      coordinator: "Christophe Millien",
-      members: [
-        { name: "Wilfine Dupont", role: "membre" },
-        { name: "Pierre-Marie Woolley", role: "membre" },
-        { name: "Vanessa Jaelle Dor", role: "membre" },
-      ],
-      icon: <Building className="h-6 w-6 text-primary" />
-    },
-    {
-      title: "Académie et Professions",
-      coordinator: "Edith C. Georges",
-      members: [
-        { name: "Marlyn Lestage-Laforest", role: "membre" },
-        { name: "Carine Réveil Jean-Baptiste", role: "membre" },
-      ],
-      icon: <BookText className="h-6 w-6 text-primary" />
-    },
-    {
-      title: "Informations Socio Culturelles",
-      coordinator: "Jessy Colimon Adrien",
-      members: [
-        { name: "Judith Jean-Baptiste", role: "adjointe" },
-        { name: "Wisly Joseph", role: "membre" },
-        { name: "Claudine Hyppolite", role: "membre" },
-        { name: "Nadège Charlot", role: "membre" },
-      ],
-      icon: <Coffee className="h-6 w-6 text-primary" />
-    },
-    {
-      title: "Éthique",
-      coordinator: "Gérald Lerebours",
-      members: [],
-      icon: <MessageSquare className="h-6 w-6 text-primary" />
-    },
-    {
-      title: "Petites Annonces",
-      coordinator: "Louis Franck Télémaque",
-      members: [],
-      icon: <FileText className="h-6 w-6 text-primary" />
-    },
-    {
-      title: "Direction et Édition",
-      members: [
-        { name: "Jean Alouidor", role: "Éditeur en chef" },
-        { name: "Eunice Dérivois", role: "Direction de lecture" },
-        { name: "Jean Alouidor", role: "Conception et réalisation" },
-      ],
-      icon: <Users className="h-6 w-6 text-primary" />
-    },
-  ];
-
+export const IGMEditorialCommittee: React.FC = () => {
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.2 }}
-      className="space-y-8 mb-12"
-    >
-      <DirectiveSection 
-        title="Membres du Comité d'INFO GAZETTE MÉDICALE"
-        icon={<Users className="h-8 w-8 text-secondary" />}
+    <div className="space-y-12">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="bg-white rounded-xl p-8 shadow-md border border-gray-100 hover:shadow-lg transition-shadow relative overflow-hidden"
       >
-        <p className="text-gray-600 mb-8">
-          Le comité éditorial d'INFO GAZETTE MÉDICALE est composé d'experts médicaux qui contribuent 
-          à la qualité et à la rigueur de nos publications dans différents domaines de spécialisation.
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {sections.map((section, sectionIndex) => (
-            <Card key={sectionIndex} className="overflow-hidden hover:shadow-md transition-all duration-300">
-              <div className="p-6">
-                <div className="flex items-start gap-4 mb-4">
-                  {section.icon}
-                  <div>
-                    <h3 className="text-lg font-semibold text-primary">{section.title}</h3>
-                    {section.coordinator && (
-                      <p className="text-sm text-secondary font-medium">
-                        Coordonnateur: {section.coordinator}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {section.members.length > 0 && (
-                  <ul className="space-y-2 pl-10">
-                    {section.members.map((member, memberIndex) => (
-                      <li key={memberIndex} className="text-gray-700">
-                        <span className="font-medium">{member.name}</span>
-                        {member.role && <span className="text-gray-500 ml-2">({member.role})</span>}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </Card>
-          ))}
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-secondary to-primary"></div>
+        <div className="flex items-center gap-3 mb-6">
+          <Award className="h-8 w-8 text-primary flex-shrink-0" />
+          <h2 className="text-2xl font-bold text-primary">Éditeur en chef</h2>
         </div>
-      </DirectiveSection>
-    </motion.div>
+        <div className="pl-11">
+          <p className="text-xl font-medium text-gray-800">
+            {igmEditorInChief.name}
+            <span className="text-gray-500 ml-2 text-base italic font-normal">
+              {igmEditorInChief.role}
+            </span>
+          </p>
+        </div>
+      </motion.div>
+
+      {igmEditorialData.map((section, index) => (
+        <motion.div
+          key={section.title}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 * index }}
+          className="bg-white rounded-xl p-8 shadow-md border border-gray-100 hover:shadow-lg transition-shadow relative overflow-hidden"
+        >
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-secondary to-primary"></div>
+          <div className="flex items-center gap-3 mb-6">
+            {section.title === "Conception et réalisation" ? (
+              <Star className="h-7 w-7 text-primary flex-shrink-0" />
+            ) : (
+              <Users className="h-7 w-7 text-primary flex-shrink-0" />
+            )}
+            <h2 className="text-xl font-bold text-primary">{section.title}</h2>
+          </div>
+
+          <div className="space-y-4 pl-11">
+            {section.members.map((member) => (
+              <div key={member.name} className="flex flex-col">
+                <p className={`${member.isCoordinator ? "font-medium text-gray-800" : "text-gray-700"}`}>
+                  {member.name}
+                  {member.role && (
+                    <span className={`ml-2 italic ${member.isCoordinator ? "text-primary/70" : "text-gray-500"}`}>
+                      {member.role}
+                    </span>
+                  )}
+                </p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      ))}
+    </div>
   );
 };
