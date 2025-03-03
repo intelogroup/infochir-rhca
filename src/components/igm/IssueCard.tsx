@@ -27,12 +27,12 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue }) => {
           <IssueCardCover coverImage={issue.coverImage} title={issue.title} />
         </div>
         
-        <div className="flex-1 flex flex-col p-3">
+        <div className="flex-1 flex flex-col p-4">
           <div className="flex-1">
             <IssueCardContent issue={issue} />
           </div>
           
-          <div className="flex justify-end mt-1">
+          <div className="flex justify-end mt-2">
             <IssueCardActions 
               pdfUrl={issue.pdfUrl} 
               id={issue.id}

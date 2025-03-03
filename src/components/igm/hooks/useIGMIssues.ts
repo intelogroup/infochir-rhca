@@ -61,7 +61,7 @@ export const useIGMIssues = () => {
           if (!issuesMap.has(key)) {
             issuesMap.set(key, {
               id: `igm-${article.volume}-${article.issue}`,
-              title: `IGM Volume ${article.volume}, No. ${article.issue}`,
+              title: `Volume ${article.volume}, No. ${article.issue} - ${article.title || "Information Gynéco-Médicale"}`,
               volume: article.volume,
               issue: article.issue,
               date: article.publication_date,
@@ -88,6 +88,11 @@ export const useIGMIssues = () => {
           });
           
           issue.articleCount = issue.articles.length;
+          
+          // If the issue doesn't have a good abstract, use the first article's abstract
+          if (issue.abstract.startsWith("Information Gynéco-Médicale Volume") && article.abstract) {
+            issue.abstract = article.abstract;
+          }
         });
 
         // Convert map to array
@@ -117,7 +122,6 @@ export const useIGMIssues = () => {
     meta: {
       errorMessage: "Erreur lors du chargement des numéros"
     },
-    // Add proper retry and stale time configuration
     retry: (failureCount, error) => {
       // Only retry network/timeout errors, not data errors
       if (error instanceof Error && 

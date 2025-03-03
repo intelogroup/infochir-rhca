@@ -68,7 +68,7 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
         </div>
       </div>
       
-      <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+      <p className="text-sm text-gray-600 line-clamp-3 leading-relaxed">
         {issue.abstract || 'Aucun résumé disponible'}
       </p>
       
