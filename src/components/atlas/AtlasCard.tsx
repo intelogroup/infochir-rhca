@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, User, Eye, Share2, Download, BookOpen } from "lucide-react";
@@ -9,6 +10,7 @@ import { motion } from "framer-motion";
 import { AtlasCategory } from "./data/atlasCategories";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { trackDownload } from "@/lib/analytics/download";
 
 interface AtlasCardProps {
   chapter: AtlasChapter;
@@ -25,8 +27,37 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
     toast.success("Lien copié dans le presse-papier");
   };
 
-  const handleDownload = () => {
-    toast.error("Le téléchargement n'est pas encore disponible");
+  const handleDownload = async () => {
+    if (!chapter.pdfUrl) {
+      toast.error("Aucun PDF disponible pour ce chapitre");
+      return;
+    }
+    
+    try {
+      // Track the download event
+      await trackDownload({
+        document_id: chapter.id,
+        document_type: 'adc',
+        file_name: chapter.pdfUrl.split('/').pop() || 'document.pdf',
+        status: 'success'
+      });
+      
+      // Open the PDF in a new tab
+      window.open(chapter.pdfUrl, '_blank');
+      toast.success("Téléchargement du PDF...");
+    } catch (error) {
+      console.error("Download error:", error);
+      toast.error("Erreur lors du téléchargement");
+      
+      // Track the failed download
+      trackDownload({
+        document_id: chapter.id,
+        document_type: 'adc',
+        file_name: chapter.pdfUrl.split('/').pop() || 'document.pdf',
+        status: 'failed',
+        error_details: error instanceof Error ? error.message : 'Unknown error'
+      }).catch(e => console.error("Failed to track download error:", e));
+    }
   };
 
   const defaultCoverImages = {
@@ -121,6 +152,7 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
                   size="sm"
                   onClick={handleDownload}
                   className="h-7 px-2 text-xs hover:bg-primary/10 hover:text-primary transition-colors"
+                  disabled={!chapter.pdfUrl}
                 >
                   <Download className="h-3 w-3 mr-1" />
                   <span className="hidden sm:inline">PDF</span>

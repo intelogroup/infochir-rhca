@@ -1,13 +1,15 @@
+
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { motion, AnimatePresence } from "framer-motion";
-import { AtlasChapter, AtlasCategory } from "./types";
+import { AtlasChapter } from "./types";
 import { Calendar, User, Eye, Share2, Download, BookOpen, ArrowUpRight, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { trackDownload } from "@/lib/analytics/download";
 
 interface AtlasModalProps {
   chapter: AtlasChapter;
@@ -26,8 +28,37 @@ export const AtlasModal = ({ chapter, category, open, onOpenChange }: AtlasModal
     toast.success("Lien copié dans le presse-papier");
   };
 
-  const handleDownload = () => {
-    toast.error("Le téléchargement n'est pas encore disponible");
+  const handleDownload = async () => {
+    if (!chapter.pdfUrl) {
+      toast.error("Aucun PDF disponible pour ce chapitre");
+      return;
+    }
+    
+    try {
+      // Track the download event
+      await trackDownload({
+        document_id: chapter.id,
+        document_type: 'adc',
+        file_name: chapter.pdfUrl.split('/').pop() || 'document.pdf',
+        status: 'success'
+      });
+      
+      // Open the PDF in a new tab
+      window.open(chapter.pdfUrl, '_blank');
+      toast.success("Téléchargement du PDF...");
+    } catch (error) {
+      console.error("Download error:", error);
+      toast.error("Erreur lors du téléchargement");
+      
+      // Track the failed download
+      trackDownload({
+        document_id: chapter.id,
+        document_type: 'adc',
+        file_name: chapter.pdfUrl.split('/').pop() || 'document.pdf',
+        status: 'failed',
+        error_details: error instanceof Error ? error.message : 'Unknown error'
+      }).catch(e => console.error("Failed to track download error:", e));
+    }
   };
 
   const defaultCoverImage = "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=800&fit=crop";
@@ -136,6 +167,7 @@ export const AtlasModal = ({ chapter, category, open, onOpenChange }: AtlasModal
                 size="sm"
                 className="h-8 text-xs gap-1.5 hover:bg-gray-100/80 transition-colors"
                 onClick={handleDownload}
+                disabled={!chapter.pdfUrl}
               >
                 <Download className="w-3 h-3" />
                 PDF
@@ -144,6 +176,8 @@ export const AtlasModal = ({ chapter, category, open, onOpenChange }: AtlasModal
                 variant="default"
                 size="sm"
                 className="h-8 text-xs gap-1.5 bg-secondary hover:bg-secondary/90 transition-colors"
+                onClick={() => chapter.pdfUrl && window.open(chapter.pdfUrl, '_blank')}
+                disabled={!chapter.pdfUrl}
               >
                 <ArrowUpRight className="w-3 h-3" />
                 Consulter
