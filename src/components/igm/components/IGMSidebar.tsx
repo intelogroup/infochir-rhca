@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { FileText, Send, Users } from "lucide-react";
+import { FileText, Send, Users, Info, Newspaper } from "lucide-react";
 
 interface SidebarCardProps {
   icon: React.ReactNode;
@@ -16,12 +16,12 @@ export const IGMSidebar = () => {
   return (
     <div className="space-y-4">
       <SidebarCard
-        icon={<Send className="h-5 w-5 text-primary" />}
-        title="Soumettre un article"
-        description="Vous souhaitez publier dans l'IGM ? Soumettez votre article en suivant nos directives."
-        buttonText="Soumettre un article"
+        icon={<Users className="h-5 w-5 text-primary" />}
+        title="Comité éditorial"
+        description="Découvrez les membres du comité éditorial de l'Info Gazette Médicale."
+        buttonText="Voir le comité"
         buttonVariant="default"
-        buttonLink="/igm/directives"
+        buttonLink="/igm/editorial-committee"
       />
 
       <SidebarCard
@@ -34,12 +34,21 @@ export const IGMSidebar = () => {
       />
 
       <SidebarCard
-        icon={<Users className="h-5 w-5 text-primary" />}
-        title="Comité éditorial"
-        description="Découvrez l'équipe éditoriale de l'IGM et son processus de révision."
-        buttonText="Voir le comité"
+        icon={<Send className="h-5 w-5 text-primary" />}
+        title="Soumettre un article"
+        description="Vous souhaitez publier dans l'IGM ? Soumettez votre article en suivant nos directives."
+        buttonText="Soumettre un article"
         buttonVariant="outline"
-        buttonLink="/editorial"
+        buttonLink="/submission"
+      />
+
+      <SidebarCard
+        icon={<Info className="h-5 w-5 text-primary" />}
+        title="À propos"
+        description="En savoir plus sur la mission et l'histoire de l'Info Gazette Médicale."
+        buttonText="En savoir plus"
+        buttonVariant="outline"
+        buttonLink="/about"
       />
     </div>
   );

@@ -36,7 +36,9 @@ export const AppRoutes = () => {
                 <Route path="/rhca/directives" element={<RouteWrapper component={LazyComponents.RHCADirectives} />} />
                 <Route path="/igm" element={<RouteWrapper component={LazyComponents.IGM} />} />
                 <Route path="/igm/directives" element={<RouteWrapper component={LazyComponents.IGMDirectives} />} />
-                <Route path="/igm/editorial-committee" element={<RouteWrapper component={LazyComponents.EditorialCommittee} />} />
+                <Route path="/igm/editorial-committee" element={<RouteWrapper component={LazyComponents.IGMEditorialCommittee} />} />
+                <Route path="/igm/editorial" element={<RouteWrapper component={LazyComponents.IGMEditorialCommittee} />} />
+                <Route path="/editorial-committee" element={<RouteWrapper component={LazyComponents.EditorialCommittee} />} />
                 <Route path="/about" element={<RouteWrapper component={LazyComponents.About} />} />
                 <Route path="/submission" element={<RouteWrapper component={LazyComponents.Submission} />} />
                 <Route path="/annuaire" element={<RouteWrapper component={LazyComponents.Annuaire} />} />

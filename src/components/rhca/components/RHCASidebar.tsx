@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { FileText, Send, Users, Info } from "lucide-react";
@@ -39,7 +40,7 @@ export const RHCASidebar = () => {
         description="Découvrez l'équipe éditoriale de la RHCA et son processus de révision."
         buttonText="Voir le comité"
         buttonVariant="outline"
-        buttonLink="/editorial"
+        buttonLink="/editorial-committee"
       />
 
       <SidebarCard

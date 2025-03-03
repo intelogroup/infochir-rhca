@@ -11,6 +11,7 @@ export const ADC = lazy(() => import("@/pages/ADC"));
 export const IndexMedicus = lazy(() => import("@/pages/IndexMedicus"));
 export const About = lazy(() => import("@/pages/About"));
 export const EditorialCommittee = lazy(() => import("@/pages/EditorialCommittee"));
+export const IGMEditorialCommittee = lazy(() => import("@/pages/igm/EditorialCommittee"));
 export const Submission = lazy(() => import("@/pages/Submission"));
 export const Annuaire = lazy(() => import("@/pages/Annuaire"));
 export const Opportunities = lazy(() => import("@/pages/Opportunities"));

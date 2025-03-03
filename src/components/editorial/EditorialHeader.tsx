@@ -7,13 +7,6 @@ import { ArrowLeft } from "lucide-react";
 
 export const EditorialHeader = () => (
   <div className="mb-16">
-    <Link to="/igm" className="inline-block mb-8">
-      <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary-light">
-        <ArrowLeft className="h-4 w-4" />
-        Retour à IGM
-      </Button>
-    </Link>
-
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
