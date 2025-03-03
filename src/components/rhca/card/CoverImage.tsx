@@ -19,12 +19,12 @@ export const CoverImage: React.FC<CoverImageProps> = ({
 }) => {
   return (
     <div className="relative w-full h-full flex items-center justify-center">
-      <div className="w-full h-full max-h-[220px] flex items-center justify-center bg-gray-50 rounded-md overflow-hidden">
+      <div className="w-full h-full max-h-[180px] flex items-center justify-center bg-gray-50 rounded-md overflow-hidden">
         <ImageOptimizer
           src={coverUrl || ''}
           alt={article.title}
-          width={180}
-          height={240}
+          width={150}
+          height={200}
           className="w-auto h-auto max-w-full max-h-full object-contain"
           fallbackText={article.title}
         />
