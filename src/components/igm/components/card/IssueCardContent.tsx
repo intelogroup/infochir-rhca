@@ -1,4 +1,3 @@
-
 import { Calendar } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -49,11 +48,11 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
     }
   })();
 
-  // Get page numbers from articles
-  const getPageNumbers = (() => {
+  // Calculate total page count from articles
+  const getTotalPages = (() => {
     try {
       if (!issue.articles || issue.articles.length === 0) {
-        return "p. -";
+        return "- Pages";
       }
       
       // Get all valid page numbers
@@ -62,21 +61,20 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
         .filter(pageNum => pageNum && pageNum > 0);
       
       if (pageNumbers.length === 0) {
-        return "p. -";
+        return "- Pages";
       }
       
       // Get the min and max page numbers
       const minPage = Math.min(...pageNumbers);
       const maxPage = Math.max(...pageNumbers);
       
-      if (minPage === maxPage) {
-        return `p. ${minPage}`;
-      }
+      // Calculate total pages (including both start and end pages)
+      const totalPages = maxPage - minPage + 1;
       
-      return `p. ${minPage}-${maxPage}`;
+      return `${totalPages} Page${totalPages > 1 ? 's' : ''}`;
     } catch (error) {
-      console.error('Error getting page numbers:', error);
-      return "p. -";
+      console.error('Error calculating total pages:', error);
+      return "- Pages";
     }
   })();
 
@@ -111,7 +109,7 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
       
       <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600 mt-1">
         <span className="bg-secondary/10 px-2 py-0.5 rounded-full font-medium">
-          {getPageNumbers}
+          {getTotalPages}
         </span>
         <span>{issue.downloads || 0} téléchargements</span>
         <span>{issue.shares || 0} partages</span>
