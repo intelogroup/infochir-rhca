@@ -1,3 +1,4 @@
+
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
@@ -8,7 +9,7 @@ interface ProductFeaturesProps {
 
 export const ProductFeatures = ({ features, className }: ProductFeaturesProps) => {
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn("space-y-3", className)}>
       {features.slice(0, 3).map((feature, index) => (
         <motion.div 
           key={index}
@@ -18,7 +19,7 @@ export const ProductFeatures = ({ features, className }: ProductFeaturesProps) =
           className="flex items-center gap-2 text-gray-600 group"
         >
           <div className="w-1.5 h-1.5 rounded-full bg-primary/60 group-hover:bg-primary/80 transition-colors flex-shrink-0" />
-          <span className="text-xs group-hover:text-gray-800 transition-colors line-clamp-1">{feature}</span>
+          <span className="text-sm group-hover:text-gray-800 transition-colors line-clamp-1">{feature}</span>
         </motion.div>
       ))}
     </div>

@@ -1,3 +1,4 @@
+
 import { LucideIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -70,8 +71,8 @@ export const ProductCard = ({
         {/* Glass effect background */}
         <div className="absolute inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-[2px] group-hover:backdrop-blur-[4px] transition-all duration-500" />
         
-        <div className="relative z-10 flex flex-col h-full justify-center pt-16">
-          <CardHeader className="space-y-3 flex-shrink-0 pb-2">
+        <div className="relative z-10 flex flex-col h-full p-6">
+          <CardHeader className="space-y-3 flex-shrink-0 pb-2 p-0">
             {shouldShowBadge(title) && (
               <div className="absolute top-0 right-0 p-4">
                 <ProductBadge />
@@ -95,10 +96,12 @@ export const ProductCard = ({
               {description}
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex-grow overflow-hidden py-2">
+          
+          <div className="flex-grow mt-2 mb-4 overflow-hidden">
             <ProductFeatures features={getProductFeatures(title)} />
-          </CardContent>
-          <CardFooter className="flex-shrink-0 pb-4 pt-2">
+          </div>
+          
+          <div className="mt-auto pt-2">
             <Button 
               variant="ghost" 
               className={`w-full group/button relative overflow-hidden bg-gradient-to-r from-[#1E40AF] via-[#41b06e] to-[#41b06e] text-white opacity-90 hover:opacity-100 ${getHoverColor(title)}`}
@@ -107,7 +110,7 @@ export const ProductCard = ({
                 Découvrir
               </span>
             </Button>
-          </CardFooter>
+          </div>
         </div>
       </Card>
     </div>

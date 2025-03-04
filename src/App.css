@@ -52,10 +52,12 @@ html {
 img {
   max-width: 100%;
   height: auto;
+  -webkit-user-drag: none;
 }
 
 /* Improve performance with hardware acceleration */
 * {
+  -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -83,26 +85,37 @@ main {
   transform: scaleX(0);
   transform-origin: right;
   transition: transform 0.3s ease;
+  -webkit-transform: scaleX(0);
+  -webkit-transform-origin: right;
+  -webkit-transition: -webkit-transform 0.3s ease;
 }
 
 .link-hover:hover::after {
   transform: scaleX(1);
   transform-origin: left;
+  -webkit-transform: scaleX(1);
+  -webkit-transform-origin: left;
 }
 
 /* Glassmorphism utility classes */
 .glass {
   background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .glass-dark {
   background: rgba(30, 41, 59, 0.6);
-  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Cross-browser perspective */
+.perspective-1000 {
+  perspective: 1000px;
+  -webkit-perspective: 1000px;
 }
 
 /* Optimize animations */
