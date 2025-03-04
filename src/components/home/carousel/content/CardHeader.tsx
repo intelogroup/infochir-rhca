@@ -17,8 +17,6 @@ export const CardHeader = ({ image, title, category }: CardHeaderProps) => {
           alt={title}
           className="w-full h-full object-cover object-center"
           style={{
-            WebkitObjectFit: "cover",
-            MozObjectFit: "cover", 
             objectFit: "cover"
           }}
           whileHover={{ scale: 1.05 }}
