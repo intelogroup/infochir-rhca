@@ -1,3 +1,4 @@
+
 export interface Sponsor {
   name: string;
   logo: string;
@@ -40,5 +41,11 @@ export const sponsors: Sponsor[] = [
     logo: "/lovable-uploads/c2c9c95c-a47c-466a-ab8e-6c17ca9e7ece.png",
     type: "sponsor",
     url: "http://www.hms.ht"
+  },
+  {
+    name: "OFATMA",
+    logo: "/lovable-uploads/6e69fedc-484d-4f68-b95c-63ca2aa91e6c.png",
+    type: "sponsor",
+    url: "https://www.ofatma.gouv.ht"
   }
 ];
