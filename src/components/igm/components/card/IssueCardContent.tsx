@@ -49,6 +49,37 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
     }
   })();
 
+  // Get page numbers from articles
+  const getPageNumbers = (() => {
+    try {
+      if (!issue.articles || issue.articles.length === 0) {
+        return "p. -";
+      }
+      
+      // Get all valid page numbers
+      const pageNumbers = issue.articles
+        .map(article => article.pageNumber)
+        .filter(pageNum => pageNum && pageNum > 0);
+      
+      if (pageNumbers.length === 0) {
+        return "p. -";
+      }
+      
+      // Get the min and max page numbers
+      const minPage = Math.min(...pageNumbers);
+      const maxPage = Math.max(...pageNumbers);
+      
+      if (minPage === maxPage) {
+        return `p. ${minPage}`;
+      }
+      
+      return `p. ${minPage}-${maxPage}`;
+    } catch (error) {
+      console.error('Error getting page numbers:', error);
+      return "p. -";
+    }
+  })();
+
   return (
     <div className="flex-1 min-w-0 space-y-2">
       <div className="flex justify-between items-start gap-2">
@@ -80,7 +111,7 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
       
       <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600 mt-1">
         <span className="bg-secondary/10 px-2 py-0.5 rounded-full font-medium">
-          {issue.articles?.length || 0} article{(issue.articles?.length || 0) !== 1 ? 's' : ''}
+          {getPageNumbers}
         </span>
         <span>{issue.downloads || 0} téléchargements</span>
         <span>{issue.shares || 0} partages</span>

@@ -85,7 +85,7 @@ export const useIGMIssues = () => {
             id: article.id,
             title: article.title,
             authors: article.authors || [],
-            pageNumber: article.page_number ? Number(article.page_number) : 0,
+            pageNumber: article.page_number ? parseInt(article.page_number, 10) || 0 : 0,
             abstract: article.abstract,
             tags: article.tags || []
           });
