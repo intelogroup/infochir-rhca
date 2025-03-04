@@ -18,13 +18,15 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       whileHover={{ y: -5 }}
-      className="h-full"
+      className="h-full flex"
     >
       <Card 
-        className="overflow-hidden group cursor-pointer h-full flex border border-gray-200 hover:shadow-md transition-all"
+        className="overflow-hidden group cursor-pointer h-full flex flex-row w-full border border-gray-200 hover:shadow-md transition-all"
       >
         <div className="shrink-0 w-1/3 md:w-1/4 h-full">
-          <IssueCardCover coverImage={issue.coverImage} title={issue.title} />
+          <div className="h-full">
+            <IssueCardCover coverImage={issue.coverImage} title={issue.title} />
+          </div>
         </div>
         
         <div className="flex-1 flex flex-col p-4">

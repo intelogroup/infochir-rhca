@@ -1,3 +1,4 @@
+
 import {
   Carousel,
   CarouselContent,
@@ -133,10 +134,12 @@ export const CarouselSection = () => {
           setApi={setApi}
           className="w-full max-w-6xl mx-auto"
         >
-          <CarouselContent>
+          <CarouselContent className="py-4">
             {displayData.map((highlight, index) => (
               <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3 h-full">
-                <CarouselCard highlight={highlight} index={index} />
+                <div className="h-full">
+                  <CarouselCard highlight={highlight} index={index} />
+                </div>
               </CarouselItem>
             ))}
           </CarouselContent>

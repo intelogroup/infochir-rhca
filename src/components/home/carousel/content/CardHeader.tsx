@@ -1,3 +1,4 @@
+
 import { Badge } from "@/components/ui/badge";
 import { motion as Motion } from "framer-motion";
 
@@ -9,14 +10,22 @@ interface CardHeaderProps {
 
 export const CardHeader = ({ image, title, category }: CardHeaderProps) => {
   return (
-    <div className="relative aspect-[4/3] overflow-hidden">
-      <Motion.img
-        src={image}
-        alt={title}
-        className="w-full h-full object-cover"
-        whileHover={{ scale: 1.05 }}
-        transition={{ duration: 0.3 }}
-      />
+    <div className="relative h-48 w-full overflow-hidden">
+      <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+        <Motion.img
+          src={image}
+          alt={title}
+          className="w-full h-full object-cover object-center"
+          whileHover={{ scale: 1.05 }}
+          transition={{ duration: 0.3 }}
+          loading="lazy"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.onerror = null;
+            target.src = '/placeholder.svg';
+          }}
+        />
+      </div>
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
       <Badge className="absolute top-4 left-4 bg-white/90 text-primary hover:bg-white">
         {category || 'Article'}

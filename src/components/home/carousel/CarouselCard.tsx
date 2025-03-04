@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { X, Calendar, Users } from "lucide-react";
 import { motion as Motion } from "framer-motion";
@@ -40,28 +41,32 @@ export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
         className="p-2 h-full"
       >
         <div 
-          className="relative group h-full rounded-xl overflow-hidden bg-white shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+          className="relative group h-full flex flex-col rounded-xl overflow-hidden bg-white shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
           onClick={() => setIsOpen(true)}
         >
-          <CardHeader 
-            image={highlight.image}
-            title={highlight.title}
-            category={highlight.category}
-          />
+          <div className="flex-shrink-0">
+            <CardHeader 
+              image={highlight.image}
+              title={highlight.title}
+              category={highlight.category}
+            />
+          </div>
           
-          <div className="p-6">
+          <div className="p-6 flex-grow flex flex-col min-h-[180px]">
             <h3 className="text-xl font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-primary transition-colors duration-300">
               {highlight.title}
             </h3>
             
-            <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+            <p className="text-gray-600 text-sm mb-4 line-clamp-2 flex-grow">
               {highlight.description}
             </p>
             
-            <CardFooter 
-              date={highlight.date}
-              author={highlight.author}
-            />
+            <div className="mt-auto pt-2">
+              <CardFooter 
+                date={highlight.date}
+                author={highlight.author}
+              />
+            </div>
           </div>
         </div>
       </Motion.div>
