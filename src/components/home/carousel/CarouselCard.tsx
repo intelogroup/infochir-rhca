@@ -52,16 +52,16 @@ export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
             />
           </div>
           
-          <div className="p-6 flex-grow flex flex-col min-h-[180px]">
+          <div className="p-4 sm:p-6 flex-grow flex flex-col min-h-[160px] max-h-[240px]">
             <h3 className="text-xl font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-primary transition-colors duration-300">
               {highlight.title}
             </h3>
             
-            <p className="text-gray-600 text-sm mb-4 line-clamp-2 flex-grow">
+            <p className="text-gray-600 text-sm mb-auto line-clamp-2 flex-grow overflow-hidden">
               {highlight.description}
             </p>
             
-            <div className="mt-auto pt-2">
+            <div className="mt-4 pt-2 border-t border-gray-100">
               <CardFooter 
                 date={highlight.date}
                 author={highlight.author}
@@ -72,7 +72,7 @@ export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
       </Motion.div>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-2xl h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <div className="relative">
             <Button
               variant="ghost"
@@ -102,14 +102,14 @@ export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
               <div className="flex items-center justify-between text-sm text-gray-500 border-y border-gray-100 py-4">
                 {highlight.date && (
                   <span className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
-                    {highlight.date}
+                    <Calendar className="h-4 w-4 flex-shrink-0" />
+                    <span className="truncate">{highlight.date}</span>
                   </span>
                 )}
                 {highlight.author && (
                   <span className="flex items-center gap-1">
-                    <Users className="h-4 w-4" />
-                    {highlight.author}
+                    <Users className="h-4 w-4 flex-shrink-0" />
+                    <span className="truncate">{highlight.author}</span>
                   </span>
                 )}
               </div>

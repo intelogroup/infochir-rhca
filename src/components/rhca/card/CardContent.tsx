@@ -12,18 +12,18 @@ interface CardContentProps {
 
 export const CardContent: React.FC<CardContentProps> = ({ article, pdfUrl }) => {
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full min-h-0">
       <div className="flex flex-wrap items-center text-sm text-muted-foreground mb-1.5 gap-2">
         <div className="flex items-center">
-          <CalendarIcon className="mr-1 h-3 w-3 text-primary/60" />
-          <span className="font-medium">
+          <CalendarIcon className="mr-1 h-3 w-3 text-primary/60 flex-shrink-0" />
+          <span className="font-medium truncate">
             {article.publicationDate ? new Date(article.publicationDate).toLocaleDateString('fr-FR') : 'Date non disponible'}
           </span>
         </div>
         {article.volume && article.issue && (
           <div className="flex items-center">
-            <BookOpen className="mr-1 h-3 w-3 text-secondary/70" />
-            <span className="font-medium text-xs text-secondary-dark">
+            <BookOpen className="mr-1 h-3 w-3 text-secondary/70 flex-shrink-0" />
+            <span className="font-medium text-xs text-secondary-dark truncate">
               Vol. {article.volume}, N° {article.issue}
             </span>
           </div>
@@ -35,12 +35,12 @@ export const CardContent: React.FC<CardContentProps> = ({ article, pdfUrl }) => 
       </h3>
       
       {article.abstract && (
-        <p className="text-muted-foreground text-sm line-clamp-2 mb-2">
+        <p className="text-muted-foreground text-sm line-clamp-2 mb-2 overflow-hidden">
           {article.abstract}
         </p>
       )}
       
-      <div className="flex flex-wrap gap-1.5 mt-auto mb-2">
+      <div className="flex flex-wrap gap-1.5 mt-auto mb-2 overflow-hidden">
         {article.tags && article.tags.slice(0, 3).map((tag, index) => (
           <Badge key={index} variant="outline" className="px-2 py-0 text-xs bg-gray-50 hover:bg-gray-100 transition-colors truncate max-w-[120px]">
             {tag}
@@ -53,7 +53,7 @@ export const CardContent: React.FC<CardContentProps> = ({ article, pdfUrl }) => 
         )}
       </div>
       
-      <div className="flex justify-between items-center mt-auto">
+      <div className="flex justify-between items-center mt-auto pt-1">
         <CardActions article={article} pdfUrl={pdfUrl} />
       </div>
     </div>

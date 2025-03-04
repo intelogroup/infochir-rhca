@@ -11,11 +11,11 @@ export interface StatsCardProps {
 
 export const StatsCard = ({ icon: Icon, title, value, description, iconClassName }: StatsCardProps) => {
   return (
-    <div className="flex flex-col items-center text-center p-6 rounded-xl bg-white shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300">
+    <div className="flex flex-col items-center text-center p-6 rounded-xl bg-white shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 min-h-[200px] max-h-[260px] h-full">
       <div className="p-3 rounded-full bg-primary/5 mb-4 transform transition-transform group-hover:scale-110">
         <Icon className={`h-6 w-6 ${iconClassName || "text-primary"}`} />
       </div>
-      <div className="space-y-2">
+      <div className="space-y-2 flex-grow flex flex-col justify-center">
         <p className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
           {value}
         </p>

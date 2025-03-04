@@ -34,26 +34,26 @@ export const MemberRow = ({ member }: { member: Member }) => {
       </TableCell>
       
       <TableCell className="relative py-4">
-        <div className="space-y-1">
-          <div className="font-semibold text-gray-900 group-hover:text-primary transition-colors duration-300">
+        <div className="space-y-1 min-w-0 max-w-full">
+          <div className="font-semibold text-gray-900 group-hover:text-primary transition-colors duration-300 truncate">
             {member.name}
           </div>
           {member.titre && (
-            <div className="text-sm text-gray-600 italic">
+            <div className="text-sm text-gray-600 italic truncate">
               {member.titre}
             </div>
           )}
           <div className="md:hidden space-y-1">
             {member.phone && (
-              <div className="flex items-center gap-2 text-gray-600 text-sm">
-                <Phone className="h-3 w-3 text-primary/70" />
-                {member.phone}
+              <div className="flex items-center gap-2 text-gray-600 text-sm truncate">
+                <Phone className="h-3 w-3 text-primary/70 flex-shrink-0" />
+                <span className="truncate">{member.phone}</span>
               </div>
             )}
             {member.email && (
-              <div className="flex items-center gap-2 text-gray-600 text-sm">
-                <Mail className="h-3 w-3 text-primary/70" />
-                <a href={`mailto:${member.email}`} className="hover:text-primary transition-colors">
+              <div className="flex items-center gap-2 text-gray-600 text-sm truncate">
+                <Mail className="h-3 w-3 text-primary/70 flex-shrink-0" />
+                <a href={`mailto:${member.email}`} className="hover:text-primary transition-colors truncate">
                   {member.email}
                 </a>
               </div>
@@ -64,20 +64,20 @@ export const MemberRow = ({ member }: { member: Member }) => {
       
       <TableCell className="hidden sm:table-cell relative py-4">
         {member.phone && (
-          <div className="flex items-center gap-2 text-gray-600 group-hover:text-gray-900 transition-colors">
-            <Phone className="h-4 w-4 text-primary/70" />
-            <span>{member.phone}</span>
+          <div className="flex items-center gap-2 text-gray-600 group-hover:text-gray-900 transition-colors truncate">
+            <Phone className="h-4 w-4 text-primary/70 flex-shrink-0" />
+            <span className="truncate">{member.phone}</span>
           </div>
         )}
       </TableCell>
       
       <TableCell className="hidden md:table-cell relative py-4">
         {member.email && (
-          <div className="flex items-center gap-2 text-gray-600 group-hover:text-gray-900 transition-colors">
-            <Mail className="h-4 w-4 text-primary/70" />
+          <div className="flex items-center gap-2 text-gray-600 group-hover:text-gray-900 transition-colors truncate">
+            <Mail className="h-4 w-4 text-primary/70 flex-shrink-0" />
             <a 
               href={`mailto:${member.email}`} 
-              className="hover:text-primary transition-colors"
+              className="hover:text-primary transition-colors truncate"
             >
               {member.email}
             </a>

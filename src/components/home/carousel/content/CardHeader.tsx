@@ -10,12 +10,17 @@ interface CardHeaderProps {
 
 export const CardHeader = ({ image, title, category }: CardHeaderProps) => {
   return (
-    <div className="relative h-48 w-full overflow-hidden">
+    <div className="relative min-h-[160px] max-h-[200px] w-full overflow-hidden">
       <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
         <Motion.img
           src={image}
           alt={title}
           className="w-full h-full object-cover object-center"
+          style={{
+            WebkitObjectFit: "cover",
+            MozObjectFit: "cover", 
+            objectFit: "cover"
+          }}
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.3 }}
           loading="lazy"

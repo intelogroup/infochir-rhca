@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -161,6 +162,8 @@
 /* Improve carousel item height consistency */
 .carousel-item {
   height: 100%;
+  min-height: 300px;
+  max-height: 420px;
 }
 
 /* Ensure consistent line clamping across browsers */
@@ -193,4 +196,51 @@
   .h-full {
     height: -webkit-fill-available;
   }
+  
+  .min-h-full {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* Card compatibility fixes */
+.card {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+/* Ensure proper spacing in member cards */
+.member-card-content {
+  padding: 1rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  height: 100%;
+  gap: 0.5rem;
+}
+
+/* Ensure proper avatar display across browsers */
+.avatar-image {
+  -o-object-fit: cover;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+/* Fix truncation for Safari */
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
