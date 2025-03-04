@@ -2,6 +2,7 @@
 import { Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { motion } from "framer-motion";
@@ -11,48 +12,44 @@ export const NewsletterSection = () => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubscribe = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !name) {
+    if (!email || !name || !message) {
       toast.error("Veuillez remplir tous les champs obligatoires");
       return;
     }
 
     setIsSubmitting(true);
-    const toastId = toast.loading("Inscription en cours...");
+    const toastId = toast.loading("Envoi en cours...");
 
     try {
       const { error } = await supabase
-        .from('newsletter_subscriptions')
+        .from('contact_messages')
         .insert([
-          { name, email, phone }
+          { name, email, phone, message }
         ]);
 
       if (error) {
-        if (error.code === '23505') {
-          toast.error("Cette adresse email est déjà inscrite à notre newsletter", {
-            id: toastId
-          });
-        } else {
-          console.error("Newsletter subscription error:", error);
-          toast.error("Une erreur est survenue lors de l'inscription", {
-            id: toastId
-          });
-        }
+        console.error("Contact form submission error:", error);
+        toast.error("Une erreur est survenue lors de l'envoi du message", {
+          id: toastId
+        });
         return;
       }
 
-      toast.success("Merci de votre inscription à notre newsletter!", {
+      toast.success("Merci pour votre message! Nous vous contacterons bientôt.", {
         id: toastId
       });
       setEmail("");
       setName("");
       setPhone("");
+      setMessage("");
     } catch (error) {
-      console.error("Newsletter submission error:", error);
-      toast.error("Une erreur est survenue lors de l'inscription", {
+      console.error("Contact form submission error:", error);
+      toast.error("Une erreur est survenue lors de l'envoi", {
         id: toastId
       });
     } finally {
@@ -76,14 +73,14 @@ export const NewsletterSection = () => {
         </div>
         
         <h2 className="text-4xl font-bold mb-4 text-white bg-clip-text">
-          Restez Informé
+          Contactez-nous
         </h2>
         
         <p className="text-lg text-white/90 mb-12 max-w-2xl mx-auto">
-          Abonnez-vous à notre newsletter pour recevoir les dernières publications et actualités
+          Envoyez-nous un message pour toute question ou demande d'information
         </p>
         
-        <form onSubmit={handleSubscribe} className="space-y-4 max-w-xl mx-auto backdrop-blur-sm bg-white/5 p-8 rounded-2xl border border-white/10 shadow-xl">
+        <form onSubmit={handleSubmit} className="space-y-4 max-w-xl mx-auto backdrop-blur-sm bg-white/5 p-8 rounded-2xl border border-white/10 shadow-xl">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <label htmlFor="name" className="text-white/90 text-sm font-medium">
@@ -132,6 +129,21 @@ export const NewsletterSection = () => {
             />
           </div>
 
+          <div className="space-y-2">
+            <label htmlFor="message" className="text-white/90 text-sm font-medium">
+              Message*
+            </label>
+            <Textarea
+              id="message"
+              placeholder="Votre message"
+              className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white/20 min-h-[120px]"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              required
+              disabled={isSubmitting}
+            />
+          </div>
+
           <motion.div
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -143,7 +155,7 @@ export const NewsletterSection = () => {
               className="w-full bg-white text-primary hover:bg-white/90 transition-all duration-300 py-6 text-lg font-medium shadow-lg"
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Inscription en cours..." : "S'abonner à la Newsletter"}
+              {isSubmitting ? "Envoi en cours..." : "Envoyer"}
             </Button>
           </motion.div>
           
