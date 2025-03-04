@@ -68,17 +68,19 @@ export const NewsletterSection = () => {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <div className="mb-8 inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 shadow-lg">
-          <Mail className="h-10 w-10 text-white" />
+        <div className="flex flex-col items-center text-center mb-12">
+          <div className="mb-8 inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 shadow-lg">
+            <Mail className="h-10 w-10 text-white" />
+          </div>
+          
+          <h2 className="text-4xl font-bold mb-4 text-white bg-clip-text">
+            Contactez-nous
+          </h2>
+          
+          <p className="text-lg text-white/90 mb-12 max-w-2xl mx-auto">
+            Envoyez-nous un message pour toute question ou demande d'information
+          </p>
         </div>
-        
-        <h2 className="text-4xl font-bold mb-4 text-white bg-clip-text">
-          Contactez-nous
-        </h2>
-        
-        <p className="text-lg text-white/90 mb-12 max-w-2xl mx-auto">
-          Envoyez-nous un message pour toute question ou demande d'information
-        </p>
         
         <form onSubmit={handleSubmit} className="space-y-4 max-w-xl mx-auto backdrop-blur-sm bg-white/5 p-8 rounded-2xl border border-white/10 shadow-xl">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
