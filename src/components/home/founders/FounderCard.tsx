@@ -42,8 +42,7 @@ export const FounderCard = ({ founder, onClick }: FounderCardProps) => {
                     alt={founder.name}
                     className="object-cover w-full h-full"
                     style={{
-                      WebkitObjectFit: "cover",
-                      MozObjectFit: "cover"
+                      objectFit: "cover"
                     }}
                   />
                   <AvatarFallback>
