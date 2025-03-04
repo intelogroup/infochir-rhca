@@ -1,3 +1,4 @@
+
 import { defaultStats } from "./stats/StatsData";
 import { StatsCard } from "@/components/ui/stats-card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -28,8 +29,7 @@ export const StatsSection = () => {
 
       const stats = [...defaultStats];
       
-      // Update Publications count
-      stats[0].value = articles?.length?.toString() || "0";
+      // Don't override the first stat value since we've set it statically to 95
       
       // Update Members count
       stats[1].value = members?.length?.toString() || "0";
@@ -53,17 +53,17 @@ export const StatsSection = () => {
 
   if (isLoading) {
     return (
-      <section className="py-12 bg-white" aria-label="Statistiques">
+      <section className="py-16 bg-gradient-to-b from-white to-gray-50" aria-label="Statistiques">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
             <LoadingSpinner variant="fun" text="Chargement des statistiques" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="p-6 bg-gray-50 rounded-xl">
-                <Skeleton className="h-12 w-12 rounded-full mb-4" />
-                <Skeleton className="h-8 w-24 mb-2" />
-                <Skeleton className="h-4 w-32" />
+              <div key={i} className="p-6 bg-white shadow-sm rounded-xl">
+                <Skeleton className="h-12 w-12 rounded-full mx-auto mb-4" />
+                <Skeleton className="h-8 w-24 mx-auto mb-2" />
+                <Skeleton className="h-4 w-32 mx-auto" />
               </div>
             ))}
           </div>
@@ -75,7 +75,7 @@ export const StatsSection = () => {
   if (error) {
     console.error('Error fetching stats:', error);
     return (
-      <section className="py-12 bg-white" aria-label="Erreur de chargement">
+      <section className="py-16 bg-gradient-to-b from-white to-gray-50" aria-label="Erreur de chargement">
         <div className="container mx-auto px-4">
           <Alert variant="destructive" className="flex items-center justify-between">
             <div className="flex items-start gap-2">
@@ -103,15 +103,21 @@ export const StatsSection = () => {
   }
 
   return (
-    <section className="py-12 bg-white" aria-label="Statistiques">
+    <section className="py-16 bg-gradient-to-b from-white to-gray-50" aria-label="Statistiques">
       <div className="container mx-auto px-4">
+        <div className="text-center mb-10">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Nos chiffres clés</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            L'impact de notre travail en quelques statistiques
+          </p>
+        </div>
         <div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
           role="list"
           aria-label="Liste des statistiques"
         >
           {(statsData || defaultStats).map((stat, index) => (
-            <div key={index} role="listitem">
+            <div key={index} role="listitem" className="transform transition-transform hover:scale-105">
               <StatsCard {...stat} />
             </div>
           ))}

@@ -1,11 +1,12 @@
+
 import { StatsCardProps } from "@/components/ui/stats-card";
 import { BookOpen, Users, Eye, Quote } from "lucide-react";
 
 export const defaultStats: StatsCardProps[] = [
   {
     title: "Publications",
-    value: "0",
-    description: "Articles publiés",
+    value: "95",
+    description: "Journals Publiés",
     icon: BookOpen,
     iconClassName: "text-blue-600",
   },
