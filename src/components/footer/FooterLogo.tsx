@@ -8,7 +8,7 @@ export const FooterLogo = () => {
     <div className="space-y-6">
       <Link to="/" className="group flex items-center space-x-3">
         <motion.div 
-          className="relative h-12 w-12 overflow-hidden rounded-full shadow-md bg-white p-1"
+          className="relative h-12 w-12 overflow-hidden rounded-full"
           whileHover={{ scale: 1.05 }}
           transition={{ type: "spring", stiffness: 400, damping: 10 }}
         >

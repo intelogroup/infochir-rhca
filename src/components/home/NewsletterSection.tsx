@@ -26,11 +26,22 @@ export const NewsletterSection = () => {
     const toastId = toast.loading("Envoi en cours...");
 
     try {
-      const { error } = await supabase
+      // First, save to database
+      const { error: dbError } = await supabase
         .from('contact_messages')
         .insert([
           { name, email, phone, message }
         ]);
+
+      if (dbError) {
+        console.error("Contact form database error:", dbError);
+        // Continue with email sending even if DB insert fails
+      }
+
+      // Send email notification
+      const { error } = await supabase.functions.invoke('send-contact-email', {
+        body: { name, email, phone, message }
+      });
 
       if (error) {
         console.error("Contact form submission error:", error);
