@@ -100,7 +100,7 @@ export const NewsletterSubscribeFooter = () => {
           whileTap={{ scale: 0.98 }}
         >
           <Button 
-            variant="primary" 
+            variant="default" 
             type="submit" 
             className="w-full"
             disabled={isSubmitting}
