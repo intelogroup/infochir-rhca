@@ -1,7 +1,8 @@
+
 import { YearGroup } from "./YearGroup";
 import { IssuesTable } from "./IssuesTable";
 import { FileText, Search, Loader2 } from "lucide-react";
-import type { Issue } from "./types";
+import type { Issue } from "@/components/igm/types";  // Updated import to use IGM types
 
 interface IssuesContentProps {
   viewMode: "grid" | "table";
