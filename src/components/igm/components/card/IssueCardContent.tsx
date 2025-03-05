@@ -56,23 +56,82 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
         return "- Pages";
       }
       
-      // Get all valid page numbers
-      const pageNumbers = issue.articles
-        .map(article => article.pageNumber)
-        .filter(pageNum => pageNum && pageNum > 0);
+      // First try to get the direct page count if available
+      if (issue.pageCount && issue.pageCount > 0) {
+        return `${issue.pageCount} Page${issue.pageCount > 1 ? 's' : ''}`;
+      }
       
-      if (pageNumbers.length === 0) {
+      // Get all valid page numbers
+      const validPageNumbers = issue.articles
+        .map(article => {
+          // Check if pageNumber exists and convert to number
+          if (!article.pageNumber) return null;
+          
+          // Handle different page number formats:
+          // 1. Direct number: "10"
+          // 2. Range: "10-15"
+          // 3. Multiple pages: "10,12,15"
+          
+          // Try parsing as a simple number first
+          const parsedNum = parseInt(article.pageNumber, 10);
+          if (!isNaN(parsedNum)) return parsedNum;
+          
+          // Check if it's a range (e.g., "10-15")
+          if (article.pageNumber.includes('-')) {
+            const [start, end] = article.pageNumber.split('-').map(num => parseInt(num.trim(), 10));
+            if (!isNaN(start) && !isNaN(end)) {
+              return { start, end };
+            }
+          }
+          
+          // Check if it's comma-separated (e.g., "10,12,15")
+          if (article.pageNumber.includes(',')) {
+            const pages = article.pageNumber.split(',')
+              .map(num => parseInt(num.trim(), 10))
+              .filter(num => !isNaN(num));
+            if (pages.length > 0) {
+              return pages;
+            }
+          }
+          
+          return null;
+        })
+        .filter(pageNum => pageNum !== null);
+      
+      if (validPageNumbers.length === 0) {
         return "- Pages";
       }
       
-      // Get the min and max page numbers
-      const minPage = Math.min(...pageNumbers);
-      const maxPage = Math.max(...pageNumbers);
+      // Calculate total pages based on the format of page numbers
+      let minPage = Infinity;
+      let maxPage = -Infinity;
+      
+      validPageNumbers.forEach(pageNum => {
+        if (typeof pageNum === 'number') {
+          minPage = Math.min(minPage, pageNum);
+          maxPage = Math.max(maxPage, pageNum);
+        } else if (pageNum && typeof pageNum === 'object') {
+          if ('start' in pageNum && 'end' in pageNum) {
+            // It's a range
+            minPage = Math.min(minPage, pageNum.start);
+            maxPage = Math.max(maxPage, pageNum.end);
+          } else if (Array.isArray(pageNum)) {
+            // It's an array of page numbers
+            pageNum.forEach(p => {
+              minPage = Math.min(minPage, p);
+              maxPage = Math.max(maxPage, p);
+            });
+          }
+        }
+      });
       
       // Calculate total pages (including both start and end pages)
-      const totalPages = maxPage - minPage + 1;
+      if (minPage !== Infinity && maxPage !== -Infinity) {
+        const totalPages = maxPage - minPage + 1;
+        return `${totalPages} Page${totalPages > 1 ? 's' : ''}`;
+      }
       
-      return `${totalPages} Page${totalPages > 1 ? 's' : ''}`;
+      return "- Pages";
     } catch (error) {
       console.error('Error calculating total pages:', error);
       return "- Pages";
