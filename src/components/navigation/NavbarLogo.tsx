@@ -18,9 +18,9 @@ export const NavbarLogo = () => {
       <motion.img
         src="/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png"
         alt="Info Chir Logo"
-        className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 object-contain rounded-full shadow-md transition-all duration-300 hover:brightness-110"
+        className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 lg:h-16 lg:w-16 object-contain rounded-full shadow-md transition-all duration-300 hover:brightness-110"
         loading="eager"
-        whileHover={{ scale: 1.05 }}
+        whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
       />
       <span className="bg-gradient-to-r from-primary via-primary-light to-secondary bg-clip-text text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-transparent whitespace-nowrap transition-all duration-300">
