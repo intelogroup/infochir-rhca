@@ -1,6 +1,5 @@
-
 import { useMemo, useCallback } from "react";
-import type { Issue } from "../types";
+import type { Issue, SortOption } from "../types";
 import { DateRange } from "react-day-picker";
 import { isValidDate } from "../types";
 
