@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { FooterSection, quickLinks, resources } from "./layouts/FooterSection";
 import { FooterLogo } from "./footer/FooterLogo";
 import { SocialLinks } from "./footer/SocialLinks";
+import { NewsletterSubscribeFooter } from "./footer/NewsletterSubscribeFooter";
 
 export const Footer = () => {
   return (
@@ -50,7 +51,7 @@ export const Footer = () => {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="lg:col-span-1"
           >
-            <SocialLinks />
+            <NewsletterSubscribeFooter />
           </motion.div>
         </div>
 
