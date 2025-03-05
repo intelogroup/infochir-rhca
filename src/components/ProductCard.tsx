@@ -49,7 +49,7 @@ export const ProductCard = ({
   };
 
   const shouldShowBadge = (title: string) => {
-    return title !== "Index Medicus";
+    return true; // Now showing badge on all cards, including Index Medicus
   };
 
   const getLogoSize = (title: string) => {

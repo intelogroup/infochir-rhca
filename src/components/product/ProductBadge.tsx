@@ -1,3 +1,4 @@
+
 import { Bell } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useState, useEffect } from "react";
@@ -23,10 +24,10 @@ export const ProductBadge = () => {
   return (
     <Badge 
       variant="secondary" 
-      className="bg-white text-primary flex items-center gap-2"
+      className="bg-white text-primary group-hover:bg-primary group-hover:text-white transition-colors flex items-center gap-2"
     >
       {showDot && (
-        <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+        <div className="w-1.5 h-1.5 rounded-full bg-green-500 group-hover:bg-white transition-colors" />
       )}
       <span>Mise à jour disponible</span>
       <Bell 
