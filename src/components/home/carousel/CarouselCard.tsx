@@ -220,3 +220,4 @@ export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
     </>
   );
 };
+

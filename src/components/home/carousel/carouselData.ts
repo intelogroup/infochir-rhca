@@ -1,3 +1,4 @@
+
 export interface Highlight {
   title: string;
   description: string;
@@ -14,6 +15,8 @@ export interface Highlight {
   maxParticipants?: number;
   prerequisites?: string[];
   objectives?: string[];
+  id?: string;
+  link?: string;
 }
 
 export const highlights: Highlight[] = [
