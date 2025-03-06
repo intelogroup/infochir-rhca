@@ -61,9 +61,14 @@ export const Footer = () => {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="mt-16 pt-8 border-t border-gray-200/50 flex flex-col md:flex-row md:justify-between md:items-center gap-4"
         >
-          <p className="text-center md:text-left text-gray-500 text-sm">
-            © {new Date().getFullYear()} InfoChir. Tous droits réservés.
-          </p>
+          <div className="text-center md:text-left">
+            <p className="text-gray-500 text-sm">
+              © {new Date().getFullYear()} InfoChir. Tous droits réservés.
+            </p>
+            <p className="text-gray-400 text-xs mt-1">
+              By: <a href="https://syfexstudio.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">syfexstudio</a>
+            </p>
+          </div>
           <div className="flex items-center justify-center md:justify-end space-x-3">
             <a href="/privacy" className="text-xs text-gray-500 hover:text-primary transition-colors">
               Politique de confidentialité
