@@ -51,7 +51,7 @@ const DonateSuccess = () => {
   if (isLoading) {
     return (
       <MainLayout>
-        <div className="flex items-center justify-center min-h-screen">
+        <div className="flex flex-col items-center justify-center pt-[150px]">
           <LoadingSpinner size="lg" variant="fun" text="Vérification de votre paiement..." />
         </div>
       </MainLayout>

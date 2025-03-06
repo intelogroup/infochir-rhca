@@ -1,7 +1,6 @@
-
 import { YearGroupList } from "./YearGroupList";
 import { IssuesTable } from "@/components/issues/IssuesTable";
-import { FileText, Search, Loader2 } from "lucide-react";
+import { FileText, Search } from "lucide-react";
 import type { Issue } from "../types";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -29,7 +28,7 @@ export const IssuesGridContent = ({
 }: IssuesGridContentProps) => {
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 bg-white rounded-xl border border-gray-100 mt-[50px]">
+      <div className="flex flex-col items-center justify-center pt-20 pb-12">
         <LoadingSpinner variant="fun" size="lg" text="Chargement des numéros..." />
       </div>
     );

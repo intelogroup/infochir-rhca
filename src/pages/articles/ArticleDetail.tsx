@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/layouts/MainLayout";
@@ -86,7 +87,7 @@ const ArticleDetail = () => {
         </Button>
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-12">
+          <div className="flex flex-col items-center justify-center pt-16">
             <LoadingSpinner size="md" text="Chargement de l'article..." />
           </div>
         ) : error ? (

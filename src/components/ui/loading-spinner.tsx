@@ -120,7 +120,7 @@ export const LoadingSpinner = ({
   }
 
   return (
-    <div className="flex flex-col items-center justify-center py-6 mt-[50px]">
+    <div className="flex flex-col items-center justify-center py-6 mt-8">
       {renderLoader()}
       {text && (
         <p className="mt-3 text-primary/80 font-medium text-sm animate-pulse">

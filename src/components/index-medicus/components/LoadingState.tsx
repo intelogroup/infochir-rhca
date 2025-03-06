@@ -1,5 +1,5 @@
 
-import { BookOpen, Loader2, Sparkles } from "lucide-react";
+import { BookOpen, Sparkles } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LoadingSpinner as UILoadingSpinner } from "@/components/ui/loading-spinner";
 import { useState, useEffect } from "react";
@@ -65,20 +65,20 @@ export const LoadingSpinner = () => {
   }, []);
   
   return (
-    <div className="space-y-6 mt-[50px]">
-      <div className="flex flex-col items-center justify-center gap-2 py-8">
-        <UILoadingSpinner 
-          size="lg" 
-          variant="fun" 
-          text={showFunnyMessage ? "Nos serveurs travaillent à pleine vitesse..." : "Chargement des articles scientifiques..."}
-        />
-        {showFunnyMessage && (
-          <p className="text-center text-sm text-ocean/80 italic mt-2 max-w-md animate-fade-up">
-            Patience, la science prend parfois son temps...
-          </p>
-        )}
+    <div className="flex flex-col items-center justify-center mt-8 py-8">
+      <UILoadingSpinner 
+        size="lg" 
+        variant="fun" 
+        text={showFunnyMessage ? "Nos serveurs travaillent à pleine vitesse..." : "Chargement des articles scientifiques..."}
+      />
+      {showFunnyMessage && (
+        <p className="text-center text-sm text-ocean/80 italic mt-2 max-w-md animate-fade-up">
+          Patience, la science prend parfois son temps...
+        </p>
+      )}
+      <div className="mt-8">
+        <LoadingSkeleton />
       </div>
-      <LoadingSkeleton />
     </div>
   );
 };

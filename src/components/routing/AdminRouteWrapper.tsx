@@ -14,7 +14,11 @@ export const AdminRouteWrapper = ({ component: Component }: AdminRouteWrapperPro
   const { isAdmin, isLoading } = useAdminAuth();
 
   if (isLoading) {
-    return <LoadingSpinner />;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner variant="default" size="lg" />
+      </div>
+    );
   }
 
   if (!isAdmin) {
@@ -22,7 +26,11 @@ export const AdminRouteWrapper = ({ component: Component }: AdminRouteWrapperPro
   }
 
   return (
-    <Suspense fallback={<LoadingSpinner />}>
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner variant="default" size="lg" />
+      </div>
+    }>
       <ErrorBoundary>
         <Component />
       </ErrorBoundary>
