@@ -1,9 +1,8 @@
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
-const RECIPIENT_EMAIL = "jayveedz19@gmail.com";
+const RECIPIENT_EMAILS = ["jayveedz19@gmail.com", "tlmq15@gmail.com"];
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -31,7 +30,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const emailResponse = await resend.emails.send({
       from: "InfoChir Contact <onboarding@resend.dev>",
-      to: [RECIPIENT_EMAIL],
+      to: RECIPIENT_EMAILS,
       subject: `Nouveau message de contact de ${name}`,
       html: `
         <h1>Nouveau message de contact</h1>

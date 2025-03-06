@@ -1,10 +1,9 @@
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.23.0";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
-const RECIPIENT_EMAIL = "jayveedz19@gmail.com";
+const RECIPIENT_EMAILS = ["jayveedz19@gmail.com", "tlmq15@gmail.com"];
 
 // Supabase client
 const supabaseUrl = Deno.env.get("SUPABASE_URL") as string;
@@ -50,7 +49,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Notify admin
     await resend.emails.send({
       from: "InfoChir Newsletter <onboarding@resend.dev>",
-      to: [RECIPIENT_EMAIL],
+      to: RECIPIENT_EMAILS,
       subject: "Nouvelle inscription à la newsletter",
       html: `
         <h1>Nouvelle inscription à la newsletter</h1>
