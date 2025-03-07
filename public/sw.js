@@ -1,112 +1,117 @@
-// Service Worker Version
-const CACHE_VERSION = 'v1';
-const CACHE_NAME = `infochir-cache-${CACHE_VERSION}`;
+
+// Service Worker for InfoChir application
+const CACHE_NAME = 'infochir-cache-v1';
 
 // Assets to cache on install
-const STATIC_ASSETS = [
+const PRECACHE_ASSETS = [
   '/',
   '/index.html',
-  '/src/main.tsx',
-  '/og-image.png',
-  '/favicon.ico'
+  '/favicon.ico',
+  '/og-image.png'
 ];
 
-// Install event - cache static assets
-self.addEventListener('install', (event) => {
+// Install event - precache static assets
+self.addEventListener('install', event => {
+  console.log('[ServiceWorker] Install');
+  
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS);
-    })
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('[ServiceWorker] Pre-caching offline page');
+        return cache.addAll(PRECACHE_ASSETS);
+      })
+      .then(() => {
+        console.log('[ServiceWorker] Skip waiting on install');
+        return self.skipWaiting();
+      })
   );
 });
 
 // Activate event - clean up old caches
-self.addEventListener('activate', (event) => {
+self.addEventListener('activate', event => {
+  console.log('[ServiceWorker] Activate');
+  
+  const currentCaches = [CACHE_NAME];
+  
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
+    caches.keys().then(cacheNames => {
+      return cacheNames.filter(cacheName => !currentCaches.includes(cacheName));
+    }).then(cachesToDelete => {
+      return Promise.all(cachesToDelete.map(cacheToDelete => {
+        console.log('[ServiceWorker] Removing old cache', cacheToDelete);
+        return caches.delete(cacheToDelete);
+      }));
+    }).then(() => {
+      console.log('[ServiceWorker] Claiming clients');
+      return self.clients.claim();
     })
   );
 });
 
-// Fetch event - network first with cache fallback for navigation,
-// and cache first with network fallback for assets
-self.addEventListener('fetch', (event) => {
+// Fetch event - serve from cache, fall back to network
+self.addEventListener('fetch', event => {
   // Skip cross-origin requests
-  if (!event.request.url.startsWith(self.location.origin)) {
+  if (!event.request.url.startsWith(self.location.origin)) return;
+  
+  // Handle API requests differently (network first)
+  if (event.request.url.includes('/api/') || 
+      event.request.url.includes('/_supabase/') || 
+      event.request.url.includes('/rest/')) {
     return;
   }
 
-  // For navigation requests (HTML pages)
+  // For navigation requests (HTML pages), use a network-first approach
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request)
-        .then((response) => {
-          // Cache a copy of the response
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone);
-          });
-          return response;
-        })
         .catch(() => {
-          // If offline, try to serve from cache
-          return caches.match(event.request).then((cachedResponse) => {
-            if (cachedResponse) {
-              return cachedResponse;
-            }
-            // If not in cache either, serve the index.html for any route
-            return caches.match('/index.html');
-          });
+          return caches.match('/index.html');
         })
     );
-  } 
-  // For other requests (assets, API calls)
-  else {
-    event.respondWith(
-      caches.match(event.request).then((cachedResponse) => {
-        // Return from cache if found
+    return;
+  }
+
+  // For all other requests, use a cache-first strategy
+  event.respondWith(
+    caches.match(event.request)
+      .then(cachedResponse => {
         if (cachedResponse) {
-          // Fetch from network in the background to update cache
-          fetch(event.request).then((response) => {
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, response.clone());
-            });
-          }).catch(() => {});
           return cachedResponse;
         }
-
-        // Otherwise fetch from network
-        return fetch(event.request).then((response) => {
-          // Don't cache non-successful responses
-          if (!response || response.status !== 200 || response.type !== 'basic') {
+        
+        return fetch(event.request)
+          .then(response => {
+            // Don't cache non-successful responses
+            if (!response || response.status !== 200 || response.type !== 'basic') {
+              return response;
+            }
+            
+            // Cache successful responses
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME)
+              .then(cache => {
+                cache.put(event.request, responseToCache);
+              });
+              
             return response;
-          }
-
-          // Cache the successful response
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone);
+          })
+          .catch(error => {
+            console.error('[ServiceWorker] Fetch failed:', error);
+            // For image requests, return a fallback image
+            if (event.request.destination === 'image') {
+              return caches.match('/placeholder.svg');
+            }
+            
+            // For other assets, just propagate the error
+            throw error;
           });
-          return response;
-        }).catch((error) => {
-          console.error('Fetch failed:', error);
-          // Return a custom offline response for API requests
-          if (event.request.url.includes('/api/')) {
-            return new Response(JSON.stringify({ 
-              error: 'Vous êtes actuellement hors ligne. Veuillez vérifier votre connexion réseau.'
-            }), {
-              headers: { 'Content-Type': 'application/json' }
-            });
-          }
-        });
       })
     );
+});
+
+// Handle messages from clients
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
   }
 });
