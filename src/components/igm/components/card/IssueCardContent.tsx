@@ -1,4 +1,3 @@
-
 import { Calendar } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -49,7 +48,7 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
     }
   })();
 
-  // Format and display page information
+  // Calculate total number of pages
   const getPageDisplay = (() => {
     try {
       if (!issue.articles || issue.articles.length === 0) {
@@ -58,84 +57,40 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
       
       // First try to get the direct page count if available
       if (issue.pageCount && issue.pageCount > 0) {
-        return `${issue.pageCount} Page${issue.pageCount > 1 ? 's' : ''}`;
+        return `${issue.pageCount} Pages`;
       }
       
       // Get all valid page numbers
       const validPageNumbers = issue.articles
         .map(article => {
-          // Check if pageNumber exists and convert to number
           if (!article.pageNumber) return null;
           
-          // Handle different page number formats:
-          // 1. Direct number: "10"
-          // 2. Range: "10-15"
-          // 3. Multiple pages: "10,12,15"
-          
-          // Try parsing as a simple number first
-          const parsedNum = parseInt(article.pageNumber, 10);
-          if (!isNaN(parsedNum)) return parsedNum;
-          
-          // Check if it's a range (e.g., "10-15")
+          // Handle page range format (e.g., "1-28")
           if (article.pageNumber.includes('-')) {
             const [start, end] = article.pageNumber.split('-').map(num => parseInt(num.trim(), 10));
             if (!isNaN(start) && !isNaN(end)) {
-              return { start, end };
+              return end; // Return the last page number
             }
           }
           
-          // Check if it's comma-separated (e.g., "10,12,15")
-          if (article.pageNumber.includes(',')) {
-            const pages = article.pageNumber.split(',')
-              .map(num => parseInt(num.trim(), 10))
-              .filter(num => !isNaN(num));
-            if (pages.length > 0) {
-              return pages;
-            }
+          // Handle single page number
+          const parsedNum = parseInt(article.pageNumber, 10);
+          if (!isNaN(parsedNum)) {
+            return parsedNum;
           }
           
           return null;
         })
-        .filter(pageNum => pageNum !== null);
+        .filter(num => num !== null);
       
       if (validPageNumbers.length === 0) {
         return "- Pages";
       }
       
-      // Find min and max page numbers
-      let minPage = Infinity;
-      let maxPage = -Infinity;
+      // Get the highest page number
+      const maxPage = Math.max(...validPageNumbers);
+      return `${maxPage} Pages`;
       
-      validPageNumbers.forEach(pageNum => {
-        if (typeof pageNum === 'number') {
-          minPage = Math.min(minPage, pageNum);
-          maxPage = Math.max(maxPage, pageNum);
-        } else if (pageNum && typeof pageNum === 'object') {
-          if ('start' in pageNum && 'end' in pageNum) {
-            // It's a range
-            minPage = Math.min(minPage, pageNum.start);
-            maxPage = Math.max(maxPage, pageNum.end);
-          } else if (Array.isArray(pageNum)) {
-            // It's an array of page numbers
-            pageNum.forEach(p => {
-              minPage = Math.min(minPage, p);
-              maxPage = Math.max(maxPage, p);
-            });
-          }
-        }
-      });
-      
-      // Format the display based on page information
-      if (minPage !== Infinity && maxPage !== -Infinity) {
-        // If it's a single page
-        if (minPage === maxPage) {
-          return `Page ${minPage}`;
-        }
-        // If it's a range
-        return `Pages ${minPage}-${maxPage}`;
-      }
-      
-      return "- Pages";
     } catch (error) {
       console.error('Error calculating page display:', error);
       return "- Pages";
