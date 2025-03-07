@@ -11,6 +11,35 @@ interface CardContentProps {
 }
 
 export const CardContent: React.FC<CardContentProps> = ({ article, pdfUrl }) => {
+  // Calculate total pages from page_number
+  const getTotalPages = (() => {
+    try {
+      if (!article.page_number) return "- Pages";
+      
+      const pageNumber = article.page_number.trim();
+      
+      // Handle page range format (e.g., "1-28")
+      if (pageNumber.includes('-')) {
+        const [start, end] = pageNumber.split('-').map(num => parseInt(num.trim(), 10));
+        if (!isNaN(end)) {
+          return `${end} Pages`;
+        }
+      } 
+      // Handle single page format (e.g., "34")
+      else {
+        const pageNum = parseInt(pageNumber, 10);
+        if (!isNaN(pageNum)) {
+          return `${pageNum} Pages`;
+        }
+      }
+      
+      return "- Pages";
+    } catch (error) {
+      console.error('Error calculating total pages:', error);
+      return "- Pages";
+    }
+  })();
+
   return (
     <div className="flex flex-col h-full min-h-0">
       <div className="flex flex-wrap items-center text-sm text-muted-foreground mb-1.5 gap-2">
@@ -54,6 +83,9 @@ export const CardContent: React.FC<CardContentProps> = ({ article, pdfUrl }) => 
       </div>
       
       <div className="flex justify-between items-center mt-auto pt-1">
+        <div className="bg-secondary/10 px-2 py-0.5 rounded-full font-medium text-xs text-gray-600">
+          {getTotalPages}
+        </div>
         <CardActions article={article} pdfUrl={pdfUrl} />
       </div>
     </div>

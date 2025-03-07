@@ -49,6 +49,51 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
     }
   })();
 
+  // Calculate total number of pages
+  const getTotalPages = (() => {
+    try {
+      // If pageCount is directly available, use it
+      if (issue.pageCount && typeof issue.pageCount === 'number') {
+        return `${issue.pageCount} Pages`;
+      }
+      
+      // Check if we can extract page information from articles
+      if (!issue.articles || issue.articles.length === 0) {
+        return "- Pages";
+      }
+      
+      let maxPage = 0;
+      
+      // Loop through all articles to find the highest page number
+      issue.articles.forEach(article => {
+        if (!article.pageNumber) return;
+        
+        const pageNumber = article.pageNumber.trim();
+        
+        // Handle page range format (e.g., "1-28")
+        if (pageNumber.includes('-')) {
+          const [start, end] = pageNumber.split('-').map(num => parseInt(num.trim(), 10));
+          if (!isNaN(end) && end > maxPage) {
+            maxPage = end;
+          }
+        } 
+        // Handle single page format (e.g., "34")
+        else {
+          const pageNum = parseInt(pageNumber, 10);
+          if (!isNaN(pageNum) && pageNum > maxPage) {
+            maxPage = pageNum;
+          }
+        }
+      });
+      
+      return maxPage > 0 ? `${maxPage} Pages` : "- Pages";
+      
+    } catch (error) {
+      console.error('Error calculating total pages:', error);
+      return "- Pages";
+    }
+  })();
+
   return (
     <div className="flex-1 min-w-0 space-y-2">
       <div className="flex justify-between items-start gap-2">
@@ -80,7 +125,7 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
       
       <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600 mt-1">
         <span className="bg-secondary/10 px-2 py-0.5 rounded-full font-medium">
-          - Pages
+          {getTotalPages}
         </span>
         <span>{issue.downloads || 0} téléchargements</span>
         <span>{issue.shares || 0} partages</span>
