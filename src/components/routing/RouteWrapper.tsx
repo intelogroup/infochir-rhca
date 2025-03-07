@@ -10,9 +10,11 @@ interface RouteWrapperProps {
 
 export const RouteWrapper = ({ component: Component }: RouteWrapperProps) => {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">
-      <LoadingSpinner variant="default" size="lg" />
-    </div>}>
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner variant="default" size="lg" />
+      </div>
+    }>
       <ErrorBoundary>
         <Component />
       </ErrorBoundary>

@@ -27,10 +27,11 @@ export const useIGMIssues = () => {
         logger.log(`Supabase query completed at: ${Date.now() - startTime}ms`);
 
         if (error) {
-          logger.error(error, {
+          logger.error('Supabase query error', {
             message: error.message,
             details: error.details,
-            hint: error.hint
+            hint: error.hint,
+            code: error.code
           });
           
           toast.error("Erreur lors du chargement des numéros", {
@@ -112,14 +113,17 @@ export const useIGMIssues = () => {
 
         return issues;
       } catch (error) {
-        logger.error(error, {
-          message: error instanceof Error ? error.message : 'Unknown error',
-          stack: error instanceof Error ? error.stack : undefined,
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        const errorStack = error instanceof Error ? error.stack : undefined;
+        
+        logger.error('Error in data fetch', {
+          message: errorMessage,
+          stack: errorStack,
           timing: Date.now() - startTime
         });
         
         toast.error("Erreur lors du chargement des numéros", {
-          description: error instanceof Error ? error.message : 'Une erreur inconnue est survenue'
+          description: errorMessage
         });
         throw error;
       }

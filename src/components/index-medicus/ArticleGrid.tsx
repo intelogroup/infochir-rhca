@@ -5,7 +5,7 @@ import { useArticlesState } from "./hooks/useArticlesState";
 import { useArticlesQuery } from "./hooks/useArticlesQuery";
 import { VirtualizedArticleList } from "./VirtualizedArticleList";
 import { FC, useState, useCallback } from "react";
-import { LoadingSpinner } from "./components/LoadingState";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ErrorDisplay } from "./components/ErrorDisplay";
 import { Pagination } from "./components/Pagination";
 
@@ -17,7 +17,7 @@ const ArticleGrid: FC<ArticleGridProps> = ({ viewMode = "table" }) => {
   console.log('ArticleGrid rendering with viewMode:', viewMode);
   
   const [currentPage, setCurrentPage] = useState(0);
-  const { data, isLoading, error } = useArticlesQuery(currentPage);
+  const { data, isLoading, error, refetch } = useArticlesQuery(currentPage);
   
   console.log('ArticleGrid query state:', { isLoading, error, hasData: !!data });
   
@@ -82,12 +82,20 @@ const ArticleGrid: FC<ArticleGridProps> = ({ viewMode = "table" }) => {
     }
   }, [selectedTags, setSelectedTags]);
 
+  const handleRetry = () => {
+    refetch();
+  };
+
   if (error) {
-    return <ErrorDisplay error={error as Error} />;
+    return <ErrorDisplay error={error as Error} onRetry={handleRetry} />;
   }
 
   if (isLoading) {
-    return <LoadingSpinner />;
+    return (
+      <div className="min-h-[50vh] flex flex-col items-center justify-center py-10">
+        <LoadingSpinner size="lg" variant="default" text="Chargement des articles..." />
+      </div>
+    );
   }
 
   return (

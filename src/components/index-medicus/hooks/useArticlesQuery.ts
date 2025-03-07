@@ -28,8 +28,10 @@ export const useArticlesQuery = (page = 0) => {
 
         if (error) {
           console.error("Supabase query error:", error);
-          toast.error("Erreur lors du chargement des articles");
-          throw error;
+          toast.error("Erreur lors du chargement des articles", {
+            description: error.message
+          });
+          throw new Error(error.message);
         }
 
         if (!data || data.length === 0) {
@@ -70,7 +72,10 @@ export const useArticlesQuery = (page = 0) => {
         return { articles, totalPages };
       } catch (err) {
         console.error('Error fetching articles:', err);
-        toast.error("Erreur lors du chargement des articles");
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        toast.error("Erreur lors du chargement des articles", {
+          description: errorMessage
+        });
         throw err;
       }
     },

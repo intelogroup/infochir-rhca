@@ -7,11 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Grid2X2, List, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 export const RhcaContent: React.FC = () => {
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [searchQuery, setSearchQuery] = useState("");
-  const { articles, loading, error } = useRHCAArticles();
+  const { articles, loading, error, refetch } = useRHCAArticles();
   
   const toggleViewMode = () => {
     setViewMode(prev => prev === "grid" ? "table" : "grid");
@@ -53,13 +55,26 @@ export const RhcaContent: React.FC = () => {
         </div>
         
         {loading ? (
-          <div className="flex flex-col items-center justify-center pt-16">
-            <LoadingSpinner variant="medical" text="Chargement des articles RHCA..." />
+          <div className="min-h-[50vh] flex flex-col items-center justify-center py-10">
+            <LoadingSpinner variant="medical" size="lg" text="Chargement des articles RHCA..." />
           </div>
         ) : error ? (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
-            <div className="font-bold">Erreur</div>
-            <div className="mt-1">Une erreur est survenue lors du chargement des articles.</div>
+          <div className="space-y-4 mx-auto max-w-2xl mt-8">
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Erreur</AlertTitle>
+              <AlertDescription>
+                Une erreur est survenue lors du chargement des articles.
+                {error.message && ` ${error.message}`}
+              </AlertDescription>
+            </Alert>
+            <Button 
+              onClick={() => refetch && refetch()}
+              variant="outline"
+              className="mx-auto block"
+            >
+              Réessayer
+            </Button>
           </div>
         ) : (
           <RhcaGrid 
