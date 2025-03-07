@@ -1,4 +1,3 @@
-
 import { Calendar } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -124,7 +123,7 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
       </p>
       
       <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600 mt-1">
-        <span className="bg-secondary/10 px-2 py-0.5 rounded-full font-medium">
+        <span className="bg-secondary/10 px-4 py-1 rounded-full font-medium text-sm min-w-[100px] text-center">
           {getTotalPages}
         </span>
         <span>{issue.downloads || 0} téléchargements</span>
