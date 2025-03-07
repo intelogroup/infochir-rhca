@@ -19,8 +19,8 @@ export const AdminRouteWrapper = ({ component: Component }: AdminRouteWrapperPro
   useEffect(() => {
     if (error) {
       console.error("Authentication error:", error);
-      toast.error("Authentication error", {
-        description: "Please try logging in again",
+      toast.error("Erreur d'authentification", {
+        description: "Veuillez vous reconnecter",
       });
       navigate("/", { replace: true });
     }
@@ -29,12 +29,15 @@ export const AdminRouteWrapper = ({ component: Component }: AdminRouteWrapperPro
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner variant="default" size="lg" />
+        <LoadingSpinner variant="default" size="lg" text="Vérification des droits d'accès..." />
       </div>
     );
   }
 
   if (!isAdmin) {
+    toast.error("Accès refusé", {
+      description: "Vous n'avez pas les droits d'accès à cette page"
+    });
     return <Navigate to="/" replace />;
   }
 

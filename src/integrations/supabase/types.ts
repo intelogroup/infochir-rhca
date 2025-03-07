@@ -55,6 +55,13 @@ export type Database = {
             foreignKeyName: "article_authors_article_id_fkey"
             columns: ["article_id"]
             isOneToOne: false
+            referencedRelation: "igm_unified_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "article_authors_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
             referencedRelation: "rhca_articles_view"
             referencedColumns: ["id"]
           },
@@ -598,6 +605,7 @@ export type Database = {
           category: string | null
           citations: number | null
           co_authors: string[] | null
+          cover_image_filename: string | null
           created_at: string | null
           doi: string | null
           downloads: number | null
@@ -608,6 +616,7 @@ export type Database = {
           issue: string | null
           keywords: string[] | null
           page_number: string | null
+          pdf_filename: string | null
           pdf_url: string | null
           primary_author: string | null
           publication_date: string | null
@@ -632,6 +641,7 @@ export type Database = {
           category?: string | null
           citations?: number | null
           co_authors?: string[] | null
+          cover_image_filename?: string | null
           created_at?: string | null
           doi?: string | null
           downloads?: number | null
@@ -642,6 +652,7 @@ export type Database = {
           issue?: string | null
           keywords?: string[] | null
           page_number?: string | null
+          pdf_filename?: string | null
           pdf_url?: string | null
           primary_author?: string | null
           publication_date?: string | null
@@ -666,6 +677,7 @@ export type Database = {
           category?: string | null
           citations?: number | null
           co_authors?: string[] | null
+          cover_image_filename?: string | null
           created_at?: string | null
           doi?: string | null
           downloads?: number | null
@@ -676,6 +688,7 @@ export type Database = {
           issue?: string | null
           keywords?: string[] | null
           page_number?: string | null
+          pdf_filename?: string | null
           pdf_url?: string | null
           primary_author?: string | null
           publication_date?: string | null
@@ -703,6 +716,7 @@ export type Database = {
           category: string | null
           citations: number | null
           co_authors: string[] | null
+          cover_image_filename: string | null
           created_at: string | null
           doi: string | null
           downloads: number | null
@@ -713,6 +727,7 @@ export type Database = {
           issue: string | null
           keywords: string[] | null
           page_number: string | null
+          pdf_filename: string | null
           pdf_url: string | null
           primary_author: string | null
           publication_date: string | null
@@ -737,6 +752,7 @@ export type Database = {
           category?: string | null
           citations?: number | null
           co_authors?: string[] | null
+          cover_image_filename?: string | null
           created_at?: string | null
           doi?: string | null
           downloads?: number | null
@@ -747,6 +763,7 @@ export type Database = {
           issue?: string | null
           keywords?: string[] | null
           page_number?: string | null
+          pdf_filename?: string | null
           pdf_url?: string | null
           primary_author?: string | null
           publication_date?: string | null
@@ -771,6 +788,7 @@ export type Database = {
           category?: string | null
           citations?: number | null
           co_authors?: string[] | null
+          cover_image_filename?: string | null
           created_at?: string | null
           doi?: string | null
           downloads?: number | null
@@ -781,6 +799,7 @@ export type Database = {
           issue?: string | null
           keywords?: string[] | null
           page_number?: string | null
+          pdf_filename?: string | null
           pdf_url?: string | null
           primary_author?: string | null
           publication_date?: string | null
@@ -869,32 +888,6 @@ export type Database = {
           title: string | null
           volume: string | null
         }
-        Insert: {
-          abstract?: string | null
-          article_count?: number | null
-          articles?: never
-          cover_image?: string | null
-          downloads?: number | null
-          id?: string | null
-          issue?: string | null
-          publication_date?: string | null
-          shares?: number | null
-          title?: string | null
-          volume?: string | null
-        }
-        Update: {
-          abstract?: string | null
-          article_count?: number | null
-          articles?: never
-          cover_image?: string | null
-          downloads?: number | null
-          id?: string | null
-          issue?: string | null
-          publication_date?: string | null
-          shares?: number | null
-          title?: string | null
-          volume?: string | null
-        }
         Relationships: []
       }
       rhca_articles_view: {
@@ -907,6 +900,7 @@ export type Database = {
           category: string | null
           citations: number | null
           co_authors: string[] | null
+          cover_image_filename: string | null
           created_at: string | null
           doi: string | null
           downloads: number | null
@@ -942,6 +936,7 @@ export type Database = {
           category?: string | null
           citations?: number | null
           co_authors?: string[] | null
+          cover_image_filename?: string | null
           created_at?: string | null
           doi?: string | null
           downloads?: number | null
@@ -977,6 +972,7 @@ export type Database = {
           category?: string | null
           citations?: number | null
           co_authors?: string[] | null
+          cover_image_filename?: string | null
           created_at?: string | null
           doi?: string | null
           downloads?: number | null

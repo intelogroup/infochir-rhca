@@ -3,19 +3,21 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Article } from "@/components/index-medicus/types";
 import { toast } from "sonner";
+import { createLogger } from "@/lib/error-logger";
 
+const logger = createLogger('useArticlesQuery');
 const PAGE_SIZE = 10;
 
 export const useArticlesQuery = (page = 0) => {
   return useQuery({
     queryKey: ["articles", page],
     queryFn: async () => {
-      console.log('Starting articles fetch for page:', page);
+      logger.log('Starting articles fetch for page:', page);
       
       const start = page * PAGE_SIZE;
       const end = start + PAGE_SIZE - 1;
 
-      console.log('Executing Supabase query with range:', { start, end });
+      logger.log('Executing Supabase query with range:', { start, end });
 
       try {
         const { data, error, count } = await supabase
@@ -24,10 +26,10 @@ export const useArticlesQuery = (page = 0) => {
           .order("publication_date", { ascending: false })
           .range(start, end);
 
-        console.log('Supabase response:', { dataCount: data?.length, error, count });
+        logger.log('Supabase response:', { dataCount: data?.length, error, count });
 
         if (error) {
-          console.error("Supabase query error:", error);
+          logger.error("Supabase query error:", error);
           toast.error("Erreur lors du chargement des articles", {
             description: error.message
           });
@@ -35,7 +37,7 @@ export const useArticlesQuery = (page = 0) => {
         }
 
         if (!data || data.length === 0) {
-          console.log('No data returned from query');
+          logger.log('No data returned from query');
           return { articles: [], totalPages: 0 };
         }
 
@@ -67,11 +69,11 @@ export const useArticlesQuery = (page = 0) => {
         }));
 
         const totalPages = Math.ceil((count || 0) / PAGE_SIZE);
-        console.log('Processed articles:', { count: articles.length, totalPages });
+        logger.log('Processed articles:', { count: articles.length, totalPages });
 
         return { articles, totalPages };
       } catch (err) {
-        console.error('Error fetching articles:', err);
+        logger.error('Error fetching articles:', err);
         const errorMessage = err instanceof Error ? err.message : String(err);
         toast.error("Erreur lors du chargement des articles", {
           description: errorMessage
