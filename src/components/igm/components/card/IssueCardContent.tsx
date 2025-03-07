@@ -49,8 +49,8 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
     }
   })();
 
-  // Calculate total page count from articles
-  const getTotalPages = (() => {
+  // Format and display page information
+  const getPageDisplay = (() => {
     try {
       if (!issue.articles || issue.articles.length === 0) {
         return "- Pages";
@@ -102,7 +102,7 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
         return "- Pages";
       }
       
-      // Calculate total pages based on the format of page numbers
+      // Find min and max page numbers
       let minPage = Infinity;
       let maxPage = -Infinity;
       
@@ -125,15 +125,19 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
         }
       });
       
-      // Calculate total pages (including both start and end pages)
+      // Format the display based on page information
       if (minPage !== Infinity && maxPage !== -Infinity) {
-        const totalPages = maxPage - minPage + 1;
-        return `${totalPages} Page${totalPages > 1 ? 's' : ''}`;
+        // If it's a single page
+        if (minPage === maxPage) {
+          return `Page ${minPage}`;
+        }
+        // If it's a range
+        return `Pages ${minPage}-${maxPage}`;
       }
       
       return "- Pages";
     } catch (error) {
-      console.error('Error calculating total pages:', error);
+      console.error('Error calculating page display:', error);
       return "- Pages";
     }
   })();
@@ -169,7 +173,7 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
       
       <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600 mt-1">
         <span className="bg-secondary/10 px-2 py-0.5 rounded-full font-medium">
-          {getTotalPages}
+          {getPageDisplay}
         </span>
         <span>{issue.downloads || 0} téléchargements</span>
         <span>{issue.shares || 0} partages</span>
