@@ -20,6 +20,8 @@
     <meta name="keywords" content="Infochir, RHCA, médecine, chirurgie, anesthésiologie, Haïti, science médicale, formation médicale, recherche" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://info-chir.org" />
+    <!-- Cache control meta tags -->
+    <meta http-equiv="Cache-Control" content="max-age=3600, must-revalidate" />
     <!-- Add JS detection immediately -->
     <script>
       (function() {
@@ -47,6 +49,20 @@
         display: none;
       }
     </style>
+    <!-- Service Worker Registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js')
+            .then(function(registration) {
+              console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            })
+            .catch(function(error) {
+              console.log('ServiceWorker registration failed: ', error);
+            });
+        });
+      }
+    </script>
   </head>
 
   <body>

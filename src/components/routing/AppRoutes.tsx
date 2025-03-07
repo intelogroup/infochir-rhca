@@ -47,6 +47,9 @@ export const AppRoutes = () => {
                 <Route path="/index-medicus" element={<RouteWrapper component={LazyComponents.IndexMedicus} />} />
                 {/* Add specific article route */}
                 <Route path="/articles/:id" element={<RouteWrapper component={LazyComponents.ArticleDetail} />} />
+                
+                {/* Add a 404 catch-all route */}
+                <Route path="*" element={<RouteWrapper component={LazyComponents.NotFound} />} />
               </Route>
 
               {/* Admin Routes */}
@@ -56,6 +59,9 @@ export const AppRoutes = () => {
                 <Route path="/admin/users" element={<AdminRouteWrapper component={LazyComponents.AdminUsers} />} />
                 <Route path="/admin/analytics" element={<AdminRouteWrapper component={LazyComponents.AdminAnalytics} />} />
                 <Route path="/admin/settings" element={<AdminRouteWrapper component={LazyComponents.AdminSettings} />} />
+                
+                {/* Add admin 404 route */}
+                <Route path="/admin/*" element={<AdminRouteWrapper component={LazyComponents.AdminNotFound} />} />
               </Route>
             </Routes>
           </m.div>
