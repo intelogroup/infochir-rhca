@@ -12,7 +12,9 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     detectSessionInUrl: true
   },
   global: {
-    fetch: (...args) => fetch(...args)
+    fetch: function customFetch(input, init) {
+      return fetch(input, init);
+    }
   }
 });
 
@@ -29,13 +31,13 @@ supabase.auth.onAuthStateChange((event, session) => {
 // Add debug logging for fetch requests in development
 if (process.env.NODE_ENV === 'development') {
   const originalFetch = window.fetch;
-  window.fetch = async (...args) => {
-    if (typeof args[0] === 'string' && args[0].includes('supabase')) {
+  window.fetch = async function(input, init) {
+    if (typeof input === 'string' && input.includes('supabase')) {
       console.debug('[Supabase Request]:', {
-        url: args[0],
-        options: args[1]
+        url: input,
+        options: init
       });
     }
-    return originalFetch.apply(window, args);
+    return originalFetch.apply(window, [input, init]);
   };
 }

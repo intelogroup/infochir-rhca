@@ -27,7 +27,12 @@ export const RouteWrapper = ({ component: Component }: RouteWrapperProps) => {
         <LoadingSpinner variant="default" size="lg" />
       </div>
     }>
-      <ErrorBoundary onError={handleError}>
+      <ErrorBoundary name="route-wrapper" fallback={
+        <div className="p-4 text-center">
+          <h2 className="text-xl font-bold mb-2">Une erreur est survenue</h2>
+          <p className="mb-4">Veuillez réessayer plus tard</p>
+        </div>
+      }>
         <Component />
       </ErrorBoundary>
     </Suspense>
