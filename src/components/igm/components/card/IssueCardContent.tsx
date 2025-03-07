@@ -1,3 +1,4 @@
+
 import { Calendar } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -48,55 +49,6 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
     }
   })();
 
-  // Calculate total number of pages
-  const getPageDisplay = (() => {
-    try {
-      if (!issue.articles || issue.articles.length === 0) {
-        return "- Pages";
-      }
-      
-      // First try to get the direct page count if available
-      if (issue.pageCount && issue.pageCount > 0) {
-        return `${issue.pageCount} Pages`;
-      }
-      
-      // Get all valid page numbers
-      const validPageNumbers = issue.articles
-        .map(article => {
-          if (!article.pageNumber) return null;
-          
-          // Handle page range format (e.g., "1-28")
-          if (article.pageNumber.includes('-')) {
-            const [start, end] = article.pageNumber.split('-').map(num => parseInt(num.trim(), 10));
-            if (!isNaN(start) && !isNaN(end)) {
-              return end; // Return the last page number
-            }
-          }
-          
-          // Handle single page number
-          const parsedNum = parseInt(article.pageNumber, 10);
-          if (!isNaN(parsedNum)) {
-            return parsedNum;
-          }
-          
-          return null;
-        })
-        .filter(num => num !== null);
-      
-      if (validPageNumbers.length === 0) {
-        return "- Pages";
-      }
-      
-      // Get the highest page number
-      const maxPage = Math.max(...validPageNumbers);
-      return `${maxPage} Pages`;
-      
-    } catch (error) {
-      console.error('Error calculating page display:', error);
-      return "- Pages";
-    }
-  })();
-
   return (
     <div className="flex-1 min-w-0 space-y-2">
       <div className="flex justify-between items-start gap-2">
@@ -128,7 +80,7 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
       
       <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600 mt-1">
         <span className="bg-secondary/10 px-2 py-0.5 rounded-full font-medium">
-          {getPageDisplay}
+          - Pages
         </span>
         <span>{issue.downloads || 0} téléchargements</span>
         <span>{issue.shares || 0} partages</span>
