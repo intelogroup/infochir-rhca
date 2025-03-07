@@ -11,12 +11,12 @@ interface CardContentProps {
 }
 
 export const CardContent: React.FC<CardContentProps> = ({ article, pdfUrl }) => {
-  // Calculate total pages from page_number
+  // Calculate total pages from pageNumber
   const getTotalPages = (() => {
     try {
-      if (!article.page_number) return "- Pages";
+      if (!article.pageNumber) return "- Pages";
       
-      const pageNumber = article.page_number.trim();
+      const pageNumber = article.pageNumber.trim();
       
       // Handle page range format (e.g., "1-28")
       if (pageNumber.includes('-')) {
