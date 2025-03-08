@@ -24,14 +24,14 @@ export const ProductBadge = () => {
   return (
     <Badge 
       variant="secondary" 
-      className="bg-white text-primary group-hover:bg-primary group-hover:text-white transition-colors flex items-center gap-2"
+      className="bg-white text-primary group-hover:bg-primary group-hover:text-white transition-colors flex items-center gap-1 px-2 py-0.5 text-xs"
     >
       {showDot && (
-        <div className="w-1.5 h-1.5 rounded-full bg-green-500 group-hover:bg-white transition-colors" />
+        <div className="w-1 h-1 rounded-full bg-green-500 group-hover:bg-white transition-colors" />
       )}
-      <span>Mise à jour disponible</span>
+      <span className="whitespace-nowrap">Mise à jour</span>
       <Bell 
-        className="w-4 h-4" 
+        className="w-3 h-3" 
         fill="#F97316"
         color="#F97316"
       />

@@ -62,8 +62,24 @@ export const ProductCard = ({
     return "h-16 w-16"; // Default size for other logos
   };
 
+  // Get the full display name for the product
+  const getFullProductName = (title: string) => {
+    switch (title) {
+      case "RHCA":
+        return "Revue Haïtienne de Chirurgie et d'Anesthésiologie";
+      case "IGM":
+        return "Info Gazette Médicale";
+      case "Atlas ADC":
+        return "Atlas de Diagnostic Chirurgical";
+      case "Index Medicus":
+        return "Index Medicus";
+      default:
+        return title;
+    }
+  };
+
   const CardComponent = () => (
-    <div className="h-[420px] perspective-1000">
+    <div className="h-[440px] perspective-1000">
       <Card className="group h-full relative overflow-hidden border-0 transition-all duration-500 transform-gpu hover:scale-[1.02] flex flex-col">
         {/* Gradient background overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF]/80 via-[#41b06e]/70 to-[#41b06e]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -74,7 +90,7 @@ export const ProductCard = ({
         <div className="relative z-10 flex flex-col h-full p-6">
           <CardHeader className="space-y-3 flex-shrink-0 pb-2 p-0">
             {shouldShowBadge(title) && (
-              <div className="absolute top-0 right-0 p-4">
+              <div className="absolute top-0 right-0 p-3">
                 <ProductBadge />
               </div>
             )}
@@ -89,10 +105,13 @@ export const ProductCard = ({
                 <ProductIcon icon={icon} logo={logo} title={title} />
               )}
             </div>
-            <CardTitle className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#1E40AF] via-[#41b06e] to-[#41b06e] text-center">
+            <CardTitle className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#1E40AF] via-[#41b06e] to-[#41b06e] text-center truncate">
               {title}
             </CardTitle>
-            <CardDescription className="text-gray-600 dark:text-gray-300 text-center text-sm leading-tight line-clamp-2 min-h-[2.5rem]">
+            <div className="text-xs font-semibold text-gray-600 dark:text-gray-300 text-center truncate min-h-[1.5rem] px-2">
+              {getFullProductName(title)}
+            </div>
+            <CardDescription className="text-gray-600 dark:text-gray-300 text-center text-sm leading-tight line-clamp-2 min-h-[2.5rem] mt-1">
               {description}
             </CardDescription>
           </CardHeader>
