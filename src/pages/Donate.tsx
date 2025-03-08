@@ -5,11 +5,12 @@ import { motion, LazyMotion, domAnimation, AnimatePresence } from "framer-motion
 import { DonateHeader } from "@/components/donate/DonateHeader";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Heart } from "lucide-react";
+import { ArrowLeft, Heart, AlertCircle } from "lucide-react";
 import { createCheckoutSession } from "@/lib/stripe";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { DonationAmountSelector } from "@/components/donate/form/DonationAmountSelector";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 const BackButton = () => {
   return (
@@ -34,6 +35,15 @@ const Donate = () => {
   const [customAmount, setCustomAmount] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
+  const [emailTouched, setEmailTouched] = useState(false);
+
+  // Form validation
+  const isEmailValid = email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const emailError = emailTouched && !isEmailValid ? "Veuillez entrer une adresse email valide" : null;
+  
+  const amount = customAmount ? Number(customAmount) : selectedAmount;
+  const isAmountValid = amount > 0 && amount <= 50000;
 
   // Optimized animations
   const formVariants = {
@@ -66,32 +76,33 @@ const Donate = () => {
   };
 
   const handleDonation = async () => {
+    // Reset error state
+    setFormError(null);
+    
     try {
       if (!email) {
-        toast.error("Please enter your email address");
+        setFormError("Veuillez entrer votre adresse email");
+        setEmailTouched(true);
         return;
       }
 
       // Input validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        toast.error("Please enter a valid email address");
+        setFormError("Veuillez entrer une adresse email valide");
+        setEmailTouched(true);
         return;
       }
 
-      const amount = customAmount ? Number(customAmount) : selectedAmount;
-      if (!amount || amount <= 0) {
-        toast.error("Please select or enter a donation amount");
-        return;
-      }
-
-      // Prevent very large amounts as a protection measure
-      if (amount > 50000) {
-        toast.error("Please contact us directly for large donations");
+      if (!isAmountValid) {
+        setFormError(amount <= 0 
+          ? "Veuillez sélectionner ou entrer un montant de don" 
+          : "Le montant du don ne peut pas dépasser $50,000");
         return;
       }
 
       setIsProcessing(true);
+      const toastId = toast.loading("Traitement de votre don...");
 
       // Use the secure helper function
       await createCheckoutSession(amount, {
@@ -102,10 +113,13 @@ const Donate = () => {
           message: '' // Include empty message field
         }
       });
+      
+      toast.success("Redirection vers la page de paiement...", { id: toastId });
 
     } catch (error: any) {
       console.error('[Donate] Payment error:', error);
-      toast.error(error.message || "Failed to process donation");
+      setFormError(error.message || "Impossible de traiter votre don");
+      toast.error(error.message || "Impossible de traiter votre don");
     } finally {
       setIsProcessing(false);
     }
@@ -135,20 +149,47 @@ const Donate = () => {
                 >
                   <DonateHeader />
                   
+                  {formError && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="my-4"
+                    >
+                      <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Erreur</AlertTitle>
+                        <AlertDescription>{formError}</AlertDescription>
+                      </Alert>
+                    </motion.div>
+                  )}
+                  
                   <motion.div 
                     variants={formVariants}
-                    className="mt-12 space-y-8 bg-white p-8 rounded-2xl shadow-lg border border-gray-100"
+                    className="mt-8 space-y-8 bg-white p-8 rounded-2xl shadow-lg border border-gray-100"
                   >
                     <motion.div variants={itemVariants} className="space-y-4">
                       <div>
-                        <label className="text-sm font-medium mb-1 block">Email (required)</label>
+                        <label className="text-sm font-medium mb-1 block">
+                          Email <span className="text-destructive">*</span>
+                        </label>
                         <Input
                           type="email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
+                          onBlur={() => setEmailTouched(true)}
                           placeholder="Enter your email"
                           required
+                          aria-invalid={emailError ? "true" : undefined}
+                          aria-describedby={emailError ? "email-error" : undefined}
+                          className={emailError ? "border-destructive" : ""}
+                          disabled={isProcessing}
                         />
+                        {emailError && (
+                          <p id="email-error" className="text-sm text-destructive mt-1 flex items-center gap-1">
+                            <AlertCircle className="h-3 w-3" /> 
+                            {emailError}
+                          </p>
+                        )}
                       </div>
                       <div>
                         <label className="text-sm font-medium mb-1 block">Name (optional)</label>
@@ -157,23 +198,29 @@ const Donate = () => {
                           value={name}
                           onChange={(e) => setName(e.target.value)}
                           placeholder="Enter your name"
+                          disabled={isProcessing}
                         />
                       </div>
                     </motion.div>
 
                     <motion.div variants={itemVariants}>
-                      <label className="text-sm font-medium mb-4 block">Select amount</label>
+                      <label className="text-sm font-medium mb-4 block">
+                        Select amount <span className="text-destructive">*</span>
+                      </label>
                       <DonationAmountSelector
                         selectedAmount={selectedAmount}
                         customAmount={customAmount}
                         onAmountChange={(amount) => {
                           setSelectedAmount(amount);
                           setCustomAmount("");
+                          setFormError(null);
                         }}
                         onCustomAmountChange={(e) => {
                           setCustomAmount(e.target.value);
                           setSelectedAmount(0);
+                          setFormError(null);
                         }}
+                        isSubmitting={isProcessing}
                       />
                     </motion.div>
 
@@ -183,8 +230,9 @@ const Donate = () => {
                     >
                       <Button
                         onClick={handleDonation}
-                        disabled={isProcessing}
+                        disabled={isProcessing || !isEmailValid}
                         className="w-full h-14 text-lg bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white relative overflow-hidden group"
+                        aria-live="polite"
                       >
                         {isProcessing ? (
                           <span className="flex items-center gap-2">

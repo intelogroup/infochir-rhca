@@ -6,11 +6,9 @@ import { ADCMission } from "@/components/adc/ADCMission";
 import { ADCSubmission } from "@/components/adc/ADCSubmission";
 import { motion } from "framer-motion";
 import { useAtlasArticles } from "@/components/atlas/hooks/useAtlasArticles";
-// Removing the import for AtlasFilterStatus since it doesn't exist
-// Removing the import for getAtlasCategoryById since it doesn't exist
 
 const ADC = () => {
-  const { articles, isLoading, error } = useAtlasArticles();
+  const { data: articles, isLoading, error } = useAtlasArticles();
 
   useEffect(() => {
     // Scroll to top when the component mounts
