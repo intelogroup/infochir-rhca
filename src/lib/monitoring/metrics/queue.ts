@@ -32,7 +32,7 @@ export const flushMetricsQueue = async (): Promise<void> => {
       const { error } = await supabase
         .from('performance_metrics')
         .insert({
-          timestamp: record.timestamp,
+          created_at: new Date().toISOString(), // Use created_at instead of timestamp
           page_url: record.page_url,
           route: new URL(record.page_url).pathname,
           user_agent: record.user_agent,

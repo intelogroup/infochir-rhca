@@ -13,7 +13,7 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Send } from 'lucide-react';
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/use-toast";
 
 // Form validation schema
 const formSchema = z.object({
@@ -90,9 +90,9 @@ const Submission = () => {
       console.error("Submission error:", error);
       
       toast({
+        variant: "destructive",
         title: "Erreur de soumission",
-        description: "Une erreur est survenue lors de la soumission. Veuillez réessayer.",
-        variant: "destructive"
+        description: "Une erreur est survenue lors de la soumission. Veuillez réessayer."
       });
     } finally {
       setIsSubmitting(false);

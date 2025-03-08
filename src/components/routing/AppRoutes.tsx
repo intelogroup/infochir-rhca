@@ -2,7 +2,7 @@
 import * as React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { LazyMotion, domMax, m } from "framer-motion";
-import { MainLayout } from "@/components/layouts/MainLayout";
+import MainLayout from "@/components/layouts/MainLayout";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { RouteWrapper } from "./RouteWrapper";
 import { AdminRouteWrapper } from "./AdminRouteWrapper";
