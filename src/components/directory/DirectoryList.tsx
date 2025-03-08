@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { queryKeys } from "@/lib/react-query";
 
 const LoadingSkeleton: FC = () => (
   <div className="space-y-4">
@@ -30,8 +31,8 @@ const DirectoryList: FC<DirectoryListProps> = () => {
   const [sortField, setSortField] = useState<'id' | 'name' | 'email'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
-  const { data: members, isLoading } = useQuery({
-    queryKey: ['members'],
+  const { data: members = [], isLoading } = useQuery({
+    queryKey: queryKeys.members,
     queryFn: async () => {
       console.time('Fetch Members');
       const { data, error } = await supabase
@@ -44,11 +45,12 @@ const DirectoryList: FC<DirectoryListProps> = () => {
       if (error) throw error;
       return data || [];
     },
+    staleTime: 10 * 60 * 1000, // 10 minutes - directory data changes infrequently
+    gcTime: 30 * 60 * 1000, // 30 minutes
   });
 
   const filteredMembers = useMemo(() => {
     console.time('Filter Members');
-    if (!members) return [];
     
     const filtered = searchTerm
       ? members.filter(member =>

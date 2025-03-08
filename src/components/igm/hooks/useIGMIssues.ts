@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Issue } from "../types";
 import { toast } from "sonner";
 import { createLogger } from "@/lib/error-logger";
+import { queryKeys } from "@/lib/react-query";
 
 const logger = createLogger('useIGMIssues');
 
@@ -12,7 +13,7 @@ export const useIGMIssues = () => {
   const startTime = Date.now();
 
   return useQuery({
-    queryKey: ["igm-issues"],
+    queryKey: queryKeys.igmIssues,
     queryFn: async () => {
       logger.log(`Starting data fetch at: ${Date.now() - startTime}ms`);
 

@@ -12,6 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ModalContent } from "./modal/ModalContent";
+import { queryKeys } from "@/lib/react-query";
 
 interface CarouselCardProps {
   highlight: Highlight;
@@ -23,7 +24,7 @@ export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
 
   // Fetch full article data when modal is opened
   const { data: articleDetails, isLoading } = useQuery({
-    queryKey: ['article-detail', highlight.id],
+    queryKey: highlight.id ? queryKeys.articles.detail(highlight.id) : ['highlight', highlight.title],
     queryFn: async () => {
       if (!highlight.id || !isOpen) return null;
       
@@ -42,6 +43,7 @@ export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
       return data;
     },
     enabled: isOpen && !!highlight.id,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   const renderContent = () => {

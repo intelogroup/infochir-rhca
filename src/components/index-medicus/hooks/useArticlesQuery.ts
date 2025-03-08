@@ -4,13 +4,14 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Article } from "@/components/index-medicus/types";
 import { toast } from "sonner";
 import { createLogger } from "@/lib/error-logger";
+import { queryKeys } from "@/lib/react-query";
 
 const logger = createLogger('useArticlesQuery');
 const PAGE_SIZE = 10;
 
 export const useArticlesQuery = (page = 0) => {
   return useQuery({
-    queryKey: ["articles", page],
+    queryKey: queryKeys.articles.list(page),
     queryFn: async () => {
       logger.log('Starting articles fetch for page:', page);
       

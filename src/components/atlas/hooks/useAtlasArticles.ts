@@ -3,12 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { AtlasChapter } from "../types";
 import { createLogger } from "@/lib/error-logger";
+import { queryKeys } from "@/lib/react-query";
 
 const logger = createLogger('useAtlasArticles');
 
 export const useAtlasArticles = () => {
   return useQuery({
-    queryKey: ["atlas-chapters"],
+    queryKey: queryKeys.atlasChapters,
     queryFn: async () => {
       logger.log('Fetching Atlas chapters from articles table');
       

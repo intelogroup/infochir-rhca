@@ -9,12 +9,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { motion } from "framer-motion";
-import React, { Suspense } from "react"; // Fix missing React import
+import React, { Suspense } from "react";
+import { queryKeys } from "@/lib/react-query";
 
 // Separate data fetching component using suspense
 const StatsData = ({ onStatsLoaded }) => {
   const { data: statsData, error, refetch } = useQuery({
-    queryKey: ['home-stats'],
+    queryKey: queryKeys.homeStats,
     queryFn: async () => {
       console.log('Fetching home stats...');
       
