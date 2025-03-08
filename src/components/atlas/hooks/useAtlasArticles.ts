@@ -6,7 +6,6 @@ import { createLogger } from "@/lib/error-logger";
 import { queryKeys } from "@/lib/react-query";
 import { useComponentLifecycle } from "@/hooks/useComponentLifecycle";
 import { useRef, useEffect, useCallback } from "react";
-import { handleError } from "@/utils/errorHandling";
 
 const logger = createLogger('useAtlasArticles');
 
@@ -45,19 +44,28 @@ export const useAtlasArticles = () => {
         }, 8000);
       });
       
-      // Execute the Supabase query
-      const queryPromise = supabase
-        .from("articles") 
-        .select("*")
-        .eq('source', 'ADC')
-        .order("publication_date", { ascending: false })
-        .abortSignal(controller.signal);
+      // Execute the Supabase query and immediately convert to a Promise
+      const queryPromise = new Promise(async (resolve, reject) => {
+        try {
+          const { data, error } = await supabase
+            .from("articles") 
+            .select("*")
+            .eq('source', 'ADC')
+            .order("publication_date", { ascending: false })
+            .abortSignal(controller.signal);
+            
+          if (error) reject(error);
+          else resolve({ data, error });
+        } catch (err) {
+          reject(err);
+        }
+      });
       
-      // Use Promise.race with proper typing to handle the timeout vs. query race
+      // Use Promise.race with proper typing
       let result;
       try {
         result = await Promise.race([
-          queryPromise as Promise<any>,
+          queryPromise,
           timeoutPromise
         ]);
       } catch (raceError) {
@@ -71,7 +79,7 @@ export const useAtlasArticles = () => {
       }
       
       // Handle the response
-      const { data, error } = result;
+      const { data, error } = result as { data: any, error: any };
       
       if (error) {
         logger.error("Error fetching atlas chapters:", error);

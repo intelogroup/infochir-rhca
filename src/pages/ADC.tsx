@@ -1,249 +1,168 @@
 
-import { MainLayout } from "@/components/layouts/MainLayout";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 import { ADCHeader } from "@/components/adc/ADCHeader";
-import React, { Suspense, lazy, useRef, useEffect, useMemo } from "react";
-import { useAtlasArticles } from "@/components/atlas/hooks/useAtlasArticles";
+import { ADCMission } from "@/components/adc/ADCMission";
+import { Button } from "@/components/ui/button";
 import { AtlasCard } from "@/components/atlas/AtlasCard";
-import { AtlasTableOfContents } from "@/components/atlas/AtlasTableOfContents";
-import { motion } from "framer-motion";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useVirtualizer } from "@tanstack/react-virtual";
-import { toast } from "@/hooks/use-toast";
-import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
-import { ComponentErrorBoundary } from "@/components/error-boundary/ComponentErrorBoundary";
-import { ErrorDisplay } from "@/components/error-boundary/ErrorDisplay";
+import { AtlasChapter, AtlasFilterStatus } from "@/components/atlas/types";
+import { atlasCategories } from "@/components/atlas/data/atlasCategories";
+import { getAtlasCategoryById } from "@/components/atlas/utils/chapterUtils";
+import { useAtlasArticles } from "@/components/atlas/hooks/useAtlasArticles";
+import { ADCSubmission } from "@/components/adc/ADCSubmission";
+import { GenericErrorBoundary } from "@/components/error-boundary/GenericErrorBoundary";
 import { createLogger } from "@/lib/error-logger";
+import { toast } from "sonner";
+import { Helmet } from "react-helmet";
 
-// Lazy load components
-const ADCMission = lazy(() => import("@/components/adc/ADCMission").then(module => ({ default: module.ADCMission })));
-const ADCSubmission = lazy(() => import("@/components/adc/ADCSubmission").then(module => ({ default: module.ADCSubmission })));
+const logger = createLogger('ADCPage');
 
-const logger = createLogger('ADC');
-
-const LoadingSkeleton = () => (
-  <div className="space-y-8">
-    <Skeleton className="h-64 w-full" />
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {[1, 2, 3].map((i) => (
-        <Skeleton key={i} className="h-[300px]" />
-      ))}
-    </div>
-  </div>
-);
-
-// Memoize the VirtualizedAtlasGrid component
-const VirtualizedAtlasGrid = ({ chapters }: { chapters: any[] }) => {
-  logger.log("[VirtualizedAtlasGrid] Rendering with chapters:", chapters);
-  const parentRef = useRef<HTMLDivElement>(null);
-  const isMounted = useRef(false);
-
-  // Memoize the column count calculation based on window width
-  const columnCount = useMemo(() => {
-    return window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1;
-  }, []);
-  
-  const rowCount = useMemo(() => Math.ceil(chapters.length / columnCount), [chapters.length, columnCount]);
-
-  useEffect(() => {
-    isMounted.current = true;
-    logger.log("[VirtualizedAtlasGrid] Component mounted");
-    
-    // Handle window resize to update the grid layout
-    const handleResize = () => {
-      if (parentRef.current) {
-        rowVirtualizer.measure();
-      }
-    };
-    
-    window.addEventListener('resize', handleResize);
-    
-    return () => {
-      isMounted.current = false;
-      window.removeEventListener('resize', handleResize);
-      logger.log("[VirtualizedAtlasGrid] Component unmounting");
-    };
-  }, []);
-
-  const rowVirtualizer = useVirtualizer({
-    count: rowCount,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 400,
-    overscan: 3,
-  });
-
+// Filter controls component
+const FilterControls = ({ 
+  activeFilter, 
+  onFilterChange 
+}: { 
+  activeFilter: AtlasFilterStatus; 
+  onFilterChange: (filter: AtlasFilterStatus) => void; 
+}) => {
   return (
-    <div
-      ref={parentRef}
-      className="h-[800px] overflow-auto"
-    >
-      <div
-        style={{
-          height: `${rowVirtualizer.getTotalSize()}px`,
-          width: '100%',
-          position: 'relative',
-        }}
+    <div className="flex gap-2 mb-6">
+      <Button 
+        variant={activeFilter === 'all' ? "default" : "outline"} 
+        size="sm"
+        onClick={() => onFilterChange('all')}
       >
-        {rowVirtualizer.getVirtualItems().map((virtualRow) => (
-          <div
-            key={virtualRow.index}
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: `${virtualRow.size}px`,
-              transform: `translateY(${virtualRow.start}px)`,
-            }}
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
-              {Array.from({ length: columnCount }).map((_, columnIndex) => {
-                const chapterIndex = virtualRow.index * columnCount + columnIndex;
-                const chapter = chapters[chapterIndex];
-                
-                if (!chapter) return null;
-                
-                return (
-                  <motion.div
-                    key={chapter.id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3, delay: columnIndex * 0.1 }}
-                  >
-                    <ComponentErrorBoundary 
-                      name={`AtlasCard-${chapter.id}`}
-                      minimal={true}
-                      showLoadingOnRetry={true}
-                    >
-                      <AtlasCard chapter={chapter} />
-                    </ComponentErrorBoundary>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-      </div>
+        Tous
+      </Button>
+      <Button 
+        variant={activeFilter === 'available' ? "default" : "outline"} 
+        size="sm"
+        onClick={() => onFilterChange('available')}
+      >
+        Disponibles
+      </Button>
+      <Button 
+        variant={activeFilter === 'coming' ? "default" : "outline"} 
+        size="sm"
+        onClick={() => onFilterChange('coming')}
+      >
+        À venir
+      </Button>
     </div>
   );
 };
 
-// Memoize the ADCContent component to prevent unnecessary re-renders
-const ADCContent = ({ children }: { children?: React.ReactNode }) => {
-  logger.log("[ADCContent] Component mounting");
-  const mountTime = useRef(Date.now());
-  const { data: chapters, isLoading, error, refetch } = useAtlasArticles();
-
-  useEffect(() => {
-    logger.log("[ADCContent] Component mounted at:", mountTime.current);
-    logger.log("[ADCContent] Initial state:", { isLoading, hasData: !!chapters, error });
-
-    return () => {
-      logger.log("[ADCContent] Component unmounting, was mounted for:", Date.now() - mountTime.current, "ms");
-    };
-  }, []);
-
-  useEffect(() => {
-    if (error) {
-      logger.error("[ADCContent] Error loading Atlas articles:", {
-        error,
-        message: error.message,
-        stack: error.stack
-      });
-    }
-  }, [error]);
-
-  useEffect(() => {
-    logger.log("[ADCContent] Data loading state updated:", { 
-      isLoading, 
-      chaptersLength: chapters?.length,
-      timestamp: Date.now() - mountTime.current
-    });
-  }, [isLoading, chapters]);
-
-  if (error) {
+// Content loading component
+const ChaptersGrid = React.memo(({ 
+  chapters, 
+  isLoading, 
+  isError 
+}: { 
+  chapters: AtlasChapter[]; 
+  isLoading: boolean; 
+  isError: boolean; 
+}) => {
+  if (isLoading) {
     return (
-      <ErrorDisplay 
-        error={error}
-        title="Erreur de chargement des articles"
-        description="Une erreur est survenue lors du chargement des articles"
-        onRetry={refetch}
-        context="Atlas de Diagnostic Chirurgical"
-        severity="error"
-      />
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="h-[280px] rounded-lg animate-pulse bg-gray-100"></div>
+        ))}
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="p-8 text-center">
+        <p className="text-lg text-red-600 mb-4">Une erreur est survenue lors du chargement des chapitres.</p>
+        <Button onClick={() => window.location.reload()}>Réessayer</Button>
+      </div>
+    );
+  }
+
+  if (chapters.length === 0) {
+    return (
+      <div className="p-8 text-center">
+        <p className="text-lg mb-4">Aucun chapitre ne correspond à ces critères.</p>
+      </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">
-          Atlas de Diagnostic Chirurgical
-        </h2>
-        <AtlasTableOfContents />
-      </div>
-      
-      {isLoading ? (
-        <LoadingSkeleton />
-      ) : chapters && chapters.length > 0 ? (
-        <ComponentErrorBoundary name="VirtualizedAtlasGrid">
-          <VirtualizedAtlasGrid chapters={chapters} />
-        </ComponentErrorBoundary>
-      ) : (
-        <div className="text-center py-12 text-gray-500">
-          Aucun chapitre disponible pour le moment
-        </div>
-      )}
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {chapters.map((chapter) => {
+        const category = getAtlasCategoryById(chapter.category || '', atlasCategories);
+        return (
+          <AtlasCard 
+            key={chapter.id} 
+            chapter={chapter} 
+            category={category}
+          />
+        );
+      })}
     </div>
   );
-};
+});
 
-ADCContent.displayName = 'ADCContent';
+ChaptersGrid.displayName = 'ChaptersGrid';
 
+// Main component
 const ADC = () => {
-  logger.log("[ADC] Component mounting");
-  const mountTime = useRef(Date.now());
+  const navigate = useNavigate();
+  const [filter, setFilter] = useState<AtlasFilterStatus>('all');
   
+  const { data: chapters = [], isLoading, error } = useAtlasArticles();
+  
+  // Filter chapters by status
+  const filteredChapters = React.useMemo(() => {
+    if (filter === 'all') return chapters;
+    return chapters.filter(chapter => chapter.status === filter);
+  }, [chapters, filter]);
+
+  // Log an error if needed
   useEffect(() => {
-    logger.log("[ADC] Component mounted at:", mountTime.current);
-    return () => {
-      logger.log("[ADC] Component unmounting, was mounted for:", Date.now() - mountTime.current, "ms");
-    };
-  }, []);
+    if (error) {
+      logger.error('Error fetching ADC chapters:', error);
+      toast.error('Erreur lors du chargement des chapitres', {
+        description: 'Veuillez réessayer plus tard.'
+      });
+    }
+  }, [error]);
 
   return (
-    <MainLayout>
-      <ErrorBoundary name="ADCPage">
-        <div className="min-h-screen bg-gradient-to-br from-white to-gray-50 pt-[70px]">
-          <ADCHeader />
+    <GenericErrorBoundary errorContext="adc-page">
+      <Helmet>
+        <title>Atlas de Chirurgie | Infochir-RHCA</title>
+        <meta name="description" content="Découvrez l'Atlas de Chirurgie avec des illustrations et des guides pratiques pour les professionnels de santé." />
+      </Helmet>
+      
+      <div className="container max-w-7xl mx-auto px-4 py-8">
+        <ADCHeader />
+        
+        <section className="my-8">
+          <ADCMission />
           
-          <ComponentErrorBoundary 
-            name="ADCContent"
-            onError={(error) => {
-              logger.error("[ADCPage] Error in ADCContent:", error);
-              toast({
-                title: "Erreur de chargement",
-                description: "Impossible de charger le contenu principal",
-                variant: "destructive"
-              });
-            }}
-          >
-            <ADCContent />
-          </ComponentErrorBoundary>
+          <div className="flex justify-between items-center mb-4 mt-12">
+            <h2 className="text-2xl font-bold">Chapitres et Fiches Techniques</h2>
+            <Button variant="outline" onClick={() => navigate('/adc/submission')}>
+              Soumettre un cas <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
           
-          <Suspense fallback={<LoadingSkeleton />}>
-            <ComponentErrorBoundary name="ADCMission" minimal={true}>
-              <ADCMission />
-            </ComponentErrorBoundary>
-          </Suspense>
+          <FilterControls activeFilter={filter} onFilterChange={setFilter} />
           
-          <Suspense fallback={<LoadingSkeleton />}>
-            <ComponentErrorBoundary name="ADCSubmission" minimal={true}>
-              <ADCSubmission />
-            </ComponentErrorBoundary>
-          </Suspense>
-        </div>
-      </ErrorBoundary>
-    </MainLayout>
+          <ChaptersGrid 
+            chapters={filteredChapters} 
+            isLoading={isLoading} 
+            isError={Boolean(error)} 
+          />
+        </section>
+        
+        <ADCSubmission />
+      </div>
+    </GenericErrorBoundary>
   );
 };
 

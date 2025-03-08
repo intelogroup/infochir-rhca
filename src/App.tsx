@@ -45,7 +45,7 @@ function App() {
         
         const staleCacheKeys = queries
           .filter(query => {
-            const state = query.getState();
+            const state = query.state;
             return state.status === 'success' && query.isStale();
           })
           .map(query => query.queryKey);

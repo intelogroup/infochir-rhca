@@ -1,5 +1,6 @@
 
 import { Badge } from "@/components/ui/badge";
+import LazyImage from "@/components/shared/LazyImage";
 
 interface CardHeaderProps {
   image: string;
@@ -11,11 +12,13 @@ interface CardHeaderProps {
 export const CardHeader = ({ image, title, category, isModal = false }: CardHeaderProps) => {
   return (
     <div className={`relative ${isModal ? 'h-52 sm:h-64' : 'h-40'}`}>
-      <img
+      <LazyImage
         src={image}
         alt={title}
         className="w-full h-full object-cover"
-        loading="lazy"
+        width={isModal ? 800 : 400}
+        height={isModal ? 320 : 160}
+        priority={isModal}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
       

@@ -52,20 +52,27 @@ export const useArticlesQuery = (page = 0) => {
           }, 8000);
         });
         
-        // Create the query promise - we need to add a .then for proper typing
-        const queryPromise = supabase
-          .from("articles")
-          .select("*", { count: 'exact' })
-          .order("publication_date", { ascending: false })
-          .range(start, end)
-          .abortSignal(controller.signal)
-          .then(response => response);  // This helps TypeScript understand it's a Promise
+        // Create the query promise with proper typing
+        const queryPromise = new Promise(async (resolve, reject) => {
+          try {
+            const response = await supabase
+              .from("articles")
+              .select("*", { count: 'exact' })
+              .order("publication_date", { ascending: false })
+              .range(start, end)
+              .abortSignal(controller.signal);
+              
+            resolve(response);
+          } catch (error) {
+            reject(error);
+          }
+        });
           
         // Race between the actual query and the timeout
         const response = await Promise.race([
           queryPromise,
           timeoutPromise
-        ]);
+        ]) as any;
 
         // Clear the timeout since the query completed
         if (timeoutRef.current) {
