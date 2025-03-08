@@ -11,6 +11,7 @@ import { AtlasCategory } from "./data/atlasCategories";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { trackDownload } from "@/lib/analytics/download";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AtlasCardProps {
   chapter: AtlasChapter;
@@ -26,6 +27,17 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
     const shareUrl = `${window.location.origin}/adc/chapters/${chapter.id}`;
     navigator.clipboard.writeText(shareUrl);
     toast.success("Lien copié dans le presse-papier");
+    
+    // Track share count
+    if (chapter.id) {
+      supabase.rpc('increment_count', {
+        table_name: 'articles',
+        column_name: 'shares',
+        row_id: chapter.id
+      }).catch(error => {
+        console.error("[AtlasCard] Error incrementing share count:", error);
+      });
+    }
   }, [chapter.id]);
 
   const handleDownload = useCallback(async () => {
@@ -46,6 +58,17 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
       // Open the PDF in a new tab
       window.open(chapter.pdfUrl, '_blank');
       toast.success("Téléchargement du PDF...");
+      
+      // Track download count
+      if (chapter.id) {
+        supabase.rpc('increment_count', {
+          table_name: 'articles',
+          column_name: 'downloads',
+          row_id: chapter.id
+        }).catch(error => {
+          console.error("[AtlasCard] Error incrementing download count:", error);
+        });
+      }
     } catch (error) {
       console.error("Download error:", error);
       toast.error("Erreur lors du téléchargement");
@@ -53,7 +76,7 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
       // Track the failed download
       trackDownload({
         document_id: chapter.id,
-        document_type: "article", // Changed from "adc" to "article" to match allowed types
+        document_type: "article", 
         file_name: chapter.pdfUrl.split('/').pop() || 'document.pdf',
         status: 'failed',
         error_details: error instanceof Error ? error.message : 'Unknown error'
@@ -61,24 +84,40 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
     }
   }, [chapter.id, chapter.pdfUrl]);
 
-  // Memoize the cover image selection to prevent recalculation
-  const defaultCoverImages = {
-    "0": "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=800&fit=crop",
-    "1": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=800&fit=crop",
-    "2": "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?q=80&w=800&fit=crop",
-    "3": "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?q=80&w=800&fit=crop",
-    "4": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&fit=crop",
-  };
-
+  // Process the image URL to ensure it works correctly
   const coverImage = useMemo(() => {
-    const baseImage = chapter.coverImage || defaultCoverImages[chapter.id as keyof typeof defaultCoverImages] || defaultCoverImages["0"];
-    // Add query parameters to optimize the cover image size
-    return `${baseImage}?w=320&h=240&fit=cover&q=80`;
+    // If chapter has a valid URL, use it
+    if (chapter.coverImage && chapter.coverImage.startsWith('http')) {
+      return `${chapter.coverImage}?w=320&h=240&fit=cover&q=80`;
+    }
+    
+    // Default fallback images if no valid cover image is available
+    const defaultCoverImages = {
+      "0": "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=800&fit=crop",
+      "1": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=800&fit=crop",
+      "2": "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?q=80&w=800&fit=crop",
+      "3": "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?q=80&w=800&fit=crop",
+      "4": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&fit=crop",
+    };
+    
+    return `${defaultCoverImages[chapter.id.toString().charAt(0) as keyof typeof defaultCoverImages] || 
+            defaultCoverImages["0"]}?w=320&h=240&fit=cover&q=80`;
   }, [chapter.coverImage, chapter.id]);
 
   const handleModalToggle = useCallback(() => {
     setShowModal(prev => !prev);
-  }, []);
+    
+    // Track view count when opening the modal
+    if (!showModal && chapter.id) {
+      supabase.rpc('increment_count', {
+        table_name: 'articles',
+        column_name: 'views',
+        row_id: chapter.id
+      }).catch(error => {
+        console.error("[AtlasCard] Error incrementing view count:", error);
+      });
+    }
+  }, [showModal, chapter.id]);
 
   const handleImageLoad = useCallback(() => {
     setImageLoaded(true);
@@ -122,10 +161,12 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
               {chapter.title}
             </CardTitle>
             <div className="flex flex-wrap gap-2 text-xs text-gray-500">
-              {chapter.lastUpdate && (
+              {chapter.publicationDate && (
                 <div className="flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
-                  <span>MàJ: {chapter.lastUpdate}</span>
+                  <span>
+                    {new Date(chapter.publicationDate).toLocaleDateString('fr-FR')}
+                  </span>
                 </div>
               )}
               {chapter.author && (

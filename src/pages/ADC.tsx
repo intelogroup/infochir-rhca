@@ -26,6 +26,7 @@ const LoadingSkeleton = () => (
   </div>
 );
 
+// Memoize the VirtualizedAtlasGrid component
 const VirtualizedAtlasGrid = ({ chapters }: { chapters: any[] }) => {
   console.log("[VirtualizedAtlasGrid] Rendering with chapters:", chapters);
   const parentRef = useRef<HTMLDivElement>(null);
@@ -116,7 +117,7 @@ const VirtualizedAtlasGrid = ({ chapters }: { chapters: any[] }) => {
 };
 
 // Memoize the ADCContent component to prevent unnecessary re-renders
-const ADCContent = React.memo(() => {
+const ADCContent = ({ children }: { children?: React.ReactNode }) => {
   console.log("[ADCContent] Component mounting");
   const mountTime = useRef(Date.now());
   const { data: chapters, isLoading, error } = useAtlasArticles();
@@ -178,7 +179,7 @@ const ADCContent = React.memo(() => {
       )}
     </div>
   );
-});
+};
 
 ADCContent.displayName = 'ADCContent';
 

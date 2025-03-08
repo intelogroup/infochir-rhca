@@ -101,7 +101,7 @@ export const useAtlasArticles = () => {
         category: item.category,
         source: "ADC",
         pdfUrl: item.pdf_url,
-        imageUrls: [],
+        imageUrls: item.article_files || [],
         institution: item.institution,
         userId: item.user_id
       })) || [];
