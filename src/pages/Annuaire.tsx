@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
 const Annuaire = () => {
+  // Use with default path-based key
   useScrollToTop();
 
   return (

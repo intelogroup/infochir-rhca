@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { Suspense, useEffect, useState, useRef } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -7,6 +6,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useScrollToTop } from "@/hooks/useScrollToTop";
 
 interface AdminRouteWrapperProps {
   component: React.ComponentType;
@@ -21,6 +21,12 @@ export const AdminRouteWrapper = ({
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const mountedRef = useRef(true);
+
+  // Use enhanced scrollToTop hook
+  const { isScrolling } = useScrollToTop(location.key || location.pathname, {
+    behavior: 'instant',
+    debounceTime: 250
+  });
 
   // Set loading state with debounce to prevent flicker
   useEffect(() => {
@@ -42,20 +48,6 @@ export const AdminRouteWrapper = ({
       mountedRef.current = false;
     };
   }, []);
-
-  // Scroll to top when changing admin routes
-  useEffect(() => {
-    const scrollTimer = window.requestAnimationFrame(() => {
-      window.scrollTo({
-        top: 0,
-        behavior: 'instant' as ScrollBehavior
-      });
-    });
-    
-    return () => {
-      window.cancelAnimationFrame(scrollTimer);
-    };
-  }, [location.pathname]);
 
   // Custom loading fallback or default spinner
   const renderLoading = () => {

@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { Suspense, useEffect, useState, useRef } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -8,6 +7,7 @@ import { toast } from "sonner";
 import { AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useScrollToTop } from "@/hooks/useScrollToTop";
 
 interface RouteWrapperProps {
   component: React.ComponentType;
@@ -27,6 +27,12 @@ export const RouteWrapper = ({
   const [isLoading, setIsLoading] = useState(true);
   const mountedRef = useRef(true);
   const routeTimersRef = useRef<number[]>([]);
+  
+  // Use enhanced scrollToTop hook
+  const { isScrolling } = useScrollToTop(location.key || location.pathname, {
+    behavior: 'instant',
+    debounceTime: 200
+  });
 
   // Register route-specific timers for cleanup
   const registerRouteTimer = (timerId: number) => {

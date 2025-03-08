@@ -25,7 +25,9 @@ const BackButton = () => {
 };
 
 const Donate = () => {
+  // Use with default path-based key
   useScrollToTop();
+  
   const [isProcessing, setIsProcessing] = useState(false);
   const [selectedAmount, setSelectedAmount] = useState(0);
   const [customAmount, setCustomAmount] = useState("");
