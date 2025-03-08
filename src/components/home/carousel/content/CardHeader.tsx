@@ -10,7 +10,7 @@ interface CardHeaderProps {
 
 export const CardHeader = ({ image, title, category, isModal = false }: CardHeaderProps) => {
   return (
-    <div className={`relative ${isModal ? 'h-52 sm:h-64' : 'h-40 sm:h-48'}`}>
+    <div className={`relative ${isModal ? 'h-52 sm:h-64' : 'h-40'}`}>
       <img
         src={image}
         alt={title}

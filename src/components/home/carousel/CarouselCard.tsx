@@ -80,7 +80,7 @@ export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
             />
           </div>
           
-          <div className="p-4 sm:p-6 flex-grow flex flex-col min-h-[180px] max-h-[240px]">
+          <div className="p-4 sm:p-6 flex-grow flex flex-col h-[200px]">
             <h3 className="text-xl font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-primary transition-colors duration-300">
               {highlight.title}
             </h3>
@@ -220,4 +220,3 @@ export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
     </>
   );
 };
-

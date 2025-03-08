@@ -9,7 +9,7 @@ import {
 import { motion } from "framer-motion";
 import { highlights } from "./carousel/carouselData";
 import { CarouselCard } from "./carousel/CarouselCard";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, AlertTriangle, RefreshCcw } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -17,10 +17,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useInView } from "framer-motion";
 
 export const CarouselSection = () => {
   const [api, setApi] = useState<any>();
   const [current, setCurrent] = useState(0);
+  const [autoPlay, setAutoPlay] = useState(true);
+  const intervalRef = useRef<number | null>(null);
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: false, amount: 0.3 });
 
   const { data: carouselData, isLoading, error, refetch } = useQuery({
     queryKey: ['carousel-highlights'],
@@ -74,8 +79,62 @@ export const CarouselSection = () => {
 
   useEffect(() => {
     if (!api) return;
-    api.on("select", () => setCurrent(api.selectedScrollSnap()));
-  }, [api]);
+    
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+      // Reset the autoplay timer when manually changing slides
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        if (autoPlay) {
+          startAutoPlay();
+        }
+      }
+    });
+    
+    return () => {
+      api.off("select");
+    };
+  }, [api, autoPlay]);
+
+  // Start/stop autoplay when in view
+  useEffect(() => {
+    if (isInView && api) {
+      setAutoPlay(true);
+      startAutoPlay();
+    } else if (!isInView && intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [isInView, api]);
+
+  const startAutoPlay = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    
+    intervalRef.current = window.setInterval(() => {
+      if (api) {
+        api.scrollNext();
+      }
+    }, 5000) as unknown as number;
+  };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, []);
 
   if (isLoading) {
     return (
@@ -128,7 +187,10 @@ export const CarouselSection = () => {
   const displayData = carouselData || highlights;
 
   return (
-    <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <section 
+      ref={sectionRef}
+      className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
+    >
       <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] opacity-5" />
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
       
@@ -153,13 +215,16 @@ export const CarouselSection = () => {
         </div>
 
         <Carousel
-          opts={{ align: "start", loop: true }}
+          opts={{ 
+            align: "start", 
+            loop: true,
+          }}
           setApi={setApi}
           className="w-full max-w-6xl mx-auto"
         >
           <CarouselContent className="py-4">
             {displayData.map((highlight, index) => (
-              <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3 h-full">
+              <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3 h-[400px]">
                 <div className="h-full">
                   <CarouselCard highlight={highlight} index={index} />
                 </div>
