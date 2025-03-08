@@ -1,29 +1,93 @@
 
 import * as React from "react";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useRef } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface RouteWrapperProps {
   component: React.ComponentType;
+  loadingFallback?: React.ReactNode;
 }
 
 // Create a simple cache for scroll positions
 const scrollPositions = new Map<string, number>();
 
-export const RouteWrapper = ({ component: Component }: RouteWrapperProps) => {
+export const RouteWrapper = ({ 
+  component: Component, 
+  loadingFallback 
+}: RouteWrapperProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isOffline, setIsOffline] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const mountedRef = useRef(true);
+  const routeTimersRef = useRef<number[]>([]);
+
+  // Register route-specific timers for cleanup
+  const registerRouteTimer = (timerId: number) => {
+    routeTimersRef.current.push(timerId);
+    
+    // Add to global registry for cleanup during route changes
+    if (!window.__ROUTE_TIMERS__) {
+      window.__ROUTE_TIMERS__ = {};
+    }
+    
+    if (!window.__ROUTE_TIMERS__[location.pathname]) {
+      window.__ROUTE_TIMERS__[location.pathname] = [];
+    }
+    
+    window.__ROUTE_TIMERS__[location.pathname].push(timerId);
+    
+    return timerId;
+  };
+
+  // Set loading state with debounce to prevent flicker
+  useEffect(() => {
+    setIsLoading(true);
+    const loadingTimer = window.setTimeout(() => {
+      if (mountedRef.current) {
+        setIsLoading(false);
+      }
+    }, 300);
+    
+    return () => {
+      window.clearTimeout(loadingTimer);
+    };
+  }, [location.pathname]);
+
+  // Clean up any component-specific resources when unmounting
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+      
+      // Clear any timers registered for this route
+      routeTimersRef.current.forEach(timerId => {
+        window.clearTimeout(timerId);
+      });
+      
+      // Save scroll position when navigating away
+      scrollPositions.set(location.pathname, window.scrollY);
+    };
+  }, [location.pathname]);
 
   // Check for network status and update state
   useEffect(() => {
-    const handleOnline = () => setIsOffline(false);
-    const handleOffline = () => setIsOffline(true);
+    const handleOnline = () => {
+      if (mountedRef.current) {
+        setIsOffline(false);
+      }
+    };
+    
+    const handleOffline = () => {
+      if (mountedRef.current) {
+        setIsOffline(true);
+      }
+    };
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
@@ -37,20 +101,34 @@ export const RouteWrapper = ({ component: Component }: RouteWrapperProps) => {
     };
   }, []);
 
-  // Save scroll position when navigating away from the route
-  useEffect(() => {
-    return () => {
-      scrollPositions.set(location.pathname, window.scrollY);
-    };
-  }, [location.pathname]);
-
   // Restore scroll position when returning to a previously visited route
   useEffect(() => {
     const savedPosition = scrollPositions.get(location.pathname);
+    
     if (savedPosition) {
-      window.scrollTo(0, savedPosition);
+      // Use requestAnimationFrame to ensure DOM is ready before scrolling
+      const scrollTimer = window.requestAnimationFrame(() => {
+        window.scrollTo({
+          top: savedPosition,
+          behavior: 'instant' as ScrollBehavior
+        });
+      });
+      
+      return () => {
+        window.cancelAnimationFrame(scrollTimer);
+      };
     } else {
-      window.scrollTo(0, 0); // Always scroll to top for new routes
+      // Always scroll to top for new routes, but do it after render
+      const scrollTimer = window.requestAnimationFrame(() => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'instant' as ScrollBehavior
+        });
+      });
+      
+      return () => {
+        window.cancelAnimationFrame(scrollTimer);
+      };
     }
   }, [location.pathname]);
 
@@ -110,12 +188,21 @@ export const RouteWrapper = ({ component: Component }: RouteWrapperProps) => {
     );
   }
 
-  return (
-    <Suspense fallback={
+  // Custom loading fallback or default spinner
+  const renderLoading = () => {
+    if (loadingFallback) {
+      return loadingFallback;
+    }
+    
+    return (
       <div className="min-h-screen flex items-center justify-center">
         <LoadingSpinner variant="default" size="lg" />
       </div>
-    }>
+    );
+  };
+
+  return (
+    <Suspense fallback={renderLoading()}>
       <ErrorBoundary name="route-wrapper" fallback={
         <div className="p-4 text-center">
           <AlertTriangle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />

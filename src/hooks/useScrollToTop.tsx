@@ -1,34 +1,59 @@
 
-import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useEffect, useRef } from 'react';
+import { createLogger } from "@/lib/error-logger";
 
-export const useScrollToTop = () => {
-  const { pathname } = useLocation();
+const logger = createLogger('useScrollToTop');
+
+/**
+ * Hook to scroll to top when route changes
+ * @param {string} key - A stable key that changes with route transitions
+ */
+export const useScrollToTop = (key: string) => {
+  const lastScrollTimeRef = useRef<number>(0);
+  const isScrollingRef = useRef<boolean>(false);
   
   useEffect(() => {
-    const performScroll = () => {
+    // Skip scrolling if we're already in the process of scrolling
+    if (isScrollingRef.current) {
+      return;
+    }
+    
+    // Prevent multiple scroll attempts within a short time period
+    const now = Date.now();
+    if (now - lastScrollTimeRef.current < 300) {
+      logger.log("Skipping duplicate scroll attempt");
+      return;
+    }
+    
+    lastScrollTimeRef.current = now;
+    logger.log(`Attempting to scroll to top for key: ${key}`);
+    
+    isScrollingRef.current = true;
+    
+    // Use requestAnimationFrame to ensure DOM is ready before scrolling
+    const scrollHandler = () => {
       try {
-        console.log("[useScrollToTop] Attempting to scroll to top for path:", pathname);
-        
         window.scrollTo({
           top: 0,
-          behavior: "smooth"
+          left: 0,
+          behavior: 'instant' as ScrollBehavior
         });
-        
-        console.log("[useScrollToTop] Successfully scrolled to top");
+        logger.log("Successfully scrolled to top");
       } catch (error) {
-        console.error("[useScrollToTop] Smooth scroll failed:", error);
-        // Fallback to instant scroll
-        try {
-          window.scrollTo(0, 0);
-          console.log("[useScrollToTop] Used fallback scroll");
-        } catch (fallbackError) {
-          console.error("[useScrollToTop] Fallback scroll failed:", fallbackError);
-        }
+        logger.error("Error scrolling to top:", error);
+      } finally {
+        isScrollingRef.current = false;
       }
     };
-
-    // Execute scroll on route change
-    performScroll();
-  }, [pathname]);
+    
+    // Use two animation frames for better reliability across browsers
+    requestAnimationFrame(() => {
+      requestAnimationFrame(scrollHandler);
+    });
+    
+    // Cleanup function
+    return () => {
+      isScrollingRef.current = false;
+    };
+  }, [key]);
 };
