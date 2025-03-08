@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { motion } from "framer-motion";
-import { Suspense } from "react";
+import React, { Suspense } from "react"; // Fix missing React import
 
 // Separate data fetching component using suspense
 const StatsData = ({ onStatsLoaded }) => {
@@ -26,9 +26,10 @@ const StatsData = ({ onStatsLoaded }) => {
       
       if (articlesError) throw articlesError;
 
-      const { data: members, error: membersError } = await supabase
+      // Fix: Use proper type for members query with count
+      const { count: membersCount, error: membersError } = await supabase
         .from('members')
-        .select('count', { count: 'exact', head: true });
+        .select('*', { count: 'exact', head: true });
       
       if (membersError) throw membersError;
 
@@ -37,7 +38,7 @@ const StatsData = ({ onStatsLoaded }) => {
       // Don't override the first stat value since we've set it statically to 95
       
       // Update Members count - now using count instead of fetching all records
-      stats[1].value = (members?.count || 0).toString();
+      stats[1].value = (membersCount || 0).toString();
       
       // Update Views and Citations counts efficiently
       let totalViews = 0;
