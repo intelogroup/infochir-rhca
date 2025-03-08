@@ -102,3 +102,32 @@ export const handleBoundaryError = async (
     console.error('Error in error tracking:', trackingError);
   }
 };
+
+// Export the setupGlobalErrorHandlers function to be used in other components
+export const setupGlobalErrorHandlers = (): void => {
+  // Handle unhandled promise rejections
+  window.addEventListener('unhandledrejection', (event) => {
+    const error = event.reason instanceof Error 
+      ? event.reason 
+      : new Error(String(event.reason || 'Unknown promise rejection'));
+    
+    handleBoundaryError(error, { componentStack: 'unhandledrejection' }, 'global');
+  });
+  
+  // Handle uncaught errors
+  window.addEventListener('error', (event) => {
+    // Prevent handling the same error twice (some errors trigger both error and unhandledrejection)
+    if (event.error) {
+      handleBoundaryError(
+        event.error,
+        { componentStack: 'window.onerror' },
+        'global'
+      );
+    }
+  });
+  
+  console.info('Global error handlers have been set up');
+};
+
+// Export trackError function for backwards compatibility
+export const trackError = handleBoundaryError;

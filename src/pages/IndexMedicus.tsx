@@ -4,11 +4,15 @@ import { ArticleGridWrapper } from '@/components/index-medicus/ArticleGridWrappe
 import { IndexMedicusHeader } from '@/components/index-medicus/IndexMedicusHeader';
 import { GenericErrorBoundary } from '@/components/error-boundary/GenericErrorBoundary';
 import MainLayout from '@/components/layouts/MainLayout';
+import { setupGlobalErrorHandlers } from '@/lib/monitoring/error-tracking';
 
 const IndexMedicus = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   
   useEffect(() => {
+    // Set up global error handlers once
+    setupGlobalErrorHandlers();
+    
     // Mark component as loaded after a short delay
     // This helps with any potential hydration issues
     const timer = setTimeout(() => {

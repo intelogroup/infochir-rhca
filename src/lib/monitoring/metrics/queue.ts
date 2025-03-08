@@ -31,7 +31,7 @@ export const flushMetricsQueue = async (): Promise<void> => {
       logger.warn('Failed to store metrics in sessionStorage', { error: storageError });
     }
     
-    // Insert metrics into database one by one to avoid type errors
+    // Insert metrics into database
     for (const record of queueToFlush) {
       try {
         const { error } = await supabase
@@ -48,7 +48,8 @@ export const flushMetricsQueue = async (): Promise<void> => {
             navigation_metrics: record.navigation_metrics,
             memory_heap_size: record.memory_heap_size,
             memory_heap_used: record.memory_heap_used,
-            session_id: record.session_id
+            session_id: record.session_id,
+            timestamp: record.timestamp
           });
         
         if (error) {
