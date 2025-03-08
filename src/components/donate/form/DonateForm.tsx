@@ -1,13 +1,12 @@
 
 import { useState } from "react";
-import { AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import { Input } from "@/components/ui/input";
 import { DonationAmountSelector } from "@/components/donate/form/DonationAmountSelector";
 import { createCheckoutSession } from "@/lib/stripe";
 import { toast } from "sonner";
 import { FormError } from "@/components/donate/form/FormError";
 import { DonationButton } from "@/components/donate/form/DonationButton";
+import { UserInfoFields } from "@/components/donate/form/UserInfoFields";
 
 export const DonateForm = () => {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -20,7 +19,6 @@ export const DonateForm = () => {
 
   // Form validation
   const isEmailValid = email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const emailError = emailTouched && !isEmailValid ? "Veuillez entrer une adresse email valide" : null;
   
   const amount = customAmount ? Number(customAmount) : selectedAmount;
   const isAmountValid = amount > 0 && amount <= 50000;
@@ -112,41 +110,15 @@ export const DonateForm = () => {
     >
       <FormError error={formError} />
 
-      <motion.div variants={itemVariants} className="space-y-4">
-        <div>
-          <label className="text-sm font-medium mb-1 block">
-            Email <span className="text-destructive">*</span>
-          </label>
-          <Input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            onBlur={() => setEmailTouched(true)}
-            placeholder="Enter your email"
-            required
-            aria-invalid={emailError ? "true" : undefined}
-            aria-describedby={emailError ? "email-error" : undefined}
-            className={emailError ? "border-destructive" : ""}
-            disabled={isProcessing}
-          />
-          {emailError && (
-            <p id="email-error" className="text-sm text-destructive mt-1 flex items-center gap-1">
-              <AlertCircle className="h-3 w-3" /> 
-              {emailError}
-            </p>
-          )}
-        </div>
-        <div>
-          <label className="text-sm font-medium mb-1 block">Name (optional)</label>
-          <Input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter your name"
-            disabled={isProcessing}
-          />
-        </div>
-      </motion.div>
+      <UserInfoFields 
+        email={email}
+        setEmail={setEmail}
+        name={name}
+        setName={setName}
+        emailTouched={emailTouched}
+        setEmailTouched={setEmailTouched}
+        isProcessing={isProcessing}
+      />
 
       <motion.div variants={itemVariants}>
         <label className="text-sm font-medium mb-4 block">
