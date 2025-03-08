@@ -7,6 +7,11 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Suspense, memo } from "react";
+
+// Memoize the year group list for better performance
+const MemoizedYearGroupList = memo(YearGroupList);
+const MemoizedIssuesTable = memo(IssuesTable);
 
 interface IssuesGridContentProps {
   viewMode: "grid" | "table";
@@ -17,6 +22,51 @@ interface IssuesGridContentProps {
   onLoadMore?: () => void;
   hasMore?: boolean;
 }
+
+// Separate component for grid view to enable suspense boundaries
+const GridView = ({ issuesByYear, sortedYears, onLoadMore, hasMore }) => {
+  return (
+    <ScrollArea className="h-[700px] pr-4">
+      <MemoizedYearGroupList 
+        issuesByYear={issuesByYear}
+        sortedYears={sortedYears}
+      />
+      
+      {hasMore && (
+        <div className="flex justify-center mt-6 pb-4">
+          <Button 
+            variant="outline"
+            onClick={onLoadMore}
+            className="gap-2"
+          >
+            Charger plus
+          </Button>
+        </div>
+      )}
+    </ScrollArea>
+  );
+};
+
+// Separate component for table view to enable suspense boundaries
+const TableView = ({ issues, onLoadMore, hasMore }) => {
+  return (
+    <>
+      <MemoizedIssuesTable issues={issues} />
+      
+      {hasMore && (
+        <div className="flex justify-center mt-6">
+          <Button 
+            variant="outline"
+            onClick={onLoadMore}
+            className="gap-2"
+          >
+            Charger plus
+          </Button>
+        </div>
+      )}
+    </>
+  );
+};
 
 export const IssuesGridContent = ({
   viewMode,
@@ -61,42 +111,26 @@ export const IssuesGridContent = ({
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
-      {viewMode === "grid" ? (
-        <ScrollArea className="h-[700px] pr-4">
-          <YearGroupList 
-            issuesByYear={issuesByYear}
-            sortedYears={sortedYears}
+      <Suspense fallback={
+        <div className="min-h-[400px] flex items-center justify-center">
+          <LoadingSpinner variant="fun" size="md" text="Préparation des données..." />
+        </div>
+      }>
+        {viewMode === "grid" ? (
+          <GridView 
+            issuesByYear={issuesByYear} 
+            sortedYears={sortedYears} 
+            onLoadMore={onLoadMore}
+            hasMore={hasMore}
           />
-          
-          {hasMore && (
-            <div className="flex justify-center mt-6 pb-4">
-              <Button 
-                variant="outline"
-                onClick={onLoadMore}
-                className="gap-2"
-              >
-                Charger plus
-              </Button>
-            </div>
-          )}
-        </ScrollArea>
-      ) : (
-        <>
-          <IssuesTable issues={sortedIssues} />
-          
-          {hasMore && (
-            <div className="flex justify-center mt-6">
-              <Button 
-                variant="outline"
-                onClick={onLoadMore}
-                className="gap-2"
-              >
-                Charger plus
-              </Button>
-            </div>
-          )}
-        </>
-      )}
+        ) : (
+          <TableView 
+            issues={sortedIssues} 
+            onLoadMore={onLoadMore}
+            hasMore={hasMore}
+          />
+        )}
+      </Suspense>
     </motion.div>
   );
 };
