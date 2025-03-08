@@ -1,10 +1,12 @@
 
 import * as React from "react";
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
+import { AlertTriangle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface RouteWrapperProps {
   component: React.ComponentType;
@@ -16,6 +18,24 @@ const scrollPositions = new Map<string, number>();
 export const RouteWrapper = ({ component: Component }: RouteWrapperProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isOffline, setIsOffline] = useState(false);
+
+  // Check for network status and update state
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    // Set initial status
+    setIsOffline(!navigator.onLine);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   // Save scroll position when navigating away from the route
   useEffect(() => {
@@ -29,15 +49,24 @@ export const RouteWrapper = ({ component: Component }: RouteWrapperProps) => {
     const savedPosition = scrollPositions.get(location.pathname);
     if (savedPosition) {
       window.scrollTo(0, savedPosition);
+    } else {
+      window.scrollTo(0, 0); // Always scroll to top for new routes
     }
   }, [location.pathname]);
 
   // Global error handler for route-level errors
   const handleError = React.useCallback((error: Error) => {
     console.error("Route error:", error);
-    toast.error("Une erreur est survenue", {
-      description: "Veuillez réessayer plus tard"
-    });
+    
+    if (error.message.includes('NetworkError') || error.message.includes('CORS')) {
+      toast.error("Erreur de connexion", {
+        description: "Impossible de se connecter au serveur. Vérifiez votre connexion internet."
+      });
+    } else {
+      toast.error("Une erreur est survenue", {
+        description: "Veuillez réessayer plus tard"
+      });
+    }
   }, []);
 
   // Use sessionStorage to persist form input state between navigations
@@ -60,6 +89,27 @@ export const RouteWrapper = ({ component: Component }: RouteWrapperProps) => {
     return EnhancedComponent;
   }, [Component, location]);
 
+  // Show offline indicator
+  if (isOffline) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="bg-yellow-50 p-6 rounded-lg text-center max-w-md">
+          <AlertTriangle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
+          <h2 className="text-xl font-bold mb-2">Vous êtes hors ligne</h2>
+          <p className="mb-4">
+            Vérifiez votre connexion Internet et réessayez.
+          </p>
+          <Button 
+            onClick={() => window.location.reload()} 
+            variant="default"
+          >
+            Actualiser la page
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center">
@@ -68,8 +118,10 @@ export const RouteWrapper = ({ component: Component }: RouteWrapperProps) => {
     }>
       <ErrorBoundary name="route-wrapper" fallback={
         <div className="p-4 text-center">
+          <AlertTriangle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold mb-2">Une erreur est survenue</h2>
           <p className="mb-4">Veuillez réessayer plus tard</p>
+          <Button onClick={() => navigate('/')}>Retour à l'accueil</Button>
         </div>
       }>
         {React.createElement(enhancedComponent)}

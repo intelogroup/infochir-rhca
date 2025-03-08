@@ -20,11 +20,19 @@ export const useArticlesQuery = (page = 0) => {
       logger.log('Executing Supabase query with range:', { start, end });
 
       try {
+        // Create a timeout for the request
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
+        
         const { data, error, count } = await supabase
           .from("articles")
           .select("*", { count: 'exact' })
           .order("publication_date", { ascending: false })
-          .range(start, end);
+          .range(start, end)
+          .abortSignal(controller.signal);
+        
+        // Clear the timeout
+        clearTimeout(timeoutId);
 
         logger.log('Supabase response:', { dataCount: data?.length, error, count });
 
@@ -33,7 +41,7 @@ export const useArticlesQuery = (page = 0) => {
           toast.error("Erreur lors du chargement des articles", {
             description: error.message
           });
-          throw new Error(error.message);
+          throw error;
         }
 
         if (!data || data.length === 0) {
@@ -75,15 +83,37 @@ export const useArticlesQuery = (page = 0) => {
       } catch (err) {
         logger.error('Error fetching articles:', err);
         const errorMessage = err instanceof Error ? err.message : String(err);
-        toast.error("Erreur lors du chargement des articles", {
-          description: errorMessage
-        });
+        
+        // Don't show toast for aborted requests
+        if (errorMessage !== 'AbortError: The operation was aborted' && 
+            !errorMessage.includes('aborted')) {
+          toast.error("Erreur lors du chargement des articles", {
+            description: errorMessage
+          });
+        }
+        
+        // Return empty state for network errors instead of failing completely
+        if (errorMessage.includes('NetworkError') || errorMessage.includes('CORS') || 
+            errorMessage.includes('AbortError')) {
+          logger.warn('Returning empty state due to network/CORS error');
+          return { articles: [], totalPages: 0 };
+        }
+        
         throw err;
       }
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 30 * 60 * 1000, // 30 minutes
-    retry: 2,
+    retry: (failureCount, error) => {
+      // Only retry network/timeout errors, not data errors
+      if (error instanceof Error && 
+         (error.message.includes('network') || 
+          error.message.includes('timeout') ||
+          error.message.includes('CORS'))) {
+        return failureCount < 3;
+      }
+      return false;
+    },
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 };
