@@ -15,6 +15,7 @@ interface ProductCardProps {
   onClick?: () => void;
   logo?: string;
   features?: string[];
+  fullName?: string;
 }
 
 export const ProductCard = ({ 
@@ -24,7 +25,8 @@ export const ProductCard = ({
   href, 
   onClick,
   logo,
-  features = []
+  features = [],
+  fullName
 }: ProductCardProps) => {
   const getProductFeatures = (title: string) => {
     switch (title) {
@@ -64,6 +66,8 @@ export const ProductCard = ({
 
   // Get the full display name for the product
   const getFullProductName = (title: string) => {
+    if (fullName) return fullName;
+    
     switch (title) {
       case "RHCA":
         return "Revue Haïtienne de Chirurgie et d'Anesthésiologie";
@@ -108,7 +112,7 @@ export const ProductCard = ({
             <CardTitle className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#1E40AF] via-[#41b06e] to-[#41b06e] text-center truncate">
               {title}
             </CardTitle>
-            <div className="text-xs font-semibold text-gray-600 dark:text-gray-300 text-center truncate min-h-[1.5rem] px-2">
+            <div className="text-xs font-semibold text-gray-600 dark:text-gray-300 text-center truncate px-2 whitespace-nowrap overflow-hidden text-ellipsis max-w-full">
               {getFullProductName(title)}
             </div>
             <CardDescription className="text-gray-600 dark:text-gray-300 text-center text-sm leading-tight line-clamp-2 min-h-[2.5rem] mt-1">
