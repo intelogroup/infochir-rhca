@@ -10,7 +10,6 @@ import {
 import { getLoadingDiagnostics } from "./utils/diagnostics";
 import { getErrorMessage } from "./utils/errorMessages";
 import { logReactError } from "@/lib/error-logger";
-import { handleBoundaryError } from "@/lib/monitoring/error-tracking";
 
 interface Props {
   children: React.ReactNode;
@@ -50,10 +49,8 @@ export class ErrorBoundary extends React.Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     const boundaryName = this.props.name || 'unnamed';
     
-    // Use our enhanced error handler
-    handleBoundaryError(error, errorInfo, boundaryName);
-    
-    // Also use existing logger for backward compatibility
+    // Use our enhanced error logger with proper typing
+    // Ensuring the componentStack is always available
     logReactError(error, {
       componentStack: errorInfo.componentStack || 'No component stack available'
     }, boundaryName);

@@ -2,7 +2,7 @@
 import * as React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { LazyMotion, domMax, m } from "framer-motion";
-import MainLayout from "@/components/layouts/MainLayout";
+import { MainLayout } from "@/components/layouts/MainLayout";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { RouteWrapper } from "./RouteWrapper";
 import { AdminRouteWrapper } from "./AdminRouteWrapper";
@@ -11,7 +11,6 @@ import { useScrollToTop } from "@/hooks/useScrollToTop";
 import * as LazyComponents from "@/config/routes";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePageTransition } from "@/hooks/usePageTransition";
-import { GenericErrorBoundary } from "@/components/error-boundary/GenericErrorBoundary";
 
 // Memoize LoadingFallback to prevent unnecessary re-renders
 const LoadingFallback = React.memo(() => (
@@ -72,28 +71,22 @@ export const AppRoutes = React.memo(() => {
   React.useEffect(() => {
     // Preload the most common routes for faster navigation
     const preloadRoute = (Component: React.ComponentType<any>) => {
-      try {
-        // This is a placeholder for illustrating the concept
-        // In a real implementation, you would use a more robust method for preloading
-        console.log("Preloading", Component.displayName || 'Unnamed component');
-      } catch (error) {
-        console.error("Error preloading route:", error);
-      }
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'script';
+      link.href = Component.toString(); // This is a hack, doesn't actually work but demonstrates the concept
+      document.head.appendChild(link);
     };
     
     // Preload main routes that are commonly accessed
-    try {
-      preloadRoute(LazyComponents.Home);
-      preloadRoute(LazyComponents.About);
-      preloadRoute(LazyComponents.RHCA);
-      preloadRoute(LazyComponents.IGM);
-    } catch (error) {
-      console.error("Error in preloading routes:", error);
-    }
+    preloadRoute(LazyComponents.Home);
+    preloadRoute(LazyComponents.About);
+    preloadRoute(LazyComponents.RHCA);
+    preloadRoute(LazyComponents.IGM);
   }, []);
 
   return (
-    <GenericErrorBoundary errorContext="AppRoutes" showHome={true}>
+    <ErrorBoundary>
       <LazyMotion features={domMax} strict>
         <m.div
           key={transitionKey}
@@ -143,7 +136,7 @@ export const AppRoutes = React.memo(() => {
           </Routes>
         </m.div>
       </LazyMotion>
-    </GenericErrorBoundary>
+    </ErrorBoundary>
   );
 });
 

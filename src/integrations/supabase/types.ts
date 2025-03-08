@@ -377,51 +377,6 @@ export type Database = {
         }
         Relationships: []
       }
-      error_events: {
-        Row: {
-          component: string | null
-          created_at: string
-          error_type: string
-          id: string
-          message: string
-          metadata: Json | null
-          route: string | null
-          session_id: string
-          stack: string | null
-          timestamp: string
-          url: string
-          user_agent: string | null
-        }
-        Insert: {
-          component?: string | null
-          created_at?: string
-          error_type: string
-          id?: string
-          message: string
-          metadata?: Json | null
-          route?: string | null
-          session_id: string
-          stack?: string | null
-          timestamp?: string
-          url: string
-          user_agent?: string | null
-        }
-        Update: {
-          component?: string | null
-          created_at?: string
-          error_type?: string
-          id?: string
-          message?: string
-          metadata?: Json | null
-          route?: string | null
-          session_id?: string
-          stack?: string | null
-          timestamp?: string
-          url?: string
-          user_agent?: string | null
-        }
-        Relationships: []
-      }
       members: {
         Row: {
           avatar_url: string | null
@@ -479,57 +434,6 @@ export type Database = {
           name?: string
           phone?: string | null
           subscribed_at?: string
-        }
-        Relationships: []
-      }
-      performance_metrics: {
-        Row: {
-          connection_type: string | null
-          created_at: string
-          id: string
-          memory_heap_size: number | null
-          memory_heap_used: number | null
-          navigation_metrics: Json | null
-          page_url: string
-          resource_metrics: Json | null
-          route: string | null
-          screen_size: string | null
-          session_id: string
-          timestamp: string
-          user_agent: string | null
-          web_vitals: Json | null
-        }
-        Insert: {
-          connection_type?: string | null
-          created_at?: string
-          id?: string
-          memory_heap_size?: number | null
-          memory_heap_used?: number | null
-          navigation_metrics?: Json | null
-          page_url: string
-          resource_metrics?: Json | null
-          route?: string | null
-          screen_size?: string | null
-          session_id: string
-          timestamp?: string
-          user_agent?: string | null
-          web_vitals?: Json | null
-        }
-        Update: {
-          connection_type?: string | null
-          created_at?: string
-          id?: string
-          memory_heap_size?: number | null
-          memory_heap_used?: number | null
-          navigation_metrics?: Json | null
-          page_url?: string
-          resource_metrics?: Json | null
-          route?: string | null
-          screen_size?: string | null
-          session_id?: string
-          timestamp?: string
-          user_agent?: string | null
-          web_vitals?: Json | null
         }
         Relationships: []
       }

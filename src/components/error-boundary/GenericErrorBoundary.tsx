@@ -3,7 +3,6 @@ import { Component, ErrorInfo, ReactNode, isValidElement, cloneElement } from "r
 import { FallbackUI } from "./FallbackUI";
 import { toast } from "sonner";
 import { createLogger } from "@/lib/error-logger";
-import { handleBoundaryError } from "@/lib/monitoring/error-tracking";
 
 interface Props {
   children: ReactNode;
@@ -48,7 +47,6 @@ export class GenericErrorBoundary extends Component<Props, State> {
   resetTimeWindow = 60000; // 1 minute
 
   static getDerivedStateFromError(error: Error): Partial<State> {
-    console.error('[GenericErrorBoundary] Error caught:', error);
     return { 
       hasError: true, 
       error 
@@ -56,9 +54,6 @@ export class GenericErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // Mark React errors to prevent duplicate reporting
-    (error as any)._suppressReactErrorLogging = true;
-    
     // Log the error with context
     logger.error(`Error caught in ${this.props.errorContext || 'unknown'}:`, {
       error,
@@ -84,9 +79,6 @@ export class GenericErrorBoundary extends Component<Props, State> {
     if (this.props.onError) {
       this.props.onError(error, errorInfo);
     }
-    
-    // Use error tracking
-    handleBoundaryError(error, errorInfo, this.props.errorContext || 'unknown');
   }
 
   resetErrorBoundary = () => {
