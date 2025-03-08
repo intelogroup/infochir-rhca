@@ -6,7 +6,7 @@ interface MainLayoutProps {
   children: React.ReactNode;
 }
 
-const MainLayout = ({ children }: MainLayoutProps) => {
+export const MainLayout = ({ children }: MainLayoutProps) => {
   // Initialize performance monitoring
   usePerformanceMonitoring();
 

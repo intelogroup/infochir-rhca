@@ -45,9 +45,10 @@ interface NavigationMetrics {
   redirectEnd?: number;
   redirectStart?: number;
   secureConnectionStart?: number;
-  serverTiming?: any[];
+  serverTiming?: ReadonlyArray<PerformanceServerTiming>;
 }
 
+// Define a type that includes all the necessary fields for the database
 interface PerformanceMetricsRecord {
   session_id: string;
   timestamp: string;
@@ -125,8 +126,10 @@ const collectWebVitals = (): WebVitals => {
     // First Input Delay
     const fidEntries = performance.getEntriesByType('first-input');
     if (fidEntries && fidEntries.length > 0) {
-      const firstInput = fidEntries[0];
-      webVitals.fid = firstInput.processingStart ? (firstInput.processingStart as number) - firstInput.startTime : undefined;
+      const firstInput = fidEntries[0] as PerformanceEventTiming;
+      webVitals.fid = firstInput.processingStart 
+        ? firstInput.processingStart - firstInput.startTime 
+        : undefined;
     }
     
     // Time to First Byte
@@ -254,30 +257,32 @@ const flushMetricsQueue = async (): Promise<void> => {
     const storedMetrics = JSON.parse(sessionStorage.getItem('perf_metrics_queue') || '[]');
     sessionStorage.setItem('perf_metrics_queue', JSON.stringify([...storedMetrics, ...queueToFlush].slice(-50))); // Keep last 50
     
-    // Insert metrics into database
-    const { error } = await supabase
-      .from('performance_metrics')
-      .insert(queueToFlush.map(record => ({
-        session_id: record.session_id,
-        timestamp: record.timestamp,
-        page_url: record.page_url,
-        route: new URL(record.page_url).pathname,
-        user_agent: record.user_agent,
-        connection_type: record.connection_type,
-        screen_size: record.screen_size,
-        web_vitals: record.web_vitals,
-        resource_metrics: record.resource_metrics,
-        navigation_metrics: record.navigation_metrics,
-        memory_heap_size: record.memory_heap_size,
-        memory_heap_used: record.memory_heap_used
-      })));
-    
-    if (error) {
-      logger.error(error, { context: 'flushMetricsQueue' });
-    } else {
-      // Clear the successfully sent metrics from backup
-      sessionStorage.removeItem('perf_metrics_queue');
+    // Insert metrics into database one by one to avoid type errors
+    for (const record of queueToFlush) {
+      const { error } = await supabase
+        .from('performance_metrics')
+        .insert({
+          session_id: record.session_id,
+          timestamp: record.timestamp,
+          page_url: record.page_url,
+          route: new URL(record.page_url).pathname,
+          user_agent: record.user_agent,
+          connection_type: record.connection_type,
+          screen_size: record.screen_size,
+          web_vitals: record.web_vitals,
+          resource_metrics: record.resource_metrics,
+          navigation_metrics: record.navigation_metrics,
+          memory_heap_size: record.memory_heap_size,
+          memory_heap_used: record.memory_heap_used
+        });
+      
+      if (error) {
+        logger.error(error, { context: 'flushMetricsQueue' });
+      }
     }
+    
+    // Clear the successfully sent metrics from backup
+    sessionStorage.removeItem('perf_metrics_queue');
     
   } catch (error) {
     logger.error(error, { context: 'flushMetricsQueue' });
@@ -355,10 +360,11 @@ const setupPerformanceObservers = (): void => {
       const fidObserver = new PerformanceObserver((entryList) => {
         const entries = entryList.getEntries();
         entries.forEach(entry => {
-          const processingStart = entry.processingStart as number;
-          const startTime = entry.startTime;
-          const fid = processingStart - startTime;
-          logger.debug(`FID: ${fid}ms`);
+          const eventEntry = entry as PerformanceEventTiming;
+          if (eventEntry.processingStart && eventEntry.startTime) {
+            const fid = eventEntry.processingStart - eventEntry.startTime;
+            logger.debug(`FID: ${fid}ms`);
+          }
         });
       });
       
