@@ -11,6 +11,7 @@ import { useScrollToTop } from "@/hooks/useScrollToTop";
 import * as LazyComponents from "@/config/routes";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePageTransition } from "@/hooks/usePageTransition";
+import { GenericErrorBoundary } from "@/components/error-boundary/GenericErrorBoundary";
 
 // Memoize LoadingFallback to prevent unnecessary re-renders
 const LoadingFallback = React.memo(() => (
@@ -71,22 +72,30 @@ export const AppRoutes = React.memo(() => {
   React.useEffect(() => {
     // Preload the most common routes for faster navigation
     const preloadRoute = (Component: React.ComponentType<any>) => {
-      const link = document.createElement('link');
-      link.rel = 'preload';
-      link.as = 'script';
-      link.href = Component.toString(); // This is a hack, doesn't actually work but demonstrates the concept
-      document.head.appendChild(link);
+      try {
+        const link = document.createElement('link');
+        link.rel = 'preload';
+        link.as = 'script';
+        link.href = Component.toString(); // This is a hack, doesn't actually work but demonstrates the concept
+        document.head.appendChild(link);
+      } catch (error) {
+        console.error("Error preloading route:", error);
+      }
     };
     
     // Preload main routes that are commonly accessed
-    preloadRoute(LazyComponents.Home);
-    preloadRoute(LazyComponents.About);
-    preloadRoute(LazyComponents.RHCA);
-    preloadRoute(LazyComponents.IGM);
+    try {
+      preloadRoute(LazyComponents.Home);
+      preloadRoute(LazyComponents.About);
+      preloadRoute(LazyComponents.RHCA);
+      preloadRoute(LazyComponents.IGM);
+    } catch (error) {
+      console.error("Error in preloading routes:", error);
+    }
   }, []);
 
   return (
-    <ErrorBoundary>
+    <GenericErrorBoundary errorContext="AppRoutes" showHome={true}>
       <LazyMotion features={domMax} strict>
         <m.div
           key={transitionKey}
@@ -136,7 +145,7 @@ export const AppRoutes = React.memo(() => {
           </Routes>
         </m.div>
       </LazyMotion>
-    </ErrorBoundary>
+    </GenericErrorBoundary>
   );
 });
 

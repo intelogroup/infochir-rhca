@@ -24,35 +24,53 @@ export const flushMetricsQueue = async (): Promise<void> => {
   
   try {
     // Store metrics in local storage first as backup
-    const storedMetrics = JSON.parse(sessionStorage.getItem('perf_metrics_queue') || '[]');
-    sessionStorage.setItem('perf_metrics_queue', JSON.stringify([...storedMetrics, ...queueToFlush].slice(-50))); // Keep last 50
+    try {
+      const storedMetrics = JSON.parse(sessionStorage.getItem('perf_metrics_queue') || '[]');
+      sessionStorage.setItem('perf_metrics_queue', JSON.stringify([...storedMetrics, ...queueToFlush].slice(-50))); // Keep last 50
+    } catch (storageError) {
+      logger.warn('Failed to store metrics in sessionStorage', { error: storageError });
+    }
     
     // Insert metrics into database one by one to avoid type errors
     for (const record of queueToFlush) {
-      const { error } = await supabase
-        .from('performance_metrics')
-        .insert({
-          created_at: new Date().toISOString(), // Use created_at instead of timestamp
-          page_url: record.page_url,
-          route: new URL(record.page_url).pathname,
-          user_agent: record.user_agent,
-          connection_type: record.connection_type,
-          screen_size: record.screen_size,
-          web_vitals: record.web_vitals,
-          resource_metrics: record.resource_metrics,
-          navigation_metrics: record.navigation_metrics,
-          memory_heap_size: record.memory_heap_size,
-          memory_heap_used: record.memory_heap_used,
-          session_id: record.session_id
+      try {
+        const { error } = await supabase
+          .from('performance_metrics')
+          .insert({
+            created_at: new Date().toISOString(), // Use created_at instead of timestamp
+            page_url: record.page_url,
+            route: new URL(record.page_url).pathname,
+            user_agent: record.user_agent,
+            connection_type: record.connection_type,
+            screen_size: record.screen_size,
+            web_vitals: record.web_vitals,
+            resource_metrics: record.resource_metrics,
+            navigation_metrics: record.navigation_metrics,
+            memory_heap_size: record.memory_heap_size,
+            memory_heap_used: record.memory_heap_used,
+            session_id: record.session_id
+          });
+        
+        if (error) {
+          logger.error(error, { context: 'flushMetricsQueue' });
+        }
+      } catch (insertError) {
+        logger.error('Error inserting metric record', { 
+          error: insertError,
+          record: {
+            url: record.page_url,
+            timestamp: record.timestamp
+          }
         });
-      
-      if (error) {
-        logger.error(error, { context: 'flushMetricsQueue' });
       }
     }
     
     // Clear the successfully sent metrics from backup
-    sessionStorage.removeItem('perf_metrics_queue');
+    try {
+      sessionStorage.removeItem('perf_metrics_queue');
+    } catch (clearError) {
+      logger.warn('Failed to clear metrics from sessionStorage', { error: clearError });
+    }
     
   } catch (error) {
     logger.error(error, { context: 'flushMetricsQueue' });
@@ -63,28 +81,42 @@ export const flushMetricsQueue = async (): Promise<void> => {
  * Queue a metrics record for later sending
  */
 export const queueMetricsRecord = (record: PerformanceMetricsRecord): void => {
-  metricsQueue.push(record);
-  
-  // Flush if queue is large enough
-  if (metricsQueue.length >= MAX_QUEUE_SIZE) {
-    flushMetricsQueue();
-    return;
-  }
-  
-  // Set up delayed flush if not already scheduled
-  if (!queueTimeout) {
-    queueTimeout = setTimeout(() => {
-      flushMetricsQueue();
-      queueTimeout = null;
-    }, QUEUE_FLUSH_INTERVAL);
+  try {
+    metricsQueue.push(record);
+    
+    // Flush if queue is large enough
+    if (metricsQueue.length >= MAX_QUEUE_SIZE) {
+      flushMetricsQueue().catch(error => {
+        logger.error('Error flushing metrics queue', { error });
+      });
+      return;
+    }
+    
+    // Set up delayed flush if not already scheduled
+    if (!queueTimeout) {
+      queueTimeout = setTimeout(() => {
+        flushMetricsQueue().catch(error => {
+          logger.error('Error in scheduled flush of metrics queue', { error });
+        });
+        queueTimeout = null;
+      }, QUEUE_FLUSH_INTERVAL);
+    }
+  } catch (error) {
+    logger.error('Error queueing metrics record', { error });
   }
 };
 
 // Utility function to flush queue on demand (e.g., when page unloads)
 export const forceFlushQueue = (): void => {
-  if (queueTimeout) {
-    clearTimeout(queueTimeout);
-    queueTimeout = null;
+  try {
+    if (queueTimeout) {
+      clearTimeout(queueTimeout);
+      queueTimeout = null;
+    }
+    
+    // Use void to indicate we're deliberately ignoring the promise
+    void flushMetricsQueue();
+  } catch (error) {
+    logger.error('Error in force flush of metrics queue', { error });
   }
-  flushMetricsQueue();
 };

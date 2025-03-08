@@ -7,6 +7,7 @@ import { createLogger } from "@/lib/error-logger";
 import { queryKeys } from "@/lib/react-query";
 import { useComponentLifecycle } from "@/hooks/useComponentLifecycle";
 import { useEffect, useRef } from "react";
+import { trackError } from "@/lib/monitoring/error-tracking";
 
 const logger = createLogger('useArticlesQuery');
 const PAGE_SIZE = 10;
@@ -15,6 +16,7 @@ export const useArticlesQuery = (page = 0) => {
   const { isMounted, createAbortController } = useComponentLifecycle();
   const controller = createAbortController();
   const timeoutRef = useRef<number | null>(null);
+  const errorShownRef = useRef(false);
   
   // Clean up timeout on unmount
   useEffect(() => {
@@ -30,6 +32,7 @@ export const useArticlesQuery = (page = 0) => {
     queryKey: queryKeys.articles.list(page),
     queryFn: async () => {
       logger.log('Starting articles fetch for page:', page);
+      errorShownRef.current = false;
       
       const start = page * PAGE_SIZE;
       const end = start + PAGE_SIZE - 1;
@@ -87,12 +90,17 @@ export const useArticlesQuery = (page = 0) => {
         if (error) {
           logger.error("Supabase query error:", error);
           
-          // Only show toast if component is still mounted
-          if (isMounted()) {
+          // Only show toast if component is still mounted and no error was shown yet
+          if (isMounted() && !errorShownRef.current) {
+            errorShownRef.current = true;
             toast.error("Erreur lors du chargement des articles", {
               description: error.message
             });
           }
+          
+          // Track the error in our monitoring system
+          trackError(error, 'useArticlesQuery', { page });
+          
           throw error;
         }
 
@@ -103,29 +111,29 @@ export const useArticlesQuery = (page = 0) => {
 
         const articles: Article[] = data.map((item) => ({
           id: item.id,
-          title: item.title,
-          abstract: item.abstract,
+          title: item.title || 'Sans titre',
+          abstract: item.abstract || '',
           date: item.publication_date,
           publicationDate: item.publication_date,
-          source: item.source as Article['source'],
-          category: item.category,
+          source: (item.source as Article['source']) || 'unknown',
+          category: item.category || 'Uncategorized',
           authors: Array.isArray(item.authors) ? item.authors : [],
           tags: Array.isArray(item.tags) ? item.tags : [],
-          imageUrl: item.image_url,
+          imageUrl: item.image_url || '',
           views: item.views || 0,
           citations: item.citations || 0,
-          pdfUrl: item.pdf_url,
+          pdfUrl: item.pdf_url || '',
           downloads: item.downloads || 0,
-          institution: item.institution,
+          institution: item.institution || '',
           status: (item.status === 'published' || item.status === 'pending' || item.status === 'draft') 
             ? item.status as 'published' | 'pending' | 'draft'
             : 'published',
           shares: item.shares || 0,
-          volume: item.volume,
-          issue: item.issue,
-          pageNumber: item.page_number,
-          specialty: item.specialty,
-          articleType: item.source as Article['source']
+          volume: item.volume || '',
+          issue: item.issue || '',
+          pageNumber: item.page_number || '',
+          specialty: item.specialty || '',
+          articleType: (item.source as Article['source']) || 'unknown'
         }));
 
         const totalPages = Math.ceil((count || 0) / PAGE_SIZE);
@@ -143,19 +151,26 @@ export const useArticlesQuery = (page = 0) => {
         
         const errorMessage = err instanceof Error ? err.message : String(err);
         
-        // Don't show toast for aborted requests or if component unmounted
+        // Don't show toast for aborted requests or if component unmounted or if error was already shown
         if (errorMessage !== 'AbortError: The operation was aborted' && 
             !errorMessage.includes('aborted') && 
-            isMounted()) {
+            isMounted() && 
+            !errorShownRef.current) {
+          errorShownRef.current = true;
           toast.error("Erreur lors du chargement des articles", {
             description: errorMessage
           });
+          
+          // Track the error
+          trackError(err, 'useArticlesQuery', { page, errorMessage });
         }
         
         // Return empty state for network errors instead of failing completely
-        if (errorMessage.includes('NetworkError') || errorMessage.includes('CORS') || 
-            errorMessage.includes('AbortError')) {
-          logger.warn('Returning empty state due to network/CORS error');
+        if (errorMessage.includes('NetworkError') || 
+            errorMessage.includes('CORS') || 
+            errorMessage.includes('AbortError') ||
+            errorMessage.includes('timeout')) {
+          logger.warn('Returning empty state due to network/CORS/timeout error');
           return { articles: [], totalPages: 0 };
         }
         

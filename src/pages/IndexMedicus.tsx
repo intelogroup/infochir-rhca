@@ -5,10 +5,36 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen, Info } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Suspense } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { GenericErrorBoundary } from "@/components/error-boundary/GenericErrorBoundary";
+import { FallbackUI } from "@/components/error-boundary/FallbackUI";
+
+const ArticleGridWrapper = () => {
+  return (
+    <GenericErrorBoundary
+      errorContext="ArticleGrid"
+      fallback={<FallbackUI error={new Error("Échec du chargement des articles")} resetErrorBoundary={() => window.location.reload()} />}
+    >
+      <Suspense fallback={<LoadingSpinner variant="fun" text="Chargement des articles..." />}>
+        <ArticleGrid viewMode="table" />
+      </Suspense>
+    </GenericErrorBoundary>
+  );
+};
 
 const IndexMedicus = () => {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Add safety timeout to ensure UI becomes responsive even if there's a loading issue
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 5000); // 5 second safety timeout
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <MainLayout>
       <div className="min-h-screen bg-gradient-to-b from-[#F1F0FB] to-white">
@@ -30,6 +56,10 @@ const IndexMedicus = () => {
                     src="/lovable-uploads/f2409464-47cf-4348-ada0-e328e86be01b.png"
                     alt="Index Medicus Logo"
                     className="h-full w-full object-contain"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = '/placeholder.svg';
+                      console.error('Error loading Index Medicus logo');
+                    }}
                   />
                 </div>
               </div>
@@ -72,9 +102,7 @@ const IndexMedicus = () => {
                 
                 <TabsContent value="articles" className="mt-6">
                   <div className="bg-white rounded-lg p-4 sm:p-6 lg:p-8 shadow-md border border-gray-100">
-                    <Suspense fallback={<LoadingSpinner variant="fun" text="Chargement des articles..." />}>
-                      <ArticleGrid viewMode="table" />
-                    </Suspense>
+                    <ArticleGridWrapper />
                   </div>
                 </TabsContent>
                 <TabsContent value="titre" className="mt-6">
