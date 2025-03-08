@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import MainLayout from '@/components/layouts/MainLayout';
@@ -13,7 +12,7 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Send } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from "@/hooks/use-toast";
 
 // Form validation schema
 const formSchema = z.object({
@@ -44,8 +43,8 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 const Submission = () => {
-  const { toast } = useToast();
   const [tab, setTab] = useState("details");
+  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Initialize form with react-hook-form

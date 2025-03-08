@@ -23,6 +23,6 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       </footer>
     </div>
   );
-}
+};
 
 export default MainLayout;

@@ -12,6 +12,7 @@ interface WebVitals {
   cls?: number; // Cumulative Layout Shift
   ttfb?: number; // Time to First Byte
   inp?: number; // Interaction to Next Paint
+  [key: string]: number | undefined; // Index signature for dynamic properties
 }
 
 interface ResourceMetrics {
@@ -110,9 +111,9 @@ const collectWebVitals = (): WebVitals => {
   
   try {
     // Get First Contentful Paint (FCP) if available
-    const fcpEntry = performance.getEntriesByName('first-contentful-paint', 'paint')[0];
-    if (fcpEntry) {
-      webVitals.fcp = fcpEntry.startTime;
+    const fcpEntries = performance.getEntriesByName('first-contentful-paint', 'paint');
+    if (fcpEntries.length > 0) {
+      webVitals.fcp = fcpEntries[0].startTime;
     }
     
     // Largest Contentful Paint
@@ -125,7 +126,7 @@ const collectWebVitals = (): WebVitals => {
     const fidEntries = performance.getEntriesByType('first-input');
     if (fidEntries && fidEntries.length > 0) {
       const firstInput = fidEntries[0];
-      webVitals.fid = firstInput.processingStart - firstInput.startTime;
+      webVitals.fid = firstInput.processingStart ? (firstInput.processingStart as number) - firstInput.startTime : undefined;
     }
     
     // Time to First Byte
@@ -354,7 +355,9 @@ const setupPerformanceObservers = (): void => {
       const fidObserver = new PerformanceObserver((entryList) => {
         const entries = entryList.getEntries();
         entries.forEach(entry => {
-          const fid = entry.processingStart - entry.startTime;
+          const processingStart = entry.processingStart as number;
+          const startTime = entry.startTime;
+          const fid = processingStart - startTime;
           logger.debug(`FID: ${fid}ms`);
         });
       });
