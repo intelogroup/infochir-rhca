@@ -1,4 +1,3 @@
-
 import { LucideIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -110,11 +109,8 @@ export const ProductCard = ({
               )}
             </div>
             <CardTitle className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#1E40AF] via-[#41b06e] to-[#41b06e] text-center truncate">
-              {title}
-            </CardTitle>
-            <div className="text-xs font-semibold text-gray-600 dark:text-gray-300 text-center truncate px-2 whitespace-nowrap overflow-hidden text-ellipsis max-w-full">
               {getFullProductName(title)}
-            </div>
+            </CardTitle>
             <CardDescription className="text-gray-600 dark:text-gray-300 text-center text-sm leading-tight line-clamp-2 min-h-[2.5rem] mt-1">
               {description}
             </CardDescription>

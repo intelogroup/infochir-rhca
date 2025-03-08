@@ -9,11 +9,11 @@ export const ProductBadge = () => {
   useEffect(() => {
     const dotInterval = setInterval(() => {
       setShowDot(prev => !prev);
-    }, 1000);
+    }, 1500); // Slower pulse for subtlety
 
     const timer = setTimeout(() => {
       clearInterval(dotInterval);
-    }, 300000);
+    }, 300000); // Stop after 5 minutes
 
     return () => {
       clearInterval(dotInterval);
@@ -22,19 +22,28 @@ export const ProductBadge = () => {
   }, []);
 
   return (
-    <Badge 
-      variant="secondary" 
-      className="bg-white text-primary group-hover:bg-primary group-hover:text-white transition-colors flex items-center gap-1 px-1.5 py-0.5 text-[10px] rounded-full shadow-sm"
-    >
-      {showDot && (
-        <div className="w-1 h-1 rounded-full bg-green-500 group-hover:bg-white transition-colors" />
-      )}
-      <span className="whitespace-nowrap">Mise à jour</span>
-      <Bell 
-        className="w-2.5 h-2.5" 
-        fill="#F97316"
-        color="#F97316"
+    <div className="flex items-center gap-1.5">
+      {/* Animated dot outside of badge text */}
+      <div 
+        className={`w-2 h-2 rounded-full transition-all duration-700 ${
+          showDot 
+            ? "bg-green-400 opacity-100 scale-100" 
+            : "bg-green-300 opacity-30 scale-90"
+        }`}
       />
-    </Badge>
+      
+      {/* Badge text with proper padding */}
+      <Badge 
+        variant="secondary" 
+        className="bg-white text-primary group-hover:bg-primary group-hover:text-white transition-colors flex items-center gap-1 px-2 py-0.5 text-[10px] rounded-full shadow-sm"
+      >
+        <span className="whitespace-nowrap">Mise à jour</span>
+        <Bell 
+          className="w-2.5 h-2.5" 
+          fill="#F97316"
+          color="#F97316"
+        />
+      </Badge>
+    </div>
   );
 };
