@@ -27,8 +27,16 @@ export const logError = (
   
   // In production, could send to an error tracking service
   if (process.env.NODE_ENV === 'production') {
-    // Send to your error tracking service here
-    // Example: sendToErrorTrackingService(details);
+    // If the new error tracking system is available, use it
+    try {
+      const { trackError } = require('./monitoring/error-tracking');
+      if (typeof trackError === 'function') {
+        trackError(error, context, metadata);
+      }
+    } catch (e) {
+      // If error tracking is not yet loaded, we still have the console log above
+      console.warn(`[${context}] Could not use error tracking:`, e);
+    }
   }
 };
 
@@ -66,6 +74,16 @@ export const createLogger = (moduleName: string) => {
     debug: (message: string, ...args: any[]) => {
       if (process.env.NODE_ENV !== 'production') {
         console.debug(`[${moduleName}] ${message}`, ...args);
+      }
+    },
+    perf: (label: string, callback: () => any) => {
+      if (process.env.NODE_ENV !== 'production') {
+        console.time(`[${moduleName}] ${label}`);
+        const result = callback();
+        console.timeEnd(`[${moduleName}] ${label}`);
+        return result;
+      } else {
+        return callback();
       }
     }
   };
