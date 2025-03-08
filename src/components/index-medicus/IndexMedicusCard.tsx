@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useCallback, memo } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { ArticleMetadata } from './article/ArticleMetadata';
 import { ArticleActions } from './article/ArticleActions';
@@ -15,12 +15,12 @@ interface IndexMedicusCardProps {
   isSelected?: boolean;
 }
 
-export const IndexMedicusCard: React.FC<IndexMedicusCardProps> = ({ 
+export const IndexMedicusCard = memo(({ 
   article, 
   onTagClick,
   isSelected = false,
-}) => {
-  const handleCitation = (format: "APA" | "MLA" | "Chicago" | "Harvard") => {
+}: IndexMedicusCardProps) => {
+  const handleCitation = useCallback((format: "APA" | "MLA" | "Chicago" | "Harvard") => {
     // Generate citation based on format
     const citation = `${article.authors.join(', ')} (${new Date(article.date).getFullYear()}). ${article.title}.`;
     
@@ -28,12 +28,12 @@ export const IndexMedicusCard: React.FC<IndexMedicusCardProps> = ({
     navigator.clipboard.writeText(citation).then(() => {
       console.log(`Citation copied in ${format} format`);
     });
-  };
+  }, [article.authors, article.date, article.title]);
 
-  const handleShare = () => {
+  const handleShare = useCallback(() => {
     // Share article
     console.log('Share article', article.id);
-  };
+  }, [article.id]);
 
   return (
     <motion.div
@@ -111,4 +111,6 @@ export const IndexMedicusCard: React.FC<IndexMedicusCardProps> = ({
       </Card>
     </motion.div>
   );
-};
+});
+
+IndexMedicusCard.displayName = 'IndexMedicusCard';

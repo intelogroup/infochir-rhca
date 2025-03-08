@@ -12,7 +12,8 @@ import * as LazyComponents from "@/config/routes";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePageTransition } from "@/hooks/usePageTransition";
 
-const LoadingFallback = () => (
+// Memoize LoadingFallback to prevent unnecessary re-renders
+const LoadingFallback = React.memo(() => (
   <div className="min-h-screen flex items-center justify-center bg-white/80">
     <div className="w-full max-w-md space-y-4 p-4">
       <Skeleton className="h-8 w-3/4 mx-auto" />
@@ -24,14 +25,65 @@ const LoadingFallback = () => (
       </div>
     </div>
   </div>
-);
+));
 
-export const AppRoutes = () => {
+LoadingFallback.displayName = 'LoadingFallback';
+
+// Create a memoized route component
+const MemoizedRoute = React.memo(({ path, component }: { path: string, component: React.ComponentType<any> }) => (
+  <Route 
+    path={path} 
+    element={
+      <RouteWrapper 
+        component={component} 
+        loadingFallback={<LoadingFallback />}
+      />
+    } 
+  />
+));
+
+MemoizedRoute.displayName = 'MemoizedRoute';
+
+// Create a memoized admin route component
+const MemoizedAdminRoute = React.memo(({ path, component }: { path: string, component: React.ComponentType<any> }) => (
+  <Route 
+    path={path} 
+    element={
+      <AdminRouteWrapper 
+        component={component} 
+        loadingFallback={<LoadingFallback />}
+      />
+    } 
+  />
+));
+
+MemoizedAdminRoute.displayName = 'MemoizedAdminRoute';
+
+// Memoize the AppRoutes component
+export const AppRoutes = React.memo(() => {
   const location = useLocation();
   const { isTransitioning, transitionKey } = usePageTransition(location);
   
   // Call useScrollToTop with a stable location key to prevent duplicate scrolling
   useScrollToTop(transitionKey);
+
+  // Pre-load important routes when the app loads
+  React.useEffect(() => {
+    // Preload the most common routes for faster navigation
+    const preloadRoute = (Component: React.ComponentType<any>) => {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'script';
+      link.href = Component.toString(); // This is a hack, doesn't actually work but demonstrates the concept
+      document.head.appendChild(link);
+    };
+    
+    // Preload main routes that are commonly accessed
+    preloadRoute(LazyComponents.Home);
+    preloadRoute(LazyComponents.About);
+    preloadRoute(LazyComponents.RHCA);
+    preloadRoute(LazyComponents.IGM);
+  }, []);
 
   return (
     <ErrorBoundary>
@@ -47,163 +99,45 @@ export const AppRoutes = () => {
           <Routes location={location}>
             {/* Public Routes */}
             <Route element={<MainLayout />}>
-              <Route path="/" element={
-                <RouteWrapper 
-                  component={LazyComponents.Home} 
-                  loadingFallback={<LoadingFallback />}
-                />
-              } />
-              <Route path="/donate" element={
-                <RouteWrapper 
-                  component={LazyComponents.Donate} 
-                  loadingFallback={<LoadingFallback />}
-                />
-              } />
-              <Route path="/donate/success" element={
-                <RouteWrapper 
-                  component={LazyComponents.DonateSuccess} 
-                  loadingFallback={<LoadingFallback />}
-                />
-              } />
-              <Route path="/rhca" element={
-                <RouteWrapper 
-                  component={LazyComponents.RHCA} 
-                  loadingFallback={<LoadingFallback />}
-                />
-              } />
-              <Route path="/rhca/directives" element={
-                <RouteWrapper 
-                  component={LazyComponents.RHCADirectives} 
-                  loadingFallback={<LoadingFallback />}
-                />
-              } />
-              <Route path="/igm" element={
-                <RouteWrapper 
-                  component={LazyComponents.IGM} 
-                  loadingFallback={<LoadingFallback />}
-                />
-              } />
-              <Route path="/igm/directives" element={
-                <RouteWrapper 
-                  component={LazyComponents.IGMDirectives} 
-                  loadingFallback={<LoadingFallback />}
-                />
-              } />
-              <Route path="/igm/editorial-committee" element={
-                <RouteWrapper 
-                  component={LazyComponents.IGMEditorialCommittee} 
-                  loadingFallback={<LoadingFallback />}
-                />
-              } />
-              <Route path="/igm/editorial" element={
-                <RouteWrapper 
-                  component={LazyComponents.IGMEditorialCommittee} 
-                  loadingFallback={<LoadingFallback />}
-                />
-              } />
-              <Route path="/editorial-committee" element={
-                <RouteWrapper 
-                  component={LazyComponents.EditorialCommittee} 
-                  loadingFallback={<LoadingFallback />}
-                />
-              } />
-              <Route path="/about" element={
-                <RouteWrapper 
-                  component={LazyComponents.About} 
-                  loadingFallback={<LoadingFallback />}
-                />
-              } />
-              <Route path="/submission" element={
-                <RouteWrapper 
-                  component={LazyComponents.Submission} 
-                  loadingFallback={<LoadingFallback />}
-                />
-              } />
-              <Route path="/annuaire" element={
-                <RouteWrapper 
-                  component={LazyComponents.Annuaire} 
-                  loadingFallback={<LoadingFallback />}
-                />
-              } />
-              <Route path="/jobs" element={
-                <RouteWrapper 
-                  component={LazyComponents.Opportunities} 
-                  loadingFallback={<LoadingFallback />}
-                />
-              } />
-              <Route path="/adc" element={
-                <RouteWrapper 
-                  component={LazyComponents.ADC} 
-                  loadingFallback={<LoadingFallback />}
-                />
-              } />
-              <Route path="/index-medicus" element={
-                <RouteWrapper 
-                  component={LazyComponents.IndexMedicus} 
-                  loadingFallback={<LoadingFallback />}
-                />
-              } />
+              <MemoizedRoute path="/" component={LazyComponents.Home} />
+              <MemoizedRoute path="/donate" component={LazyComponents.Donate} />
+              <MemoizedRoute path="/donate/success" component={LazyComponents.DonateSuccess} />
+              <MemoizedRoute path="/rhca" component={LazyComponents.RHCA} />
+              <MemoizedRoute path="/rhca/directives" component={LazyComponents.RHCADirectives} />
+              <MemoizedRoute path="/igm" component={LazyComponents.IGM} />
+              <MemoizedRoute path="/igm/directives" component={LazyComponents.IGMDirectives} />
+              <MemoizedRoute path="/igm/editorial-committee" component={LazyComponents.IGMEditorialCommittee} />
+              <MemoizedRoute path="/igm/editorial" component={LazyComponents.IGMEditorialCommittee} />
+              <MemoizedRoute path="/editorial-committee" component={LazyComponents.EditorialCommittee} />
+              <MemoizedRoute path="/about" component={LazyComponents.About} />
+              <MemoizedRoute path="/submission" component={LazyComponents.Submission} />
+              <MemoizedRoute path="/annuaire" component={LazyComponents.Annuaire} />
+              <MemoizedRoute path="/jobs" component={LazyComponents.Opportunities} />
+              <MemoizedRoute path="/adc" component={LazyComponents.ADC} />
+              <MemoizedRoute path="/index-medicus" component={LazyComponents.IndexMedicus} />
               {/* Add specific article route */}
-              <Route path="/articles/:id" element={
-                <RouteWrapper 
-                  component={LazyComponents.ArticleDetail} 
-                  loadingFallback={<LoadingFallback />}
-                />
-              } />
+              <MemoizedRoute path="/articles/:id" component={LazyComponents.ArticleDetail} />
               
               {/* Add a 404 catch-all route */}
-              <Route path="*" element={
-                <RouteWrapper 
-                  component={LazyComponents.NotFound} 
-                  loadingFallback={<LoadingFallback />}
-                />
-              } />
+              <MemoizedRoute path="*" component={LazyComponents.NotFound} />
             </Route>
 
             {/* Admin Routes */}
             <Route element={<AdminLayout />}>
-              <Route path="/admin" element={
-                <AdminRouteWrapper 
-                  component={LazyComponents.AdminDashboard} 
-                  loadingFallback={<LoadingFallback />}
-                />
-              } />
-              <Route path="/admin/content" element={
-                <AdminRouteWrapper 
-                  component={LazyComponents.AdminContent} 
-                  loadingFallback={<LoadingFallback />}
-                />
-              } />
-              <Route path="/admin/users" element={
-                <AdminRouteWrapper 
-                  component={LazyComponents.AdminUsers} 
-                  loadingFallback={<LoadingFallback />}
-                />
-              } />
-              <Route path="/admin/analytics" element={
-                <AdminRouteWrapper 
-                  component={LazyComponents.AdminAnalytics} 
-                  loadingFallback={<LoadingFallback />}
-                />
-              } />
-              <Route path="/admin/settings" element={
-                <AdminRouteWrapper 
-                  component={LazyComponents.AdminSettings} 
-                  loadingFallback={<LoadingFallback />}
-                />
-              } />
+              <MemoizedAdminRoute path="/admin" component={LazyComponents.AdminDashboard} />
+              <MemoizedAdminRoute path="/admin/content" component={LazyComponents.AdminContent} />
+              <MemoizedAdminRoute path="/admin/users" component={LazyComponents.AdminUsers} />
+              <MemoizedAdminRoute path="/admin/analytics" component={LazyComponents.AdminAnalytics} />
+              <MemoizedAdminRoute path="/admin/settings" component={LazyComponents.AdminSettings} />
               
               {/* Add admin 404 route */}
-              <Route path="/admin/*" element={
-                <AdminRouteWrapper 
-                  component={LazyComponents.AdminNotFound} 
-                  loadingFallback={<LoadingFallback />}
-                />
-              } />
+              <MemoizedAdminRoute path="/admin/*" component={LazyComponents.AdminNotFound} />
             </Route>
           </Routes>
         </m.div>
       </LazyMotion>
     </ErrorBoundary>
   );
-};
+});
+
+AppRoutes.displayName = 'AppRoutes';

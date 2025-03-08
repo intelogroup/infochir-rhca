@@ -1,7 +1,7 @@
 
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { ADCHeader } from "@/components/adc/ADCHeader";
-import { Suspense, lazy, useRef, useEffect } from "react";
+import { Suspense, lazy, useRef, useEffect, useMemo } from "react";
 import { useAtlasArticles } from "@/components/atlas/hooks/useAtlasArticles";
 import { AtlasCard } from "@/components/atlas/AtlasCard";
 import { AtlasTableOfContents } from "@/components/atlas/AtlasTableOfContents";
@@ -31,17 +31,32 @@ const VirtualizedAtlasGrid = ({ chapters }: { chapters: any[] }) => {
   const parentRef = useRef<HTMLDivElement>(null);
   const isMounted = useRef(false);
 
+  // Memoize the column count calculation based on window width
+  const columnCount = useMemo(() => {
+    return window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1;
+  }, []);
+  
+  const rowCount = useMemo(() => Math.ceil(chapters.length / columnCount), [chapters.length, columnCount]);
+
   useEffect(() => {
     isMounted.current = true;
     console.log("[VirtualizedAtlasGrid] Component mounted");
+    
+    // Handle window resize to update the grid layout
+    const handleResize = () => {
+      if (parentRef.current) {
+        rowVirtualizer.measure();
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
     return () => {
       isMounted.current = false;
+      window.removeEventListener('resize', handleResize);
       console.log("[VirtualizedAtlasGrid] Component unmounting");
     };
   }, []);
-
-  const columnCount = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1;
-  const rowCount = Math.ceil(chapters.length / columnCount);
 
   const rowVirtualizer = useVirtualizer({
     count: rowCount,
@@ -100,7 +115,8 @@ const VirtualizedAtlasGrid = ({ chapters }: { chapters: any[] }) => {
   );
 };
 
-const ADCContent = () => {
+// Memoize the ADCContent component to prevent unnecessary re-renders
+const ADCContent = React.memo(() => {
   console.log("[ADCContent] Component mounting");
   const mountTime = useRef(Date.now());
   const { data: chapters, isLoading, error } = useAtlasArticles();
@@ -162,7 +178,9 @@ const ADCContent = () => {
       )}
     </div>
   );
-};
+});
+
+ADCContent.displayName = 'ADCContent';
 
 const ADC = () => {
   console.log("[ADC] Component mounting");

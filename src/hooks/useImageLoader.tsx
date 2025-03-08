@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { getOptimizedImageUrl, getAlternativeRHCAUrl } from '@/utils/imageOptimization';
 import { useComponentLifecycle } from '@/hooks/useComponentLifecycle';
 
@@ -25,6 +25,12 @@ export const useImageLoader = ({
   const { isMounted } = useComponentLifecycle();
   const retryTimerRef = useRef<number | null>(null);
   
+  // Memoize the optimized image URL to prevent recalculations
+  const optimizedSrc = useMemo(() => {
+    if (!src) return "";
+    return getOptimizedImageUrl(src, width, height);
+  }, [src, width, height]);
+  
   // Clean up any pending timers on unmount
   useEffect(() => {
     return () => {
@@ -34,6 +40,50 @@ export const useImageLoader = ({
       }
     };
   }, []);
+
+  // Memoize the onload handler to prevent recreating on each render
+  const handleImageLoad = useCallback(() => {
+    if (isMounted()) {
+      console.log(`[ImageOptimizer:SUCCESS] Image loaded successfully: ${src}`);
+      setIsLoading(false);
+      setHasError(false);
+    }
+  }, [src, isMounted]);
+  
+  // Memoize the error handler to prevent recreating on each render
+  const handleImageError = useCallback((error: any) => {
+    if (isMounted()) {
+      console.error(`[ImageOptimizer:ERROR] Failed to load image from: ${src}`, error);
+      
+      // If we've already retried 3 times, give up
+      if (retryCount >= 2) {
+        setHasError(true);
+        setIsLoading(false);
+        return;
+      }
+      
+      // Try alternative URL for RHCA covers
+      const alternativeUrl = getAlternativeRHCAUrl(src);
+      if (alternativeUrl) {
+        setRetryCount(prev => prev + 1);
+        
+        // Use setTimeout with a ref for proper cleanup
+        retryTimerRef.current = window.setTimeout(() => {
+          if (isMounted()) {
+            const newImg = new Image();
+            const optimizedAltSrc = getOptimizedImageUrl(alternativeUrl, width, height);
+            setImageSrc(optimizedAltSrc);
+            newImg.src = optimizedAltSrc;
+          }
+          
+          retryTimerRef.current = null;
+        }, 500);
+      } else {
+        setHasError(true);
+        setIsLoading(false);
+      }
+    }
+  }, [src, width, height, retryCount, isMounted]);
 
   useEffect(() => {
     // Reset states when src changes
@@ -64,53 +114,10 @@ export const useImageLoader = ({
         img.fetchPriority = 'high';
       }
       
-      // Get optimized image URL
-      const optimizedSrc = getOptimizedImageUrl(src, width, height);
       setImageSrc(optimizedSrc);
 
-      img.onload = () => {
-        // Only update state if component is still mounted
-        if (isMounted()) {
-          console.log(`[ImageOptimizer:SUCCESS] Image loaded successfully: ${src}`);
-          setIsLoading(false);
-          setHasError(false);
-        }
-      };
-
-      img.onerror = (error) => {
-        // Only update state if component is still mounted
-        if (isMounted()) {
-          console.error(`[ImageOptimizer:ERROR] Failed to load image from: ${src}`, error);
-          
-          // If we've already retried 3 times, give up
-          if (retryCount >= 2) {
-            setHasError(true);
-            setIsLoading(false);
-            return;
-          }
-          
-          // Try alternative URL for RHCA covers
-          const alternativeUrl = getAlternativeRHCAUrl(src);
-          if (alternativeUrl) {
-            setRetryCount(prev => prev + 1);
-            
-            // Use setTimeout with a ref for proper cleanup
-            retryTimerRef.current = window.setTimeout(() => {
-              if (isMounted()) {
-                const newImg = new Image();
-                const optimizedAltSrc = getOptimizedImageUrl(alternativeUrl, width, height);
-                setImageSrc(optimizedAltSrc);
-                newImg.src = optimizedAltSrc;
-              }
-              
-              retryTimerRef.current = null;
-            }, 500);
-          } else {
-            setHasError(true);
-            setIsLoading(false);
-          }
-        }
-      };
+      img.onload = handleImageLoad;
+      img.onerror = handleImageError;
       
       // Start loading the image
       img.src = optimizedSrc;
@@ -125,7 +132,7 @@ export const useImageLoader = ({
         retryTimerRef.current = null;
       }
     };
-  }, [src, width, height, alt, retryCount, priority, isMounted]);
+  }, [src, optimizedSrc, width, height, alt, retryCount, priority, handleImageLoad, handleImageError]);
 
   return {
     isLoading,

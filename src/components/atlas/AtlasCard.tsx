@@ -1,9 +1,10 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, User, Eye, Share2, Download, BookOpen } from "lucide-react";
 import { AtlasChapter } from "./types";
 import { toast } from "sonner";
-import { useState, memo } from "react";
+import { useState, memo, useCallback, useMemo } from "react";
 import { AtlasModal } from "./AtlasModal";
 import { motion } from "framer-motion";
 import { AtlasCategory } from "./data/atlasCategories";
@@ -20,13 +21,14 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
   const [showModal, setShowModal] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
 
-  const handleShare = () => {
+  // Memoize event handlers to prevent recreation on each render
+  const handleShare = useCallback(() => {
     const shareUrl = `${window.location.origin}/adc/chapters/${chapter.id}`;
     navigator.clipboard.writeText(shareUrl);
     toast.success("Lien copié dans le presse-papier");
-  };
+  }, [chapter.id]);
 
-  const handleDownload = async () => {
+  const handleDownload = useCallback(async () => {
     if (!chapter.pdfUrl) {
       toast.error("Aucun PDF disponible pour ce chapitre");
       return;
@@ -57,8 +59,9 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
         error_details: error instanceof Error ? error.message : 'Unknown error'
       }).catch(e => console.error("Failed to track download error:", e));
     }
-  };
+  }, [chapter.id, chapter.pdfUrl]);
 
+  // Memoize the cover image selection to prevent recalculation
   const defaultCoverImages = {
     "0": "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=800&fit=crop",
     "1": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=800&fit=crop",
@@ -67,9 +70,19 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
     "4": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&fit=crop",
   };
 
-  const coverImage = chapter.coverImage || defaultCoverImages[chapter.id as keyof typeof defaultCoverImages] || defaultCoverImages["0"];
-  // Add query parameters to optimize the cover image size
-  const optimizedCoverImage = `${coverImage}?w=320&h=240&fit=cover&q=80`;
+  const coverImage = useMemo(() => {
+    const baseImage = chapter.coverImage || defaultCoverImages[chapter.id as keyof typeof defaultCoverImages] || defaultCoverImages["0"];
+    // Add query parameters to optimize the cover image size
+    return `${baseImage}?w=320&h=240&fit=cover&q=80`;
+  }, [chapter.coverImage, chapter.id]);
+
+  const handleModalToggle = useCallback(() => {
+    setShowModal(prev => !prev);
+  }, []);
+
+  const handleImageLoad = useCallback(() => {
+    setImageLoaded(true);
+  }, []);
 
   return (
     <>
@@ -85,14 +98,14 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
               <Skeleton className="absolute inset-0 w-full h-full" />
             )}
             <img
-              src={optimizedCoverImage}
+              src={coverImage}
               alt={chapter.title}
               width={320}
               height={240}
               className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${
                 !imageLoaded ? 'opacity-0' : 'opacity-100'
               }`}
-              onLoad={() => setImageLoaded(true)}
+              onLoad={handleImageLoad}
               loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-background/20" />
@@ -136,7 +149,7 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
                   variant="outline" 
                   size="sm"
                   className="h-7 px-2 text-xs hover:bg-secondary/10 hover:text-secondary transition-colors"
-                  onClick={() => setShowModal(true)}
+                  onClick={handleModalToggle}
                 >
                   <Eye className="h-3 w-3 mr-1" />
                   <span className="hidden sm:inline">Consulter</span>
@@ -172,7 +185,7 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
         chapter={chapter}
         category={category}
         open={showModal}
-        onOpenChange={setShowModal}
+        onOpenChange={handleModalToggle}
       />
     </>
   );
