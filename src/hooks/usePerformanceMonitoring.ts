@@ -1,6 +1,6 @@
 
 import { useEffect, useRef } from 'react';
-import { initPerformanceTracking, trackPageView } from '@/lib/monitoring/performance-metrics';
+import { initPerformanceTracking, trackPageView } from '@/lib/monitoring/metrics';
 import { setupGlobalErrorHandlers } from '@/lib/monitoring/error-tracking';
 import { useLocation } from 'react-router-dom';
 import { createLogger } from '@/lib/error-logger';

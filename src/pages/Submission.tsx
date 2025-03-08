@@ -13,7 +13,7 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Send } from 'lucide-react';
-import { toast, useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 // Form validation schema
 const formSchema = z.object({
@@ -45,7 +45,6 @@ type FormValues = z.infer<typeof formSchema>;
 
 const Submission = () => {
   const [tab, setTab] = useState("details");
-  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Initialize form with react-hook-form
@@ -81,8 +80,7 @@ const Submission = () => {
       
       toast({
         title: "Soumission réussie",
-        description: "Votre article a été soumis avec succès. Nous vous contacterons prochainement.",
-        variant: "default",
+        description: "Votre article a été soumis avec succès. Nous vous contacterons prochainement."
       });
       
       // Reset form
@@ -94,7 +92,7 @@ const Submission = () => {
       toast({
         title: "Erreur de soumission",
         description: "Une erreur est survenue lors de la soumission. Veuillez réessayer.",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsSubmitting(false);
