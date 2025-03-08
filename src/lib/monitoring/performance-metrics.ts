@@ -4,121 +4,165 @@ import { createLogger } from "@/lib/error-logger";
 
 const logger = createLogger('PerformanceMetrics');
 
-/**
- * Core Web Vitals metrics
- */
-export interface WebVitals {
-  FCP: number | null; // First Contentful Paint
-  LCP: number | null; // Largest Contentful Paint
-  FID: number | null; // First Input Delay
-  CLS: number | null; // Cumulative Layout Shift
-  TTFB: number | null; // Time to First Byte
-  INP: number | null; // Interaction to Next Paint
+// Types for performance metrics
+interface WebVitals {
+  fcp?: number; // First Contentful Paint
+  lcp?: number; // Largest Contentful Paint
+  fid?: number; // First Input Delay
+  cls?: number; // Cumulative Layout Shift
+  ttfb?: number; // Time to First Byte
+  inp?: number; // Interaction to Next Paint
 }
 
-/**
- * Resource timing metrics
- */
-export interface ResourceMetrics {
+interface ResourceMetrics {
   name: string;
   initiatorType: string;
   duration: number;
-  transferSize: number;
-  decodedBodySize: number;
+  transferSize?: number;
+  decodedBodySize?: number;
+  responseEnd?: number;
 }
 
-/**
- * Navigation timing metrics
- */
-export interface NavigationMetrics {
+interface NavigationMetrics {
   type: string;
-  pageLoadTime: number;
-  dnsTime: number;
-  tcpTime: number;
-  ttfb: number;
-  domInteractive: number;
-  domComplete: number;
+  redirectCount: number;
+  activationStart?: number;
+  loadEventEnd?: number;
+  domComplete?: number;
+  domContentLoadedEventEnd?: number;
+  domContentLoadedEventStart?: number;
+  domInteractive?: number;
+  loadEventStart?: number;
+  responseEnd?: number;
+  responseStart?: number;
+  requestStart?: number;
+  connectEnd?: number;
+  connectStart?: number;
+  domainLookupEnd?: number;
+  domainLookupStart?: number;
+  fetchStart?: number;
+  redirectEnd?: number;
+  redirectStart?: number;
+  secureConnectionStart?: number;
+  serverTiming?: any[];
 }
 
-/**
- * Performance metrics record
- */
-export interface PerformanceRecord {
+interface PerformanceMetricsRecord {
   session_id: string;
   timestamp: string;
   page_url: string;
   user_agent: string;
-  connection_type?: string;
+  connection_type: string;
   screen_size: string;
-  webVitals: WebVitals;
-  resourceMetrics?: ResourceMetrics[];
-  navigationMetrics?: NavigationMetrics;
-  jsHeapSize?: number;
-  jsHeapUsed?: number;
+  web_vitals: WebVitals;
+  resource_metrics: ResourceMetrics[];
+  navigation_metrics: NavigationMetrics;
+  memory_heap_size: number;
+  memory_heap_used: number;
 }
 
+// Queue to batch performance metrics
+let metricsQueue: PerformanceMetricsRecord[] = [];
+let queueTimeout: ReturnType<typeof setTimeout> | null = null;
+const QUEUE_FLUSH_INTERVAL = 10000; // 10 seconds
+const MAX_QUEUE_SIZE = 10;
+
 /**
- * Collects Web Vitals metrics using Performance API
+ * Create a unique session ID for tracking
  */
-const collectWebVitals = (): WebVitals => {
-  const webVitals: WebVitals = {
-    FCP: null,
-    LCP: null,
-    FID: null,
-    CLS: null,
-    TTFB: null,
-    INP: null
-  };
-
-  try {
-    // Get FCP (First Contentful Paint)
-    const paintEntries = performance.getEntriesByType('paint');
-    const fcpEntry = paintEntries.find(entry => entry.name === 'first-contentful-paint');
-    if (fcpEntry) {
-      webVitals.FCP = Math.round(fcpEntry.startTime);
-    }
-
-    // Get TTFB (Time To First Byte)
-    const navEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-    if (navEntry) {
-      webVitals.TTFB = Math.round(navEntry.responseStart);
-    }
-
-    // Using performance observer for LCP, CLS, and FID requires additional setup
-    // which is handled by the setupPerformanceObservers function
-
-    return webVitals;
-  } catch (error) {
-    logger.error(error, { context: 'collectWebVitals' });
-    return webVitals;
+const getOrCreateSessionId = (): string => {
+  let sessionId = localStorage.getItem('perf_session_id');
+  if (!sessionId) {
+    sessionId = Math.random().toString(36).substring(2, 15);
+    localStorage.setItem('perf_session_id', sessionId);
   }
+  return sessionId;
 };
 
 /**
- * Collects resource timing metrics
+ * Get information about the current network connection
  */
-const collectResourceMetrics = (limit = 10): ResourceMetrics[] => {
+const getConnectionInfo = (): string => {
+  const nav = navigator as any;
+  if (!nav.connection) {
+    return 'unknown';
+  }
+  
+  return `${nav.connection.effectiveType || 'unknown'} (rtt: ${nav.connection.rtt || 'unknown'}, downlink: ${nav.connection.downlink || 'unknown'})`;
+};
+
+/**
+ * Get memory usage if available
+ */
+const getMemoryInfo = (): { heapSize: number; heapUsed: number } => {
+  const memory = (performance as any).memory;
+  return {
+    heapSize: memory ? memory.jsHeapSizeLimit : 0,
+    heapUsed: memory ? memory.usedJSHeapSize : 0
+  };
+};
+
+/**
+ * Collect web vitals metrics
+ */
+const collectWebVitals = (): WebVitals => {
+  const webVitals: WebVitals = {};
+  
   try {
-    return performance.getEntriesByType('resource')
-      .filter(entry => {
-        const url = entry.name;
-        return url.includes('.js') || 
-               url.includes('.css') || 
-               url.includes('.jpg') || 
-               url.includes('.png') || 
-               url.includes('.svg');
-      })
-      .slice(0, limit)
-      .map(entry => {
-        const resource = entry as PerformanceResourceTiming;
-        return {
-          name: resource.name,
-          initiatorType: resource.initiatorType,
-          duration: Math.round(resource.duration),
-          transferSize: resource.transferSize,
-          decodedBodySize: resource.decodedBodySize
-        };
-      });
+    // Get First Contentful Paint (FCP) if available
+    const fcpEntry = performance.getEntriesByName('first-contentful-paint', 'paint')[0];
+    if (fcpEntry) {
+      webVitals.fcp = fcpEntry.startTime;
+    }
+    
+    // Largest Contentful Paint
+    const lcpEntries = performance.getEntriesByType('largest-contentful-paint');
+    if (lcpEntries && lcpEntries.length > 0) {
+      webVitals.lcp = lcpEntries[lcpEntries.length - 1].startTime;
+    }
+    
+    // First Input Delay
+    const fidEntries = performance.getEntriesByType('first-input');
+    if (fidEntries && fidEntries.length > 0) {
+      const firstInput = fidEntries[0];
+      webVitals.fid = firstInput.processingStart - firstInput.startTime;
+    }
+    
+    // Time to First Byte
+    const navEntries = performance.getEntriesByType('navigation');
+    if (navEntries && navEntries.length > 0) {
+      const nav = navEntries[0] as PerformanceNavigationTiming;
+      webVitals.ttfb = nav.responseStart - nav.requestStart;
+    }
+    
+  } catch (error) {
+    logger.error(error, { context: 'collectWebVitals' });
+  }
+  
+  return webVitals;
+};
+
+/**
+ * Collect resource timing information
+ */
+const collectResourceMetrics = (): ResourceMetrics[] => {
+  try {
+    // Get all resource timing entries
+    const resourceEntries = performance.getEntriesByType('resource');
+    
+    // Map to simplified metrics
+    return resourceEntries.map(entry => {
+      const resource = entry as PerformanceResourceTiming;
+      return {
+        name: resource.name,
+        initiatorType: resource.initiatorType,
+        duration: resource.duration,
+        transferSize: resource.transferSize,
+        decodedBodySize: resource.decodedBodySize,
+        responseEnd: resource.responseEnd
+      };
+    }).slice(-10); // Only take the last 10 resources to avoid sending too much data
+    
   } catch (error) {
     logger.error(error, { context: 'collectResourceMetrics' });
     return [];
@@ -126,282 +170,291 @@ const collectResourceMetrics = (limit = 10): ResourceMetrics[] => {
 };
 
 /**
- * Collects navigation timing metrics
+ * Collect navigation timing metrics
  */
-const collectNavigationMetrics = (): NavigationMetrics | null => {
+const collectNavigationMetrics = (): NavigationMetrics => {
+  const defaultNav: NavigationMetrics = {
+    type: 'unknown',
+    redirectCount: 0
+  };
+  
   try {
-    const navEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+    const navEntries = performance.getEntriesByType('navigation');
+    if (!navEntries || navEntries.length === 0) {
+      return defaultNav;
+    }
     
-    if (!navEntry) return null;
-
+    const nav = navEntries[0] as PerformanceNavigationTiming;
+    
     return {
-      type: navEntry.type,
-      pageLoadTime: Math.round(navEntry.loadEventEnd - navEntry.startTime),
-      dnsTime: Math.round(navEntry.domainLookupEnd - navEntry.domainLookupStart),
-      tcpTime: Math.round(navEntry.connectEnd - navEntry.connectStart),
-      ttfb: Math.round(navEntry.responseStart - navEntry.requestStart),
-      domInteractive: Math.round(navEntry.domInteractive - navEntry.startTime),
-      domComplete: Math.round(navEntry.domComplete - navEntry.startTime)
+      type: nav.type,
+      redirectCount: nav.redirectCount,
+      activationStart: nav.activationStart,
+      loadEventEnd: nav.loadEventEnd,
+      domComplete: nav.domComplete,
+      domContentLoadedEventEnd: nav.domContentLoadedEventEnd,
+      domContentLoadedEventStart: nav.domContentLoadedEventStart,
+      domInteractive: nav.domInteractive,
+      loadEventStart: nav.loadEventStart,
+      responseEnd: nav.responseEnd,
+      responseStart: nav.responseStart,
+      requestStart: nav.requestStart,
+      connectEnd: nav.connectEnd,
+      connectStart: nav.connectStart,
+      domainLookupEnd: nav.domainLookupEnd,
+      domainLookupStart: nav.domainLookupStart,
+      fetchStart: nav.fetchStart,
+      redirectEnd: nav.redirectEnd,
+      redirectStart: nav.redirectStart,
+      secureConnectionStart: nav.secureConnectionStart,
+      serverTiming: nav.serverTiming
     };
+    
   } catch (error) {
     logger.error(error, { context: 'collectNavigationMetrics' });
-    return null;
+    return defaultNav;
   }
 };
 
 /**
- * Gets memory usage metrics if available
+ * Create a full performance metrics record
  */
-const getMemoryUsage = () => {
-  try {
-    if ('memory' in performance) {
-      const memory = (performance as any).memory;
-      return {
-        jsHeapSize: memory.jsHeapSizeLimit,
-        jsHeapUsed: memory.usedJSHeapSize
-      };
-    }
-  } catch (error) {
-    logger.error(error, { context: 'getMemoryUsage' });
-  }
+const createPerformanceRecord = (route?: string): PerformanceMetricsRecord => {
+  const memInfo = getMemoryInfo();
+  
   return {
-    jsHeapSize: undefined,
-    jsHeapUsed: undefined
+    session_id: getOrCreateSessionId(),
+    timestamp: new Date().toISOString(),
+    page_url: window.location.href,
+    user_agent: navigator.userAgent,
+    connection_type: getConnectionInfo(),
+    screen_size: `${window.innerWidth}x${window.innerHeight}`,
+    web_vitals: collectWebVitals(),
+    resource_metrics: collectResourceMetrics(),
+    navigation_metrics: collectNavigationMetrics(),
+    memory_heap_size: memInfo.heapSize,
+    memory_heap_used: memInfo.heapUsed
   };
 };
 
 /**
- * Setup performance observers for LCP, CLS and FID
+ * Flush the metrics queue to the database
  */
-export const setupPerformanceObservers = (callback: (webVitals: Partial<WebVitals>) => void) => {
-  try {
-    // Largest Contentful Paint
-    const lcpObserver = new PerformanceObserver((entryList) => {
-      const entries = entryList.getEntries();
-      const lastEntry = entries[entries.length - 1];
-      const lcp = Math.round(lastEntry.startTime);
-      callback({ LCP: lcp });
-    });
-    
-    lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
-
-    // Cumulative Layout Shift
-    let clsValue = 0;
-    const clsObserver = new PerformanceObserver((entryList) => {
-      for (const entry of entryList.getEntries()) {
-        // Only count layout shifts without recent user input
-        if (!(entry as any).hadRecentInput) {
-          clsValue += (entry as any).value;
-        }
-      }
-      callback({ CLS: clsValue });
-    });
-    
-    clsObserver.observe({ type: 'layout-shift', buffered: true });
-
-    // First Input Delay
-    const fidObserver = new PerformanceObserver((entryList) => {
-      for (const entry of entryList.getEntries()) {
-        if (entry.name === 'first-input') {
-          const fid = Math.round((entry as PerformanceEventTiming).processingStart - entry.startTime);
-          callback({ FID: fid });
-          break;
-        }
-      }
-    });
-    
-    fidObserver.observe({ type: 'first-input', buffered: true });
-
-    // Interaction to Next Paint (INP)
-    const inpObserver = new PerformanceObserver((entryList) => {
-      const entries = entryList.getEntries();
-      // Use the 75th percentile as the INP value
-      const interactionTimes = entries.map(entry => {
-        return (entry as any).duration;
-      }).sort((a, b) => a - b);
-      
-      const idx = Math.floor(interactionTimes.length * 0.75);
-      if (interactionTimes.length > 0 && idx < interactionTimes.length) {
-        callback({ INP: Math.round(interactionTimes[idx]) });
-      }
-    });
-
-    if (PerformanceObserver.supportedEntryTypes.includes('event')) {
-      inpObserver.observe({ type: 'event', buffered: true, durationThreshold: 16 });
-    }
-
-    // Return disconnect function for cleanup
-    return () => {
-      lcpObserver.disconnect();
-      clsObserver.disconnect();
-      fidObserver.disconnect();
-      inpObserver.disconnect();
-    };
-  } catch (error) {
-    logger.error(error, { context: 'setupPerformanceObservers' });
-    return () => {}; // Return no-op function on error
+const flushMetricsQueue = async (): Promise<void> => {
+  if (metricsQueue.length === 0) {
+    return;
   }
-};
-
-// Session ID for tracking metrics
-let sessionId = '';
-
-// Generate a unique session ID
-const generateSessionId = () => {
-  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-};
-
-// Initialize session ID
-export const initPerformanceTracking = () => {
+  
+  const queueToFlush = [...metricsQueue];
+  metricsQueue = [];
+  
   try {
-    sessionId = localStorage.getItem('performance_session_id') || generateSessionId();
-    localStorage.setItem('performance_session_id', sessionId);
+    // Store metrics in local storage first as backup
+    const storedMetrics = JSON.parse(sessionStorage.getItem('perf_metrics_queue') || '[]');
+    sessionStorage.setItem('perf_metrics_queue', JSON.stringify([...storedMetrics, ...queueToFlush].slice(-50))); // Keep last 50
     
-    // Clear old performance entries
-    performance.clearResourceTimings();
-    
-    // Setup observers to track metrics
-    const webVitals: Partial<WebVitals> = {};
-    
-    // Setup performance observers
-    const cleanup = setupPerformanceObservers((metrics) => {
-      // Update web vitals with new metrics
-      Object.assign(webVitals, metrics);
-      
-      // Store updated metrics if significant changes
-      if (metrics.LCP || metrics.CLS || metrics.FID) {
-        storePerformanceMetrics({ ...webVitals as WebVitals });
-      }
-    });
-    
-    // Return cleanup function
-    return cleanup;
-  } catch (error) {
-    logger.error(error, { context: 'initPerformanceTracking' });
-    return () => {}; // Return no-op function on error
-  }
-};
-
-/**
- * Collects all performance metrics
- */
-export const collectPerformanceMetrics = (): PerformanceRecord => {
-  try {
-    // Collect basic metrics
-    const webVitals = collectWebVitals();
-    const resourceMetrics = collectResourceMetrics(20); // Top 20 resources
-    const navigationMetrics = collectNavigationMetrics();
-    const memory = getMemoryUsage();
-    
-    // Get connection info if available
-    const connection = (navigator as any).connection || {};
-    
-    return {
-      session_id: sessionId || generateSessionId(),
-      timestamp: new Date().toISOString(),
-      page_url: window.location.href,
-      user_agent: navigator.userAgent,
-      connection_type: connection.effectiveType || undefined,
-      screen_size: `${window.innerWidth}x${window.innerHeight}`,
-      webVitals,
-      resourceMetrics,
-      navigationMetrics: navigationMetrics || undefined,
-      jsHeapSize: memory.jsHeapSize,
-      jsHeapUsed: memory.jsHeapUsed
-    };
-  } catch (error) {
-    logger.error(error, { context: 'collectPerformanceMetrics' });
-    
-    // Return minimal data on error
-    return {
-      session_id: sessionId || generateSessionId(),
-      timestamp: new Date().toISOString(),
-      page_url: window.location.href,
-      user_agent: navigator.userAgent,
-      screen_size: `${window.innerWidth}x${window.innerHeight}`,
-      webVitals: {
-        FCP: null,
-        LCP: null,
-        FID: null,
-        CLS: null,
-        TTFB: null,
-        INP: null
-      }
-    };
-  }
-};
-
-/**
- * Store performance metrics in Supabase
- */
-export const storePerformanceMetrics = async (partialWebVitals?: Partial<WebVitals>) => {
-  try {
-    const performanceData = collectPerformanceMetrics();
-    
-    // Update web vitals with any provided values
-    if (partialWebVitals) {
-      performanceData.webVitals = {
-        ...performanceData.webVitals,
-        ...partialWebVitals
-      };
-    }
-    
-    logger.log('Storing performance metrics', performanceData);
-    
-    // Store in Supabase (table name assumed to be 'performance_metrics')
+    // Insert metrics into database
     const { error } = await supabase
       .from('performance_metrics')
-      .insert([{
-        session_id: performanceData.session_id,
-        timestamp: performanceData.timestamp,
-        page_url: performanceData.page_url,
-        user_agent: performanceData.user_agent,
-        connection_type: performanceData.connection_type,
-        screen_size: performanceData.screen_size,
-        web_vitals: performanceData.webVitals,
-        resource_metrics: performanceData.resourceMetrics,
-        navigation_metrics: performanceData.navigationMetrics,
-        memory_heap_size: performanceData.jsHeapSize,
-        memory_heap_used: performanceData.jsHeapUsed
-      }]);
-      
+      .insert(queueToFlush.map(record => ({
+        session_id: record.session_id,
+        timestamp: record.timestamp,
+        page_url: record.page_url,
+        route: new URL(record.page_url).pathname,
+        user_agent: record.user_agent,
+        connection_type: record.connection_type,
+        screen_size: record.screen_size,
+        web_vitals: record.web_vitals,
+        resource_metrics: record.resource_metrics,
+        navigation_metrics: record.navigation_metrics,
+        memory_heap_size: record.memory_heap_size,
+        memory_heap_used: record.memory_heap_used
+      })));
+    
     if (error) {
-      logger.error(error, { context: 'storePerformanceMetrics' });
-      
-      // Store metrics in sessionStorage as fallback
-      const storedMetrics = JSON.parse(sessionStorage.getItem('performance_metrics') || '[]');
-      storedMetrics.push(performanceData);
-      sessionStorage.setItem('performance_metrics', JSON.stringify(storedMetrics.slice(-10))); // Keep last 10
+      logger.error(error, { context: 'flushMetricsQueue' });
+    } else {
+      // Clear the successfully sent metrics from backup
+      sessionStorage.removeItem('perf_metrics_queue');
     }
+    
   } catch (error) {
-    logger.error(error, { context: 'storePerformanceMetrics' });
+    logger.error(error, { context: 'flushMetricsQueue' });
   }
 };
 
 /**
- * Tracks a page view with performance metrics
+ * Queue a metrics record for later sending
  */
-export const trackPageView = (route: string) => {
+const queueMetricsRecord = (record: PerformanceMetricsRecord): void => {
+  metricsQueue.push(record);
+  
+  // Flush if queue is large enough
+  if (metricsQueue.length >= MAX_QUEUE_SIZE) {
+    flushMetricsQueue();
+    return;
+  }
+  
+  // Set up delayed flush if not already scheduled
+  if (!queueTimeout) {
+    queueTimeout = setTimeout(() => {
+      flushMetricsQueue();
+      queueTimeout = null;
+    }, QUEUE_FLUSH_INTERVAL);
+  }
+};
+
+/**
+ * Initialize performance observers
+ */
+const setupPerformanceObservers = (): void => {
   try {
-    // Allow metrics to be collected after page hydration
-    setTimeout(() => {
-      const metrics = collectPerformanceMetrics();
+    // Resource timing observer
+    if (window.PerformanceObserver) {
+      // Resource timing
+      const resourceObserver = new PerformanceObserver((entryList) => {
+        const entries = entryList.getEntries();
+        logger.debug(`Observed ${entries.length} resource entries`);
+      });
       
-      // Add any additional page-specific information
-      const pageViewData = {
-        ...metrics,
-        route,
-        page_title: document.title,
-        referrer: document.referrer,
-        timestamp: new Date().toISOString()
-      };
+      resourceObserver.observe({ type: 'resource', buffered: true });
       
-      logger.log('Page view tracked', { route, metrics: pageViewData });
+      // Long tasks
+      const longTaskObserver = new PerformanceObserver((entryList) => {
+        const entries = entryList.getEntries();
+        entries.forEach(entry => {
+          logger.debug(`Long task detected: ${entry.duration}ms`);
+        });
+      });
       
-      // Store the metrics
-      storePerformanceMetrics();
-    }, 2000); // Wait for 2 seconds to collect more accurate metrics
+      longTaskObserver.observe({ type: 'longtask', buffered: true });
+      
+      // Layout shifts
+      const layoutShiftObserver = new PerformanceObserver((entryList) => {
+        const entries = entryList.getEntries();
+        entries.forEach(entry => {
+          // Calculate CLS
+          const cls = (entry as any).value;
+          logger.debug(`Layout shift detected: ${cls}`);
+        });
+      });
+      
+      layoutShiftObserver.observe({ type: 'layout-shift', buffered: true });
+      
+      // Largest contentful paint
+      const lcpObserver = new PerformanceObserver((entryList) => {
+        const entries = entryList.getEntries();
+        const lastEntry = entries[entries.length - 1];
+        logger.debug(`LCP: ${lastEntry.startTime}ms`);
+      });
+      
+      lcpObserver.observe({ type: 'largest-contentful-paint', buffered: true });
+      
+      // First input delay
+      const fidObserver = new PerformanceObserver((entryList) => {
+        const entries = entryList.getEntries();
+        entries.forEach(entry => {
+          const fid = entry.processingStart - entry.startTime;
+          logger.debug(`FID: ${fid}ms`);
+        });
+      });
+      
+      fidObserver.observe({ type: 'first-input', buffered: true });
+    }
+    
+  } catch (error) {
+    logger.error(error, { context: 'setupPerformanceObservers' });
+  }
+};
+
+/**
+ * Track a specific performance event
+ */
+export const trackPerformanceEvent = (
+  eventName: string, 
+  duration: number,
+  metadata: Record<string, any> = {}
+): void => {
+  try {
+    // Create a custom performance mark
+    performance.mark(`${eventName}-end`);
+    
+    // Log the event
+    logger.debug(`Performance event: ${eventName}`, { duration, ...metadata });
+    
+    // Queue for sending
+    const record = createPerformanceRecord();
+    record.web_vitals = { ...record.web_vitals, [eventName]: duration };
+    queueMetricsRecord(record);
+    
+  } catch (error) {
+    logger.error(error, { context: 'trackPerformanceEvent' });
+  }
+};
+
+/**
+ * Track page view with performance metrics
+ */
+export const trackPageView = (route: string): void => {
+  try {
+    // Mark the navigation
+    performance.mark(`page-view-${route}`);
+    
+    // Collect and queue metrics
+    const metrics = createPerformanceRecord(route);
+    queueMetricsRecord(metrics);
+    
+    // Log a debug message
+    logger.debug(`Page view tracked: ${route}`, {
+      fcp: metrics.web_vitals.fcp,
+      lcp: metrics.web_vitals.lcp,
+      ttfb: metrics.web_vitals.ttfb
+    });
+    
   } catch (error) {
     logger.error(error, { context: 'trackPageView' });
+  }
+};
+
+/**
+ * Initialize performance tracking
+ */
+export const initPerformanceTracking = (): () => void => {
+  try {
+    logger.log('Initializing performance tracking');
+    
+    // Set up observers
+    setupPerformanceObservers();
+    
+    // Track initial page load
+    trackPageView(window.location.pathname);
+    
+    // Set up flush on page unload
+    const handleUnload = () => {
+      flushMetricsQueue();
+    };
+    
+    // Set up periodic metrics collection
+    const periodicCollectionInterval = setInterval(() => {
+      const metrics = createPerformanceRecord();
+      queueMetricsRecord(metrics);
+    }, 60000); // Every minute
+    
+    window.addEventListener('unload', handleUnload);
+    
+    // Return cleanup function
+    return () => {
+      window.removeEventListener('unload', handleUnload);
+      clearInterval(periodicCollectionInterval);
+      if (queueTimeout) {
+        clearTimeout(queueTimeout);
+        queueTimeout = null;
+      }
+      flushMetricsQueue();
+    };
+    
+  } catch (error) {
+    logger.error(error, { context: 'initPerformanceTracking' });
+    return () => {}; // Empty cleanup function
   }
 };

@@ -1,6 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger } from "@/lib/error-logger";
+import React from 'react';
 
 const logger = createLogger('ErrorTracking');
 
@@ -94,6 +95,90 @@ export const normalizeError = (error: unknown, component?: string, metadata?: Re
   }
 };
 
+// Error queue for batching
+let errorQueue: ErrorRecord[] = [];
+let queueTimeout: ReturnType<typeof setTimeout> | null = null;
+const QUEUE_FLUSH_INTERVAL = 5000; // 5 seconds
+const MAX_QUEUE_SIZE = 5;
+
+/**
+ * Flush the error queue to Supabase
+ */
+const flushErrorQueue = async (): Promise<void> => {
+  if (errorQueue.length === 0) {
+    return;
+  }
+  
+  const queueToFlush = [...errorQueue];
+  errorQueue = [];
+  
+  try {
+    // Store in sessionStorage as backup
+    const storedErrors = JSON.parse(sessionStorage.getItem('error_events') || '[]');
+    sessionStorage.setItem('error_events', JSON.stringify([...storedErrors, ...queueToFlush].slice(-20))); // Keep last 20
+    
+    // Store in Supabase
+    const { error: supabaseError } = await supabase
+      .from('error_events')
+      .insert(queueToFlush.map(record => ({
+        session_id: record.session_id,
+        timestamp: record.timestamp,
+        error_type: record.error_type,
+        message: record.message,
+        stack: record.stack,
+        component: record.component,
+        url: record.url,
+        route: record.route,
+        user_agent: record.user_agent,
+        metadata: record.metadata
+      })));
+      
+    if (supabaseError) {
+      logger.error(supabaseError, { 
+        context: 'flushErrorQueue'
+      });
+    } else {
+      // Clear the successfully sent errors from backup
+      sessionStorage.removeItem('error_events');
+    }
+  } catch (error) {
+    logger.error(error, { context: 'flushErrorQueue' });
+  }
+};
+
+/**
+ * Get or create a session ID for tracking
+ */
+const getOrCreateSessionId = (): string => {
+  let sessionId = localStorage.getItem('error_session_id');
+  if (!sessionId) {
+    sessionId = Math.random().toString(36).substring(2, 15);
+    localStorage.setItem('error_session_id', sessionId);
+  }
+  return sessionId;
+};
+
+/**
+ * Queue an error for later sending
+ */
+const queueError = (record: ErrorRecord): void => {
+  errorQueue.push(record);
+  
+  // Flush if queue is large enough
+  if (errorQueue.length >= MAX_QUEUE_SIZE) {
+    flushErrorQueue();
+    return;
+  }
+  
+  // Set up delayed flush if not already scheduled
+  if (!queueTimeout) {
+    queueTimeout = setTimeout(() => {
+      flushErrorQueue();
+      queueTimeout = null;
+    }, QUEUE_FLUSH_INTERVAL);
+  }
+};
+
 /**
  * Track an error in Supabase
  */
@@ -104,13 +189,7 @@ export const trackError = async (
 ) => {
   try {
     // Get session ID from localStorage or generate one
-    const sessionId = localStorage.getItem('error_session_id') || 
-                      Math.random().toString(36).substring(2, 15);
-    
-    // Store session ID for future errors
-    if (!localStorage.getItem('error_session_id')) {
-      localStorage.setItem('error_session_id', sessionId);
-    }
+    const sessionId = getOrCreateSessionId();
     
     // Normalize the error
     const normalizedError = normalizeError(error, component, metadata);
@@ -137,33 +216,8 @@ export const trackError = async (
     
     logger.log('Tracking error', errorRecord);
     
-    // Store in Supabase
-    const { error: supabaseError } = await supabase
-      .from('error_events')
-      .insert([{
-        session_id: errorRecord.session_id,
-        timestamp: errorRecord.timestamp,
-        error_type: errorRecord.error_type,
-        message: errorRecord.message,
-        stack: errorRecord.stack,
-        component: errorRecord.component,
-        url: errorRecord.url,
-        route: errorRecord.route,
-        user_agent: errorRecord.user_agent,
-        metadata: errorRecord.metadata
-      }]);
-      
-    if (supabaseError) {
-      logger.error(supabaseError, { 
-        context: 'trackError',
-        errorRecord 
-      });
-      
-      // Store in sessionStorage as fallback
-      const storedErrors = JSON.parse(sessionStorage.getItem('error_events') || '[]');
-      storedErrors.push(errorRecord);
-      sessionStorage.setItem('error_events', JSON.stringify(storedErrors.slice(-20))); // Keep last 20
-    }
+    // Queue error for batch sending
+    queueError(errorRecord);
     
     return errorRecord;
   } catch (trackingError) {
@@ -218,7 +272,7 @@ export const setupGlobalErrorHandlers = () => {
   // Handle uncaught errors
   window.addEventListener('error', (event) => {
     // Avoid duplicate reports for errors already caught by React
-    if (event.error && event.error._suppressReactErrorLogging) {
+    if (event.error && (event.error as any)._suppressReactErrorLogging) {
       return;
     }
     
