@@ -8,6 +8,7 @@ import { componentTagger } from "lovable-tagger";
 export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
+    // Only use development plugins in dev mode
     mode === 'development' && componentTagger(),
     mode === 'development' && visualizer({
       template: "treemap",
@@ -63,7 +64,12 @@ export default defineConfig(({ mode }) => ({
         }
       }
     },
-    sourcemap: true,
+    // Only generate sourcemaps in development mode
+    sourcemap: mode !== 'production',
+    // Minify CSS in production
+    cssMinify: mode === 'production',
+    // Reduce chunk size warnings
+    chunkSizeWarningLimit: 1000,
     commonjsOptions: {
       transformMixedEsModules: true
     }
@@ -89,6 +95,7 @@ export default defineConfig(({ mode }) => ({
       `.replace(/\s+/g, ' ').trim()
     }
   },
+  // Ensure consistent line endings across environments
   esbuild: {
     logOverride: { 'this-is-undefined-in-esm': 'silent' }
   }

@@ -73,11 +73,9 @@ export const AppRoutes = React.memo(() => {
     // Preload the most common routes for faster navigation
     const preloadRoute = (Component: React.ComponentType<any>) => {
       try {
-        const link = document.createElement('link');
-        link.rel = 'preload';
-        link.as = 'script';
-        link.href = Component.toString(); // This is a hack, doesn't actually work but demonstrates the concept
-        document.head.appendChild(link);
+        // This is a placeholder for illustrating the concept
+        // In a real implementation, you would use a more robust method for preloading
+        console.log("Preloading", Component.displayName || 'Unnamed component');
       } catch (error) {
         console.error("Error preloading route:", error);
       }

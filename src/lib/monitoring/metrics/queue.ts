@@ -37,7 +37,7 @@ export const flushMetricsQueue = async (): Promise<void> => {
         const { error } = await supabase
           .from('performance_metrics')
           .insert({
-            created_at: new Date().toISOString(), // Use created_at instead of timestamp
+            created_at: new Date().toISOString(),
             page_url: record.page_url,
             route: new URL(record.page_url).pathname,
             user_agent: record.user_agent,
@@ -52,7 +52,10 @@ export const flushMetricsQueue = async (): Promise<void> => {
           });
         
         if (error) {
-          logger.error(error, { context: 'flushMetricsQueue' });
+          logger.error('Error inserting metric record', { 
+            error, 
+            context: 'flushMetricsQueue'
+          });
         }
       } catch (insertError) {
         logger.error('Error inserting metric record', { 
@@ -73,7 +76,7 @@ export const flushMetricsQueue = async (): Promise<void> => {
     }
     
   } catch (error) {
-    logger.error(error, { context: 'flushMetricsQueue' });
+    logger.error('Error in flushMetricsQueue', { error, context: 'flushMetricsQueue' });
   }
 };
 
