@@ -100,7 +100,7 @@ export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
       </Motion.div>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-2xl max-h-[80vh] p-0 overflow-hidden">
+        <DialogContent className="max-w-2xl max-h-[90vh] p-0 overflow-hidden">
           <div className="relative">
             <Button
               variant="ghost"
@@ -118,14 +118,14 @@ export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
               isModal
             />
 
-            <ScrollArea className="max-h-[calc(80vh-200px)]">
+            <ScrollArea className="max-h-[calc(90vh-250px)] overflow-y-auto">
               <div className="p-6 space-y-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2 break-words">
                     {highlight.title}
                   </h2>
                   
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 whitespace-pre-line break-words">
                     {highlight.description}
                   </p>
                 </div>
@@ -163,21 +163,21 @@ export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
                           </div>
                         )}
                         
-                        <div className="prose prose-sm max-w-none">
-                          <p className="text-gray-600">{articleDetails.abstract}</p>
+                        <div className="prose prose-sm max-w-none break-words">
+                          <p className="text-gray-600 whitespace-pre-line">{articleDetails.abstract}</p>
                         </div>
                         
                         {articleDetails.authors && articleDetails.authors.length > 0 && (
                           <div className="border-t pt-4">
                             <h4 className="font-semibold mb-2">Auteurs</h4>
-                            <p className="text-gray-600">{Array.isArray(articleDetails.authors) ? articleDetails.authors.join(", ") : articleDetails.authors}</p>
+                            <p className="text-gray-600 break-words">{Array.isArray(articleDetails.authors) ? articleDetails.authors.join(", ") : articleDetails.authors}</p>
                           </div>
                         )}
                         
                         {articleDetails.institution && (
                           <div className="border-t pt-4">
                             <h4 className="font-semibold mb-2">Institution</h4>
-                            <p className="text-gray-600">{articleDetails.institution}</p>
+                            <p className="text-gray-600 break-words">{articleDetails.institution}</p>
                           </div>
                         )}
                       </>
