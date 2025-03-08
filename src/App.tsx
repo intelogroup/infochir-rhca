@@ -39,28 +39,39 @@ function App() {
     // Add event listener to refetch stale data when the tab becomes visible again
     const handleVisibilityChange = async () => {
       if (document.visibilityState === 'visible') {
-        const staleCacheKeys = Array.from(queryClient.getQueryCache().queries)
-          .filter(query => query.state.status === 'success' && query.isStale())
+        // Properly type our stale queries
+        const queryCache = queryClient.getQueryCache();
+        const queries = queryCache.getAll();
+        
+        const staleCacheKeys = queries
+          .filter(query => query.getState().status === 'success' && query.isStale())
           .map(query => query.queryKey);
           
         if (staleCacheKeys.length > 0) {
           console.log("Refetching stale queries on tab focus:", staleCacheKeys.length);
           
           // Refetching in the background without blocking rendering
-          setTimeout(() => {
+          const refetchTimer = setTimeout(() => {
             staleCacheKeys.forEach(key => {
               queryClient.refetchQueries({ queryKey: key, exact: true });
             });
           }, 100);
+          
+          // Return cleanup function for the timer
+          return () => clearTimeout(refetchTimer);
         }
       }
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    prefetchData();
+    const prefetchPromise = prefetchData();
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      
+      // Create an AbortController to cancel any in-flight requests
+      const controller = new AbortController();
+      controller.abort();
     };
   }, []);
 

@@ -7,6 +7,8 @@ import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/react-query';
 import { createLogger } from '@/lib/error-logger';
+import { useComponentLifecycle } from '@/hooks/useComponentLifecycle';
+import { useRef, useEffect } from 'react';
 
 // Define a more specific type for the database article that includes cover_image_filename
 interface RhcaDatabaseArticle {
@@ -36,24 +38,58 @@ interface RhcaDatabaseArticle {
 const logger = createLogger('useRHCAArticles');
 
 export const useRHCAArticles = () => {
+  const { isMounted, createAbortController } = useComponentLifecycle();
+  const controller = createAbortController();
+  const timeoutRef = useRef<number | null>(null);
+  
+  // Clean up timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
+  }, []);
+  
   const fetchRHCAArticles = useCallback(async () => {
     logger.log('[RHCA:INFO] Fetching RHCA articles from database');
     
     // Create a timeout for the request
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    
+    // Set a promise that will reject after timeout
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      timeoutRef.current = window.setTimeout(() => {
+        if (isMounted()) {
+          controller.abort('Request timeout');
+          reject(new Error('Request timed out after 10 seconds'));
+        }
+      }, 10000);
+    });
     
     try {
       // Use the articles table directly instead of the view to ensure we get all fields
-      const { data, error } = await supabase
+      const queryPromise = supabase
         .from('articles')
         .select('*')
         .eq('source', 'RHCA')
         .order('publication_date', { ascending: false })
         .abortSignal(controller.signal);
+      
+      // Race between the actual query and the timeout
+      const { data, error } = await Promise.race([
+        queryPromise,
+        timeoutPromise
+      ]) as Awaited<ReturnType<typeof queryPromise>>;
 
       // Clear the timeout
-      clearTimeout(timeoutId);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
 
       if (error) {
         logger.error('[RHCA:ERROR] Error fetching RHCA articles:', error);
@@ -116,14 +152,18 @@ export const useRHCAArticles = () => {
       return mappedArticles;
     } catch (err) {
       // Clear the timeout if there's an error
-      clearTimeout(timeoutId);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
       
       const errorMessage = err instanceof Error ? err.message : String(err);
       logger.error(`[RHCA:ERROR] Error in fetchRHCAArticles: ${errorMessage}`, err);
       
-      // Don't show toast for aborted requests (they're intentional)
+      // Don't show toast for aborted requests or if component unmounted
       if (errorMessage !== 'AbortError: The operation was aborted' && 
-          !errorMessage.includes('aborted')) {
+          !errorMessage.includes('aborted') && 
+          isMounted()) {
         toast.error("Erreur lors du chargement des articles RHCA", {
           description: errorMessage
         });
@@ -131,7 +171,7 @@ export const useRHCAArticles = () => {
       
       throw err;
     }
-  }, []);
+  }, [controller, isMounted]);
 
   const { 
     data: articles = [], 

@@ -4,21 +4,65 @@ import { supabase } from "@/integrations/supabase/client";
 import type { AtlasChapter } from "../types";
 import { createLogger } from "@/lib/error-logger";
 import { queryKeys } from "@/lib/react-query";
+import { useComponentLifecycle } from "@/hooks/useComponentLifecycle";
+import { useRef, useEffect } from "react";
 
 const logger = createLogger('useAtlasArticles');
 
 export const useAtlasArticles = () => {
+  const { isMounted, createAbortController } = useComponentLifecycle();
+  const controller = createAbortController();
+  const timeoutRef = useRef<number | null>(null);
+  
+  // Clean up timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
+  }, []);
+  
   return useQuery({
     queryKey: queryKeys.atlasChapters,
     queryFn: async () => {
       logger.log('Fetching Atlas chapters from articles table');
       
       try {
-        const { data, error } = await supabase
-          .from("articles")  // Using the articles table for ADC content
+        // Create a timeout for the request
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+        
+        // Set a promise that will reject after timeout
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          timeoutRef.current = window.setTimeout(() => {
+            if (isMounted()) {
+              controller.abort('Request timeout');
+              reject(new Error('Request timed out after 8 seconds'));
+            }
+          }, 8000);
+        });
+        
+        // Use Promise.race to implement the timeout
+        const queryPromise = supabase
+          .from("articles") 
           .select("*")
           .eq('source', 'ADC')
-          .order("publication_date", { ascending: false });
+          .order("publication_date", { ascending: false })
+          .abortSignal(controller.signal);
+        
+        const { data, error } = await Promise.race([
+          queryPromise,
+          timeoutPromise
+        ]) as Awaited<ReturnType<typeof queryPromise>>;
+
+        // Clear the timeout
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
+        }
 
         if (error) {
           logger.error("Error fetching atlas chapters:", error);
@@ -62,12 +106,19 @@ export const useAtlasArticles = () => {
 
         return chapters;
       } catch (error) {
+        // Clear the timeout
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
+        }
+        
         // Log the error with more details
         const errorMessage = error instanceof Error ? error.message : String(error);
         logger.error(`Error fetching atlas chapters: ${errorMessage}`, error);
         
         // For CORS errors or network failures, we return an empty array instead of throwing
-        if (errorMessage.includes('NetworkError') || errorMessage.includes('CORS')) {
+        if (errorMessage.includes('NetworkError') || errorMessage.includes('CORS') || 
+            errorMessage.includes('AbortError')) {
           logger.warn('Returning empty array due to network/CORS error');
           return [];
         }
