@@ -1,13 +1,13 @@
 
 import { useState } from "react";
-import { AlertCircle, Heart } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { DonationAmountSelector } from "@/components/donate/form/DonationAmountSelector";
 import { createCheckoutSession } from "@/lib/stripe";
 import { toast } from "sonner";
+import { FormError } from "@/components/donate/form/FormError";
+import { DonationButton } from "@/components/donate/form/DonationButton";
 
 export const DonateForm = () => {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -110,19 +110,7 @@ export const DonateForm = () => {
       variants={formVariants}
       className="mt-8 space-y-8 bg-white p-8 rounded-2xl shadow-lg border border-gray-100"
     >
-      {formError && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="my-4"
-        >
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Erreur</AlertTitle>
-            <AlertDescription>{formError}</AlertDescription>
-          </Alert>
-        </motion.div>
-      )}
+      <FormError error={formError} />
 
       <motion.div variants={itemVariants} className="space-y-4">
         <div>
@@ -181,28 +169,12 @@ export const DonateForm = () => {
         />
       </motion.div>
 
-      <motion.div 
-        variants={itemVariants}
-        whileTap={{ scale: isProcessing ? 1 : 0.98 }}
-      >
-        <Button
+      <motion.div variants={itemVariants}>
+        <DonationButton 
+          isProcessing={isProcessing}
+          disabled={!isEmailValid}
           onClick={handleDonation}
-          disabled={isProcessing || !isEmailValid}
-          className="w-full h-14 text-lg bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white relative overflow-hidden group"
-          aria-live="polite"
-        >
-          {isProcessing ? (
-            <span className="flex items-center gap-2">
-              <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              Processing...
-            </span>
-          ) : (
-            <span className="flex items-center justify-center gap-2">
-              Continue to Payment
-              <Heart className="h-4 w-4" />
-            </span>
-          )}
-        </Button>
+        />
       </motion.div>
     </motion.div>
   );
