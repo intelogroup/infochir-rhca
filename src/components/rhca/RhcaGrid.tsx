@@ -11,6 +11,7 @@ import {
   AccordionItem,
   AccordionTrigger
 } from "@/components/ui/accordion";
+import { motion } from "framer-motion";
 
 interface RhcaGridProps {
   articles: RhcaArticle[];
@@ -46,7 +47,12 @@ export const RhcaGrid: React.FC<RhcaGridProps> = ({
   const { articlesByYear, years } = useArticlesState(filteredArticles);
 
   return (
-    <div className="grid grid-cols-1 gap-6">
+    <motion.div 
+      className="grid grid-cols-1 gap-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
       {viewMode === "grid" ? (
         <Accordion type="multiple" defaultValue={years.map(year => year.toString())} className="space-y-4">
           {years.map(year => (
@@ -61,7 +67,7 @@ export const RhcaGrid: React.FC<RhcaGridProps> = ({
               </AccordionTrigger>
               <AccordionContent>
                 <div className="px-2 sm:px-4 py-2 sm:py-3">
-                  <ScrollArea className="w-full max-h-[70vh]">
+                  <ScrollArea className="w-full h-[700px] pr-4">
                     <div 
                       className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 py-2 sm:py-4 px-2 sm:px-4" 
                     >
@@ -84,6 +90,6 @@ export const RhcaGrid: React.FC<RhcaGridProps> = ({
           onSearchChange={onSearchChange}
         />
       )}
-    </div>
+    </motion.div>
   );
 };
