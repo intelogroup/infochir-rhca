@@ -39,12 +39,15 @@ function App() {
     // Add event listener to refetch stale data when the tab becomes visible again
     const handleVisibilityChange = async () => {
       if (document.visibilityState === 'visible') {
-        // Properly type our stale queries
+        // Get stale queries from the cache
         const queryCache = queryClient.getQueryCache();
         const queries = queryCache.getAll();
         
         const staleCacheKeys = queries
-          .filter(query => query.getState().status === 'success' && query.isStale())
+          .filter(query => {
+            const state = query.getState();
+            return state.status === 'success' && query.isStale();
+          })
           .map(query => query.queryKey);
           
         if (staleCacheKeys.length > 0) {

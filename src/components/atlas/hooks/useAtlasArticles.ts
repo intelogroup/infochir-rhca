@@ -6,6 +6,7 @@ import { createLogger } from "@/lib/error-logger";
 import { queryKeys } from "@/lib/react-query";
 import { useComponentLifecycle } from "@/hooks/useComponentLifecycle";
 import { useRef, useEffect, useCallback } from "react";
+import { handleError } from "@/utils/errorHandling";
 
 const logger = createLogger('useAtlasArticles');
 
@@ -44,7 +45,7 @@ export const useAtlasArticles = () => {
         }, 8000);
       });
       
-      // Use Promise.race to implement the timeout
+      // Execute the Supabase query
       const queryPromise = supabase
         .from("articles") 
         .select("*")
@@ -52,10 +53,16 @@ export const useAtlasArticles = () => {
         .order("publication_date", { ascending: false })
         .abortSignal(controller.signal);
       
-      const result = await Promise.race([
-        queryPromise,
-        timeoutPromise
-      ]);
+      // Use Promise.race with proper typing to handle the timeout vs. query race
+      let result;
+      try {
+        result = await Promise.race([
+          queryPromise as Promise<any>,
+          timeoutPromise
+        ]);
+      } catch (raceError) {
+        throw raceError;
+      }
       
       // Clear the timeout
       if (timeoutRef.current) {
@@ -64,7 +71,7 @@ export const useAtlasArticles = () => {
       }
       
       // Handle the response
-      const { data, error } = result as any;
+      const { data, error } = result;
       
       if (error) {
         logger.error("Error fetching atlas chapters:", error);

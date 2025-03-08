@@ -77,19 +77,22 @@ export const useRHCAArticles = () => {
         .select('*')
         .eq('source', 'RHCA')
         .order('publication_date', { ascending: false })
-        .abortSignal(controller.signal);
+        .abortSignal(controller.signal)
+        .then(response => response);  // This helps TypeScript understand it's a Promise
       
       // Race between the actual query and the timeout
-      const { data, error } = await Promise.race([
+      const response = await Promise.race([
         queryPromise,
         timeoutPromise
-      ]) as Awaited<ReturnType<typeof queryPromise>>;
+      ]);
 
       // Clear the timeout
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
         timeoutRef.current = null;
       }
+
+      const { data, error } = response;
 
       if (error) {
         logger.error('[RHCA:ERROR] Error fetching RHCA articles:', error);

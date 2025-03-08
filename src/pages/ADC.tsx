@@ -1,7 +1,7 @@
 
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { ADCHeader } from "@/components/adc/ADCHeader";
-import { Suspense, lazy, useRef, useEffect, useMemo } from "react";
+import React, { Suspense, lazy, useRef, useEffect, useMemo } from "react";
 import { useAtlasArticles } from "@/components/atlas/hooks/useAtlasArticles";
 import { AtlasCard } from "@/components/atlas/AtlasCard";
 import { AtlasTableOfContents } from "@/components/atlas/AtlasTableOfContents";
@@ -10,10 +10,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { toast } from "@/hooks/use-toast";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
+import { ComponentErrorBoundary } from "@/components/error-boundary/ComponentErrorBoundary";
+import { ErrorDisplay } from "@/components/error-boundary/ErrorDisplay";
+import { createLogger } from "@/lib/error-logger";
 
 // Lazy load components
 const ADCMission = lazy(() => import("@/components/adc/ADCMission").then(module => ({ default: module.ADCMission })));
 const ADCSubmission = lazy(() => import("@/components/adc/ADCSubmission").then(module => ({ default: module.ADCSubmission })));
+
+const logger = createLogger('ADC');
 
 const LoadingSkeleton = () => (
   <div className="space-y-8">
@@ -28,7 +33,7 @@ const LoadingSkeleton = () => (
 
 // Memoize the VirtualizedAtlasGrid component
 const VirtualizedAtlasGrid = ({ chapters }: { chapters: any[] }) => {
-  console.log("[VirtualizedAtlasGrid] Rendering with chapters:", chapters);
+  logger.log("[VirtualizedAtlasGrid] Rendering with chapters:", chapters);
   const parentRef = useRef<HTMLDivElement>(null);
   const isMounted = useRef(false);
 
@@ -41,7 +46,7 @@ const VirtualizedAtlasGrid = ({ chapters }: { chapters: any[] }) => {
 
   useEffect(() => {
     isMounted.current = true;
-    console.log("[VirtualizedAtlasGrid] Component mounted");
+    logger.log("[VirtualizedAtlasGrid] Component mounted");
     
     // Handle window resize to update the grid layout
     const handleResize = () => {
@@ -55,7 +60,7 @@ const VirtualizedAtlasGrid = ({ chapters }: { chapters: any[] }) => {
     return () => {
       isMounted.current = false;
       window.removeEventListener('resize', handleResize);
-      console.log("[VirtualizedAtlasGrid] Component unmounting");
+      logger.log("[VirtualizedAtlasGrid] Component unmounting");
     };
   }, []);
 
@@ -104,7 +109,13 @@ const VirtualizedAtlasGrid = ({ chapters }: { chapters: any[] }) => {
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.3, delay: columnIndex * 0.1 }}
                   >
-                    <AtlasCard chapter={chapter} />
+                    <ComponentErrorBoundary 
+                      name={`AtlasCard-${chapter.id}`}
+                      minimal={true}
+                      showLoadingOnRetry={true}
+                    >
+                      <AtlasCard chapter={chapter} />
+                    </ComponentErrorBoundary>
                   </motion.div>
                 );
               })}
@@ -118,22 +129,22 @@ const VirtualizedAtlasGrid = ({ chapters }: { chapters: any[] }) => {
 
 // Memoize the ADCContent component to prevent unnecessary re-renders
 const ADCContent = ({ children }: { children?: React.ReactNode }) => {
-  console.log("[ADCContent] Component mounting");
+  logger.log("[ADCContent] Component mounting");
   const mountTime = useRef(Date.now());
-  const { data: chapters, isLoading, error } = useAtlasArticles();
+  const { data: chapters, isLoading, error, refetch } = useAtlasArticles();
 
   useEffect(() => {
-    console.log("[ADCContent] Component mounted at:", mountTime.current);
-    console.log("[ADCContent] Initial state:", { isLoading, hasData: !!chapters, error });
+    logger.log("[ADCContent] Component mounted at:", mountTime.current);
+    logger.log("[ADCContent] Initial state:", { isLoading, hasData: !!chapters, error });
 
     return () => {
-      console.log("[ADCContent] Component unmounting, was mounted for:", Date.now() - mountTime.current, "ms");
+      logger.log("[ADCContent] Component unmounting, was mounted for:", Date.now() - mountTime.current, "ms");
     };
   }, []);
 
   useEffect(() => {
     if (error) {
-      console.error("[ADCContent] Error loading Atlas articles:", {
+      logger.error("[ADCContent] Error loading Atlas articles:", {
         error,
         message: error.message,
         stack: error.stack
@@ -142,7 +153,7 @@ const ADCContent = ({ children }: { children?: React.ReactNode }) => {
   }, [error]);
 
   useEffect(() => {
-    console.log("[ADCContent] Data loading state updated:", { 
+    logger.log("[ADCContent] Data loading state updated:", { 
       isLoading, 
       chaptersLength: chapters?.length,
       timestamp: Date.now() - mountTime.current
@@ -150,12 +161,15 @@ const ADCContent = ({ children }: { children?: React.ReactNode }) => {
   }, [isLoading, chapters]);
 
   if (error) {
-    console.error("[ADCContent] Rendering error state:", error);
-    toast.error("Une erreur est survenue lors du chargement des articles");
     return (
-      <div className="text-center py-12 text-red-500">
-        Une erreur est survenue lors du chargement des articles
-      </div>
+      <ErrorDisplay 
+        error={error}
+        title="Erreur de chargement des articles"
+        description="Une erreur est survenue lors du chargement des articles"
+        onRetry={refetch}
+        context="Atlas de Diagnostic Chirurgical"
+        severity="error"
+      />
     );
   }
 
@@ -171,7 +185,9 @@ const ADCContent = ({ children }: { children?: React.ReactNode }) => {
       {isLoading ? (
         <LoadingSkeleton />
       ) : chapters && chapters.length > 0 ? (
-        <VirtualizedAtlasGrid chapters={chapters} />
+        <ComponentErrorBoundary name="VirtualizedAtlasGrid">
+          <VirtualizedAtlasGrid chapters={chapters} />
+        </ComponentErrorBoundary>
       ) : (
         <div className="text-center py-12 text-gray-500">
           Aucun chapitre disponible pour le moment
@@ -184,29 +200,46 @@ const ADCContent = ({ children }: { children?: React.ReactNode }) => {
 ADCContent.displayName = 'ADCContent';
 
 const ADC = () => {
-  console.log("[ADC] Component mounting");
+  logger.log("[ADC] Component mounting");
   const mountTime = useRef(Date.now());
   
   useEffect(() => {
-    console.log("[ADC] Component mounted at:", mountTime.current);
+    logger.log("[ADC] Component mounted at:", mountTime.current);
     return () => {
-      console.log("[ADC] Component unmounting, was mounted for:", Date.now() - mountTime.current, "ms");
+      logger.log("[ADC] Component unmounting, was mounted for:", Date.now() - mountTime.current, "ms");
     };
   }, []);
 
   return (
     <MainLayout>
-      <ErrorBoundary>
+      <ErrorBoundary name="ADCPage">
         <div className="min-h-screen bg-gradient-to-br from-white to-gray-50 pt-[70px]">
           <ADCHeader />
-          <ADCContent />
+          
+          <ComponentErrorBoundary 
+            name="ADCContent"
+            onError={(error) => {
+              logger.error("[ADCPage] Error in ADCContent:", error);
+              toast({
+                title: "Erreur de chargement",
+                description: "Impossible de charger le contenu principal",
+                variant: "destructive"
+              });
+            }}
+          >
+            <ADCContent />
+          </ComponentErrorBoundary>
           
           <Suspense fallback={<LoadingSkeleton />}>
-            <ADCMission />
+            <ComponentErrorBoundary name="ADCMission" minimal={true}>
+              <ADCMission />
+            </ComponentErrorBoundary>
           </Suspense>
           
           <Suspense fallback={<LoadingSkeleton />}>
-            <ADCSubmission />
+            <ComponentErrorBoundary name="ADCSubmission" minimal={true}>
+              <ADCSubmission />
+            </ComponentErrorBoundary>
           </Suspense>
         </div>
       </ErrorBoundary>

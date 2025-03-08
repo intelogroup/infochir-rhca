@@ -12,11 +12,14 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { trackDownload } from "@/lib/analytics/download";
 import { supabase } from "@/integrations/supabase/client";
+import { createLogger } from "@/lib/error-logger";
 
 interface AtlasCardProps {
   chapter: AtlasChapter;
   category?: AtlasCategory;
 }
+
+const logger = createLogger('AtlasCard');
 
 const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
   const [showModal, setShowModal] = useState(false);
@@ -34,8 +37,10 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
         table_name: 'articles',
         column_name: 'shares',
         row_id: chapter.id
-      }).catch(error => {
-        console.error("[AtlasCard] Error incrementing share count:", error);
+      }).then(result => {
+        if (result.error) {
+          logger.error("Error incrementing share count:", result.error);
+        }
       });
     }
   }, [chapter.id]);
@@ -65,12 +70,14 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
           table_name: 'articles',
           column_name: 'downloads',
           row_id: chapter.id
-        }).catch(error => {
-          console.error("[AtlasCard] Error incrementing download count:", error);
+        }).then(result => {
+          if (result.error) {
+            logger.error("Error incrementing download count:", result.error);
+          }
         });
       }
     } catch (error) {
-      console.error("Download error:", error);
+      logger.error("Download error:", error);
       toast.error("Erreur lors du téléchargement");
       
       // Track the failed download
@@ -80,7 +87,7 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
         file_name: chapter.pdfUrl.split('/').pop() || 'document.pdf',
         status: 'failed',
         error_details: error instanceof Error ? error.message : 'Unknown error'
-      }).catch(e => console.error("Failed to track download error:", e));
+      }).catch(e => logger.error("Failed to track download error:", e));
     }
   }, [chapter.id, chapter.pdfUrl]);
 
@@ -113,8 +120,10 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
         table_name: 'articles',
         column_name: 'views',
         row_id: chapter.id
-      }).catch(error => {
-        console.error("[AtlasCard] Error incrementing view count:", error);
+      }).then(result => {
+        if (result.error) {
+          logger.error("Error incrementing view count:", result.error);
+        }
       });
     }
   }, [showModal, chapter.id]);
