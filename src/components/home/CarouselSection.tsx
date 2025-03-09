@@ -7,8 +7,8 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { motion } from "framer-motion";
-import { highlights } from "./carousel/carouselData";
-import { CarouselCard } from "./carousel/CarouselCard";
+import { highlights } from "@/components/home/carousel/carouselData";
+import { CarouselCard } from "@/components/home/carousel/CarouselCard";
 import { useEffect, useState, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, AlertTriangle, RefreshCcw } from "lucide-react";
