@@ -1,5 +1,15 @@
 
-export const highlights = [
+export interface Highlight {
+  title: string;
+  description: string;
+  image: string;
+  date: string;
+  category: string;
+  author?: string;
+  link?: string;
+}
+
+export const highlights: Highlight[] = [
   {
     title: "Séminaire sur les nouvelles techniques de chirurgie digestive",
     description: "Un séminaire regroupant les chirurgiens du pays a été organisé au HUEH pour présenter les nouvelles techniques de chirurgie digestive.",
