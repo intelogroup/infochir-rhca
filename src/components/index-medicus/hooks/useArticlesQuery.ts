@@ -12,40 +12,23 @@ export const useArticlesQuery = (page = 0) => {
   return useQuery({
     queryKey: ["articles", page],
     queryFn: async () => {
-      logger.log('Starting articles fetch for page:', page);
-      
       const start = page * PAGE_SIZE;
       const end = start + PAGE_SIZE - 1;
 
-      logger.log('Executing Supabase query with range:', { start, end });
-
       try {
-        // Create a timeout for the request
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
-        
         const { data, error, count } = await supabase
           .from("articles")
           .select("*", { count: 'exact' })
           .order("publication_date", { ascending: false })
-          .range(start, end)
-          .abortSignal(controller.signal);
-        
-        // Clear the timeout
-        clearTimeout(timeoutId);
-
-        logger.log('Supabase response:', { dataCount: data?.length, error, count });
+          .range(start, end);
 
         if (error) {
-          logger.error("Supabase query error:", error);
-          toast.error("Erreur lors du chargement des articles", {
-            description: error.message
-          });
+          logger.error(error);
+          toast.error("Erreur lors du chargement des articles");
           throw error;
         }
 
         if (!data || data.length === 0) {
-          logger.log('No data returned from query');
           return { articles: [], totalPages: 0 };
         }
 
@@ -77,25 +60,21 @@ export const useArticlesQuery = (page = 0) => {
         }));
 
         const totalPages = Math.ceil((count || 0) / PAGE_SIZE);
-        logger.log('Processed articles:', { count: articles.length, totalPages });
 
         return { articles, totalPages };
       } catch (err) {
-        logger.error('Error fetching articles:', err);
+        logger.error(err);
         const errorMessage = err instanceof Error ? err.message : String(err);
         
         // Don't show toast for aborted requests
         if (errorMessage !== 'AbortError: The operation was aborted' && 
             !errorMessage.includes('aborted')) {
-          toast.error("Erreur lors du chargement des articles", {
-            description: errorMessage
-          });
+          toast.error("Erreur lors du chargement des articles");
         }
         
         // Return empty state for network errors instead of failing completely
         if (errorMessage.includes('NetworkError') || errorMessage.includes('CORS') || 
             errorMessage.includes('AbortError')) {
-          logger.warn('Returning empty state due to network/CORS error');
           return { articles: [], totalPages: 0 };
         }
         

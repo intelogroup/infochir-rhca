@@ -3,11 +3,10 @@
  * Simplified error logging utility
  */
 export const logError = (
-  error: unknown, 
-  context: string
+  error: unknown
 ): void => {
   const errorObj = error instanceof Error ? error : new Error(String(error));
-  console.error(`[${context}] Error:`, errorObj.message);
+  console.error(`Error:`, errorObj.message);
 };
 
 /**
@@ -26,25 +25,25 @@ export const logReactError = (
  */
 export const createLogger = (moduleName: string) => {
   return {
-    log: (message: string, ...args: any[]) => {
+    log: (message: string) => {
       if (process.env.NODE_ENV !== 'production') {
-        console.log(`[${moduleName}] ${message}`, ...args);
+        console.log(`[${moduleName}] ${message}`);
       }
     },
-    warn: (message: string, ...args: any[]) => {
-      console.warn(`[${moduleName}] ${message}`, ...args);
+    warn: (message: string) => {
+      console.warn(`[${moduleName}] ${message}`);
     },
     error: (error: unknown) => {
-      logError(error, moduleName);
+      logError(error);
     },
-    info: (message: string, ...args: any[]) => {
+    info: (message: string) => {
       if (process.env.NODE_ENV !== 'production') {
-        console.info(`[${moduleName}] ${message}`, ...args);
+        console.info(`[${moduleName}] ${message}`);
       }
     },
-    debug: (message: string, ...args: any[]) => {
+    debug: (message: string) => {
       if (process.env.NODE_ENV !== 'production') {
-        console.debug(`[${moduleName}] ${message}`, ...args);
+        console.debug(`[${moduleName}] ${message}`);
       }
     }
   };

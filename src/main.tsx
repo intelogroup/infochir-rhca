@@ -10,24 +10,23 @@ import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "sonner";
 
 // React App component with proper error boundaries and toaster
-const AppWithProviders = () => {
-  return (
-    <React.StrictMode>
-      <ErrorBoundary name="AppRoot">
-        <QueryClientProvider client={queryClient}>
-          <BrowserRouter>
-            <App />
-            <Toaster richColors position="top-center" />
-          </BrowserRouter>
-        </QueryClientProvider>
-      </ErrorBoundary>
-    </React.StrictMode>
-  );
-};
+const AppWithProviders = () => (
+  <ErrorBoundary name="AppRoot">
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <App />
+        <Toaster richColors position="top-center" />
+      </BrowserRouter>
+    </QueryClientProvider>
+  </ErrorBoundary>
+);
 
 // Initialize application
 const rootElement = document.getElementById("root");
 if (rootElement) {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(<AppWithProviders />);
+  ReactDOM.createRoot(rootElement).render(
+    <React.StrictMode>
+      <AppWithProviders />
+    </React.StrictMode>
+  );
 }

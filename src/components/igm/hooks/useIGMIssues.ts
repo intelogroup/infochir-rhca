@@ -1,55 +1,32 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import type { Issue } from "../types";
 import { toast } from "sonner";
 import { createLogger } from "@/lib/error-logger";
 
 const logger = createLogger('useIGMIssues');
 
 export const useIGMIssues = () => {
-  logger.log('Hook initializing');
-  const startTime = Date.now();
-
   return useQuery({
     queryKey: ["igm-issues"],
     queryFn: async () => {
-      logger.log(`Starting data fetch at: ${Date.now() - startTime}ms`);
-
       try {
-        // Fetch IGM articles from the articles table instead of igm_unified_view
+        // Fetch IGM articles from the articles table
         const { data, error } = await supabase
           .from("articles")
           .select('*')
           .eq('source', 'IGM')
           .order('publication_date', { ascending: false });
 
-        logger.log(`Supabase query completed at: ${Date.now() - startTime}ms`);
-
         if (error) {
-          logger.error('Supabase query error', {
-            message: error.message,
-            details: error.details,
-            hint: error.hint,
-            code: error.code
-          });
-          
-          toast.error("Erreur lors du chargement des numéros", {
-            description: error.message
-          });
+          logger.error(error);
+          toast.error("Erreur lors du chargement des numéros");
           throw error;
         }
 
         if (!data || data.length === 0) {
-          logger.log('No data returned from Supabase');
           return [];
         }
-
-        logger.log('Raw data from Supabase:', {
-          count: data.length,
-          firstItem: data[0],
-          lastItem: data[data.length - 1]
-        });
 
         // Group articles by volume and issue
         const issuesMap = new Map();
@@ -102,34 +79,12 @@ export const useIGMIssues = () => {
         });
 
         // Convert map to array
-        const issues = Array.from(issuesMap.values());
-
-        logger.log('Processed issues:', {
-          count: issues.length,
-          timing: Date.now() - startTime,
-          'ms': 'since initialization',
-          firstIssue: issues.length > 0 ? issues[0] : null
-        });
-
-        return issues;
+        return Array.from(issuesMap.values());
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        const errorStack = error instanceof Error ? error.stack : undefined;
-        
-        logger.error('Error in data fetch', {
-          message: errorMessage,
-          stack: errorStack,
-          timing: Date.now() - startTime
-        });
-        
-        toast.error("Erreur lors du chargement des numéros", {
-          description: errorMessage
-        });
+        logger.error(error);
+        toast.error("Erreur lors du chargement des numéros");
         throw error;
       }
-    },
-    meta: {
-      errorMessage: "Erreur lors du chargement des numéros"
     },
     retry: (failureCount, error) => {
       // Only retry network/timeout errors, not data errors

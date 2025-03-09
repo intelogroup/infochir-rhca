@@ -16,15 +16,14 @@ export const RouteWrapper = ({ component: Component }: RouteWrapperProps) => {
 
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner variant="default" size="lg" />
+      <div className="flex items-center justify-center h-[50vh]">
+        <LoadingSpinner size="md" />
       </div>
     }>
-      <ErrorBoundary name="route-wrapper" fallback={
+      <ErrorBoundary name="route" fallback={
         <div className="p-4 text-center">
           <AlertTriangle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold mb-2">Une erreur est survenue</h2>
-          <p className="mb-4">Veuillez réessayer plus tard</p>
           <Button onClick={() => navigate('/')}>Retour à l'accueil</Button>
         </div>
       }>
