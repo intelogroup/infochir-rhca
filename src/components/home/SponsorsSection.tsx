@@ -3,29 +3,28 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { SponsorCard } from './sponsors/SponsorCard';
-import { supabase } from '@/integrations/supabase/client';
 import { createLogger } from '@/lib/error-logger';
-import { SponsorsData } from './sponsors/SponsorsData';
+import { sponsors } from './sponsors/SponsorsData';
 
 // Create a logger for the sponsors section
 const logger = createLogger('SponsorsSection');
 
 export const SponsorsSection = () => {
-  const [sponsors, setSponsors] = useState(SponsorsData);
+  const [sponsorsList, setSponsors] = useState(sponsors);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchSponsors = async () => {
-      logger.info('Fetching sponsors data');
+      logger.info('Initializing sponsors data');
       setLoading(true);
       
       try {
-        // Use the SponsorsData directly instead of fetching from founder_specialties
-        // This eliminates the error until the proper table is set up
-        setSponsors(SponsorsData);
+        // Use the sponsors data directly from the local file
+        setSponsors(sponsors);
+        logger.info(`Loaded ${sponsors.length} sponsors successfully`);
       } catch (error) {
         // Log the error but don't crash the app
-        logger.error('Error fetching sponsors:', error);
+        logger.error('Error loading sponsors:', error);
       } finally {
         setLoading(false);
       }
@@ -52,15 +51,15 @@ export const SponsorsSection = () => {
         </motion.div>
         
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 items-center justify-items-center">
-          {sponsors.map((sponsor, index) => (
+          {sponsorsList.map((sponsor, index) => (
             <motion.div
-              key={sponsor.id}
+              key={sponsor.name}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
             >
-              <SponsorCard sponsor={sponsor} />
+              <SponsorCard sponsor={sponsor} index={index} />
             </motion.div>
           ))}
         </div>
