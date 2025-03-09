@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { CardHeader } from "../content/CardHeader";
-import type { Highlight } from "../carouselData";
+import { CarouselItem } from "../types";
 
 interface ModalContentProps {
-  highlight: Highlight;
+  highlight: CarouselItem;
   articleDetails: any;
   isLoading: boolean;
   onClose: () => void;
