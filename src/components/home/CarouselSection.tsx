@@ -18,11 +18,17 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useInView } from "framer-motion";
+import { CarouselModal, CarouselItem } from "@/components/home/carousel/CarouselModal";
+import { createLogger } from "@/lib/error-logger";
+
+const logger = createLogger('CarouselSection');
 
 export const CarouselSection = () => {
   const [api, setApi] = useState<any>();
   const [current, setCurrent] = useState(0);
   const [autoPlay, setAutoPlay] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<CarouselItem | null>(null);
   const intervalRef = useRef<number | null>(null);
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: false, amount: 0.3 });
@@ -30,7 +36,7 @@ export const CarouselSection = () => {
   const { data: carouselData, isLoading, error, refetch } = useQuery({
     queryKey: ['carousel-highlights'],
     queryFn: async () => {
-      console.log('Fetching carousel highlights for IGM, RHCA, and ADC sources...');
+      logger.debug('Fetching carousel highlights for IGM, RHCA, and ADC sources...');
       
       // Get the latest article from each source (IGM, RHCA, ADC)
       const { data: articles, error } = await supabase
@@ -42,7 +48,7 @@ export const CarouselSection = () => {
       if (error) throw error;
 
       if (!articles || articles.length === 0) {
-        console.log('No articles found, falling back to highlights');
+        logger.debug('No articles found, falling back to highlights');
         return highlights;
       }
 
@@ -59,7 +65,7 @@ export const CarouselSection = () => {
       // Convert map to array of latest articles (one per source)
       const latestArticles = Array.from(sourceMap.values());
       
-      console.log(`Found ${latestArticles.length} latest articles from specified sources`);
+      logger.debug(`Found ${latestArticles.length} latest articles from specified sources`);
 
       return latestArticles.map(article => ({
         title: article.title,
@@ -136,6 +142,48 @@ export const CarouselSection = () => {
     };
   }, []);
 
+  // Select an item for the modal
+  const handleItemSelect = (item: CarouselItem, index: number) => {
+    setSelectedItem(item);
+    setCurrent(index);
+    setModalOpen(true);
+    setAutoPlay(false); // Pause autoplay when modal is open
+    
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+  // Close the modal
+  const handleModalClose = () => {
+    setModalOpen(false);
+    setSelectedItem(null);
+    
+    if (isInView) {
+      setAutoPlay(true);
+      startAutoPlay();
+    }
+  };
+
+  // Navigate to the next item in the modal
+  const handleNext = () => {
+    if (!carouselData) return;
+    const nextIndex = (current + 1) % carouselData.length;
+    setCurrent(nextIndex);
+    setSelectedItem(carouselData[nextIndex]);
+    api?.scrollTo(nextIndex);
+  };
+
+  // Navigate to the previous item in the modal
+  const handlePrevious = () => {
+    if (!carouselData) return;
+    const prevIndex = (current - 1 + carouselData.length) % carouselData.length;
+    setCurrent(prevIndex);
+    setSelectedItem(carouselData[prevIndex]);
+    api?.scrollTo(prevIndex);
+  };
+
   if (isLoading) {
     return (
       <section className="py-16 px-4 sm:px-6 lg:px-8">
@@ -155,7 +203,7 @@ export const CarouselSection = () => {
   }
 
   if (error) {
-    console.error('Error fetching carousel data:', error);
+    logger.error('Error fetching carousel data:', error);
     return (
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
@@ -225,7 +273,7 @@ export const CarouselSection = () => {
           <CarouselContent className="py-4">
             {displayData.map((highlight, index) => (
               <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3 h-[400px]">
-                <div className="h-full">
+                <div className="h-full" onClick={() => handleItemSelect(highlight, index)}>
                   <CarouselCard highlight={highlight} index={index} />
                 </div>
               </CarouselItem>
@@ -252,6 +300,19 @@ export const CarouselSection = () => {
           ))}
         </div>
       </div>
+
+      {/* Global modal for carousel items */}
+      {selectedItem && (
+        <CarouselModal
+          item={selectedItem}
+          isOpen={modalOpen}
+          onClose={handleModalClose}
+          onNext={handleNext}
+          onPrevious={handlePrevious}
+          hasNext={displayData.length > 1}
+          hasPrevious={displayData.length > 1}
+        />
+      )}
     </section>
   );
 };
