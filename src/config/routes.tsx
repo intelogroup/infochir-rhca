@@ -1,9 +1,9 @@
 
-import Home from "@/pages/Home";
-import NotFound from "@/pages/NotFound";
+import { Home } from "@/pages/Home";
+import { NotFound } from "@/pages/NotFound";
 import TriggerUploads from "@/pages/TriggerUploads";
 // Import the Article component
-import Article from "@/pages/articles/ArticleDetail";
+import { Article } from "@/pages/articles/ArticleDetail";
 
 export const routes = [
   {

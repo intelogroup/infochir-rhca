@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { getFounderAvatarUrl } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { createLogger } from '@/lib/error-logger';
 
@@ -32,9 +33,10 @@ export const useFounders = () => {
         logger.info('Starting founders data fetch...');
         setLoading(true);
         
-        // Fetch founders directly from the founders table
+        // Log the query we're about to execute with the new display_order column
         logger.info('Executing Supabase query: SELECT * FROM founders ORDER BY display_order, name');
         
+        // Fetch founders - order by display_order as primary, name as secondary sort
         const { data: foundersData, error: foundersError } = await supabase
           .from('founders')
           .select('*')
@@ -70,11 +72,19 @@ export const useFounders = () => {
         
         const transformedFounders = foundersData.map((founder, index) => {
           try {
+            // Log image URL generation
+            let imageUrl: string | undefined = undefined;
+            if (founder.image_path) {
+              logger.debug(`Generating image URL for founder ${founder.name} with path: ${founder.image_path}`);
+              imageUrl = getFounderAvatarUrl(founder.image_path);
+              logger.debug(`Generated image URL: ${imageUrl}`);
+            }
+            
             return {
               name: founder.name,
               title: founder.title,
               role: founder.role,
-              image: founder.image_path || undefined,
+              image: imageUrl,
               bio: founder.bio || undefined,
               location: founder.location || undefined,
               isDeceased: founder.is_deceased,
