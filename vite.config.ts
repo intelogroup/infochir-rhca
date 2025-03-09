@@ -3,6 +3,10 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
 
+// Environment detection
+const isProduction = process.env.NODE_ENV === 'production';
+const isPreview = process.env.VITE_APP_PREVIEW === 'true';
+
 export default defineConfig({
   plugins: [react()],
   resolve: {
@@ -22,6 +26,11 @@ export default defineConfig({
       '@stripe/stripe-js'
     ]
   },
+  define: {
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+    'process.env.VITE_APP_PREVIEW': JSON.stringify(process.env.VITE_APP_PREVIEW),
+    'process.env.DEBUG': JSON.stringify(!isProduction || isPreview),
+  },
   build: {
     target: ['es2015', 'edge88', 'firefox78', 'chrome87', 'safari13'],
     rollupOptions: {
@@ -35,7 +44,8 @@ export default defineConfig({
         }
       }
     },
-    sourcemap: false
+    sourcemap: !isProduction || isPreview,
+    minify: isProduction && !isPreview
   },
   server: {
     host: "::",

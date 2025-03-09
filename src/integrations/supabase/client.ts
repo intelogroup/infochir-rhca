@@ -5,21 +5,34 @@ import type { Database } from './types';
 const SUPABASE_URL = "https://llxzstqejdrplmxdjxlu.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxseHpzdHFlamRycGxteGRqeGx1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzUwNzM3NDgsImV4cCI6MjA1MDY0OTc0OH0.dza-_2f6kCnY11CmnyHRf3kE-JxQTTnZm20GaZwiA9g";
 
+// Check if we're in development, preview or debugging mode
+const isDebugMode = process.env.NODE_ENV === 'development' || 
+                  process.env.VITE_APP_PREVIEW === 'true' || 
+                  process.env.DEBUG === 'true';
+
 /**
- * Configures and creates a Supabase client with simplified settings for production
+ * Configures and creates a Supabase client with settings optimized for the current environment
  */
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     persistSession: true,
-    autoRefreshToken: true
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    storageKey: 'infochir-supabase-auth'
   },
   global: {
     headers: {
-      'X-Client-Info': `infochir-app/1.0.0`
+      'X-Client-Info': `infochir-app/1.1.0`,
+      'X-Client-Mode': isDebugMode ? 'development' : 'production'
     }
   },
   db: {
     schema: 'public'
+  },
+  realtime: {
+    params: {
+      eventsPerSecond: 10
+    }
   }
 });
 
@@ -36,7 +49,25 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
       
     return !error;
   } catch (error) {
-    console.error('Connection check failed');
+    if (isDebugMode) {
+      console.error('Supabase connection check failed', error);
+    }
     return false;
   }
+};
+
+/**
+ * Handles image URL resolving from Supabase storage
+ * @param bucket Storage bucket name
+ * @param path File path in the bucket
+ * @returns Public URL string
+ */
+export const getStorageUrl = (bucket: string, path: string): string => {
+  if (!path) return '';
+  
+  const { data } = supabase.storage
+    .from(bucket)
+    .getPublicUrl(path);
+    
+  return data.publicUrl;
 };

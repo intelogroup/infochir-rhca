@@ -7,7 +7,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@/components/ui/alert";
-import { getLoadingDiagnostics } from "./utils/diagnostics";
+import { getLoadingDiagnostics, isDebugMode } from "./utils/diagnostics";
 import { getErrorMessage } from "./utils/errorMessages";
 import { logReactError } from "@/lib/error-logger";
 
@@ -37,10 +37,21 @@ export class ErrorBoundary extends React.Component<Props, State> {
     const boundaryName = this.props.name || 'unnamed';
     logReactError(error, errorInfo, boundaryName);
     this.setState({ errorInfo });
+    
+    // Log extra diagnostics in debug mode
+    if (isDebugMode()) {
+      console.error(`Error caught in boundary '${boundaryName}':`, error);
+      console.error('React component stack:', errorInfo.componentStack);
+      console.error('System diagnostics:', getLoadingDiagnostics());
+    }
   }
 
   handleRetry = () => {
     window.location.reload();
+  };
+
+  handleBackToHome = () => {
+    window.location.href = '/';
   };
 
   renderErrorContent() {
@@ -55,13 +66,25 @@ export class ErrorBoundary extends React.Component<Props, State> {
         <AlertTitle className="text-lg font-semibold mb-2">{title}</AlertTitle>
         <AlertDescription className="space-y-4">
           <p className="text-base">{message}</p>
-          <Button
-            variant="outline"
-            className="mt-4"
-            onClick={this.handleRetry}
-          >
-            Réessayer
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-2 mt-4">
+            <Button
+              variant="outline"
+              onClick={this.handleRetry}
+            >
+              Réessayer
+            </Button>
+            <Button
+              variant="default"
+              onClick={this.handleBackToHome}
+            >
+              Retour à l'accueil
+            </Button>
+          </div>
+          {isDebugMode() && error.stack && (
+            <div className="mt-4 p-2 bg-gray-100 rounded text-xs font-mono overflow-auto">
+              <pre>{error.stack}</pre>
+            </div>
+          )}
         </AlertDescription>
       </Alert>
     );

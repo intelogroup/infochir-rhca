@@ -1,10 +1,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent as CardContentUI } from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
+import { getStorageUrl } from "@/integrations/supabase/client";
 import { CoverImage } from "./card/CoverImage";
 import { CardContent } from "./card/CardContent";
 import type { RhcaArticle } from "./types";
+
+// Check if we're in debug mode
+const isDebugMode = process.env.NODE_ENV === 'development' || 
+                   process.env.VITE_APP_PREVIEW === 'true' || 
+                   process.env.DEBUG === 'true';
 
 interface RhcaCardProps {
   article: RhcaArticle;
@@ -16,57 +21,48 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
   const [imageLoading, setImageLoading] = useState(true);
   
   useEffect(() => {
-    const loadCoverImage = async () => {
+    const loadResources = async () => {
       try {
         setImageLoading(true);
-        console.log(`[RhcaCard] Article ${article.id} cover filename:`, article.coverImageFileName);
         
-        // First try to get the cover image from storage if we have a filename
+        // Debug logs only in debug mode
+        if (isDebugMode) {
+          console.log(`[RhcaCard] Article ${article.id} cover filename:`, article.coverImageFileName);
+        }
+        
+        // Load cover image
         if (article.coverImageFileName) {
-          const { data } = await supabase.storage
-            .from('rhca_covers')
-            .getPublicUrl(article.coverImageFileName);
-            
-          console.log(`[RhcaCard] Cover image URL from storage:`, data.publicUrl);
-          setCoverUrl(data.publicUrl);
+          const publicUrl = getStorageUrl('rhca_covers', article.coverImageFileName);
+          setCoverUrl(publicUrl);
         } 
         // Fallback to image_url if available
         else if (article.image_url) {
-          console.log(`[RhcaCard] Using image_url fallback:`, article.image_url);
           setCoverUrl(article.image_url);
         } 
-        // If no image is available, use a placeholder
+        // If no image is available, use null
         else {
-          console.log(`[RhcaCard] No cover image available for article ${article.id}`);
           setCoverUrl(null);
         }
+        
+        // Load PDF URL
+        if (article.pdfFileName) {
+          const publicUrl = getStorageUrl('rhca-pdfs', article.pdfFileName);
+          setPdfUrl(publicUrl);
+        } else {
+          setPdfUrl(null);
+        }
       } catch (error) {
-        console.error('[RhcaCard] Error loading cover image:', error);
+        if (isDebugMode) {
+          console.error('[RhcaCard] Error loading resources:', error);
+        }
         setCoverUrl(null);
+        setPdfUrl(null);
       } finally {
         setImageLoading(false);
       }
     };
     
-    const loadPdfUrl = async () => {
-      try {
-        if (article.pdfFileName) {
-          const { data } = await supabase.storage
-            .from('rhca-pdfs')
-            .getPublicUrl(article.pdfFileName);
-            
-          setPdfUrl(data.publicUrl);
-        } else {
-          setPdfUrl(null);
-        }
-      } catch (error) {
-        console.error('[RhcaCard] Error loading PDF URL:', error);
-        setPdfUrl(null);
-      }
-    };
-    
-    loadCoverImage();
-    loadPdfUrl();
+    loadResources();
   }, [article]);
   
   return (

@@ -9,13 +9,18 @@ import { queryClient } from "@/lib/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "sonner";
 
+// Set up in production mode or preview mode
+const isDebugMode = process.env.NODE_ENV === 'development' || 
+                   process.env.VITE_APP_PREVIEW === 'true' ||
+                   process.env.DEBUG === 'true';
+
 // React App component with proper error boundaries and toaster
 const AppWithProviders = () => (
   <ErrorBoundary name="AppRoot">
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <App />
-        <Toaster richColors position="top-center" />
+        <Toaster richColors position="top-center" closeButton />
       </BrowserRouter>
     </QueryClientProvider>
   </ErrorBoundary>
@@ -29,4 +34,19 @@ if (rootElement) {
       <AppWithProviders />
     </React.StrictMode>
   );
+}
+
+// Register the service worker
+if ('serviceWorker' in navigator && !isDebugMode) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').then(registration => {
+      if (isDebugMode) {
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      }
+    }).catch(error => {
+      if (isDebugMode) {
+        console.error('ServiceWorker registration failed: ', error);
+      }
+    });
+  });
 }
