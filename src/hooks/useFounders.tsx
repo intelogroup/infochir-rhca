@@ -34,21 +34,18 @@ export const useFounders = () => {
         logger.info('Starting founders data fetch...');
         setLoading(true);
         
-        // Log the query we're about to execute with the display_order column
-        logger.info('Executing Supabase query: SELECT * FROM founders ORDER BY display_order, name');
+        // Using the new founders_view which is already ordered by display_order and name
+        logger.info('Executing Supabase query to founders_view');
         
-        // Fetch founders - order by display_order as primary, name as secondary sort
         const { data: foundersData, error: foundersError } = await supabase
-          .from('founders')
-          .select('*')
-          .order('display_order', { ascending: true })
-          .order('name', { ascending: true });
+          .from('founders_view')
+          .select('*');
           
         if (foundersError) {
           // Enhanced error logging
           logger.error(foundersError, {
-            endpoint: 'founders',
-            query: 'SELECT * FROM founders ORDER BY display_order, name',
+            endpoint: 'founders_view',
+            query: 'SELECT * FROM founders_view',
             errorCode: foundersError.code,
             errorMessage: foundersError.message,
             context: 'Fetching founders data'
@@ -64,9 +61,6 @@ export const useFounders = () => {
         
         logger.info(`Successfully fetched ${foundersData.length} founders`);
         logger.debug('Fetched founders data:', foundersData);
-        
-        // Map DB data to Founder type
-        logger.info('Transforming database records to Founder type...');
         
         // Track transformation success/failure
         let transformationErrors = 0;

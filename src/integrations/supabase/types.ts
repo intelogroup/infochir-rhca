@@ -853,6 +853,57 @@ export type Database = {
         }
         Relationships: []
       }
+      founders_view: {
+        Row: {
+          achievements: string[] | null
+          bio: string | null
+          created_at: string | null
+          display_order: number | null
+          id: string | null
+          image_path: string | null
+          is_deceased: boolean | null
+          location: string | null
+          name: string | null
+          responsibilities: string[] | null
+          role: string | null
+          specialties: string[] | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          achievements?: string[] | null
+          bio?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          id?: string | null
+          image_path?: string | null
+          is_deceased?: boolean | null
+          location?: string | null
+          name?: string | null
+          responsibilities?: string[] | null
+          role?: string | null
+          specialties?: string[] | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          achievements?: string[] | null
+          bio?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          id?: string | null
+          image_path?: string | null
+          is_deceased?: boolean | null
+          location?: string | null
+          name?: string | null
+          responsibilities?: string[] | null
+          role?: string | null
+          specialties?: string[] | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       igm_articles_view: {
         Row: {
           abstract: string | null
