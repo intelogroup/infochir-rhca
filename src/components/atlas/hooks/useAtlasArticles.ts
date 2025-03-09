@@ -38,6 +38,10 @@ export const useAtlasArticles = () => {
           if (item.cover_image_filename) {
             coverImage = getStorageUrl('adc_covers', item.cover_image_filename);
             logger.log(`Using cover image from storage: ${coverImage}`);
+          } else if (item.image_url) {
+            logger.log(`Using external image URL: ${item.image_url}`);
+          } else {
+            logger.log(`No cover image found for article: ${item.id} - ${item.title}`);
           }
           
           return {

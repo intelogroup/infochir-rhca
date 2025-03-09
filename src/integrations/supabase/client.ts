@@ -68,6 +68,12 @@ export const getStorageUrl = (bucket: string, path: string): string => {
   const { data } = supabase.storage
     .from(bucket)
     .getPublicUrl(path);
+  
+  const publicUrl = data.publicUrl;
+  
+  if (isDebugMode) {
+    console.log(`Generated Supabase storage URL for ${bucket}/${path}: ${publicUrl}`);
+  }
     
-  return data.publicUrl;
+  return publicUrl;
 };

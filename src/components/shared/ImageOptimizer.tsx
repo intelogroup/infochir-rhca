@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ImageFallback } from "./ImageFallback";
@@ -35,6 +36,12 @@ export const ImageOptimizer = ({
     
     // Don't modify if it's a data URL or SVG
     if (src.startsWith('data:') || src.endsWith('.svg')) return src;
+    
+    // Check if it's a Supabase URL and log for debugging
+    const isSupabaseUrl = src.includes('supabase.co') || src.includes('llxzstqejdrplmxdjxlu');
+    if (isDebugMode && isSupabaseUrl) {
+      console.log(`Loading Supabase image: ${src}`);
+    }
     
     // Add width and height for remote images when possible
     try {
@@ -86,13 +93,17 @@ export const ImageOptimizer = ({
     
     img.onload = () => {
       setIsLoading(false);
+      if (isDebugMode && (optimizedSrc.includes('supabase.co') || optimizedSrc.includes('llxzstqejdrplmxdjxlu'))) {
+        console.log(`Successfully loaded Supabase image: ${optimizedSrc}`);
+      }
     };
     
     img.onerror = () => {
       setHasError(true);
       setIsLoading(false);
       if (isDebugMode) {
-        console.error(`Failed to load image: ${optimizedSrc}`);
+        const isSupabaseUrl = optimizedSrc.includes('supabase.co') || optimizedSrc.includes('llxzstqejdrplmxdjxlu');
+        console.error(`Failed to load image${isSupabaseUrl ? ' from Supabase' : ''}: ${optimizedSrc}`);
       }
     };
     
