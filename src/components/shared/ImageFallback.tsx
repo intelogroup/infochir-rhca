@@ -17,8 +17,6 @@ export const ImageFallback: React.FC<ImageFallbackProps> = ({
   className = "",
   fallbackText
 }) => {
-  console.log(`[ImageOptimizer:INFO] Showing fallback for failed image: ${alt}`);
-  
   return (
     <div 
       className={`${className} flex items-center justify-center bg-emerald-50/50 border border-emerald-100/50 rounded-lg`}

@@ -1,6 +1,6 @@
 
 import * as React from "react";
-import { Suspense, useEffect } from "react";
+import { Suspense } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
@@ -16,9 +16,8 @@ export const AdminRouteWrapper = ({ component: Component }: AdminRouteWrapperPro
   const navigate = useNavigate();
 
   // Handle authentication errors
-  useEffect(() => {
+  React.useEffect(() => {
     if (error) {
-      console.error("Authentication error:", error);
       toast.error("Erreur d'authentification", {
         description: "Veuillez vous reconnecter",
       });

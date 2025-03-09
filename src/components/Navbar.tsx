@@ -1,6 +1,5 @@
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { NavLinks } from "./navigation/NavLinks";
 import { MobileMenu } from "./navigation/MobileMenu";
 import { NavbarLogo } from "./navigation/NavbarLogo";
@@ -8,44 +7,10 @@ import { MobileMenuButton } from "./navigation/MobileMenuButton";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    let touchStartY = 0;
-    let pullDistance = 0;
-    const threshold = 150;
-
-    const handleTouchStart = (e: TouchEvent) => {
-      if (window.scrollY === 0) {
-        touchStartY = e.touches[0].clientY;
-      }
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      if (touchStartY === 0) return;
-
-      pullDistance = e.touches[0].clientY - touchStartY;
-      if (pullDistance > 0 && pullDistance < threshold) {
-        document.body.style.transform = `translateY(${pullDistance}px)`;
-      }
-    };
-
-    const handleTouchEnd = async () => {
-      if (pullDistance >= threshold) {
-        setRefreshing(true);
-        document.body.style.transform = '';
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        window.location.reload();
-      } else {
-        document.body.style.transform = '';
-      }
-      touchStartY = 0;
-      pullDistance = 0;
-      setRefreshing(false);
-    };
-
     const handleScroll = () => {
       if (window.scrollY > lastScrollY && window.scrollY > 100) {
         setVisible(false);
@@ -55,65 +20,46 @@ export const Navbar = () => {
       setLastScrollY(window.scrollY);
     };
 
-    document.addEventListener('touchstart', handleTouchStart);
-    document.addEventListener('touchmove', handleTouchMove);
-    document.addEventListener('touchend', handleTouchEnd);
     window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      document.removeEventListener('touchstart', handleTouchStart);
-      document.removeEventListener('touchmove', handleTouchMove);
-      document.removeEventListener('touchend', handleTouchEnd);
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
   return (
-    <>
-      {refreshing && (
-        <div className="fixed top-0 left-0 w-full h-1 bg-primary/20 z-50">
-          <div className="h-full bg-primary animate-[loading_1s_ease-in-out_infinite]" />
-        </div>
-      )}
-      <motion.nav 
-        className="fixed w-full z-50"
-        initial={{ y: 0 }}
-        animate={{ y: visible ? 0 : -100 }}
-        transition={{ duration: 0.3 }}
-        role="navigation" 
-        aria-label="Main navigation"
-      >
-        <div className="w-full border-b border-gray-200/50 bg-white/85 backdrop-blur-md shadow-lg">
-          <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-12">
-            <div className="flex h-16 md:h-[4.5rem] lg:h-20 items-center justify-between">
-              {/* Logo section with adjusted margins */}
-              <div className="flex-shrink-0">
-                <NavbarLogo />
-              </div>
+    <nav 
+      className={`fixed w-full z-50 transition-transform duration-300 ${!visible ? '-translate-y-full' : 'translate-y-0'}`}
+      role="navigation" 
+      aria-label="Main navigation"
+    >
+      <div className="w-full border-b border-gray-200/50 bg-white/85 backdrop-blur-md shadow-lg">
+        <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-12">
+          <div className="flex h-16 md:h-[4.5rem] lg:h-20 items-center justify-between">
+            {/* Logo section */}
+            <div className="flex-shrink-0">
+              <NavbarLogo />
+            </div>
 
-              {/* Navigation links with improved tablet spacing */}
-              <div className="hidden md:flex md:items-center md:justify-center md:space-x-1.5 lg:space-x-4">
-                <NavLinks />
-              </div>
+            {/* Navigation links */}
+            <div className="hidden md:flex md:items-center md:justify-center md:space-x-1.5 lg:space-x-4">
+              <NavLinks />
+            </div>
 
-              {/* Mobile menu button with adjusted positioning */}
-              <div className="flex md:hidden">
-                <MobileMenuButton 
-                  isOpen={isOpen}
-                  onClick={() => setIsOpen(!isOpen)}
-                />
-              </div>
+            {/* Mobile menu button */}
+            <div className="flex md:hidden">
+              <MobileMenuButton 
+                isOpen={isOpen}
+                onClick={() => setIsOpen(!isOpen)}
+              />
             </div>
           </div>
-
-          <AnimatePresence>
-            <MobileMenu 
-              isOpen={isOpen} 
-              onClose={() => setIsOpen(false)} 
-            />
-          </AnimatePresence>
         </div>
-      </motion.nav>
-    </>
+
+        {isOpen && (
+          <MobileMenu 
+            isOpen={isOpen} 
+            onClose={() => setIsOpen(false)} 
+          />
+        )}
+      </div>
+    </nav>
   );
 };

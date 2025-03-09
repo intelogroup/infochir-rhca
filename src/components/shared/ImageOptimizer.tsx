@@ -1,7 +1,6 @@
 
 import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useImageLoader } from "@/hooks/useImageLoader";
 import { ImageFallback } from "./ImageFallback";
 
 interface ImageOptimizerProps {
@@ -23,13 +22,36 @@ export const ImageOptimizer = ({
   fallbackText,
   priority = false
 }: ImageOptimizerProps) => {
-  const { isLoading, hasError, imageSrc, setHasError } = useImageLoader({
-    src,
-    alt,
-    width,
-    height,
-    priority
-  });
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [hasError, setHasError] = React.useState(false);
+  
+  React.useEffect(() => {
+    if (!src) {
+      setHasError(true);
+      setIsLoading(false);
+      return;
+    }
+    
+    setIsLoading(true);
+    setHasError(false);
+    
+    const img = new Image();
+    img.src = src;
+    
+    img.onload = () => {
+      setIsLoading(false);
+    };
+    
+    img.onerror = () => {
+      setHasError(true);
+      setIsLoading(false);
+    };
+    
+    return () => {
+      img.onload = null;
+      img.onerror = null;
+    };
+  }, [src]);
 
   if (isLoading) {
     return <Skeleton className={`${className} bg-muted`} style={{ width, height }} />;
@@ -49,17 +71,14 @@ export const ImageOptimizer = ({
 
   return (
     <img 
-      src={imageSrc}
+      src={src}
       alt={alt}
       className={className}
       width={width}
       height={height}
       loading={priority ? "eager" : "lazy"}
       decoding={priority ? "sync" : "async"}
-      onError={(e) => {
-        console.error(`[ImageOptimizer:ERROR] Runtime error loading image: ${src}`, e);
-        setHasError(true);
-      }}
+      onError={() => setHasError(true)}
     />
   );
 };
