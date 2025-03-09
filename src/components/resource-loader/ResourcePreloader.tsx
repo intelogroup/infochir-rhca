@@ -39,7 +39,7 @@ const ResourcePreloader: React.FC = () => {
     });
     
     // Add resource hints to document head
-    const addResourceHint = (type: 'preload' | 'prefetch' | 'preconnect', href: string, as?: string) => {
+    const addResourceHint = (type: 'prefetch' | 'preconnect', href: string) => {
       if (typeof href !== 'string') {
         logger.warn(`Invalid href for ${type}:`, href);
         return;
@@ -49,7 +49,6 @@ const ResourcePreloader: React.FC = () => {
         const link = document.createElement('link');
         link.rel = type;
         link.href = href;
-        if (as) link.setAttribute('as', as);
         if (type === 'preconnect') link.setAttribute('crossorigin', '');
         document.head.appendChild(link);
         
@@ -64,12 +63,12 @@ const ResourcePreloader: React.FC = () => {
     addResourceHint('preconnect', 'https://fonts.googleapis.com');
     addResourceHint('preconnect', 'https://images.unsplash.com');
     
-    // Prefetch important routes as strings
+    // Prefetch important routes
     const importantRoutes = ['/rhca', '/adc', '/igm'];
     importantRoutes.forEach(route => {
       // Make sure we're dealing with string routes only
       if (typeof route === 'string') {
-        addResourceHint('prefetch', route, 'fetch'); // Using 'fetch' for routes
+        addResourceHint('prefetch', route);
       }
     });
     

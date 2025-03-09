@@ -31,9 +31,14 @@ export class ErrorBoundary extends React.Component<Props, State> {
   }
 
   static getDerivedStateFromError(error: Error): State {
+    // Ensure error has a message
+    if (!error.message) {
+      error.message = 'Unknown error';
+    }
+    
     console.error("[ErrorBoundary] getDerivedStateFromError:", {
       error,
-      message: error.message || "Unknown error", // Ensure there's always a message
+      message: error.message,
       stack: error.stack,
       name: error.name
     });
@@ -54,11 +59,13 @@ export class ErrorBoundary extends React.Component<Props, State> {
       error.message = `Error in ${boundaryName}`;
     }
     
-    // Use our enhanced error logger with proper typing
-    // Ensuring the componentStack is always available
-    logReactError(error, {
+    // Ensure componentStack is always available
+    const safeErrorInfo = {
       componentStack: errorInfo.componentStack || 'No component stack available'
-    }, boundaryName);
+    };
+    
+    // Use our enhanced error logger
+    logReactError(error, safeErrorInfo, boundaryName);
 
     // Add specific error handling for downloads
     if (error.message.includes('download') || error.message.includes('fetch')) {
@@ -77,8 +84,21 @@ export class ErrorBoundary extends React.Component<Props, State> {
       console.error("[ErrorBoundary] Chunk loading diagnostic:", getLoadingDiagnostics());
     }
     
+    // Handle common React Router errors
+    if (error.stack && (
+      error.stack.includes('router.js') || 
+      error.stack.includes('react-router') ||
+      error.stack.includes('index.js:1374')
+    )) {
+      console.error("[ErrorBoundary] React Router error detected:", {
+        message: error.message || "Router error",
+        path: window.location.pathname,
+        search: window.location.search
+      });
+    }
+    
     // Set error info in state
-    this.setState({ errorInfo });
+    this.setState({ errorInfo: safeErrorInfo });
   }
 
   handleRetry = () => {
@@ -98,6 +118,12 @@ export class ErrorBoundary extends React.Component<Props, State> {
       this.setState({ hasError: false, error: undefined, errorInfo: undefined });
     } else if (errorDetails.type === 'download_error') {
       this.setState({ hasError: false, error: undefined, errorInfo: undefined });
+    } else if (error.stack && (
+      error.stack.includes('router.js') || 
+      error.stack.includes('react-router')
+    )) {
+      // For router errors, try navigating to home
+      window.location.href = '/';
     } else {
       window.location.reload();
     }

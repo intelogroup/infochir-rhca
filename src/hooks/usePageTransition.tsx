@@ -15,14 +15,14 @@ interface PageTransitionState {
  * Custom hook to manage page transitions and ensure proper cleanup between route changes
  */
 export const usePageTransition = (location: Location): PageTransitionState => {
+  // Ensure we always have a valid transition key
+  const generateSafeKey = (loc: Location | null) => {
+    if (!loc) return Math.random().toString(36).substring(2, 8);
+    return loc.key || loc.pathname || Math.random().toString(36).substring(2, 8);
+  };
+
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [transitionKey, setTransitionKey] = useState<string>(() => {
-    // Generate a safe key from location or fallback to a random string
-    if (location) {
-      return location.key || location.pathname || Math.random().toString(36).substring(2, 8);
-    }
-    return Math.random().toString(36).substring(2, 8);
-  });
+  const [transitionKey, setTransitionKey] = useState<string>(() => generateSafeKey(location));
   const previousLocationRef = useRef<Location | null>(null);
   
   // Handle location changes
@@ -42,13 +42,15 @@ export const usePageTransition = (location: Location): PageTransitionState => {
     // Skip if pathname hasn't changed (query params changed)
     if (previousLocationRef.current.pathname === location.pathname) {
       previousLocationRef.current = location;
+      // Still update the transition key for query param changes
+      setTransitionKey(generateSafeKey(location));
       return;
     }
 
     const cleanup = () => {
       if (!previousLocationRef.current) return;
       
-      logger.log(`Cleaning up resources for route: ${previousLocationRef.current?.pathname}`);
+      logger.log(`Cleaning up resources for route: ${previousLocationRef.current?.pathname || ''}`);
       
       // Cancel any pending network requests specific to the previous route
       try {
@@ -64,13 +66,19 @@ export const usePageTransition = (location: Location): PageTransitionState => {
       
       // Clear any route-specific timeouts or intervals
       try {
-        const routeTimers = window.__ROUTE_TIMERS__ || {};
-        if (routeTimers[previousLocationRef.current?.pathname || '']) {
-          routeTimers[previousLocationRef.current?.pathname || ''].forEach(
+        // Initialize __ROUTE_TIMERS__ if it doesn't exist
+        if (!window.__ROUTE_TIMERS__) {
+          window.__ROUTE_TIMERS__ = {};
+        }
+        
+        const routeTimers = window.__ROUTE_TIMERS__;
+        const prevPath = previousLocationRef.current?.pathname || '';
+        
+        if (routeTimers[prevPath]) {
+          routeTimers[prevPath].forEach(
             (timerId: number) => window.clearTimeout(timerId)
           );
-          delete routeTimers[previousLocationRef.current?.pathname || ''];
-          window.__ROUTE_TIMERS__ = routeTimers;
+          delete routeTimers[prevPath];
         }
       } catch (error) {
         logger.warn('Error clearing route timers', error);
@@ -85,7 +93,7 @@ export const usePageTransition = (location: Location): PageTransitionState => {
       cleanup();
       
       // Generate a safe transition key
-      const newKey = location.key || location.pathname || Math.random().toString(36).substring(2, 8);
+      const newKey = generateSafeKey(location);
       setTransitionKey(newKey);
       
       previousLocationRef.current = location;

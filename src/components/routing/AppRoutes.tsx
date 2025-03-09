@@ -72,31 +72,24 @@ export const AppRoutes = React.memo(() => {
 
   // Pre-load important routes when the app loads - fixed version
   React.useEffect(() => {
-    // Use import() to properly preload main routes
-    const preloadRoutes = async () => {
-      try {
-        // Create a list of paths to preload
-        const commonRoutes = ['/', '/about', '/rhca', '/igm'];
-        
-        // Safely add preload link tags for common routes
-        commonRoutes.forEach(route => {
-          if (typeof route === 'string') {
-            const link = document.createElement('link');
-            link.rel = 'preload';
-            link.as = 'fetch'; // Use 'fetch' instead of 'document' for routes
-            link.href = route;
-            link.crossOrigin = 'anonymous';
-            document.head.appendChild(link);
-          }
-        });
-        
-        logger.log('Preloaded common routes:', commonRoutes);
-      } catch (error) {
-        logger.error(error, { component: 'AppRoutes', context: 'preloadRoutes' });
-      }
-    };
-    
-    preloadRoutes();
+    try {
+      // Create a list of paths to preload
+      const commonRoutes = ['/', '/about', '/rhca', '/igm'];
+      
+      // Use prefetch rel instead of preload for navigation hints
+      commonRoutes.forEach(route => {
+        if (typeof route === 'string') {
+          const link = document.createElement('link');
+          link.rel = 'prefetch';
+          link.href = route;
+          document.head.appendChild(link);
+        }
+      });
+      
+      logger.log('Preloaded common routes:', commonRoutes);
+    } catch (error) {
+      logger.error(error, { component: 'AppRoutes', context: 'preloadRoutes' });
+    }
   }, []);
 
   return (

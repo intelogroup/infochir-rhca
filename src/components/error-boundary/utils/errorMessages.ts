@@ -8,6 +8,23 @@ export const getErrorMessage = (error: Error) => {
                           error.message.includes('fetch') ||
                           error.message.includes('network') ||
                           error.message.includes('Failed to fetch');
+  const isRouterError = error.stack && (
+                        error.stack.includes('router.js') || 
+                        error.stack.includes('react-router') ||
+                        error.stack.includes('index.js:1374'));
+
+  if (isRouterError) {
+    return {
+      title: "Erreur de navigation",
+      message: "Un problème est survenu lors de la navigation. Veuillez réessayer.",
+      type: "router_error",
+      details: [
+        "Essayez de rafraîchir la page",
+        "Vérifiez l'URL que vous essayez d'atteindre",
+        "Retournez à la page d'accueil et réessayez"
+      ]
+    };
+  }
 
   if (isChunkError) {
     return {

@@ -7,7 +7,14 @@ export const logError = (
   context: string, 
   metadata: Record<string, any> = {}
 ): void => {
-  const errorObj = error instanceof Error ? error : new Error(String(error));
+  // Ensure we have a proper Error object
+  const errorObj = error instanceof Error ? error : new Error(String(error || 'Unknown error'));
+  
+  // Make sure the error message is never empty
+  if (!errorObj.message) {
+    errorObj.message = `Error in ${context}`;
+  }
+  
   const timestamp = new Date().toISOString();
   
   // Construct error details
@@ -47,6 +54,11 @@ export const logReactError = (
   errorInfo: { componentStack: string }, 
   componentName: string
 ): void => {
+  // Make sure the error message is never empty
+  if (!error.message) {
+    error.message = `Error in ${componentName}`;
+  }
+  
   logError(error, `React Component: ${componentName}`, {
     componentStack: errorInfo.componentStack,
     componentName
