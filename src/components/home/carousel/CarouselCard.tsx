@@ -4,8 +4,7 @@ import { Highlight } from "./carouselData";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, User } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
 
 interface CarouselCardProps {
   highlight: Highlight;
@@ -13,8 +12,6 @@ interface CarouselCardProps {
 }
 
 export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
-  const [imageLoaded, setImageLoaded] = useState(false);
-  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -23,19 +20,12 @@ export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
       className="rounded-xl overflow-hidden bg-white shadow-md h-full flex flex-col"
     >
       <div className="relative h-48 overflow-hidden">
-        {!imageLoaded && (
-          <Skeleton className="absolute inset-0 w-full h-full" />
-        )}
-        <img
+        <ImageOptimizer
           src={highlight.image}
           alt={highlight.title}
           width={400}
           height={200}
-          className={`w-full h-full object-cover transition-opacity duration-300 ${
-            imageLoaded ? 'opacity-100' : 'opacity-0'
-          }`}
-          onLoad={() => setImageLoaded(true)}
-          loading="lazy"
+          className="w-full h-full object-cover"
         />
         <div className="absolute top-3 right-3">
           <Badge variant="secondary" className="backdrop-blur-sm bg-white/10">

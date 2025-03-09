@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, User, Eye, Share2, Download, BookOpen } from "lucide-react";
@@ -8,7 +9,7 @@ import { AtlasModal } from "./AtlasModal";
 import { motion } from "framer-motion";
 import { AtlasCategory } from "./data/atlasCategories";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
 import { trackDownload } from "@/lib/analytics/download";
 
 interface AtlasCardProps {
@@ -18,7 +19,6 @@ interface AtlasCardProps {
 
 const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
   const [showModal, setShowModal] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
 
   const handleShare = () => {
     const shareUrl = `${window.location.origin}/adc/chapters/${chapter.id}`;
@@ -68,8 +68,6 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
   };
 
   const coverImage = chapter.coverImage || defaultCoverImages[chapter.id as keyof typeof defaultCoverImages] || defaultCoverImages["0"];
-  // Add query parameters to optimize the cover image size
-  const optimizedCoverImage = `${coverImage}?w=320&h=240&fit=cover&q=80`;
 
   return (
     <>
@@ -81,19 +79,13 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
       >
         <Card className="group h-full flex flex-col overflow-hidden border-transparent hover:border-secondary/30 transition-all duration-300">
           <div className="relative h-32 overflow-hidden">
-            {!imageLoaded && (
-              <Skeleton className="absolute inset-0 w-full h-full" />
-            )}
-            <img
-              src={optimizedCoverImage}
+            <ImageOptimizer
+              src={coverImage}
               alt={chapter.title}
               width={320}
               height={240}
-              className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${
-                !imageLoaded ? 'opacity-0' : 'opacity-100'
-              }`}
-              onLoad={() => setImageLoaded(true)}
-              loading="lazy"
+              className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
+              fallbackText={chapter.title}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-background/20" />
           </div>

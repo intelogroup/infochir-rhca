@@ -3,14 +3,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Suspense, lazy } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
-
-const LazyImage = lazy(() => import("./LazyImage"));
-
-const LoadingSkeleton = () => (
-  <Skeleton className="h-28 w-28 rounded-full" />
-);
+import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
 
 export const ADCHeader = () => {
   return (
@@ -30,15 +23,14 @@ export const ADCHeader = () => {
           className="space-y-8"
         >
           <div className="flex justify-center">
-            <Suspense fallback={<LoadingSkeleton />}>
-              <LazyImage 
-                src="/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png"
-                alt="Atlas ADC Logo"
-                className="h-28 w-28 object-contain"
-                width={112}
-                height={112}
-              />
-            </Suspense>
+            <ImageOptimizer 
+              src="/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png"
+              alt="Atlas ADC Logo"
+              className="h-28 w-28 object-contain"
+              width={112}
+              height={112}
+              priority={true}
+            />
           </div>
           
           <div className="space-y-4">
