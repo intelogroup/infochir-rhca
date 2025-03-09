@@ -13,14 +13,14 @@ export const ProductIcon = ({ icon: Icon, logo, title }: ProductIconProps) => {
       <img 
         src={logo} 
         alt={`${title} logo`} 
-        className="w-20 h-20 object-contain max-w-full" 
+        className="h-16 w-auto object-contain max-w-full" 
       />
     );
   }
 
   return (
-    <div className="w-20 h-20 flex items-center justify-center rounded-full bg-primary/5">
-      <Icon className="text-primary h-10 w-10" />
+    <div className="w-16 h-16 flex items-center justify-center rounded-full bg-primary/5">
+      <Icon className="text-primary h-8 w-8" />
     </div>
   );
 };
