@@ -32,10 +32,9 @@ export const useFounders = () => {
         logger.info('Starting founders data fetch...');
         setLoading(true);
         
-        // Log the query we're about to execute with the new display_order column
+        // Fetch founders directly from the founders table
         logger.info('Executing Supabase query: SELECT * FROM founders ORDER BY display_order, name');
         
-        // Fetch founders - order by display_order as primary, name as secondary sort
         const { data: foundersData, error: foundersError } = await supabase
           .from('founders')
           .select('*')
@@ -71,7 +70,6 @@ export const useFounders = () => {
         
         const transformedFounders = foundersData.map((founder, index) => {
           try {
-            // Use the image_path directly since it's now a full URL
             return {
               name: founder.name,
               title: founder.title,
