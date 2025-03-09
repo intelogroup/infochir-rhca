@@ -1,22 +1,20 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import type { Founder } from '@/components/home/founders/types';
 import { getFounderAvatarUrl } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-export interface FounderFromDB {
-  id: string;
+export interface Founder {
   name: string;
   title: string;
   role: string;
-  bio: string | null;
-  location: string | null;
-  image_path: string | null;
-  is_deceased: boolean;
-  specialties: string[] | null;
-  achievements: string[] | null;
-  responsibilities: string[] | null;
+  image?: string;
+  bio?: string;
+  location?: string;
+  isDeceased?: boolean;
+  specialties?: string[];
+  achievements?: string[];
+  responsibilities?: string[];
 }
 
 export const useFounders = () => {
@@ -37,8 +35,13 @@ export const useFounders = () => {
           
         if (foundersError) throw foundersError;
         
+        if (!foundersData || foundersData.length === 0) {
+          setFounders([]);
+          return;
+        }
+        
         // Map DB data to Founder type
-        const transformedFounders = (foundersData as FounderFromDB[]).map((founder: FounderFromDB) => {
+        const transformedFounders = foundersData.map((founder) => {
           return {
             name: founder.name,
             title: founder.title,

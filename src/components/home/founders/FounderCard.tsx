@@ -1,104 +1,62 @@
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { motion } from "framer-motion";
-import { UserRound } from "lucide-react";
-import { Founder } from "./types";
-import { getFounderAvatarUrl } from "@/integrations/supabase/client";
+import React from 'react';
+import type { Founder } from '@/hooks/useFounders';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface FounderCardProps {
   founder: Founder;
   onClick: () => void;
 }
 
-export const FounderCard = ({ founder, onClick }: FounderCardProps) => {
-  const avatarUrl = founder.image ? getFounderAvatarUrl(founder.image) : undefined;
+const FounderCard: React.FC<FounderCardProps> = ({ founder, onClick }) => {
+  const [imageLoaded, setImageLoaded] = React.useState(false);
+  const [imageError, setImageError] = React.useState(false);
 
   return (
-    <Card 
-      className={`relative group overflow-hidden backdrop-blur-sm border-0 cursor-pointer h-full min-h-[300px] max-h-[400px] flex flex-col ${
-        founder.isDeceased 
-          ? 'bg-gradient-to-br from-gray-50/90 to-gray-100/90' 
-          : 'bg-gradient-to-br from-white/90 to-gray-50/90 hover:shadow-[0_0_30px_rgba(30,64,175,0.2)] transition-all duration-500'
+    <div 
+      className={`flex flex-col items-center p-4 rounded-lg transition-transform duration-200 hover:shadow-md cursor-pointer ${
+        founder.isDeceased ? 'opacity-75' : ''
       }`}
       onClick={onClick}
     >
-      <CardContent className="p-6 sm:p-8 flex flex-col h-full justify-between">
-        <div className="flex flex-col items-center text-center h-full">
-          <motion.div 
-            className={`relative w-24 h-24 sm:w-32 sm:h-32 mb-4 sm:mb-6 ${
-              founder.isDeceased ? 'grayscale' : ''
+      <div className="relative mb-4">
+        {!imageLoaded && !imageError && (
+          <Skeleton className="w-32 h-32 rounded-full absolute inset-0" />
+        )}
+        
+        {founder.image && !imageError ? (
+          <img
+            src={founder.image}
+            alt={`Photo de ${founder.name}`}
+            className={`w-32 h-32 object-cover rounded-full border-2 ${
+              founder.isDeceased ? 'border-gray-400 grayscale' : 'border-primary'
             }`}
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF]/30 to-[#41b06e]/30 rounded-full animate-pulse" />
-            <div className={`relative w-full h-full rounded-full overflow-hidden ring-4 transform transition-all duration-500 ${
-              founder.isDeceased 
-                ? 'ring-gray-200' 
-                : 'ring-[#1E40AF] group-hover:ring-[#1E40AF]/80'
-            }`}>
-              {avatarUrl ? (
-                <Avatar className="w-full h-full">
-                  <AvatarImage
-                    src={avatarUrl}
-                    alt={founder.name}
-                    className="object-cover w-full h-full"
-                    style={{
-                      objectFit: "cover"
-                    }}
-                  />
-                  <AvatarFallback>
-                    <UserRound className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400" />
-                  </AvatarFallback>
-                </Avatar>
-              ) : (
-                <div className={`w-full h-full flex items-center justify-center ${
-                  founder.isDeceased ? 'bg-gray-200' : 'bg-[#1E40AF]/10'
-                }`}>
-                  <UserRound className={`w-10 h-10 sm:w-12 sm:h-12 ${
-                    founder.isDeceased ? 'text-gray-400' : 'text-[#1E40AF]'
-                  }`} />
-                </div>
-              )}
-            </div>
-          </motion.div>
-          
-          <div className="flex-grow flex flex-col justify-center items-center mb-4">
-            <motion.h3 
-              className={`font-semibold text-lg sm:text-xl mb-2 transition-colors duration-300 line-clamp-2 ${
-                founder.isDeceased ? 'text-gray-500' : 'text-gray-900 group-hover:text-[#1E40AF]'
-              }`}
-              whileHover={{ scale: 1.02 }}
-            >
-              {founder.name}
-            </motion.h3>
-            <p className={`text-sm mb-3 line-clamp-2 ${
-              founder.isDeceased ? 'text-gray-400' : 'text-gray-600'
-            }`}>
-              {founder.title}
-            </p>
+            onLoad={() => setImageLoaded(true)}
+            onError={() => setImageError(true)}
+            style={{ display: imageLoaded ? 'block' : 'none' }}
+          />
+        ) : (
+          <div className={`w-32 h-32 rounded-full border-2 flex items-center justify-center bg-gray-100 ${
+            founder.isDeceased ? 'border-gray-400' : 'border-primary'
+          }`}>
+            <span className="text-3xl font-semibold text-gray-500">
+              {founder.name.charAt(0)}
+            </span>
           </div>
-          
-          <div className="mt-auto">
-            <motion.span 
-              className={`inline-flex items-center rounded-full px-3 py-1 sm:px-4 sm:py-1.5 text-xs sm:text-sm font-medium ${
-                founder.isDeceased 
-                  ? 'bg-gray-100 text-gray-500' 
-                  : 'bg-gradient-to-r from-[#1E40AF]/10 to-[#41b06e]/10 text-[#1E40AF] group-hover:from-[#1E40AF]/20 group-hover:to-[#41b06e]/20 transition-colors duration-300'
-              }`}
-              whileHover={{ scale: 1.05 }}
-            >
-              {founder.role}
-            </motion.span>
-            {founder.isDeceased && (
-              <div className="mt-4 text-sm text-gray-500 italic">
-                In memoriam
-              </div>
-            )}
+        )}
+        
+        {founder.isDeceased && (
+          <div className="absolute -top-2 -right-2 bg-gray-500 text-white text-xs px-2 py-1 rounded-full">
+            In memoriam
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        )}
+      </div>
+      
+      <h3 className="font-bold text-lg text-center">{founder.name}</h3>
+      <p className="text-sm text-gray-600 text-center">{founder.title}</p>
+      <p className="text-xs text-gray-500 text-center mt-1">{founder.role}</p>
+    </div>
   );
 };
+
+export default FounderCard;
