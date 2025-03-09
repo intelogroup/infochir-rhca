@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { Founder } from '@/components/home/founders/types';
+import { toast } from 'sonner';
 
 export interface FounderFromDB {
   id: string;
@@ -107,6 +108,7 @@ export const useFounders = () => {
       } catch (err) {
         console.error('Error fetching founders:', err);
         setError(err instanceof Error ? err : new Error(String(err)));
+        toast.error("Erreur lors du chargement des fondateurs");
       } finally {
         setLoading(false);
       }
