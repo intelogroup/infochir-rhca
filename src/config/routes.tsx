@@ -1,8 +1,8 @@
 
-import { Home } from "@/pages/Home";
-import { NotFound } from "@/pages/NotFound";
+import Home from "@/pages/Home";
+import NotFound from "@/pages/NotFound";
 import TriggerUploads from "@/pages/TriggerUploads";
-import { Article } from "@/pages/articles/ArticleDetail";
+import ArticleDetail from "@/pages/articles/ArticleDetail";
 import { MainLayout } from "@/components/layouts/MainLayout";
 
 export const routes = [
@@ -13,7 +13,7 @@ export const routes = [
   },
   {
     path: "/articles/:id",
-    element: <MainLayout><Article /></MainLayout>,
+    element: <MainLayout><ArticleDetail /></MainLayout>,
     name: "article",
   },
   {
