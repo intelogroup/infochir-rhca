@@ -1,14 +1,6 @@
-import { introductionChapter } from "./categories/introduction";
-import { traumaChapters } from "./categories/trauma";
-import { specialtiesChapters } from "./categories/specialties";
-import { thoracicChapters } from "./categories/thoracic";
-import { digestiveChapters } from "./categories/digestive";
-import { AtlasChapter } from "../types";
+import { supabase } from "@/integrations/supabase/client";
+import type { AtlasChapter } from "../types";
 
-export const atlasChapters: AtlasChapter[] = [
-  introductionChapter,
-  ...traumaChapters,
-  ...specialtiesChapters,
-  ...thoracicChapters,
-  ...digestiveChapters,
-];
+// This file is intentionally empty as we're now fetching real data from Supabase
+// The mock data has been removed in favor of real data
+export const atlasChapters: AtlasChapter[] = [];

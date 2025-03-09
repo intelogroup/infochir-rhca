@@ -17,6 +17,7 @@ export const ModalHeader = ({ chapter, category }: ModalHeaderProps) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   
   const defaultCoverImage = "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=800&fit=crop";
+  // Use the chapter's cover image from Supabase if available, otherwise use default
   const coverImage = chapter.coverImage || defaultCoverImage;
   // Optimize the cover image for the modal header
   const optimizedCoverImage = `${coverImage}?w=800&h=320&fit=cover&q=80`;

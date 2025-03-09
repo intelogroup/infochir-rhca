@@ -1,6 +1,6 @@
 
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, getStorageUrl } from "@/integrations/supabase/client";
 import type { AtlasChapter } from "../types";
 import { createLogger } from "@/lib/error-logger";
 
@@ -31,33 +31,43 @@ export const useAtlasArticles = () => {
 
         logger.log(`Found ${data.length} ADC articles in the articles table`);
 
-        const chapters: AtlasChapter[] = data?.map(item => ({
-          id: item.id,
-          title: item.title,
-          description: item.abstract || undefined,
-          abstract: item.abstract,
-          content: item.abstract,
-          lastUpdate: item.updated_at,
-          publicationDate: item.publication_date,
-          author: Array.isArray(item.authors) ? item.authors[0] : undefined,
-          authors: Array.isArray(item.authors) ? item.authors : [],
-          status: item.status === 'draft' ? 'coming' : 'available',
-          coverImage: item.image_url,
-          stats: {
-            views: item.views || 0,
-            shares: item.shares || 0,
-            downloads: item.downloads || 0
-          },
-          tags: item.tags || [],
-          volume: item.volume,
-          specialty: item.specialty,
-          category: item.category,
-          source: "ADC",
-          pdfUrl: item.pdf_url,
-          imageUrls: [],
-          institution: item.institution,
-          userId: item.user_id
-        })) || [];
+        const chapters: AtlasChapter[] = data?.map(item => {
+          // Handle cover image from Supabase storage if a filename is provided
+          let coverImage = item.image_url || '';
+          
+          if (item.cover_image_filename) {
+            coverImage = getStorageUrl('adc_covers', item.cover_image_filename);
+            logger.log(`Using cover image from storage: ${coverImage}`);
+          }
+          
+          return {
+            id: item.id,
+            title: item.title,
+            description: item.abstract || undefined,
+            abstract: item.abstract,
+            content: item.abstract,
+            lastUpdate: item.updated_at,
+            publicationDate: item.publication_date,
+            author: Array.isArray(item.authors) ? item.authors[0] : undefined,
+            authors: Array.isArray(item.authors) ? item.authors : [],
+            status: item.status === 'draft' ? 'coming' : 'available',
+            coverImage: coverImage,
+            stats: {
+              views: item.views || 0,
+              shares: item.shares || 0,
+              downloads: item.downloads || 0
+            },
+            tags: item.tags || [],
+            volume: item.volume,
+            specialty: item.specialty,
+            category: item.category,
+            source: "ADC",
+            pdfUrl: item.pdf_url,
+            imageUrls: [],
+            institution: item.institution,
+            userId: item.user_id
+          };
+        }) || [];
 
         return chapters;
       } catch (error) {
