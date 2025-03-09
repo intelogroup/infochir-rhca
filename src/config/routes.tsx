@@ -1,29 +1,69 @@
+import { Home } from "@/pages";
+import Contact from "@/pages/Contact";
+import IGM from "@/pages/IGM";
+import Legal from "@/pages/Legal";
+import Newsletter from "@/pages/Newsletter";
+import NotFound from "@/pages/NotFound";
+import Products from "@/pages/Products";
+import Sponsors from "@/pages/Sponsors";
+import Team from "@/pages/Team";
+import { Article } from "@/pages/articles";
+import TriggerUploads from "@/pages/TriggerUploads";
 
-import * as React from "react";
-import { lazy } from "react";
-
-export const Home = lazy(() => import("@/pages/Home"));
-export const RHCA = lazy(() => import("@/pages/RHCA"));
-export const IGM = lazy(() => import("@/pages/IGM"));
-export const Donate = lazy(() => import("@/pages/Donate"));
-export const DonateSuccess = lazy(() => import("@/pages/donate/DonateSuccess"));
-export const ADC = lazy(() => import("@/pages/ADC"));
-export const IndexMedicus = lazy(() => import("@/pages/IndexMedicus"));
-export const About = lazy(() => import("@/pages/About"));
-export const EditorialCommittee = lazy(() => import("@/pages/EditorialCommittee"));
-export const IGMEditorialCommittee = lazy(() => import("@/pages/igm/EditorialCommittee"));
-export const Submission = lazy(() => import("@/pages/Submission"));
-export const Annuaire = lazy(() => import("@/pages/Annuaire"));
-export const Opportunities = lazy(() => import("@/pages/Opportunities"));
-export const RHCADirectives = lazy(() => import("@/pages/rhca/Directives"));
-export const IGMDirectives = lazy(() => import("@/pages/igm/Directives"));
-export const ArticleDetail = lazy(() => import("@/pages/articles/ArticleDetail"));
-export const NotFound = lazy(() => import("@/pages/NotFound"));
-
-// Admin routes
-export const AdminDashboard = lazy(() => import("@/pages/admin/Dashboard"));
-export const AdminContent = lazy(() => import("@/pages/admin/Content"));
-export const AdminUsers = lazy(() => import("@/pages/admin/Users"));
-export const AdminAnalytics = lazy(() => import("@/pages/admin/Analytics"));
-export const AdminSettings = lazy(() => import("@/pages/admin/Settings"));
-export const AdminNotFound = lazy(() => import("@/pages/admin/NotFound"));
+export const routes = [
+  {
+    path: "/",
+    element: <Home />,
+    name: "home",
+  },
+  {
+    path: "/articles/:id",
+    element: <Article />,
+    name: "article",
+  },
+  {
+    path: "/produits",
+    element: <Products />,
+    name: "products",
+  },
+  {
+    path: "/sponsors",
+    element: <Sponsors />,
+    name: "sponsors",
+  },
+  {
+    path: "/contact",
+    element: <Contact />,
+    name: "contact",
+  },
+  {
+    path: "/newsletter",
+    element: <Newsletter />,
+    name: "newsletter",
+  },
+  {
+    path: "/igm",
+    element: <IGM />,
+    name: "igm",
+  },
+  {
+    path: "/team",
+    element: <Team />,
+    name: "team",
+  },
+  {
+    path: "/legal",
+    element: <Legal />,
+    name: "legal",
+  },
+  {
+    path: "/admin/uploads",
+    element: <TriggerUploads />,
+    name: "uploads",
+  },
+  {
+    path: "*",
+    element: <NotFound />,
+    name: "notFound",
+  },
+];

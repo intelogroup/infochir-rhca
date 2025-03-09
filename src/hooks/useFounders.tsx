@@ -74,19 +74,19 @@ export const useFounders = () => {
         if (responsibilitiesError) throw responsibilitiesError;
         
         // Map DB data to Founder type
-        const transformedFounders = foundersData.map((founder: FounderFromDB) => {
+        const transformedFounders = (foundersData as FounderFromDB[]).map((founder: FounderFromDB) => {
           // Get specialties for this founder
-          const specialties = specialtiesData
+          const specialties = (specialtiesData as FounderSpecialty[])
             .filter((s: FounderSpecialty) => s.founder_id === founder.id)
             .map((s: FounderSpecialty) => s.specialty);
             
           // Get achievements for this founder
-          const achievements = achievementsData
+          const achievements = (achievementsData as FounderAchievement[])
             .filter((a: FounderAchievement) => a.founder_id === founder.id)
             .map((a: FounderAchievement) => a.achievement);
             
           // Get responsibilities for this founder
-          const responsibilities = responsibilitiesData
+          const responsibilities = (responsibilitiesData as FounderResponsibility[])
             .filter((r: FounderResponsibility) => r.founder_id === founder.id)
             .map((r: FounderResponsibility) => r.responsibility);
             
