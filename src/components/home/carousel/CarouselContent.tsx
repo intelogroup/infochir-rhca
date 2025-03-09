@@ -1,4 +1,4 @@
-importtypescript
+
 import { useState, useEffect } from "react";
 import { 
   Carousel, 
@@ -99,12 +99,24 @@ export const CarouselContentSection = ({ data, sectionRef }: CarouselContentProp
         <CarouselContent className="py-4">
           {data.map((item, index) => (
             <CarouselItemUI key={index} className="md:basis-1/2 lg:basis-1/3 h-[400px]">
-              <div className="h-full" onClick={() => handleItemSelect(item, index)}>
+              <motion.div 
+                className="h-full" 
+                onClick={() => handleItemSelect(item, index)}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
                 <CarouselCard highlight={item} index={index} />
-              </div>
+              </motion.div>
             </CarouselItemUI>
           ))}
         </CarouselContent>
+        
+        {/* Desktop pagination indicator */}
+        <div className="hidden md:flex items-center justify-center mt-4 text-sm text-gray-600">
+          <span>{current + 1} of {data.length}</span>
+        </div>
+
         <CarouselPrevious className="hidden md:flex -left-12 lg:-left-16 h-12 w-12 border-2 border-primary/20 bg-white/80 hover:bg-white">
           <ChevronLeft className="h-6 w-6 text-primary" />
         </CarouselPrevious>

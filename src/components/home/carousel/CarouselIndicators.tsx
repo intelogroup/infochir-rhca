@@ -13,18 +13,26 @@ export const CarouselIndicators = ({
   onSelect 
 }: CarouselIndicatorsProps) => {
   return (
-    <div className="flex justify-center gap-2 mt-4 md:hidden">
-      {items.map((_, index) => (
-        <button
-          key={index}
-          className={cn(
-            "h-2 w-2 rounded-full transition-all duration-300",
-            currentIndex === index ? "bg-primary w-4" : "bg-primary/20"
-          )}
-          onClick={() => onSelect(index)}
-          aria-label={`Go to slide ${index + 1}`}
-        />
-      ))}
+    <div className="flex flex-col items-center mt-4 md:hidden">
+      {/* Dot indicators */}
+      <div className="flex justify-center gap-2">
+        {items.map((_, index) => (
+          <button
+            key={index}
+            className={cn(
+              "h-2 w-2 rounded-full transition-all duration-300",
+              currentIndex === index ? "bg-primary w-4" : "bg-primary/20"
+            )}
+            onClick={() => onSelect(index)}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
+      
+      {/* Pagination text indicator */}
+      <div className="text-sm text-gray-600 mt-2">
+        {currentIndex + 1} of {items.length}
+      </div>
     </div>
   );
 };
