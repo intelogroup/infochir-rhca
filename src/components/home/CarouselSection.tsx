@@ -2,7 +2,7 @@
 import {
   Carousel,
   CarouselContent,
-  CarouselItem,
+  CarouselItem as CarouselItemUI,
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
@@ -272,11 +272,11 @@ export const CarouselSection = () => {
         >
           <CarouselContent className="py-4">
             {displayData.map((highlight, index) => (
-              <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3 h-[400px]">
+              <CarouselItemUI key={index} className="md:basis-1/2 lg:basis-1/3 h-[400px]">
                 <div className="h-full" onClick={() => handleItemSelect(highlight, index)}>
                   <CarouselCard highlight={highlight} index={index} />
                 </div>
-              </CarouselItem>
+              </CarouselItemUI>
             ))}
           </CarouselContent>
           <CarouselPrevious className="hidden md:flex -left-12 lg:-left-16 h-12 w-12 border-2 border-primary/20 bg-white/80 hover:bg-white">

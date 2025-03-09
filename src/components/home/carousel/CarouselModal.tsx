@@ -106,9 +106,8 @@ export const CarouselModal = ({
             
             <div className="mt-auto pt-4">
               <Button
-                as="a"
-                href={item.link}
                 className="w-full sm:w-auto"
+                onClick={() => window.open(item.link, '_blank')}
               >
                 Lire l'article complet
               </Button>
