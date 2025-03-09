@@ -2,28 +2,28 @@
 import { Home } from "@/pages/Home";
 import { NotFound } from "@/pages/NotFound";
 import TriggerUploads from "@/pages/TriggerUploads";
-// Import the Article component
 import { Article } from "@/pages/articles/ArticleDetail";
+import { MainLayout } from "@/components/layouts/MainLayout";
 
 export const routes = [
   {
     path: "/",
-    element: <Home />,
+    element: <MainLayout><Home /></MainLayout>,
     name: "home",
   },
   {
     path: "/articles/:id",
-    element: <Article />,
+    element: <MainLayout><Article /></MainLayout>,
     name: "article",
   },
   {
     path: "/admin/uploads",
-    element: <TriggerUploads />,
+    element: <MainLayout><TriggerUploads /></MainLayout>,
     name: "uploads",
   },
   {
     path: "*",
-    element: <NotFound />,
+    element: <MainLayout><NotFound /></MainLayout>,
     name: "notFound",
   },
 ];
