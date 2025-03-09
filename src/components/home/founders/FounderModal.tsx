@@ -1,8 +1,10 @@
 
-import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { X } from "lucide-react";
+import { Founder } from "@/hooks/useFounders";
 import { Button } from "@/components/ui/button";
-import type { Founder } from '@/hooks/useFounders';
+import { Badge } from "@/components/ui/badge";
 
 interface FounderModalProps {
   founder: Founder;
@@ -10,90 +12,99 @@ interface FounderModalProps {
   onClose: () => void;
 }
 
-const FounderModal: React.FC<FounderModalProps> = ({ founder, isOpen, onClose }) => {
-  if (!founder) return null;
+export const FounderModal = ({ founder, isOpen, onClose }: FounderModalProps) => {
+  // Generate initials from name
+  const initials = founder.name
+    .split(' ')
+    .map(part => part[0])
+    .join('')
+    .substring(0, 2)
+    .toUpperCase();
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="text-xl">{founder.name}</DialogTitle>
-          <DialogDescription className="text-sm text-muted-foreground">
-            {founder.title} · {founder.role}
-            {founder.location && ` · ${founder.location}`}
-          </DialogDescription>
+      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
+        <DialogClose asChild className="absolute right-4 top-4">
+          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onClose}>
+            <X className="h-4 w-4" />
+            <span className="sr-only">Close</span>
+          </Button>
+        </DialogClose>
+        
+        <DialogHeader className="pt-6 sm:text-center flex flex-col items-center">
+          <Avatar className="h-24 w-24 border-2 border-white shadow-lg mx-auto mb-4">
+            <AvatarImage 
+              src={founder.image} 
+              alt={founder.name} 
+              className="object-cover"
+            />
+            <AvatarFallback className="text-2xl bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+          
+          <DialogTitle className="text-2xl font-bold text-center">
+            {founder.name}
+            {founder.isDeceased && (
+              <Badge variant="outline" className="ml-2 bg-gray-100">
+                In Memoriam
+              </Badge>
+            )}
+          </DialogTitle>
+          
+          <div className="mt-1 text-center">
+            <p className="text-gray-700 font-medium">{founder.title}</p>
+            <p className="text-gray-500 text-sm mt-1">{founder.role}</p>
+            {founder.location && (
+              <p className="text-gray-500 text-sm mt-1">{founder.location}</p>
+            )}
+          </div>
         </DialogHeader>
         
-        <div className="grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 py-2">
-          <div className="flex justify-center">
-            {founder.image ? (
-              <img
-                src={founder.image}
-                alt={`Photo de ${founder.name}`}
-                className={`w-28 h-28 object-cover rounded-full border-2 ${
-                  founder.isDeceased ? 'border-gray-400 grayscale' : 'border-primary'
-                }`}
-              />
-            ) : (
-              <div className={`w-28 h-28 rounded-full border-2 flex items-center justify-center bg-gray-100 ${
-                founder.isDeceased ? 'border-gray-400' : 'border-primary'
-              }`}>
-                <span className="text-3xl font-semibold text-gray-500">
-                  {founder.name.charAt(0)}
-                </span>
-              </div>
-            )}
-          </div>
+        <div className="mt-6 space-y-4">
+          {founder.bio && (
+            <div>
+              <h3 className="font-medium text-gray-900 mb-2">Biographie</h3>
+              <p className="text-gray-600">{founder.bio}</p>
+            </div>
+          )}
           
-          <div className="space-y-3">
-            {founder.bio && (
-              <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-1">Biographie</h4>
-                <p className="text-sm text-gray-600">{founder.bio}</p>
+          {founder.specialties && founder.specialties.length > 0 && (
+            <div>
+              <h3 className="font-medium text-gray-900 mb-2">Spécialités</h3>
+              <div className="flex flex-wrap gap-2">
+                {founder.specialties.map((specialty, index) => (
+                  <Badge key={index} variant="secondary">
+                    {specialty}
+                  </Badge>
+                ))}
               </div>
-            )}
-            
-            {founder.specialties && founder.specialties.length > 0 && (
-              <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-1">Spécialités</h4>
-                <ul className="text-sm text-gray-600 list-disc pl-4">
-                  {founder.specialties.map((specialty, index) => (
-                    <li key={index}>{specialty}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            
-            {founder.achievements && founder.achievements.length > 0 && (
-              <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-1">Réalisations</h4>
-                <ul className="text-sm text-gray-600 list-disc pl-4">
-                  {founder.achievements.map((achievement, index) => (
-                    <li key={index}>{achievement}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            
-            {founder.responsibilities && founder.responsibilities.length > 0 && (
-              <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-1">Responsabilités</h4>
-                <ul className="text-sm text-gray-600 list-disc pl-4">
-                  {founder.responsibilities.map((responsibility, index) => (
-                    <li key={index}>{responsibility}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
+            </div>
+          )}
+          
+          {founder.achievements && founder.achievements.length > 0 && (
+            <div>
+              <h3 className="font-medium text-gray-900 mb-2">Réalisations</h3>
+              <ul className="list-disc pl-5 text-gray-600 space-y-1">
+                {founder.achievements.map((achievement, index) => (
+                  <li key={index}>{achievement}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
+          {founder.responsibilities && founder.responsibilities.length > 0 && (
+            <div>
+              <h3 className="font-medium text-gray-900 mb-2">Responsabilités</h3>
+              <ul className="list-disc pl-5 text-gray-600 space-y-1">
+                {founder.responsibilities.map((responsibility, index) => (
+                  <li key={index}>{responsibility}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
-        
-        <DialogFooter>
-          <Button onClick={onClose}>Fermer</Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 };
-
-export default FounderModal;

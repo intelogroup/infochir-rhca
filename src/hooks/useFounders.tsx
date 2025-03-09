@@ -27,7 +27,7 @@ export const useFounders = () => {
       try {
         setLoading(true);
         
-        // Fetch founders
+        // Fetch founders - order by name instead of display_order
         const { data: foundersData, error: foundersError } = await supabase
           .from('founders')
           .select('*')
@@ -36,9 +36,12 @@ export const useFounders = () => {
         if (foundersError) throw foundersError;
         
         if (!foundersData || foundersData.length === 0) {
+          console.log('No founders data found in database');
           setFounders([]);
           return;
         }
+        
+        console.log('Fetched founders data:', foundersData);
         
         // Map DB data to Founder type
         const transformedFounders = foundersData.map((founder) => {
