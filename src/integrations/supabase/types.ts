@@ -427,6 +427,7 @@ export type Database = {
           achievements: string[] | null
           bio: string | null
           created_at: string | null
+          display_order: number
           id: string
           image_path: string | null
           is_deceased: boolean | null
@@ -442,6 +443,7 @@ export type Database = {
           achievements?: string[] | null
           bio?: string | null
           created_at?: string | null
+          display_order: number
           id?: string
           image_path?: string | null
           is_deceased?: boolean | null
@@ -457,6 +459,7 @@ export type Database = {
           achievements?: string[] | null
           bio?: string | null
           created_at?: string | null
+          display_order?: number
           id?: string
           image_path?: string | null
           is_deceased?: boolean | null

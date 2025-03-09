@@ -27,13 +27,19 @@ export const FoundersSection = () => {
     if (loading) {
       logger.info('Founders loading...');
     } else if (error) {
-      logger.error(error, { context: 'FoundersSection rendering error' });
+      logger.error(error, { 
+        context: 'FoundersSection rendering error',
+        details: error.message
+      });
     } else {
       logger.info(`Founders loaded: ${founders.length} founders`);
       
       // Log deceased vs non-deceased counts
       const deceasedCount = founders.filter(f => f.isDeceased).length;
       logger.info(`Founders breakdown: ${founders.length - deceasedCount} active, ${deceasedCount} deceased`);
+      
+      // Log display order for debugging
+      logger.debug('Display order:', founders.map(f => `${f.name}: ${f.displayOrder}`));
     }
   }, [loading, error, founders]);
 
@@ -58,7 +64,8 @@ export const FoundersSection = () => {
   if (error) {
     logger.error(error, { 
       context: 'Rendering error state',
-      message: error.message
+      message: error.message,
+      stack: error.stack
     });
     return (
       <section className="py-24 relative overflow-hidden">
@@ -67,6 +74,12 @@ export const FoundersSection = () => {
           <div className="mt-2 text-sm text-gray-600">
             {error.message}
           </div>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+          >
+            Réessayer
+          </button>
         </div>
       </section>
     );

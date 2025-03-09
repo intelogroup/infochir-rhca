@@ -19,6 +19,7 @@ export interface Founder {
   specialties?: string[];
   achievements?: string[];
   responsibilities?: string[];
+  displayOrder?: number;
 }
 
 export const useFounders = () => {
@@ -32,20 +33,21 @@ export const useFounders = () => {
         logger.info('Starting founders data fetch...');
         setLoading(true);
         
-        // Log the query we're about to execute
-        logger.info('Executing Supabase query: SELECT * FROM founders ORDER BY name');
+        // Log the query we're about to execute with the new display_order column
+        logger.info('Executing Supabase query: SELECT * FROM founders ORDER BY display_order, name');
         
-        // Fetch founders - order by name
+        // Fetch founders - order by display_order as primary, name as secondary sort
         const { data: foundersData, error: foundersError } = await supabase
           .from('founders')
           .select('*')
-          .order('name');
+          .order('display_order', { ascending: true })
+          .order('name', { ascending: true });
           
         if (foundersError) {
           // Enhanced error logging
           logger.error(foundersError, {
             endpoint: 'founders',
-            query: 'SELECT * FROM founders ORDER BY name',
+            query: 'SELECT * FROM founders ORDER BY display_order, name',
             errorCode: foundersError.code,
             errorMessage: foundersError.message,
             context: 'Fetching founders data'
@@ -89,6 +91,7 @@ export const useFounders = () => {
               specialties: founder.specialties || undefined,
               achievements: founder.achievements || undefined,
               responsibilities: founder.responsibilities || undefined,
+              displayOrder: founder.display_order
             } as Founder;
           } catch (transformError) {
             // Log individual transformation errors but continue processing
@@ -103,7 +106,8 @@ export const useFounders = () => {
               name: founder.name || 'Unknown',
               title: founder.title || 'Unknown',
               role: founder.role || 'Member',
-              isDeceased: !!founder.is_deceased
+              isDeceased: !!founder.is_deceased,
+              displayOrder: founder.display_order || 999 // High number for error cases to push to end
             } as Founder;
           }
         });
@@ -142,6 +146,7 @@ export const useFounders = () => {
   useEffect(() => {
     if (founders.length > 0) {
       logger.info(`State updated with ${founders.length} founders`);
+      logger.debug('Founder order check', founders.map(f => ({ name: f.name, order: f.displayOrder })));
     }
   }, [founders]);
   
