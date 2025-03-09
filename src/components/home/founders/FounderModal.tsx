@@ -5,6 +5,10 @@ import { X } from "lucide-react";
 import { Founder } from "@/hooks/useFounders";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { createLogger } from "@/lib/error-logger";
+
+const logger = createLogger('FounderModal');
 
 interface FounderModalProps {
   founder: Founder;
@@ -21,11 +25,19 @@ export const FounderModal = ({ founder, isOpen, onClose }: FounderModalProps) =>
     .substring(0, 2)
     .toUpperCase();
 
+  // Log when modal opens for debugging
+  if (isOpen) {
+    logger.debug('Modal opened with founder data:', { 
+      name: founder.name,
+      specialties: founder.specialties,
+      achievements: founder.achievements
+    });
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
         <DialogClose asChild className="absolute right-4 top-4">
-          {/* Fixed the button size from "icon" to "sm" */}
           <Button variant="ghost" size="sm" className="h-6 w-6" onClick={onClose}>
             <X className="h-4 w-4" />
             <span className="sr-only">Close</span>
@@ -62,7 +74,9 @@ export const FounderModal = ({ founder, isOpen, onClose }: FounderModalProps) =>
           </div>
         </DialogHeader>
         
-        <div className="mt-6 space-y-4">
+        <Separator className="my-4" />
+        
+        <div className="mt-6 space-y-6">
           {founder.bio && (
             <div>
               <h3 className="font-medium text-gray-900 mb-2">Biographie</h3>

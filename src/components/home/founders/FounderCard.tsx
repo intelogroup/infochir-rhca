@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Founder } from "@/hooks/useFounders";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 interface FounderCardProps {
   founder: Founder;
@@ -54,10 +55,19 @@ export const FounderCard = ({ founder, onClick, memorialStyle = false }: Founder
           <p className="text-sm text-gray-500">{founder.role}</p>
           
           {founder.specialties && founder.specialties.length > 0 && (
-            <div className="pt-2">
-              <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                {founder.specialties[0]}
-              </span>
+            <div className="pt-2 flex flex-wrap justify-center gap-1">
+              {founder.specialties.map((specialty, index) => (
+                index < 2 && (
+                  <Badge key={index} variant="secondary" className="text-xs">
+                    {specialty}
+                  </Badge>
+                )
+              ))}
+              {founder.specialties.length > 2 && (
+                <Badge variant="outline" className="text-xs">
+                  +{founder.specialties.length - 2}
+                </Badge>
+              )}
             </div>
           )}
         </CardContent>

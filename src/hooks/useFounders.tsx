@@ -9,6 +9,7 @@ import { createLogger } from '@/lib/error-logger';
 const logger = createLogger('useFounders');
 
 export interface Founder {
+  id: string;
   name: string;
   title: string;
   role: string;
@@ -33,7 +34,7 @@ export const useFounders = () => {
         logger.info('Starting founders data fetch...');
         setLoading(true);
         
-        // Log the query we're about to execute with the new display_order column
+        // Log the query we're about to execute with the display_order column
         logger.info('Executing Supabase query: SELECT * FROM founders ORDER BY display_order, name');
         
         // Fetch founders - order by display_order as primary, name as secondary sort
@@ -81,6 +82,7 @@ export const useFounders = () => {
             }
             
             return {
+              id: founder.id,
               name: founder.name,
               title: founder.title,
               role: founder.role,
@@ -103,6 +105,7 @@ export const useFounders = () => {
             
             // Return a minimal valid record to prevent the map from failing
             return {
+              id: founder.id,
               name: founder.name || 'Unknown',
               title: founder.title || 'Unknown',
               role: founder.role || 'Member',

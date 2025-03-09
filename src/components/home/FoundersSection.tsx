@@ -7,6 +7,10 @@ import { FounderModal } from "./founders/FounderModal";
 import { useFounders } from "@/hooks/useFounders";
 import { Founder } from "@/hooks/useFounders";
 import { createLogger } from "@/lib/error-logger";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 // Create a logger for the FoundersSection
 const logger = createLogger('FoundersSection');
@@ -51,11 +55,14 @@ export const FoundersSection = () => {
   }, [selectedFounder]);
 
   if (loading) {
-    logger.info('Rendering loading state');
     return (
-      <section className="py-24 relative overflow-hidden">
+      <section className="py-24 relative overflow-hidden" aria-label="Membres fondateurs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="text-xl">Chargement des fondateurs...</div>
+          <LoadingSpinner 
+            text="Chargement des membres fondateurs..." 
+            variant="medical"
+            size="lg"
+          />
         </div>
       </section>
     );
@@ -69,17 +76,37 @@ export const FoundersSection = () => {
     });
     return (
       <section className="py-24 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="text-xl text-red-500">Une erreur est survenue lors du chargement des fondateurs</div>
-          <div className="mt-2 text-sm text-gray-600">
-            {error.message}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Erreur</AlertTitle>
+            <AlertDescription>
+              Une erreur est survenue lors du chargement des fondateurs: {error.message}
+            </AlertDescription>
+          </Alert>
+          <div className="text-center">
+            <Button 
+              onClick={() => window.location.reload()} 
+              className="mt-4"
+            >
+              Réessayer
+            </Button>
           </div>
-          <button 
-            onClick={() => window.location.reload()} 
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-          >
-            Réessayer
-          </button>
+        </div>
+      </section>
+    );
+  }
+
+  if (founders.length === 0) {
+    return (
+      <section className="py-24 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <Alert className="mb-6">
+            <AlertTitle>Information</AlertTitle>
+            <AlertDescription>
+              Aucune information sur les fondateurs n'est disponible pour le moment.
+            </AlertDescription>
+          </Alert>
         </div>
       </section>
     );
@@ -136,7 +163,7 @@ export const FoundersSection = () => {
         >
           {nonDeceasedFounders.map((founder, index) => (
             <motion.div
-              key={founder.name}
+              key={founder.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
@@ -162,7 +189,7 @@ export const FoundersSection = () => {
               <div className={`col-span-1 ${deceasedFounders.length === 1 ? 'md:col-span-2 lg:col-span-3 xl:col-span-4' : ''} grid grid-cols-1 ${deceasedFounders.length > 1 ? 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : ''} gap-8`}>
                 {deceasedFounders.map((founder, index) => (
                   <motion.div
-                    key={founder.name}
+                    key={founder.id}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: (nonDeceasedFounders.length + index) * 0.1 }}
