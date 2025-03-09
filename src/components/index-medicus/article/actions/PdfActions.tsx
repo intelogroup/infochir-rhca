@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Download, ExternalLink, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -52,8 +53,17 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
           setFileExists(exists);
         } else {
           // For external URLs, try a HEAD request
-          const response = await fetch(pdfUrl, { method: 'HEAD' });
-          setFileExists(response.ok);
+          try {
+            const response = await fetch(pdfUrl, { 
+              method: 'HEAD',
+              signal: AbortSignal.timeout(5000) // 5 second timeout
+            });
+            setFileExists(response.ok);
+          } catch (error) {
+            logger.warn('Failed to check external PDF URL', { pdfUrl, error });
+            // Assume it exists if we can't check (might be CORS issues)
+            setFileExists(true);
+          }
         }
       } catch (err) {
         logger.error(err, { action: 'validateFile', pdfUrl });
@@ -80,12 +90,21 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
     
     // Track the view event if we have an article ID
     if (articleId) {
-      // We could add a separate tracking function for views if needed
-      supabase.rpc('increment_count', {
-        table_name: 'articles',
-        column_name: 'views',
-        row_id: articleId
-      });
+      try {
+        // We could add a separate tracking function for views if needed
+        supabase.rpc('increment_count', {
+          table_name: 'articles',
+          column_name: 'views',
+          row_id: articleId
+        }).then(({ error }) => {
+          if (error) {
+            logger.warn('Failed to track PDF view', { error, articleId });
+          }
+        });
+      } catch (error) {
+        logger.warn('Error tracking PDF view', { error, articleId });
+        // Don't show errors to users for analytics failures
+      }
     }
     
     toast.success("PDF ouvert dans un nouvel onglet");

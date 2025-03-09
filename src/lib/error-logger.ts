@@ -27,8 +27,15 @@ export const logError = (
   
   // In production, could send to an error tracking service
   if (process.env.NODE_ENV === 'production') {
-    // Send to your error tracking service here
-    // Example: sendToErrorTrackingService(details);
+    // For future implementation: send to error tracking service
+    try {
+      // Example implementation:
+      // sendToErrorTrackingService(details);
+      console.log('[ErrorTracking] Would send to error tracking service:', details);
+    } catch (trackingError) {
+      // Don't let tracking errors cause additional problems
+      console.error('[ErrorTracking] Failed to track error:', trackingError);
+    }
   }
 };
 
@@ -69,4 +76,53 @@ export const createLogger = (moduleName: string) => {
       }
     }
   };
+};
+
+/**
+ * Setup global error handlers for uncaught exceptions and unhandled rejections
+ */
+export const setupGlobalErrorHandlers = (): void => {
+  const handleUnhandledError = (event: ErrorEvent) => {
+    const error = event.error || new Error(event.message || 'Unknown error');
+    console.error('[Global Error Handler] Uncaught error:', error);
+    logError(error, 'window.onerror', { 
+      message: event.message,
+      filename: event.filename,
+      lineno: event.lineno,
+      colno: event.colno
+    });
+    // Prevent default browser error handling
+    event.preventDefault();
+  };
+
+  const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+    const error = event.reason instanceof Error 
+      ? event.reason 
+      : new Error(String(event.reason || 'Unknown promise rejection'));
+    console.error('[Global Error Handler] Unhandled rejection:', error);
+    logError(error, 'unhandledrejection');
+    // Prevent default browser error handling
+    event.preventDefault();
+  };
+
+  window.addEventListener('error', handleUnhandledError);
+  window.addEventListener('unhandledrejection', handleUnhandledRejection);
+
+  console.log('[Global Error Handler] Global error handlers installed');
+};
+
+// Export a convenience method for toast integration
+export const showErrorToast = (error: unknown, context = 'Application'): void => {
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  logError(error, context);
+  
+  // This implementation doesn't directly depend on a toast library
+  // The consumer will need to implement the actual toast display
+  console.log('[ErrorToast]', { message: errorMessage, context });
+  
+  // Dispatch a custom event that can be listened for by toast components
+  const errorEvent = new CustomEvent('app:error', { 
+    detail: { message: errorMessage, context } 
+  });
+  window.dispatchEvent(errorEvent);
 };

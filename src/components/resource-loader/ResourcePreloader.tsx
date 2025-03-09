@@ -1,6 +1,9 @@
 
 import React, { useEffect } from 'react';
 import { useImageContext } from '@/contexts/ImageContext';
+import { createLogger } from '@/lib/error-logger';
+
+const logger = createLogger('ResourcePreloader');
 
 // This component doesn't render anything visually but preloads critical resources
 const ResourcePreloader: React.FC = () => {
@@ -20,19 +23,32 @@ const ResourcePreloader: React.FC = () => {
       'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=800&fit=crop'
     ];
     
+    logger.log(`Preloading ${criticalImages.length} critical images`);
+    
     // Preload all critical images
     criticalImages.forEach(image => {
-      imageContext.preloadImage(image, true);
+      if (typeof image === 'string') {
+        imageContext.preloadImage(image, true);
+      } else {
+        logger.warn('Invalid image URL in preloading', image);
+      }
     });
     
     // Add resource hints to document head
     const addResourceHint = (type: 'preload' | 'prefetch' | 'preconnect', href: string, as?: string) => {
+      if (typeof href !== 'string') {
+        logger.warn(`Invalid href for ${type}:`, href);
+        return;
+      }
+      
       const link = document.createElement('link');
       link.rel = type;
       link.href = href;
       if (as) link.setAttribute('as', as);
       if (type === 'preconnect') link.setAttribute('crossorigin', '');
       document.head.appendChild(link);
+      
+      logger.debug(`Added ${type} for: ${href}`);
     };
     
     // Preconnect to important domains
@@ -40,14 +56,18 @@ const ResourcePreloader: React.FC = () => {
     addResourceHint('preconnect', 'https://fonts.googleapis.com');
     addResourceHint('preconnect', 'https://images.unsplash.com');
     
-    // Prefetch important routes
-    ['/rhca', '/adc', '/igm'].forEach(route => {
-      addResourceHint('prefetch', route);
+    // Prefetch important routes as strings
+    const importantRoutes = ['/rhca', '/adc', '/igm'];
+    importantRoutes.forEach(route => {
+      addResourceHint('prefetch', route, 'document');
     });
+    
+    logger.log('Resource preloading complete');
     
     // Clean up resource hints on unmount (optional - they're lightweight)
     return () => {
       // No cleanup needed for preloaded images - they stay in cache
+      logger.debug('ResourcePreloader unmounted');
     };
   }, [imageContext]);
   

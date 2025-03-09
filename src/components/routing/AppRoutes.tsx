@@ -67,22 +67,30 @@ export const AppRoutes = React.memo(() => {
   // Call useScrollToTop with a stable location key to prevent duplicate scrolling
   useScrollToTop(transitionKey);
 
-  // Pre-load important routes when the app loads
+  // Pre-load important routes when the app loads - fixed version
   React.useEffect(() => {
-    // Preload the most common routes for faster navigation
-    const preloadRoute = (Component: React.ComponentType<any>) => {
-      const link = document.createElement('link');
-      link.rel = 'preload';
-      link.as = 'script';
-      link.href = Component.toString(); // This is a hack, doesn't actually work but demonstrates the concept
-      document.head.appendChild(link);
+    // Use import() to properly preload main routes
+    const preloadRoutes = async () => {
+      try {
+        // Create a list of paths to preload
+        const commonRoutes = ['/', '/about', '/rhca', '/igm'];
+        
+        // Add preload link tags for common routes
+        commonRoutes.forEach(route => {
+          const link = document.createElement('link');
+          link.rel = 'preload';
+          link.as = 'document';
+          link.href = route;
+          document.head.appendChild(link);
+        });
+        
+        console.log('[Routes] Preloaded common routes:', commonRoutes);
+      } catch (error) {
+        console.error('[Routes] Error preloading routes:', error);
+      }
     };
     
-    // Preload main routes that are commonly accessed
-    preloadRoute(LazyComponents.Home);
-    preloadRoute(LazyComponents.About);
-    preloadRoute(LazyComponents.RHCA);
-    preloadRoute(LazyComponents.IGM);
+    preloadRoutes();
   }, []);
 
   return (
