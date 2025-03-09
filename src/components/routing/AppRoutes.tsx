@@ -18,20 +18,30 @@ export const AppRoutes = () => {
     logger.info(`Route changed to: ${location.pathname}`);
   }, [location]);
 
+  const renderRoutes = (routes: any[]) => {
+    return routes.map((route) => {
+      if (route.children) {
+        return (
+          <Route key={route.path || 'root'} path={route.path} element={route.element}>
+            {renderRoutes(route.children)}
+          </Route>
+        );
+      }
+      
+      return (
+        <Route 
+          key={route.path} 
+          path={route.path} 
+          element={route.element} 
+        />
+      );
+    });
+  };
+
   return (
     <ErrorBoundary>
       <Routes location={location}>
-        {/* Map through defined routes */}
-        {routes.map((route) => {
-          logger.debug(`Rendering route: ${route.path} (${route.name})`);
-          return (
-            <Route 
-              key={route.path} 
-              path={route.path} 
-              element={route.element} 
-            />
-          );
-        })}
+        {renderRoutes(routes)}
       </Routes>
     </ErrorBoundary>
   );
