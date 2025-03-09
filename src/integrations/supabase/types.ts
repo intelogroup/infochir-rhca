@@ -422,6 +422,54 @@ export type Database = {
         }
         Relationships: []
       }
+      founders: {
+        Row: {
+          achievements: string[] | null
+          bio: string | null
+          created_at: string | null
+          id: string
+          image_path: string | null
+          is_deceased: boolean | null
+          location: string | null
+          name: string
+          responsibilities: string[] | null
+          role: string
+          specialties: string[] | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          achievements?: string[] | null
+          bio?: string | null
+          created_at?: string | null
+          id?: string
+          image_path?: string | null
+          is_deceased?: boolean | null
+          location?: string | null
+          name: string
+          responsibilities?: string[] | null
+          role: string
+          specialties?: string[] | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          achievements?: string[] | null
+          bio?: string | null
+          created_at?: string | null
+          id?: string
+          image_path?: string | null
+          is_deceased?: boolean | null
+          location?: string | null
+          name?: string
+          responsibilities?: string[] | null
+          role?: string
+          specialties?: string[] | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       members: {
         Row: {
           avatar_url: string | null
