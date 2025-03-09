@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { getFounderAvatarUrl } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { createLogger } from '@/lib/error-logger';
 
@@ -72,19 +71,12 @@ export const useFounders = () => {
         
         const transformedFounders = foundersData.map((founder, index) => {
           try {
-            // Log image URL generation
-            let imageUrl: string | undefined = undefined;
-            if (founder.image_path) {
-              logger.debug(`Generating image URL for founder ${founder.name} with path: ${founder.image_path}`);
-              imageUrl = getFounderAvatarUrl(founder.image_path);
-              logger.debug(`Generated image URL: ${imageUrl}`);
-            }
-            
+            // Use the image_path directly since it's now a full URL
             return {
               name: founder.name,
               title: founder.title,
               role: founder.role,
-              image: imageUrl,
+              image: founder.image_path || undefined,
               bio: founder.bio || undefined,
               location: founder.location || undefined,
               isDeceased: founder.is_deceased,
