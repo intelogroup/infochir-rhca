@@ -103,11 +103,12 @@ export const NewsletterSection = () => {
           <form onSubmit={handleSubmit} className="space-y-4 backdrop-blur-sm bg-white/5 p-8 rounded-2xl border border-white/10 shadow-xl">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label htmlFor="name" className="text-white/90 text-sm font-medium">
+                <label htmlFor="contact-name" className="text-white/90 text-sm font-medium">
                   Nom*
                 </label>
                 <Input
-                  id="name"
+                  id="contact-name"
+                  name="contact-name"
                   type="text"
                   placeholder="Votre nom"
                   className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white/20"
@@ -115,30 +116,34 @@ export const NewsletterSection = () => {
                   onChange={(e) => setName(e.target.value)}
                   required
                   disabled={isSubmitting}
+                  autoComplete="name"
                 />
               </div>
               <div className="space-y-2">
-                <label htmlFor="phone" className="text-white/90 text-sm font-medium">
+                <label htmlFor="contact-phone" className="text-white/90 text-sm font-medium">
                   Téléphone
                 </label>
                 <Input
-                  id="phone"
+                  id="contact-phone"
+                  name="contact-phone"
                   type="tel"
                   placeholder="Votre numéro"
                   className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white/20"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   disabled={isSubmitting}
+                  autoComplete="tel"
                 />
               </div>
             </div>
             
             <div className="space-y-2">
-              <label htmlFor="email" className="text-white/90 text-sm font-medium">
+              <label htmlFor="contact-email" className="text-white/90 text-sm font-medium">
                 Email*
               </label>
               <Input
-                id="email"
+                id="contact-email"
+                name="contact-email"
                 type="email"
                 placeholder="Votre adresse email"
                 className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white/20"
@@ -146,15 +151,17 @@ export const NewsletterSection = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={isSubmitting}
+                autoComplete="email"
               />
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="message" className="text-white/90 text-sm font-medium">
+              <label htmlFor="contact-message" className="text-white/90 text-sm font-medium">
                 Message*
               </label>
               <Textarea
-                id="message"
+                id="contact-message"
+                name="contact-message"
                 placeholder="Votre message"
                 className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white/20 min-h-[120px]"
                 value={message}

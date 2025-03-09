@@ -69,6 +69,7 @@ export const NewsletterSubscribeFooter = () => {
           </Label>
           <Input
             id="footer-name"
+            name="footer-name"
             type="text"
             placeholder="Votre nom"
             className="bg-white/80 border-gray-200 focus:border-primary"
@@ -76,6 +77,7 @@ export const NewsletterSubscribeFooter = () => {
             onChange={(e) => setName(e.target.value)}
             required
             disabled={isSubmitting}
+            autoComplete="name"
           />
         </div>
         
@@ -85,6 +87,7 @@ export const NewsletterSubscribeFooter = () => {
           </Label>
           <Input
             id="footer-email"
+            name="footer-email"
             type="email"
             placeholder="Votre adresse email"
             className="bg-white/80 border-gray-200 focus:border-primary"
@@ -92,6 +95,7 @@ export const NewsletterSubscribeFooter = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
             disabled={isSubmitting}
+            autoComplete="email"
           />
         </div>
 

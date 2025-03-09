@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { motion } from "framer-motion";
@@ -102,28 +103,34 @@ const Donate = () => {
             >
               <div className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium mb-1 block">Email (required)</label>
+                  <label htmlFor="donor-email" className="text-sm font-medium mb-1 block">Email (required)</label>
                   <Input
+                    id="donor-email"
+                    name="donor-email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
                     required
+                    autoComplete="email"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-1 block">Name (optional)</label>
+                  <label htmlFor="donor-name" className="text-sm font-medium mb-1 block">Name (optional)</label>
                   <Input
+                    id="donor-name"
+                    name="donor-name"
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Enter your name"
+                    autoComplete="name"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-4 block">Select amount</label>
+                <label htmlFor="donation-amount" className="text-sm font-medium mb-4 block">Select amount</label>
                 <DonationAmountSelector
                   selectedAmount={selectedAmount}
                   customAmount={customAmount}

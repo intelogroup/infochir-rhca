@@ -38,9 +38,10 @@ export default defineConfig(({ mode }) => ({
     ]
   },
   define: {
-    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-    'process.env.VITE_APP_PREVIEW': JSON.stringify(isPreview ? 'true' : 'false'),
-    'process.env.DEBUG': JSON.stringify(!isProduction || isPreview ? 'true' : undefined),
+    'import.meta.env.MODE': JSON.stringify(mode),
+    'import.meta.env.DEV': mode === 'development' || isPreview,
+    'import.meta.env.VITE_APP_PREVIEW': JSON.stringify(isPreview ? 'true' : 'false'),
+    'import.meta.env.DEBUG': JSON.stringify(!isProduction || isPreview ? 'true' : undefined),
   },
   build: {
     target: ['es2015', 'edge88', 'firefox78', 'chrome87', 'safari13'],

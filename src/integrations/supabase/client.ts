@@ -10,16 +10,16 @@ const isPreviewMode =
   typeof window !== 'undefined' && 
   (window.location.hostname.includes('preview') || 
    window.location.hostname.includes('lovable.app')) ||
-  process.env.VITE_APP_PREVIEW === 'true';
+  import.meta.env.VITE_APP_PREVIEW === 'true';
 
 // Check if we're in development, preview or debugging mode
-const isDebugMode = process.env.NODE_ENV === 'development' || 
+const isDebugMode = import.meta.env.DEV || 
                   isPreviewMode || 
-                  process.env.DEBUG === 'true';
+                  import.meta.env.DEBUG === 'true';
 
 // Log status for debugging
 if (typeof window !== 'undefined' && isDebugMode) {
-  console.log(`Supabase client initializing in ${isPreviewMode ? 'preview' : process.env.NODE_ENV} mode`);
+  console.log(`Supabase client initializing in ${isPreviewMode ? 'preview' : import.meta.env.MODE} mode`);
   console.log(`Debug mode: ${isDebugMode ? 'enabled' : 'disabled'}`);
 }
 

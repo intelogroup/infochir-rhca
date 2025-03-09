@@ -39,6 +39,7 @@ export const DonationAmountSelector = ({
                 ? "border-primary bg-primary text-white"
                 : "border-gray-200 hover:border-primary/50"
             }`}
+            aria-label={`Donate $${amount}`}
           >
             <span className="relative z-10">${amount}</span>
             <div className={`absolute inset-0 bg-gradient-to-r from-primary/10 to-secondary/10 transition-opacity ${
@@ -48,9 +49,11 @@ export const DonationAmountSelector = ({
         ))}
       </div>
       <div className="space-y-2">
-        <label className="text-sm font-medium">Or enter a custom amount</label>
+        <label htmlFor="custom-amount" className="text-sm font-medium">Or enter a custom amount</label>
         <div className="relative">
           <Input
+            id="custom-amount"
+            name="custom-amount"
             type="number"
             placeholder="0"
             className="pl-8 text-lg"
@@ -58,6 +61,7 @@ export const DonationAmountSelector = ({
             onChange={handleCustomAmountChange}
             max={MAX_DONATION}
             min={0}
+            autoComplete="transaction-amount"
           />
           <span className="absolute left-3 top-1/2 -translate-y-1/2">$</span>
         </div>
