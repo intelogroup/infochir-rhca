@@ -33,13 +33,13 @@ export class ErrorBoundary extends React.Component<Props, State> {
   static getDerivedStateFromError(error: Error): State {
     console.error("[ErrorBoundary] getDerivedStateFromError:", {
       error,
-      message: error.message,
+      message: error.message || "Unknown error", // Ensure there's always a message
       stack: error.stack,
       name: error.name
     });
 
     // Handle context-specific errors
-    if (error.message.includes('must be used within')) {
+    if (error.message && error.message.includes('must be used within')) {
       console.error("[ErrorBoundary] Context provider missing:", error.message);
     }
 
@@ -48,6 +48,11 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     const boundaryName = this.props.name || 'unnamed';
+    
+    // Ensure the error has a message
+    if (!error.message) {
+      error.message = `Error in ${boundaryName}`;
+    }
     
     // Use our enhanced error logger with proper typing
     // Ensuring the componentStack is always available
@@ -102,7 +107,13 @@ export class ErrorBoundary extends React.Component<Props, State> {
     const { error } = this.state;
     if (!error) return null;
 
-    const { title, message, details, type } = getErrorMessage(error);
+    // Ensure we have an error message
+    const safeError = {
+      ...error,
+      message: error.message || "An unknown error occurred"
+    };
+
+    const { title, message, details, type } = getErrorMessage(safeError);
     
     return (
       <Alert variant="destructive" className="p-6">

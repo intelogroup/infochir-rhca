@@ -28,7 +28,11 @@ const ResourcePreloader: React.FC = () => {
     // Preload all critical images
     criticalImages.forEach(image => {
       if (typeof image === 'string') {
-        imageContext.preloadImage(image, true);
+        try {
+          imageContext.preloadImage(image, true);
+        } catch (error) {
+          logger.warn('Error preloading image:', { image, error });
+        }
       } else {
         logger.warn('Invalid image URL in preloading', image);
       }
@@ -41,14 +45,18 @@ const ResourcePreloader: React.FC = () => {
         return;
       }
       
-      const link = document.createElement('link');
-      link.rel = type;
-      link.href = href;
-      if (as) link.setAttribute('as', as);
-      if (type === 'preconnect') link.setAttribute('crossorigin', '');
-      document.head.appendChild(link);
-      
-      logger.debug(`Added ${type} for: ${href}`);
+      try {
+        const link = document.createElement('link');
+        link.rel = type;
+        link.href = href;
+        if (as) link.setAttribute('as', as);
+        if (type === 'preconnect') link.setAttribute('crossorigin', '');
+        document.head.appendChild(link);
+        
+        logger.debug(`Added ${type} for: ${href}`);
+      } catch (error) {
+        logger.warn(`Error adding ${type} for ${href}:`, error);
+      }
     };
     
     // Preconnect to important domains
@@ -61,7 +69,7 @@ const ResourcePreloader: React.FC = () => {
     importantRoutes.forEach(route => {
       // Make sure we're dealing with string routes only
       if (typeof route === 'string') {
-        addResourceHint('prefetch', route, 'document');
+        addResourceHint('prefetch', route, 'fetch'); // Using 'fetch' for routes
       }
     });
     

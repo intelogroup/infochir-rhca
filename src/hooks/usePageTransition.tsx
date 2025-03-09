@@ -16,13 +16,23 @@ interface PageTransitionState {
  */
 export const usePageTransition = (location: Location): PageTransitionState => {
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [transitionKey, setTransitionKey] = useState<string>(() => 
-    location.key || location.pathname || Math.random().toString(36).substring(2, 8)
-  );
+  const [transitionKey, setTransitionKey] = useState<string>(() => {
+    // Generate a safe key from location or fallback to a random string
+    if (location) {
+      return location.key || location.pathname || Math.random().toString(36).substring(2, 8);
+    }
+    return Math.random().toString(36).substring(2, 8);
+  });
   const previousLocationRef = useRef<Location | null>(null);
   
   // Handle location changes
   useEffect(() => {
+    // Skip if location is null or undefined
+    if (!location) {
+      logger.warn('usePageTransition called with null location');
+      return;
+    }
+    
     // Early return if we don't have a previous location (first render)
     if (!previousLocationRef.current) {
       previousLocationRef.current = location;
@@ -36,25 +46,34 @@ export const usePageTransition = (location: Location): PageTransitionState => {
     }
 
     const cleanup = () => {
+      if (!previousLocationRef.current) return;
+      
       logger.log(`Cleaning up resources for route: ${previousLocationRef.current?.pathname}`);
       
       // Cancel any pending network requests specific to the previous route
-      window.dispatchEvent(new CustomEvent('route-change', { 
-        detail: { 
-          from: previousLocationRef.current?.pathname,
-          to: location.pathname 
-        } 
-      }));
+      try {
+        window.dispatchEvent(new CustomEvent('route-change', { 
+          detail: { 
+            from: previousLocationRef.current?.pathname || '',
+            to: location.pathname || ''
+          } 
+        }));
+      } catch (error) {
+        logger.warn('Error dispatching route-change event', error);
+      }
       
       // Clear any route-specific timeouts or intervals
-      // This is a general approach - specific timeouts should be cleared in component useEffect cleanups
-      const routeTimers = window.__ROUTE_TIMERS__ || {};
-      if (routeTimers[previousLocationRef.current?.pathname || '']) {
-        routeTimers[previousLocationRef.current?.pathname || ''].forEach(
-          (timerId: number) => window.clearTimeout(timerId)
-        );
-        delete routeTimers[previousLocationRef.current?.pathname || ''];
-        window.__ROUTE_TIMERS__ = routeTimers;
+      try {
+        const routeTimers = window.__ROUTE_TIMERS__ || {};
+        if (routeTimers[previousLocationRef.current?.pathname || '']) {
+          routeTimers[previousLocationRef.current?.pathname || ''].forEach(
+            (timerId: number) => window.clearTimeout(timerId)
+          );
+          delete routeTimers[previousLocationRef.current?.pathname || ''];
+          window.__ROUTE_TIMERS__ = routeTimers;
+        }
+      } catch (error) {
+        logger.warn('Error clearing route timers', error);
       }
     };
 
@@ -64,7 +83,11 @@ export const usePageTransition = (location: Location): PageTransitionState => {
     // After a short delay, perform cleanup and complete transition
     const transitionTimer = window.setTimeout(() => {
       cleanup();
-      setTransitionKey(location.key || location.pathname || Math.random().toString(36).substring(2, 8));
+      
+      // Generate a safe transition key
+      const newKey = location.key || location.pathname || Math.random().toString(36).substring(2, 8);
+      setTransitionKey(newKey);
+      
       previousLocationRef.current = location;
       setIsTransitioning(false);
     }, 100); // Slightly faster than the animation duration

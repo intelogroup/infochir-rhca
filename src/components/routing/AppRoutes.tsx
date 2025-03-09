@@ -11,6 +11,9 @@ import { useScrollToTop } from "@/hooks/useScrollToTop";
 import * as LazyComponents from "@/config/routes";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePageTransition } from "@/hooks/usePageTransition";
+import { createLogger } from "@/lib/error-logger";
+
+const logger = createLogger('Routes');
 
 // Memoize LoadingFallback to prevent unnecessary re-renders
 const LoadingFallback = React.memo(() => (
@@ -75,18 +78,21 @@ export const AppRoutes = React.memo(() => {
         // Create a list of paths to preload
         const commonRoutes = ['/', '/about', '/rhca', '/igm'];
         
-        // Add preload link tags for common routes
+        // Safely add preload link tags for common routes
         commonRoutes.forEach(route => {
-          const link = document.createElement('link');
-          link.rel = 'preload';
-          link.as = 'document';
-          link.href = route;
-          document.head.appendChild(link);
+          if (typeof route === 'string') {
+            const link = document.createElement('link');
+            link.rel = 'preload';
+            link.as = 'fetch'; // Use 'fetch' instead of 'document' for routes
+            link.href = route;
+            link.crossOrigin = 'anonymous';
+            document.head.appendChild(link);
+          }
         });
         
-        console.log('[Routes] Preloaded common routes:', commonRoutes);
+        logger.log('Preloaded common routes:', commonRoutes);
       } catch (error) {
-        console.error('[Routes] Error preloading routes:', error);
+        logger.error(error, { component: 'AppRoutes', context: 'preloadRoutes' });
       }
     };
     
@@ -94,7 +100,7 @@ export const AppRoutes = React.memo(() => {
   }, []);
 
   return (
-    <ErrorBoundary>
+    <ErrorBoundary name="routes">
       <LazyMotion features={domMax} strict>
         <m.div
           key={transitionKey}

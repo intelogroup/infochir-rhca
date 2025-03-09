@@ -83,26 +83,34 @@ export const createLogger = (moduleName: string) => {
  */
 export const setupGlobalErrorHandlers = (): void => {
   const handleUnhandledError = (event: ErrorEvent) => {
-    const error = event.error || new Error(event.message || 'Unknown error');
-    console.error('[Global Error Handler] Uncaught error:', error);
-    logError(error, 'window.onerror', { 
-      message: event.message,
-      filename: event.filename,
-      lineno: event.lineno,
-      colno: event.colno
-    });
-    // Prevent default browser error handling
-    event.preventDefault();
+    try {
+      const error = event.error || new Error(event.message || 'Unknown error');
+      console.error('[Global Error Handler] Uncaught error:', error);
+      logError(error, 'window.onerror', { 
+        message: event.message,
+        filename: event.filename,
+        lineno: event.lineno,
+        colno: event.colno
+      });
+      // Prevent default browser error handling
+      event.preventDefault();
+    } catch (handlerError) {
+      console.error('[Error Handler] Failed to handle error:', handlerError);
+    }
   };
 
   const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-    const error = event.reason instanceof Error 
-      ? event.reason 
-      : new Error(String(event.reason || 'Unknown promise rejection'));
-    console.error('[Global Error Handler] Unhandled rejection:', error);
-    logError(error, 'unhandledrejection');
-    // Prevent default browser error handling
-    event.preventDefault();
+    try {
+      const error = event.reason instanceof Error 
+        ? event.reason 
+        : new Error(String(event.reason || 'Unknown promise rejection'));
+      console.error('[Global Error Handler] Unhandled rejection:', error);
+      logError(error, 'unhandledrejection');
+      // Prevent default browser error handling
+      event.preventDefault();
+    } catch (handlerError) {
+      console.error('[Error Handler] Failed to handle rejection:', handlerError);
+    }
   };
 
   window.addEventListener('error', handleUnhandledError);
@@ -121,8 +129,12 @@ export const showErrorToast = (error: unknown, context = 'Application'): void =>
   console.log('[ErrorToast]', { message: errorMessage, context });
   
   // Dispatch a custom event that can be listened for by toast components
-  const errorEvent = new CustomEvent('app:error', { 
-    detail: { message: errorMessage, context } 
-  });
-  window.dispatchEvent(errorEvent);
+  try {
+    const errorEvent = new CustomEvent('app:error', { 
+      detail: { message: errorMessage, context } 
+    });
+    window.dispatchEvent(errorEvent);
+  } catch (eventError) {
+    console.error('[ErrorToast] Failed to dispatch error event:', eventError);
+  }
 };
