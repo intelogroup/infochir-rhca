@@ -1,4 +1,3 @@
-
 /**
  * Enhanced error logging utility
  */
@@ -13,6 +12,20 @@ export const logError = (
   // Make sure the error message is never empty
   if (!errorObj.message) {
     errorObj.message = `Error in ${context}`;
+  }
+  
+  // Detect router errors
+  if (errorObj.stack && (
+    errorObj.stack.includes('router.js') || 
+    errorObj.stack.includes('react-router') ||
+    errorObj.stack.includes('index.js:1374') ||
+    errorObj.stack.includes('assets/react-vendor') ||
+    errorObj.stack.includes('at H (router')
+  )) {
+    errorObj.name = 'NavigationError';
+    if (!errorObj.message || errorObj.message === 'Unknown error') {
+      errorObj.message = 'Navigation error occurred';
+    }
   }
   
   const timestamp = new Date().toISOString();

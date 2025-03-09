@@ -1,9 +1,24 @@
+
 export const getErrorMessage = (error: Error) => {
   // Make sure we have a valid error message
-  if (!error.message) {
-    error.message = "Unknown error";
+  if (!error || !error.message) {
+    error = new Error("Unknown error");
   }
 
+  // Enhanced router error detection with more specific patterns
+  const isRouterError = 
+    (error.stack && (
+      error.stack.includes('router.js') || 
+      error.stack.includes('react-router') ||
+      error.stack.includes('index.js:1374') ||
+      error.stack.includes('assets/react-vendor') ||
+      error.stack.includes('at H (router') ||
+      error.message.includes('route') ||
+      error.message.includes('navigation')
+    )) ||
+    error.name === 'NavigationError' ||
+    error.message === 'Unknown error';  // Often router errors have no message
+  
   const isChunkError = error.message.includes('Failed to fetch dynamically imported module');
   const isStripeError = error.message.includes('Stripe') || 
                        error.message.includes('stripe.com') || 
@@ -13,16 +28,6 @@ export const getErrorMessage = (error: Error) => {
                           error.message.includes('network') ||
                           error.message.includes('Failed to fetch');
                           
-  // Enhanced router error detection
-  const isRouterError = (error.stack && (
-                        error.stack.includes('router.js') || 
-                        error.stack.includes('react-router') ||
-                        error.stack.includes('index.js:1374') ||
-                        error.stack.includes('assets/react-vendor') ||
-                        error.message.includes('route') ||
-                        error.message.includes('navigation'))) ||
-                        error.name === 'NavigationError';
-  
   if (isRouterError) {
     return {
       title: "Erreur de navigation",

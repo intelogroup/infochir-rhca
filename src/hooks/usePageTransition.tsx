@@ -17,8 +17,18 @@ interface PageTransitionState {
 export const usePageTransition = (location: Location): PageTransitionState => {
   // Ensure we always have a valid transition key
   const generateSafeKey = (loc: Location | null) => {
-    if (!loc) return Math.random().toString(36).substring(2, 8);
-    return loc.key || loc.pathname || Math.random().toString(36).substring(2, 8);
+    try {
+      if (!loc) return `fallback-${Math.random().toString(36).substring(2, 8)}`;
+      // Use multiple properties to generate a reliable key
+      const key = loc.key || '';
+      const pathname = loc.pathname || '';
+      const search = loc.search || '';
+      return `${key}-${pathname}-${search}`.replace(/[^a-zA-Z0-9-_]/g, '') || 
+             Math.random().toString(36).substring(2, 8);
+    } catch (error) {
+      logger.warn('Error generating transition key:', error);
+      return Math.random().toString(36).substring(2, 8);
+    }
   };
 
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -38,6 +48,8 @@ export const usePageTransition = (location: Location): PageTransitionState => {
       // Early return if we don't have a previous location (first render)
       if (!previousLocationRef.current) {
         previousLocationRef.current = location;
+        // Set initial transition key
+        setTransitionKey(generateSafeKey(location));
         return;
       }
       
@@ -52,7 +64,7 @@ export const usePageTransition = (location: Location): PageTransitionState => {
       const cleanup = () => {
         if (!previousLocationRef.current) return;
         
-        logger.log(`Cleaning up resources for route: ${previousLocationRef.current?.pathname || ''}`);
+        logger.debug(`Cleaning up resources for route: ${previousLocationRef.current?.pathname || ''}`);
         
         // Cancel any pending network requests specific to the previous route
         try {

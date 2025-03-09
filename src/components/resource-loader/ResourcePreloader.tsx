@@ -26,20 +26,20 @@ const ResourcePreloader: React.FC = () => {
       
       logger.log(`Preloading ${criticalImages.length} critical images`);
       
-      // Preload all critical images
+      // Preload all critical images with better error handling
       criticalImages.forEach(image => {
-        if (typeof image === 'string') {
-          try {
+        try {
+          if (typeof image === 'string' && image) {
             imageContext.preloadImage(image, true);
-          } catch (error) {
-            logger.warn('Error preloading image:', { image, error });
+          } else {
+            logger.warn('Invalid image URL in preloading', image);
           }
-        } else {
-          logger.warn('Invalid image URL in preloading', image);
+        } catch (error) {
+          logger.warn('Error preloading image:', { image, error });
         }
       });
       
-      // Add resource hints to document head in a safe way
+      // Add resource hints to document head in a safer way
       const addResourceHint = (type: 'prefetch' | 'preconnect', href: string) => {
         if (typeof href !== 'string' || !href) {
           logger.warn(`Invalid href for ${type}:`, href);

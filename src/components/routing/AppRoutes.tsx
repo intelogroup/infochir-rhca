@@ -62,6 +62,54 @@ const MemoizedAdminRoute = React.memo(({ path, component }: { path: string, comp
 
 MemoizedAdminRoute.displayName = 'MemoizedAdminRoute';
 
+// Wrap routes with extra error boundary
+const SafeRoutes = React.memo(() => {
+  const location = useLocation();
+  
+  return (
+    <Routes location={location}>
+      {/* Public Routes */}
+      <Route element={<MainLayout />}>
+        <MemoizedRoute path="/" component={LazyComponents.Home} />
+        <MemoizedRoute path="/donate" component={LazyComponents.Donate} />
+        <MemoizedRoute path="/donate/success" component={LazyComponents.DonateSuccess} />
+        <MemoizedRoute path="/rhca" component={LazyComponents.RHCA} />
+        <MemoizedRoute path="/rhca/directives" component={LazyComponents.RHCADirectives} />
+        <MemoizedRoute path="/igm" component={LazyComponents.IGM} />
+        <MemoizedRoute path="/igm/directives" component={LazyComponents.IGMDirectives} />
+        <MemoizedRoute path="/igm/editorial-committee" component={LazyComponents.IGMEditorialCommittee} />
+        <MemoizedRoute path="/igm/editorial" component={LazyComponents.IGMEditorialCommittee} />
+        <MemoizedRoute path="/editorial-committee" component={LazyComponents.EditorialCommittee} />
+        <MemoizedRoute path="/about" component={LazyComponents.About} />
+        <MemoizedRoute path="/submission" component={LazyComponents.Submission} />
+        <MemoizedRoute path="/annuaire" component={LazyComponents.Annuaire} />
+        <MemoizedRoute path="/jobs" component={LazyComponents.Opportunities} />
+        <MemoizedRoute path="/adc" component={LazyComponents.ADC} />
+        <MemoizedRoute path="/index-medicus" component={LazyComponents.IndexMedicus} />
+        {/* Add specific article route */}
+        <MemoizedRoute path="/articles/:id" component={LazyComponents.ArticleDetail} />
+        
+        {/* Add a 404 catch-all route */}
+        <MemoizedRoute path="*" component={LazyComponents.NotFound} />
+      </Route>
+
+      {/* Admin Routes */}
+      <Route element={<AdminLayout />}>
+        <MemoizedAdminRoute path="/admin" component={LazyComponents.AdminDashboard} />
+        <MemoizedAdminRoute path="/admin/content" component={LazyComponents.AdminContent} />
+        <MemoizedAdminRoute path="/admin/users" component={LazyComponents.AdminUsers} />
+        <MemoizedAdminRoute path="/admin/analytics" component={LazyComponents.AdminAnalytics} />
+        <MemoizedAdminRoute path="/admin/settings" component={LazyComponents.AdminSettings} />
+        
+        {/* Add admin 404 route */}
+        <MemoizedAdminRoute path="/admin/*" component={LazyComponents.AdminNotFound} />
+      </Route>
+    </Routes>
+  );
+});
+
+SafeRoutes.displayName = 'SafeRoutes';
+
 // Memoize the AppRoutes component
 export const AppRoutes = React.memo(() => {
   const location = useLocation();
@@ -70,19 +118,25 @@ export const AppRoutes = React.memo(() => {
   // Call useScrollToTop with a stable location key to prevent duplicate scrolling
   useScrollToTop(transitionKey);
 
-  // Pre-load important routes when the app loads - fixed version
+  // Pre-load important routes when the app loads
   React.useEffect(() => {
     try {
       // Create a list of paths to preload
       const commonRoutes = ['/', '/about', '/rhca', '/igm'];
       
-      // Use prefetch rel instead of preload for navigation hints
+      // Use prefetch rel for navigation hints
       commonRoutes.forEach(route => {
         if (typeof route === 'string') {
-          const link = document.createElement('link');
-          link.rel = 'prefetch';
-          link.href = route;
-          document.head.appendChild(link);
+          try {
+            const link = document.createElement('link');
+            link.rel = 'prefetch';
+            link.href = route;
+            link.setAttribute('as', 'document'); // Specify what we're prefetching
+            document.head.appendChild(link);
+          } catch (err) {
+            // Silently fail on prefetch errors - they're just optimizations
+            logger.debug(`Failed to prefetch ${route}:`, err);
+          }
         }
       });
       
@@ -103,44 +157,9 @@ export const AppRoutes = React.memo(() => {
           transition={{ duration: 0.2, ease: "easeInOut" }}
           className="min-h-screen"
         >
-          <Routes location={location}>
-            {/* Public Routes */}
-            <Route element={<MainLayout />}>
-              <MemoizedRoute path="/" component={LazyComponents.Home} />
-              <MemoizedRoute path="/donate" component={LazyComponents.Donate} />
-              <MemoizedRoute path="/donate/success" component={LazyComponents.DonateSuccess} />
-              <MemoizedRoute path="/rhca" component={LazyComponents.RHCA} />
-              <MemoizedRoute path="/rhca/directives" component={LazyComponents.RHCADirectives} />
-              <MemoizedRoute path="/igm" component={LazyComponents.IGM} />
-              <MemoizedRoute path="/igm/directives" component={LazyComponents.IGMDirectives} />
-              <MemoizedRoute path="/igm/editorial-committee" component={LazyComponents.IGMEditorialCommittee} />
-              <MemoizedRoute path="/igm/editorial" component={LazyComponents.IGMEditorialCommittee} />
-              <MemoizedRoute path="/editorial-committee" component={LazyComponents.EditorialCommittee} />
-              <MemoizedRoute path="/about" component={LazyComponents.About} />
-              <MemoizedRoute path="/submission" component={LazyComponents.Submission} />
-              <MemoizedRoute path="/annuaire" component={LazyComponents.Annuaire} />
-              <MemoizedRoute path="/jobs" component={LazyComponents.Opportunities} />
-              <MemoizedRoute path="/adc" component={LazyComponents.ADC} />
-              <MemoizedRoute path="/index-medicus" component={LazyComponents.IndexMedicus} />
-              {/* Add specific article route */}
-              <MemoizedRoute path="/articles/:id" component={LazyComponents.ArticleDetail} />
-              
-              {/* Add a 404 catch-all route */}
-              <MemoizedRoute path="*" component={LazyComponents.NotFound} />
-            </Route>
-
-            {/* Admin Routes */}
-            <Route element={<AdminLayout />}>
-              <MemoizedAdminRoute path="/admin" component={LazyComponents.AdminDashboard} />
-              <MemoizedAdminRoute path="/admin/content" component={LazyComponents.AdminContent} />
-              <MemoizedAdminRoute path="/admin/users" component={LazyComponents.AdminUsers} />
-              <MemoizedAdminRoute path="/admin/analytics" component={LazyComponents.AdminAnalytics} />
-              <MemoizedAdminRoute path="/admin/settings" component={LazyComponents.AdminSettings} />
-              
-              {/* Add admin 404 route */}
-              <MemoizedAdminRoute path="/admin/*" component={LazyComponents.AdminNotFound} />
-            </Route>
-          </Routes>
+          <ErrorBoundary name="routes-inner">
+            <SafeRoutes />
+          </ErrorBoundary>
         </m.div>
       </LazyMotion>
     </ErrorBoundary>
