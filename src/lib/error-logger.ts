@@ -14,7 +14,7 @@ export const logError = (
  */
 export const logReactError = (
   error: Error, 
-  errorInfo: { componentStack: string }, 
+  errorInfo: React.ErrorInfo, 
   componentName: string
 ): void => {
   console.error(`[React Component: ${componentName}] Error:`, error.message);
@@ -25,25 +25,26 @@ export const logReactError = (
  */
 export const createLogger = (moduleName: string) => {
   return {
-    log: (message: string) => {
+    log: (message: string, ...args: any[]) => {
       if (process.env.NODE_ENV !== 'production') {
-        console.log(`[${moduleName}] ${message}`);
+        console.log(`[${moduleName}] ${message}`, ...(args || []));
       }
     },
-    warn: (message: string) => {
-      console.warn(`[${moduleName}] ${message}`);
+    warn: (message: string, ...args: any[]) => {
+      console.warn(`[${moduleName}] ${message}`, ...(args || []));
     },
-    error: (error: unknown) => {
-      logError(error);
+    error: (error: unknown, metadata?: any) => {
+      const errorObj = error instanceof Error ? error : new Error(String(error));
+      console.error(`[${moduleName}] Error:`, errorObj.message, metadata || '');
     },
-    info: (message: string) => {
+    info: (message: string, ...args: any[]) => {
       if (process.env.NODE_ENV !== 'production') {
-        console.info(`[${moduleName}] ${message}`);
+        console.info(`[${moduleName}] ${message}`, ...(args || []));
       }
     },
-    debug: (message: string) => {
+    debug: (message: string, ...args: any[]) => {
       if (process.env.NODE_ENV !== 'production') {
-        console.debug(`[${moduleName}] ${message}`);
+        console.debug(`[${moduleName}] ${message}`, ...(args || []));
       }
     }
   };

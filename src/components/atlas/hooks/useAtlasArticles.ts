@@ -20,7 +20,7 @@ export const useAtlasArticles = () => {
           .order("publication_date", { ascending: false });
 
         if (error) {
-          logger.error("Error fetching atlas chapters:", error);
+          logger.error(error);
           throw error;
         }
 
@@ -62,11 +62,11 @@ export const useAtlasArticles = () => {
         return chapters;
       } catch (error) {
         // Log the error with more details
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        logger.error(`Error fetching atlas chapters: ${errorMessage}`, error);
+        logger.error(error);
         
         // For CORS errors or network failures, we return an empty array instead of throwing
-        if (errorMessage.includes('NetworkError') || errorMessage.includes('CORS')) {
+        if (error instanceof Error && 
+           (error.message.includes('NetworkError') || error.message.includes('CORS'))) {
           logger.warn('Returning empty array due to network/CORS error');
           return [];
         }

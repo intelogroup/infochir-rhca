@@ -57,7 +57,7 @@ export const downloadPDF = async ({
     
     if (!response.ok) {
       const errorMessage = `HTTP error! status: ${response.status}`;
-      logger.error(new Error(errorMessage), { url, status: response.status });
+      logger.error(new Error(errorMessage));
       
       toast.error("Échec du téléchargement", {
         id: toastId,
@@ -112,7 +112,7 @@ export const downloadPDF = async ({
     
     return true;
   } catch (error) {
-    logger.error(error, { action: 'downloadPDF', documentId, url });
+    logger.error(error);
     
     toast.error("Échec du téléchargement", {
       description: "Une erreur inattendue est survenue"

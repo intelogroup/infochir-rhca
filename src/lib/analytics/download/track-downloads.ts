@@ -50,13 +50,13 @@ export const trackDownload = async (event: DownloadEvent): Promise<boolean> => {
       });
       
     if (error) {
-      logger.error(new Error('Error logging download event'), { error, event });
+      logger.error(new Error('Error logging download event'));
       return false;
     }
     
     return true;
   } catch (error) {
-    logger.error(error, { action: 'trackDownload', event });
+    logger.error(error);
     return false;
   }
 };

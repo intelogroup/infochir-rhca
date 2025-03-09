@@ -20,11 +20,6 @@ export const queryClient = new QueryClient({
       retry: isDebugMode ? 0 : 1,
       networkMode: 'always',
     }
-  },
-  logger: {
-    log: isDebugMode ? console.log : () => {},
-    warn: isDebugMode ? console.warn : () => {},
-    error: console.error,
   }
 });
 

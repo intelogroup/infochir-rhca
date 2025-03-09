@@ -19,7 +19,7 @@ export const getDocumentDownloadStats = async (documentId: string): Promise<{
       .rpc('get_document_download_stats', { doc_id: documentId });
       
     if (error) {
-      logger.error(error, { action: 'getDocumentDownloadStats', documentId });
+      logger.error(error);
       return null;
     }
     
@@ -39,7 +39,7 @@ export const getDocumentDownloadStats = async (documentId: string): Promise<{
       lastDownloadTime: data[0].last_download_time
     };
   } catch (error) {
-    logger.error(error, { action: 'getDocumentDownloadStats', documentId });
+    logger.error(error);
     return null;
   }
 };
@@ -58,7 +58,7 @@ export const getDownloadStatsByType = async (documentType: DownloadEvent['docume
       .rpc('get_download_stats_by_type', { doc_type: documentType });
       
     if (error) {
-      logger.error(error, { action: 'getDownloadStatsByType', documentType });
+      logger.error(error);
       return null;
     }
     
@@ -78,7 +78,7 @@ export const getDownloadStatsByType = async (documentType: DownloadEvent['docume
       uniqueDocuments: Number(data[0].unique_documents)
     };
   } catch (error) {
-    logger.error(error, { action: 'getDownloadStatsByType', documentType });
+    logger.error(error);
     return null;
   }
 };

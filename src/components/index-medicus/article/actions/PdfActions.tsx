@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Download, ExternalLink, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -56,7 +57,7 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
           setFileExists(response.ok);
         }
       } catch (err) {
-        logger.error(err, { action: 'validateFile', pdfUrl });
+        logger.error(err);
         setFileExists(false);
       }
     };
@@ -121,7 +122,7 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
         throw new Error('Download failed');
       }
     } catch (error) {
-      logger.error(error, { action: 'handleDownloadPdf', pdfUrl, articleId });
+      logger.error(error);
       toast.error("Une erreur est survenue lors du téléchargement");
     } finally {
       setIsLoading(false);

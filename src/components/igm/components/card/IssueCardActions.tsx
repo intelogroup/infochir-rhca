@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Share2 } from "lucide-react";
@@ -41,10 +42,10 @@ export const IssueCardActions: React.FC<IssueCardActionsProps> = ({
       });
       
       if (!success) {
-        logger.error(new Error('Download failed'), { id, pdfUrl });
+        logger.error(new Error('Download failed'));
       }
     } catch (error) {
-      logger.error(error, { action: 'handleDownload', id, pdfUrl });
+      logger.error(error);
       toast.error("Erreur lors du téléchargement", {
         description: "Veuillez réessayer plus tard"
       });
@@ -81,7 +82,7 @@ export const IssueCardActions: React.FC<IssueCardActionsProps> = ({
         row_id: id
       });
     } catch (error) {
-      logger.error(error, { action: 'handleShare', id });
+      logger.error(error);
       if (error instanceof Error && error.name !== 'AbortError') {
         toast.error("Erreur lors du partage");
       }

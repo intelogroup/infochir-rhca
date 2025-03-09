@@ -29,7 +29,7 @@ export const checkFileExists = async (
     logger.log(`File ${filePath} exists: ${exists}`);
     return exists;
   } catch (error) {
-    logger.error(error, { action: 'checkFileExists', bucketName, filePath });
+    logger.error(error);
     return false;
   }
 };
@@ -66,7 +66,7 @@ export const getStorageStats = async (): Promise<{
         .list();
         
       if (filesError) {
-        logger.error(filesError, { action: 'getStorageStats', bucket: bucket.name });
+        logger.error(filesError);
         continue;
       }
       
@@ -83,7 +83,7 @@ export const getStorageStats = async (): Promise<{
     logger.log(`Storage stats:`, stats);
     return stats;
   } catch (error) {
-    logger.error(error, { action: 'getStorageStats' });
+    logger.error(error);
     return null;
   }
 };
