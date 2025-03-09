@@ -4,9 +4,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ImageFallback } from "./ImageFallback";
 
 // Helper to determine if we're debugging
-const isDebugMode = process.env.NODE_ENV === 'development' || 
-                   process.env.VITE_APP_PREVIEW === 'true' || 
-                   process.env.DEBUG === 'true';
+const isDebugMode = import.meta.env.DEV || 
+                   import.meta.env.VITE_APP_PREVIEW === 'true' || 
+                   import.meta.env.DEBUG === 'true';
+
+// Detect if we're in preview mode (for CORS handling)
+const isPreviewMode = 
+  typeof window !== 'undefined' && 
+  (window.location.hostname.includes('preview') || 
+   window.location.hostname.includes('lovable.app')) ||
+  import.meta.env.VITE_APP_PREVIEW === 'true';
 
 interface ImageOptimizerProps {
   src: string | undefined;
@@ -16,6 +23,7 @@ interface ImageOptimizerProps {
   height?: number;
   fallbackText?: string;
   priority?: boolean;
+  crossOrigin?: "anonymous" | "use-credentials" | "";
 }
 
 export const ImageOptimizer = ({ 
@@ -25,7 +33,8 @@ export const ImageOptimizer = ({
   width = 400,
   height = 300,
   fallbackText,
-  priority = false
+  priority = false,
+  crossOrigin = "anonymous"
 }: ImageOptimizerProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -39,6 +48,7 @@ export const ImageOptimizer = ({
     
     // Check if it's a Supabase URL and log for debugging
     const isSupabaseUrl = src.includes('supabase.co') || src.includes('llxzstqejdrplmxdjxlu');
+    
     if (isDebugMode && isSupabaseUrl) {
       console.log(`Loading Supabase image: ${src}`);
     }
@@ -54,6 +64,11 @@ export const ImageOptimizer = ({
       
       if (!url.searchParams.has('h') && !url.searchParams.has('height') && height) {
         url.searchParams.append('h', height.toString());
+      }
+      
+      // For Supabase storage URLs in preview mode, attempt to add a timestamp to bust cache
+      if (isPreviewMode && isSupabaseUrl) {
+        url.searchParams.append('t', Date.now().toString());
       }
       
       return url.toString();
@@ -79,6 +94,10 @@ export const ImageOptimizer = ({
       link.rel = 'preload';
       link.as = 'image';
       link.href = optimizedSrc;
+      // Add crossOrigin attribute for CORS images
+      if (optimizedSrc.includes('supabase.co') || !optimizedSrc.includes(window.location.hostname)) {
+        link.crossOrigin = crossOrigin;
+      }
       document.head.appendChild(link);
       
       // Clean up preload link
@@ -91,6 +110,11 @@ export const ImageOptimizer = ({
     const img = new Image();
     img.src = optimizedSrc;
     
+    // Add crossOrigin attribute for CORS images
+    if (optimizedSrc.includes('supabase.co') || !optimizedSrc.includes(window.location.hostname)) {
+      img.crossOrigin = crossOrigin;
+    }
+    
     img.onload = () => {
       setIsLoading(false);
       if (isDebugMode && (optimizedSrc.includes('supabase.co') || optimizedSrc.includes('llxzstqejdrplmxdjxlu'))) {
@@ -98,12 +122,12 @@ export const ImageOptimizer = ({
       }
     };
     
-    img.onerror = () => {
+    img.onerror = (e) => {
       setHasError(true);
       setIsLoading(false);
       if (isDebugMode) {
         const isSupabaseUrl = optimizedSrc.includes('supabase.co') || optimizedSrc.includes('llxzstqejdrplmxdjxlu');
-        console.error(`Failed to load image${isSupabaseUrl ? ' from Supabase' : ''}: ${optimizedSrc}`);
+        console.error(`Failed to load image${isSupabaseUrl ? ' from Supabase' : ''}: ${optimizedSrc}`, e);
       }
     };
     
@@ -111,7 +135,7 @@ export const ImageOptimizer = ({
       img.onload = null;
       img.onerror = null;
     };
-  }, [optimizedSrc, priority]);
+  }, [optimizedSrc, priority, crossOrigin]);
 
   if (isLoading) {
     return <Skeleton className={`${className} bg-muted`} style={{ width, height }} />;
@@ -138,6 +162,12 @@ export const ImageOptimizer = ({
       height={height}
       loading={priority ? "eager" : "lazy"}
       decoding={priority ? "sync" : "async"}
+      crossOrigin={
+        // Add crossOrigin attribute for CORS images
+        (optimizedSrc.includes('supabase.co') || !optimizedSrc.includes(window.location.hostname)) 
+          ? crossOrigin 
+          : undefined
+      }
       onError={() => setHasError(true)}
     />
   );

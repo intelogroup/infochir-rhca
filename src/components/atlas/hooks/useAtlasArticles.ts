@@ -6,6 +6,13 @@ import { createLogger } from "@/lib/error-logger";
 
 const logger = createLogger('useAtlasArticles');
 
+// Detect if we're in preview mode for improved error handling
+const isPreviewMode = 
+  typeof window !== 'undefined' && 
+  (window.location.hostname.includes('preview') || 
+   window.location.hostname.includes('lovable.app')) ||
+  import.meta.env.VITE_APP_PREVIEW === 'true';
+
 export const useAtlasArticles = () => {
   return useQuery({
     queryKey: ["atlas-chapters"],
@@ -36,8 +43,20 @@ export const useAtlasArticles = () => {
           let coverImage = item.image_url || '';
           
           if (item.cover_image_filename) {
-            coverImage = getStorageUrl('adc_covers', item.cover_image_filename);
-            logger.log(`Using cover image from storage: ${coverImage}`);
+            try {
+              coverImage = getStorageUrl('adc_covers', item.cover_image_filename);
+              logger.log(`Using cover image from storage: ${coverImage}`);
+              
+              // Add a cache buster in preview mode
+              if (isPreviewMode && coverImage) {
+                coverImage = `${coverImage}?t=${Date.now()}`;
+                logger.log(`Added cache buster to URL: ${coverImage}`);
+              }
+            } catch (imageError) {
+              logger.error(`Failed to generate storage URL for ${item.cover_image_filename}`, imageError);
+              // Fallback to default image or external URL if available
+              coverImage = item.image_url || '';
+            }
           } else if (item.image_url) {
             logger.log(`Using external image URL: ${item.image_url}`);
           } else {
@@ -78,10 +97,20 @@ export const useAtlasArticles = () => {
         // Log the error with more details
         logger.error(error);
         
-        // For CORS errors or network failures, we return an empty array instead of throwing
+        // For CORS errors or network failures, return empty array instead of throwing
         if (error instanceof Error && 
-           (error.message.includes('NetworkError') || error.message.includes('CORS'))) {
-          logger.warn('Returning empty array due to network/CORS error');
+           (error.message.includes('NetworkError') || 
+            error.message.includes('CORS') || 
+            error.message.includes('CORB'))) {
+          
+          logger.warn('Returning empty array due to network/CORS/CORB error');
+          
+          // If in preview mode, log additional context to help with debugging
+          if (isPreviewMode) {
+            logger.warn('CORS issues are more common in preview environments. ' +
+                        'This should resolve in production deployment.');
+          }
+          
           return [];
         }
         
@@ -90,7 +119,7 @@ export const useAtlasArticles = () => {
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 30 * 60 * 1000, // 30 minutes
-    retry: 2,
+    retry: isPreviewMode ? 1 : 2, // Fewer retries in preview mode to prevent excessive CORB warnings
     retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
   });
 };

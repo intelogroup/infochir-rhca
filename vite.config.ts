@@ -57,7 +57,9 @@ export default defineConfig(({ mode }) => ({
       }
     },
     sourcemap: !isProduction || isPreview,
-    minify: isProduction && !isPreview
+    minify: isProduction && !isPreview,
+    // Add image optimization for production builds
+    assetsInlineLimit: 4096, // 4kb - small images will be inlined
   },
   server: {
     host: "::",
@@ -66,6 +68,13 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       clientPort: 443,
       protocol: 'wss'
+    },
+    // Add headers for CORS and caching during development
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'require-corp'
     }
   }
 }));
