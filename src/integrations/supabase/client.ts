@@ -1,4 +1,3 @@
-
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
@@ -116,4 +115,21 @@ export const getStorageUrl = (bucket: string, path: string): string => {
     console.error(`Failed to generate storage URL for ${bucket}/${path}:`, error);
     return '';
   }
+};
+
+/**
+ * Gets the full URL for a founder avatar
+ * @param imagePath The path to the image in the founder_avatars bucket
+ * @returns The full public URL for the avatar image
+ */
+export const getFounderAvatarUrl = (imagePath: string): string => {
+  if (!imagePath) return '';
+  
+  // If the image path is already a full URL (e.g., from /lovable-uploads/), return it as is
+  if (imagePath.startsWith('/lovable-uploads/') || imagePath.startsWith('http')) {
+    return imagePath;
+  }
+  
+  // Otherwise, get the URL from Supabase storage
+  return getStorageUrl('founder_avatars', imagePath.replace('/founder_avatars/', ''));
 };

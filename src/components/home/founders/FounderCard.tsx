@@ -4,6 +4,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
 import { UserRound } from "lucide-react";
 import { Founder } from "./types";
+import { getFounderAvatarUrl } from "@/integrations/supabase/client";
 
 interface FounderCardProps {
   founder: Founder;
@@ -11,6 +12,8 @@ interface FounderCardProps {
 }
 
 export const FounderCard = ({ founder, onClick }: FounderCardProps) => {
+  const avatarUrl = founder.image ? getFounderAvatarUrl(founder.image) : undefined;
+
   return (
     <Card 
       className={`relative group overflow-hidden backdrop-blur-sm border-0 cursor-pointer h-full min-h-[300px] max-h-[400px] flex flex-col ${
@@ -35,10 +38,10 @@ export const FounderCard = ({ founder, onClick }: FounderCardProps) => {
                 ? 'ring-gray-200' 
                 : 'ring-[#1E40AF] group-hover:ring-[#1E40AF]/80'
             }`}>
-              {founder.image ? (
+              {avatarUrl ? (
                 <Avatar className="w-full h-full">
                   <AvatarImage
-                    src={founder.image}
+                    src={avatarUrl}
                     alt={founder.name}
                     className="object-cover w-full h-full"
                     style={{

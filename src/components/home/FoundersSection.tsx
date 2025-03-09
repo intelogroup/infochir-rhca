@@ -4,11 +4,35 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { FounderCard } from "./founders/FounderCard";
 import { FounderModal } from "./founders/FounderModal";
-import { founders } from "./founders/FoundersData";
+import { useFounders } from "@/hooks/useFounders";
 import type { Founder } from "./founders/types";
 
 export const FoundersSection = () => {
   const [selectedFounder, setSelectedFounder] = useState<Founder | null>(null);
+  const { founders, loading, error } = useFounders();
+
+  if (loading) {
+    return (
+      <section className="py-24 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="text-xl">Chargement des fondateurs...</div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="py-24 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="text-xl text-red-500">Une erreur est survenue lors du chargement des fondateurs</div>
+        </div>
+      </section>
+    );
+  }
+
+  const nonDeceasedFounders = founders.filter(founder => !founder.isDeceased);
+  const deceasedFounders = founders.filter(founder => founder.isDeceased);
 
   return (
     <section 
@@ -53,7 +77,7 @@ export const FoundersSection = () => {
           role="list"
           aria-label="Liste des membres fondateurs"
         >
-          {founders.slice(0, founders.length - 3).map((founder, index) => (
+          {nonDeceasedFounders.map((founder, index) => (
             <motion.div
               key={founder.name}
               initial={{ opacity: 0, y: 20 }}
@@ -69,24 +93,26 @@ export const FoundersSection = () => {
             </motion.div>
           ))}
           
-          {/* Center the last 3 members */}
-          <div className="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4 grid grid-cols-1 md:grid-cols-3 gap-8">
-            {founders.slice(founders.length - 3).map((founder, index) => (
-              <motion.div
-                key={founder.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: (founders.length - 3 + index) * 0.1 }}
-                viewport={{ once: true }}
-                role="listitem"
-              >
-                <FounderCard 
-                  founder={founder}
-                  onClick={() => setSelectedFounder(founder)}
-                />
-              </motion.div>
-            ))}
-          </div>
+          {/* Center the deceased members */}
+          {deceasedFounders.length > 0 && (
+            <div className={`col-span-1 ${deceasedFounders.length === 1 ? 'md:col-span-2 lg:col-span-3 xl:col-span-4' : ''} grid grid-cols-1 ${deceasedFounders.length > 1 ? 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : ''} gap-8`}>
+              {deceasedFounders.map((founder, index) => (
+                <motion.div
+                  key={founder.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: (nonDeceasedFounders.length + index) * 0.1 }}
+                  viewport={{ once: true }}
+                  role="listitem"
+                >
+                  <FounderCard 
+                    founder={founder}
+                    onClick={() => setSelectedFounder(founder)}
+                  />
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

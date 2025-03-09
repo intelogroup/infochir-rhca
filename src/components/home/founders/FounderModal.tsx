@@ -1,8 +1,10 @@
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { X, Heart, Stethoscope, MapPin, Award, Target, Briefcase } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Founder } from "./types";
+import { getFounderAvatarUrl } from "@/integrations/supabase/client";
 
 interface FounderModalProps {
   founder: Founder;
@@ -11,6 +13,8 @@ interface FounderModalProps {
 }
 
 export const FounderModal = ({ founder, isOpen, onClose }: FounderModalProps) => {
+  const avatarUrl = founder.image ? getFounderAvatarUrl(founder.image) : undefined;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden bg-white/95 backdrop-blur-sm">
@@ -30,11 +34,17 @@ export const FounderModal = ({ founder, isOpen, onClose }: FounderModalProps) =>
               className="p-6 space-y-6"
             >
               <div className="flex items-start gap-4">
-                <img
-                  src={founder.image}
-                  alt={founder.name}
-                  className="w-32 h-32 rounded-full object-cover ring-4 ring-[#1E40AF]"
-                />
+                {avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt={founder.name}
+                    className="w-32 h-32 rounded-full object-cover ring-4 ring-[#1E40AF]"
+                  />
+                ) : (
+                  <div className="w-32 h-32 rounded-full bg-[#1E40AF]/10 flex items-center justify-center ring-4 ring-[#1E40AF]">
+                    <X className="w-12 h-12 text-[#1E40AF]" />
+                  </div>
+                )}
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
                     {founder.title}
