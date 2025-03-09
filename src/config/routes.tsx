@@ -1,3 +1,4 @@
+
 import { Home } from "@/pages";
 import Contact from "@/pages/Contact";
 import IGM from "@/pages/IGM";
