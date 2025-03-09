@@ -4,8 +4,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { motion } from "framer-motion";
 import { FileText, CheckCircle } from "lucide-react";
 import * as React from "react";
+import { UseFormReturn } from "react-hook-form";
 
-export const AbstractField = ({ form, disabled }: { form: any; disabled?: boolean }) => {
+export interface AbstractFieldProps {
+  form: UseFormReturn<any>;
+  disabled?: boolean;
+}
+
+export const AbstractField = ({ form, disabled }: AbstractFieldProps) => {
   // Calculate remaining words when the field value changes
   const abstractValue = form.watch("abstract") || "";
   const wordCount = abstractValue.trim() ? abstractValue.trim().split(/\s+/).length : 0;

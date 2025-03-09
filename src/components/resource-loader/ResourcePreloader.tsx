@@ -59,7 +59,10 @@ const ResourcePreloader: React.FC = () => {
     // Prefetch important routes as strings
     const importantRoutes = ['/rhca', '/adc', '/igm'];
     importantRoutes.forEach(route => {
-      addResourceHint('prefetch', route, 'document');
+      // Make sure we're dealing with string routes only
+      if (typeof route === 'string') {
+        addResourceHint('prefetch', route, 'document');
+      }
     });
     
     logger.log('Resource preloading complete');

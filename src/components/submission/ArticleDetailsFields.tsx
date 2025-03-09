@@ -1,16 +1,20 @@
-import { FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
+
+import React from "react";
+import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { motion } from "framer-motion";
+import { UseFormReturn } from "react-hook-form";
 import { FileText, Users, Building2, Tag } from "lucide-react";
 
-export const ArticleDetailsFields = ({ form }: { form: any }) => {
+export interface ArticleDetailsFieldsProps {
+  form: UseFormReturn<any>;
+  disabled?: boolean;
+}
+
+export const ArticleDetailsFields = ({ form, disabled }: ArticleDetailsFieldsProps) => {
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="space-y-6"
-    >
+    <div className="space-y-4">
+      <h3 className="text-lg font-semibold">Détails de l'article</h3>
+      
       <FormField
         control={form.control}
         name="title"
@@ -18,20 +22,24 @@ export const ArticleDetailsFields = ({ form }: { form: any }) => {
           <FormItem>
             <FormLabel className="flex items-center gap-2">
               <FileText className="h-4 w-4" />
-              Titre de l'article
+              Titre
             </FormLabel>
             <FormControl>
               <Input 
-                placeholder="Entrez le titre de votre article" 
-                {...field}
-                className="bg-white/50 backdrop-blur-sm"
+                placeholder="Titre de l'article" 
+                {...field} 
+                disabled={disabled}
+                className={disabled ? "opacity-70" : ""}
               />
             </FormControl>
+            <FormDescription>
+              Le titre doit être informatif et concis
+            </FormDescription>
             <FormMessage />
           </FormItem>
         )}
       />
-
+      
       <FormField
         control={form.control}
         name="authors"
@@ -43,19 +51,20 @@ export const ArticleDetailsFields = ({ form }: { form: any }) => {
             </FormLabel>
             <FormControl>
               <Input 
-                placeholder="Noms des auteurs (séparés par des virgules)" 
-                {...field}
-                className="bg-white/50 backdrop-blur-sm"
+                placeholder="Liste des auteurs (séparés par des virgules)" 
+                {...field} 
+                disabled={disabled}
+                className={disabled ? "opacity-70" : ""}
               />
             </FormControl>
             <FormDescription>
-              Incluez le degré académique le plus élevé pour chaque auteur
+              Format: Nom Prénom, Nom Prénom, ...
             </FormDescription>
             <FormMessage />
           </FormItem>
         )}
       />
-
+      
       <FormField
         control={form.control}
         name="institution"
@@ -67,16 +76,17 @@ export const ArticleDetailsFields = ({ form }: { form: any }) => {
             </FormLabel>
             <FormControl>
               <Input 
-                placeholder="Nom du département ou de l'institution" 
+                placeholder="Institution d'affiliation" 
                 {...field}
-                className="bg-white/50 backdrop-blur-sm"
+                disabled={disabled}
+                className={disabled ? "opacity-70" : ""} 
               />
             </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
-
+      
       <FormField
         control={form.control}
         name="keywords"
@@ -88,18 +98,19 @@ export const ArticleDetailsFields = ({ form }: { form: any }) => {
             </FormLabel>
             <FormControl>
               <Input 
-                placeholder="3 à 5 mots clés séparés par des virgules" 
+                placeholder="mots, clés, séparés, par, virgules" 
                 {...field}
-                className="bg-white/50 backdrop-blur-sm"
+                disabled={disabled}
+                className={disabled ? "opacity-70" : ""} 
               />
             </FormControl>
             <FormDescription>
-              Correspondant à la liste des titres de sujets médicaux de l'Index Medicus
+              Entre 3 et 5 mots clés séparés par des virgules
             </FormDescription>
             <FormMessage />
           </FormItem>
         )}
       />
-    </motion.div>
+    </div>
   );
 };
