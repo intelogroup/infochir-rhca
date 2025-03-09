@@ -56,12 +56,10 @@ export const FounderCard = ({ founder, onClick, memorialStyle = false }: Founder
           
           {founder.specialties && founder.specialties.length > 0 && (
             <div className="pt-2 flex flex-wrap justify-center gap-1">
-              {founder.specialties.map((specialty, index) => (
-                index < 2 && (
-                  <Badge key={index} variant="secondary" className="text-xs">
-                    {specialty}
-                  </Badge>
-                )
+              {founder.specialties.slice(0, 2).map((specialty, index) => (
+                <Badge key={index} variant="secondary" className="text-xs">
+                  {specialty}
+                </Badge>
               ))}
               {founder.specialties.length > 2 && (
                 <Badge variant="outline" className="text-xs">

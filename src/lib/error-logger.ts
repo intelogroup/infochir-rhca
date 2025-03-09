@@ -26,7 +26,7 @@ export const logReactError = (
 export const createLogger = (moduleName: string) => {
   return {
     log: (message: string, ...args: any[]) => {
-      if (process.env.NODE_ENV !== 'production') {
+      if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
         console.log(`[${moduleName}] ${message}`, ...(args || []));
       }
     },
@@ -38,12 +38,12 @@ export const createLogger = (moduleName: string) => {
       console.error(`[${moduleName}] Error:`, errorObj.message, metadata || '');
     },
     info: (message: string, ...args: any[]) => {
-      if (process.env.NODE_ENV !== 'production') {
+      if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
         console.info(`[${moduleName}] ${message}`, ...(args || []));
       }
     },
     debug: (message: string, ...args: any[]) => {
-      if (process.env.NODE_ENV !== 'production') {
+      if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
         console.debug(`[${moduleName}] ${message}`, ...(args || []));
       }
     }
