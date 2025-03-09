@@ -47,6 +47,21 @@ export class ErrorBoundary extends React.Component<Props, State> {
     if (error.message && error.message.includes('must be used within')) {
       console.error("[ErrorBoundary] Context provider missing:", error.message);
     }
+    
+    // Try to detect if it's a React Router error
+    if (error.stack && (
+      error.stack.includes('router.js') || 
+      error.stack.includes('react-router') ||
+      error.stack.includes('index.js:1374') ||
+      error.stack.includes('assets/react-vendor')
+    )) {
+      console.error("[ErrorBoundary] React Router error detected");
+      // For router errors, create a more specific error
+      const routerError = new Error("Navigation error occurred");
+      routerError.name = "NavigationError";
+      routerError.stack = error.stack;
+      return { hasError: true, error: routerError };
+    }
 
     return { hasError: true, error };
   }
@@ -84,16 +99,18 @@ export class ErrorBoundary extends React.Component<Props, State> {
       console.error("[ErrorBoundary] Chunk loading diagnostic:", getLoadingDiagnostics());
     }
     
-    // Handle common React Router errors
+    // Handle common React Router errors with more detailed logging
     if (error.stack && (
       error.stack.includes('router.js') || 
       error.stack.includes('react-router') ||
-      error.stack.includes('index.js:1374')
+      error.stack.includes('index.js:1374') ||
+      error.stack.includes('assets/react-vendor')
     )) {
       console.error("[ErrorBoundary] React Router error detected:", {
         message: error.message || "Router error",
         path: window.location.pathname,
-        search: window.location.search
+        search: window.location.search,
+        stack: error.stack
       });
     }
     
@@ -118,10 +135,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
       this.setState({ hasError: false, error: undefined, errorInfo: undefined });
     } else if (errorDetails.type === 'download_error') {
       this.setState({ hasError: false, error: undefined, errorInfo: undefined });
-    } else if (error.stack && (
-      error.stack.includes('router.js') || 
-      error.stack.includes('react-router')
-    )) {
+    } else if (errorDetails.type === 'router_error' || error.name === 'NavigationError') {
       // For router errors, try navigating to home
       window.location.href = '/';
     } else {

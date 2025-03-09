@@ -11,72 +11,73 @@ const ResourcePreloader: React.FC = () => {
   
   // Preload critical images when the app starts
   useEffect(() => {
-    // List of important images to preload
-    const criticalImages = [
-      // Hero section images
-      '/lovable-uploads/75589792-dc14-4d53-9aae-5796c76a3b39.png',
-      '/lovable-uploads/4e3c1f79-c9cc-4d01-8520-1af84d350a2a.png',
-      '/lovable-uploads/745435b6-9abc-4051-b168-cf77c96ed9a0.png',
-      // Logo
-      '/og-image.png',
-      // Default fallback images
-      'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=800&fit=crop'
-    ];
-    
-    logger.log(`Preloading ${criticalImages.length} critical images`);
-    
-    // Preload all critical images
-    criticalImages.forEach(image => {
-      if (typeof image === 'string') {
-        try {
-          imageContext.preloadImage(image, true);
-        } catch (error) {
-          logger.warn('Error preloading image:', { image, error });
-        }
-      } else {
-        logger.warn('Invalid image URL in preloading', image);
-      }
-    });
-    
-    // Add resource hints to document head
-    const addResourceHint = (type: 'prefetch' | 'preconnect', href: string) => {
-      if (typeof href !== 'string') {
-        logger.warn(`Invalid href for ${type}:`, href);
-        return;
-      }
+    try {
+      // List of important images to preload
+      const criticalImages = [
+        // Hero section images
+        '/lovable-uploads/75589792-dc14-4d53-9aae-5796c76a3b39.png',
+        '/lovable-uploads/4e3c1f79-c9cc-4d01-8520-1af84d350a2a.png',
+        '/lovable-uploads/745435b6-9abc-4051-b168-cf77c96ed9a0.png',
+        // Logo
+        '/og-image.png',
+        // Default fallback images
+        'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=800&fit=crop'
+      ];
       
-      try {
-        const link = document.createElement('link');
-        link.rel = type;
-        link.href = href;
-        if (type === 'preconnect') link.setAttribute('crossorigin', '');
-        document.head.appendChild(link);
+      logger.log(`Preloading ${criticalImages.length} critical images`);
+      
+      // Preload all critical images
+      criticalImages.forEach(image => {
+        if (typeof image === 'string') {
+          try {
+            imageContext.preloadImage(image, true);
+          } catch (error) {
+            logger.warn('Error preloading image:', { image, error });
+          }
+        } else {
+          logger.warn('Invalid image URL in preloading', image);
+        }
+      });
+      
+      // Add resource hints to document head in a safe way
+      const addResourceHint = (type: 'prefetch' | 'preconnect', href: string) => {
+        if (typeof href !== 'string' || !href) {
+          logger.warn(`Invalid href for ${type}:`, href);
+          return;
+        }
         
-        logger.debug(`Added ${type} for: ${href}`);
-      } catch (error) {
-        logger.warn(`Error adding ${type} for ${href}:`, error);
-      }
-    };
-    
-    // Preconnect to important domains
-    addResourceHint('preconnect', 'https://fonts.gstatic.com');
-    addResourceHint('preconnect', 'https://fonts.googleapis.com');
-    addResourceHint('preconnect', 'https://images.unsplash.com');
-    
-    // Prefetch important routes
-    const importantRoutes = ['/rhca', '/adc', '/igm'];
-    importantRoutes.forEach(route => {
-      // Make sure we're dealing with string routes only
-      if (typeof route === 'string') {
-        addResourceHint('prefetch', route);
-      }
-    });
-    
-    logger.log('Resource preloading complete');
+        if (!document || !document.head) {
+          logger.warn(`Document or document.head not available for ${type}:`, href);
+          return;
+        }
+        
+        try {
+          const link = document.createElement('link');
+          link.rel = type;
+          link.href = href;
+          if (type === 'preconnect') {
+            link.setAttribute('crossorigin', '');
+          }
+          document.head.appendChild(link);
+          
+          logger.debug(`Added ${type} for: ${href}`);
+        } catch (error) {
+          logger.warn(`Error adding ${type} for ${href}:`, error);
+        }
+      };
+      
+      // Preconnect to important domains
+      addResourceHint('preconnect', 'https://fonts.gstatic.com');
+      addResourceHint('preconnect', 'https://fonts.googleapis.com');
+      addResourceHint('preconnect', 'https://images.unsplash.com');
+      
+      logger.log('Resource preloading complete');
+    } catch (error) {
+      logger.error('Error in ResourcePreloader', error);
+    }
     
     // Clean up resource hints on unmount (optional - they're lightweight)
     return () => {
-      // No cleanup needed for preloaded images - they stay in cache
       logger.debug('ResourcePreloader unmounted');
     };
   }, [imageContext]);

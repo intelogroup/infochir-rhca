@@ -24,8 +24,8 @@ export const logError = (
     name: errorObj.name,
     context,
     timestamp,
-    url: window.location.href,
-    userAgent: navigator.userAgent,
+    url: typeof window !== 'undefined' ? window.location.href : 'unknown',
+    userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
     ...metadata
   };
   
@@ -57,6 +57,19 @@ export const logReactError = (
   // Make sure the error message is never empty
   if (!error.message) {
     error.message = `Error in ${componentName}`;
+  }
+  
+  // Check for router errors
+  if (error.stack && (
+    error.stack.includes('router.js') || 
+    error.stack.includes('react-router') ||
+    error.stack.includes('index.js:1374') ||
+    error.stack.includes('assets/react-vendor')
+  )) {
+    error.name = 'NavigationError';
+    if (!error.message || error.message === 'Unknown error') {
+      error.message = 'Navigation error occurred';
+    }
   }
   
   logError(error, `React Component: ${componentName}`, {
@@ -94,6 +107,10 @@ export const createLogger = (moduleName: string) => {
  * Setup global error handlers for uncaught exceptions and unhandled rejections
  */
 export const setupGlobalErrorHandlers = (): void => {
+  if (typeof window === 'undefined') {
+    return; // Only run in browser environment
+  }
+
   const handleUnhandledError = (event: ErrorEvent) => {
     try {
       const error = event.error || new Error(event.message || 'Unknown error');

@@ -1,5 +1,9 @@
-
 export const getErrorMessage = (error: Error) => {
+  // Make sure we have a valid error message
+  if (!error.message) {
+    error.message = "Unknown error";
+  }
+
   const isChunkError = error.message.includes('Failed to fetch dynamically imported module');
   const isStripeError = error.message.includes('Stripe') || 
                        error.message.includes('stripe.com') || 
@@ -8,11 +12,17 @@ export const getErrorMessage = (error: Error) => {
                           error.message.includes('fetch') ||
                           error.message.includes('network') ||
                           error.message.includes('Failed to fetch');
-  const isRouterError = error.stack && (
+                          
+  // Enhanced router error detection
+  const isRouterError = (error.stack && (
                         error.stack.includes('router.js') || 
                         error.stack.includes('react-router') ||
-                        error.stack.includes('index.js:1374'));
-
+                        error.stack.includes('index.js:1374') ||
+                        error.stack.includes('assets/react-vendor') ||
+                        error.message.includes('route') ||
+                        error.message.includes('navigation'))) ||
+                        error.name === 'NavigationError';
+  
   if (isRouterError) {
     return {
       title: "Erreur de navigation",

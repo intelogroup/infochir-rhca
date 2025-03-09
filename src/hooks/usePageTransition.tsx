@@ -27,83 +27,104 @@ export const usePageTransition = (location: Location): PageTransitionState => {
   
   // Handle location changes
   useEffect(() => {
-    // Skip if location is null or undefined
-    if (!location) {
-      logger.warn('usePageTransition called with null location');
-      return;
-    }
-    
-    // Early return if we don't have a previous location (first render)
-    if (!previousLocationRef.current) {
-      previousLocationRef.current = location;
-      return;
-    }
-    
-    // Skip if pathname hasn't changed (query params changed)
-    if (previousLocationRef.current.pathname === location.pathname) {
-      previousLocationRef.current = location;
-      // Still update the transition key for query param changes
-      setTransitionKey(generateSafeKey(location));
-      return;
-    }
-
-    const cleanup = () => {
-      if (!previousLocationRef.current) return;
-      
-      logger.log(`Cleaning up resources for route: ${previousLocationRef.current?.pathname || ''}`);
-      
-      // Cancel any pending network requests specific to the previous route
-      try {
-        window.dispatchEvent(new CustomEvent('route-change', { 
-          detail: { 
-            from: previousLocationRef.current?.pathname || '',
-            to: location.pathname || ''
-          } 
-        }));
-      } catch (error) {
-        logger.warn('Error dispatching route-change event', error);
+    // Protect against errors with location
+    try {
+      // Skip if location is null or undefined
+      if (!location) {
+        logger.warn('usePageTransition called with null location');
+        return;
       }
       
-      // Clear any route-specific timeouts or intervals
-      try {
-        // Initialize __ROUTE_TIMERS__ if it doesn't exist
-        if (!window.__ROUTE_TIMERS__) {
-          window.__ROUTE_TIMERS__ = {};
-        }
-        
-        const routeTimers = window.__ROUTE_TIMERS__;
-        const prevPath = previousLocationRef.current?.pathname || '';
-        
-        if (routeTimers[prevPath]) {
-          routeTimers[prevPath].forEach(
-            (timerId: number) => window.clearTimeout(timerId)
-          );
-          delete routeTimers[prevPath];
-        }
-      } catch (error) {
-        logger.warn('Error clearing route timers', error);
+      // Early return if we don't have a previous location (first render)
+      if (!previousLocationRef.current) {
+        previousLocationRef.current = location;
+        return;
       }
-    };
+      
+      // Skip if pathname hasn't changed (query params changed)
+      if (previousLocationRef.current.pathname === location.pathname) {
+        previousLocationRef.current = location;
+        // Still update the transition key for query param changes
+        setTransitionKey(generateSafeKey(location));
+        return;
+      }
 
-    // Start transition
-    setIsTransitioning(true);
-    
-    // After a short delay, perform cleanup and complete transition
-    const transitionTimer = window.setTimeout(() => {
-      cleanup();
+      const cleanup = () => {
+        if (!previousLocationRef.current) return;
+        
+        logger.log(`Cleaning up resources for route: ${previousLocationRef.current?.pathname || ''}`);
+        
+        // Cancel any pending network requests specific to the previous route
+        try {
+          window.dispatchEvent(new CustomEvent('route-change', { 
+            detail: { 
+              from: previousLocationRef.current?.pathname || '',
+              to: location?.pathname || ''
+            } 
+          }));
+        } catch (error) {
+          logger.warn('Error dispatching route-change event', error);
+        }
+        
+        // Clear any route-specific timeouts or intervals
+        try {
+          // Initialize __ROUTE_TIMERS__ if it doesn't exist
+          if (typeof window !== 'undefined' && !window.__ROUTE_TIMERS__) {
+            window.__ROUTE_TIMERS__ = {};
+          }
+          
+          if (typeof window !== 'undefined') {
+            const routeTimers = window.__ROUTE_TIMERS__;
+            const prevPath = previousLocationRef.current?.pathname || '';
+            
+            if (routeTimers[prevPath]) {
+              routeTimers[prevPath].forEach(
+                (timerId: number) => window.clearTimeout(timerId)
+              );
+              delete routeTimers[prevPath];
+            }
+          }
+        } catch (error) {
+          logger.warn('Error clearing route timers', error);
+        }
+      };
+
+      // Start transition
+      setIsTransitioning(true);
       
-      // Generate a safe transition key
-      const newKey = generateSafeKey(location);
-      setTransitionKey(newKey);
+      // After a short delay, perform cleanup and complete transition
+      let transitionTimer: number | null = null;
       
-      previousLocationRef.current = location;
+      if (typeof window !== 'undefined') {
+        transitionTimer = window.setTimeout(() => {
+          try {
+            cleanup();
+            
+            // Generate a safe transition key
+            const newKey = generateSafeKey(location);
+            setTransitionKey(newKey);
+            
+            previousLocationRef.current = location;
+            setIsTransitioning(false);
+          } catch (error) {
+            logger.error('Error during transition', error);
+            // Even if there's an error, we should stop transitioning
+            setIsTransitioning(false);
+          }
+        }, 100); // Slightly faster than the animation duration
+      }
+      
+      // Clean up the transition timer if component unmounts
+      return () => {
+        if (typeof window !== 'undefined' && transitionTimer !== null) {
+          window.clearTimeout(transitionTimer);
+        }
+      };
+    } catch (error) {
+      logger.error('Unhandled error in usePageTransition', error);
       setIsTransitioning(false);
-    }, 100); // Slightly faster than the animation duration
-    
-    // Clean up the transition timer if component unmounts
-    return () => {
-      window.clearTimeout(transitionTimer);
-    };
+      return undefined;
+    }
   }, [location]);
 
   return {
