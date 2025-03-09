@@ -1,87 +1,93 @@
-
-import { useEffect, useState, useRef } from "react";
-import { useInView } from "framer-motion";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
+importtypescript
+import { useState, useEffect } from "react";
+import { 
+  Carousel, 
+  CarouselContent, 
+  CarouselItem as CarouselItemUI, 
+  CarouselNext, 
+  CarouselPrevious 
 } from "@/components/ui/carousel";
-import { CarouselCard } from "@/components/home/carousel/CarouselCard";
-import { CarouselControls } from "@/components/home/carousel/CarouselControls";
+import { motion } from "framer-motion";
+import { CarouselCard } from "./CarouselCard";
+import { CarouselIndicators } from "./CarouselIndicators";
+import { CarouselModal } from "./CarouselModal";
+import { CarouselItem } from "./types";
+import { useCarouselAutoplay } from "./useCarouselAutoplay";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useInView } from "framer-motion";
 
 interface CarouselContentProps {
-  data: any[];
+  data: CarouselItem[];
+  sectionRef: React.RefObject<HTMLElement>;
 }
 
-export const CarouselContentSection = ({ data }: CarouselContentProps) => {
-  const [api, setApi] = useState<any>();
+export const CarouselContentSection = ({ data, sectionRef }: CarouselContentProps) => {
+  const [api, setApi] = useState<any>(null);
   const [current, setCurrent] = useState(0);
   const [autoPlay, setAutoPlay] = useState(true);
-  const intervalRef = useRef<number | null>(null);
-  const sectionRef = useRef(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<CarouselItem | null>(null);
   const isInView = useInView(sectionRef, { once: false, amount: 0.3 });
 
+  // Use the autoplay hook
+  const { handleManualInteraction } = useCarouselAutoplay({
+    enabled: autoPlay,
+    api,
+    isInView
+  });
+
+  // Update current slide index when the carousel changes
   useEffect(() => {
     if (!api) return;
     
     api.on("select", () => {
       setCurrent(api.selectedScrollSnap());
-      // Reset the autoplay timer when manually changing slides
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        if (autoPlay) {
-          startAutoPlay();
-        }
-      }
+      handleManualInteraction();
     });
     
     return () => {
       api.off("select");
     };
-  }, [api, autoPlay]);
+  }, [api, handleManualInteraction]);
 
-  // Start/stop autoplay when in view
-  useEffect(() => {
-    if (isInView && api) {
-      setAutoPlay(true);
-      startAutoPlay();
-    } else if (!isInView && intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-    
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
-  }, [isInView, api]);
-
-  const startAutoPlay = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-    
-    intervalRef.current = window.setInterval(() => {
-      if (api) {
-        api.scrollNext();
-      }
-    }, 5000) as unknown as number;
+  // Select an item for the modal
+  const handleItemSelect = (item: CarouselItem, index: number) => {
+    setSelectedItem(item);
+    setCurrent(index);
+    setModalOpen(true);
+    setAutoPlay(false); // Pause autoplay when modal is open
   };
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
-  }, []);
+  // Close the modal
+  const handleModalClose = () => {
+    setModalOpen(false);
+    setSelectedItem(null);
+    
+    if (isInView) {
+      setAutoPlay(true);
+    }
+  };
+
+  // Navigate to the next item in the modal
+  const handleNext = () => {
+    if (!data) return;
+    const nextIndex = (current + 1) % data.length;
+    setCurrent(nextIndex);
+    setSelectedItem(data[nextIndex]);
+    api?.scrollTo(nextIndex);
+  };
+
+  // Navigate to the previous item in the modal
+  const handlePrevious = () => {
+    if (!data) return;
+    const prevIndex = (current - 1 + data.length) % data.length;
+    setCurrent(prevIndex);
+    setSelectedItem(data[prevIndex]);
+    api?.scrollTo(prevIndex);
+  };
 
   return (
-    <div ref={sectionRef} className="w-full">
+    <>
       <Carousel
         opts={{ 
           align: "start", 
@@ -91,21 +97,40 @@ export const CarouselContentSection = ({ data }: CarouselContentProps) => {
         className="w-full max-w-6xl mx-auto"
       >
         <CarouselContent className="py-4">
-          {data.map((highlight, index) => (
-            <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3 h-[400px]">
-              <div className="h-full">
-                <CarouselCard highlight={highlight} index={index} />
+          {data.map((item, index) => (
+            <CarouselItemUI key={index} className="md:basis-1/2 lg:basis-1/3 h-[400px]">
+              <div className="h-full" onClick={() => handleItemSelect(item, index)}>
+                <CarouselCard highlight={item} index={index} />
               </div>
-            </CarouselItem>
+            </CarouselItemUI>
           ))}
         </CarouselContent>
-        
-        <CarouselControls 
-          current={current} 
-          itemsCount={data.length}
-          api={api}
-        />
+        <CarouselPrevious className="hidden md:flex -left-12 lg:-left-16 h-12 w-12 border-2 border-primary/20 bg-white/80 hover:bg-white">
+          <ChevronLeft className="h-6 w-6 text-primary" />
+        </CarouselPrevious>
+        <CarouselNext className="hidden md:flex -right-12 lg:-right-16 h-12 w-12 border-2 border-primary/20 bg-white/80 hover:bg-white">
+          <ChevronRight className="h-6 w-6 text-primary" />
+        </CarouselNext>
       </Carousel>
-    </div>
+
+      <CarouselIndicators 
+        items={data} 
+        currentIndex={current} 
+        onSelect={(index) => api?.scrollTo(index)} 
+      />
+
+      {/* Global modal for carousel items */}
+      {selectedItem && (
+        <CarouselModal
+          item={selectedItem}
+          isOpen={modalOpen}
+          onClose={handleModalClose}
+          onNext={handleNext}
+          onPrevious={handlePrevious}
+          hasNext={data.length > 1}
+          hasPrevious={data.length > 1}
+        />
+      )}
+    </>
   );
 };

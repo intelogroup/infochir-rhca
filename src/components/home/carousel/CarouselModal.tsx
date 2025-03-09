@@ -12,18 +12,9 @@ import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
 import { createLogger } from "@/lib/error-logger";
 import { formatDate } from "@/lib/utils";
+import { CarouselItem } from "./types";
 
 const logger = createLogger('CarouselModal');
-
-export interface CarouselItem {
-  title: string;
-  description: string;
-  image: string;
-  date?: string;
-  category?: string;
-  author?: string;
-  link: string;
-}
 
 interface CarouselModalProps {
   item: CarouselItem;

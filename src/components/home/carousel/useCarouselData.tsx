@@ -2,12 +2,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { highlights } from "@/components/home/carousel/carouselData";
+import { CarouselItem } from "./types";
+import { createLogger } from "@/lib/error-logger";
+
+const logger = createLogger('useCarouselData');
 
 export const useCarouselData = () => {
   return useQuery({
     queryKey: ['carousel-highlights'],
     queryFn: async () => {
-      console.log('Fetching carousel highlights for IGM, RHCA, and ADC sources...');
+      logger.debug('Fetching carousel highlights for IGM, RHCA, and ADC sources...');
       
       // Get the latest article from each source (IGM, RHCA, ADC)
       const { data: articles, error } = await supabase
@@ -19,7 +23,7 @@ export const useCarouselData = () => {
       if (error) throw error;
 
       if (!articles || articles.length === 0) {
-        console.log('No articles found, falling back to highlights');
+        logger.debug('No articles found, falling back to highlights');
         return highlights;
       }
 
@@ -36,7 +40,7 @@ export const useCarouselData = () => {
       // Convert map to array of latest articles (one per source)
       const latestArticles = Array.from(sourceMap.values());
       
-      console.log(`Found ${latestArticles.length} latest articles from specified sources`);
+      logger.debug(`Found ${latestArticles.length} latest articles from specified sources`);
 
       return latestArticles.map(article => ({
         title: article.title,
@@ -46,7 +50,7 @@ export const useCarouselData = () => {
         category: article.source,
         author: article.authors ? article.authors.join(', ') : undefined,
         link: `/articles/${article.id}`,
-      })) || highlights;
+      })) as CarouselItem[];
     },
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,

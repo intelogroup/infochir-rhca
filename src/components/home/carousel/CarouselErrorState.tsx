@@ -1,13 +1,19 @@
 
-import { AlertTriangle, RefreshCcw } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { AlertTriangle, RefreshCcw } from "lucide-react";
+import { createLogger } from "@/lib/error-logger";
+
+const logger = createLogger('CarouselErrorState');
 
 interface CarouselErrorStateProps {
+  error: unknown;
   onRetry: () => void;
 }
 
-export const CarouselErrorState = ({ onRetry }: CarouselErrorStateProps) => {
+export const CarouselErrorState = ({ error, onRetry }: CarouselErrorStateProps) => {
+  logger.error('Error fetching carousel data:', error);
+  
   return (
     <section className="py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
