@@ -1,46 +1,68 @@
-
-import React from "react";
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { UseFormReturn } from "react-hook-form";
-import { FileText } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { BookText, Newspaper } from "lucide-react";
+import { motion } from "framer-motion";
 
-export interface PublicationTypeFieldProps {
-  form: UseFormReturn<any>;
-  disabled?: boolean;
-}
-
-export const PublicationTypeField = ({ form, disabled }: PublicationTypeFieldProps) => {
+export const PublicationTypeField = ({ form }: { form: any }) => {
   return (
     <FormField
       control={form.control}
       name="publicationType"
       render={({ field }) => (
-        <FormItem className="space-y-3">
-          <FormLabel className="flex items-center gap-2">
-            <FileText className="h-4 w-4" />
-            Type de publication
-          </FormLabel>
+        <FormItem>
+          <FormLabel className="text-lg font-semibold">Type de publication</FormLabel>
           <FormControl>
             <RadioGroup
               onValueChange={field.onChange}
               defaultValue={field.value}
-              value={field.value}
-              className="flex flex-col gap-3"
-              disabled={disabled}
+              className="grid grid-cols-1 md:grid-cols-2 gap-4"
             >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="RHCA" id="publication-rhca" disabled={disabled} />
-                <label htmlFor="publication-rhca" className={`font-medium ${disabled ? 'opacity-60' : ''}`}>
-                  Revue d'histoire de la chirurgie africaine (RHCA)
-                </label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="IGM" id="publication-igm" disabled={disabled} />
-                <label htmlFor="publication-igm" className={`font-medium ${disabled ? 'opacity-60' : ''}`}>
-                  InfoChir / Gazette médicale (IGM)
-                </label>
-              </div>
+              <motion.div 
+                whileHover={{ scale: 1.02 }}
+                className="relative"
+              >
+                <RadioGroupItem
+                  value="RHCA"
+                  id="rhca"
+                  className="peer sr-only"
+                />
+                <Label
+                  htmlFor="rhca"
+                  className="flex flex-col items-center gap-2 rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                >
+                  <BookText className="h-6 w-6" />
+                  <div className="text-center">
+                    <div className="font-semibold">RHCA</div>
+                    <div className="text-sm text-muted-foreground">
+                      Revue Haïtienne de Chirurgie et d'Anesthésiologie
+                    </div>
+                  </div>
+                </Label>
+              </motion.div>
+
+              <motion.div 
+                whileHover={{ scale: 1.02 }}
+                className="relative"
+              >
+                <RadioGroupItem
+                  value="IGM"
+                  id="igm"
+                  className="peer sr-only"
+                />
+                <Label
+                  htmlFor="igm"
+                  className="flex flex-col items-center gap-2 rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+                >
+                  <Newspaper className="h-6 w-6" />
+                  <div className="text-center">
+                    <div className="font-semibold">IGM</div>
+                    <div className="text-sm text-muted-foreground">
+                      Info Gazette Médicale
+                    </div>
+                  </div>
+                </Label>
+              </motion.div>
             </RadioGroup>
           </FormControl>
           <FormMessage />

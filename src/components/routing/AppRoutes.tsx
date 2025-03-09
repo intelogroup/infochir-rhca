@@ -1,7 +1,8 @@
 
 import * as React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-import { LazyMotion, domMax, m } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
+import { LazyMotion, m, domMax } from "framer-motion";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { RouteWrapper } from "./RouteWrapper";
@@ -9,161 +10,63 @@ import { AdminRouteWrapper } from "./AdminRouteWrapper";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import * as LazyComponents from "@/config/routes";
-import { Skeleton } from "@/components/ui/skeleton";
-import { usePageTransition } from "@/hooks/usePageTransition";
-import { createLogger } from "@/lib/error-logger";
 
-const logger = createLogger('Routes');
-
-// Memoize LoadingFallback to prevent unnecessary re-renders
-const LoadingFallback = React.memo(() => (
-  <div className="min-h-screen flex items-center justify-center bg-white/80">
-    <div className="w-full max-w-md space-y-4 p-4">
-      <Skeleton className="h-8 w-3/4 mx-auto" />
-      <Skeleton className="h-64 w-full rounded-lg" />
-      <div className="space-y-2">
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-5/6" />
-        <Skeleton className="h-4 w-4/6" />
-      </div>
-    </div>
-  </div>
-));
-
-LoadingFallback.displayName = 'LoadingFallback';
-
-// Create a memoized route component
-const MemoizedRoute = React.memo(({ path, component }: { path: string, component: React.ComponentType<any> }) => (
-  <Route 
-    path={path} 
-    element={
-      <RouteWrapper 
-        component={component} 
-        loadingFallback={<LoadingFallback />}
-      />
-    } 
-  />
-));
-
-MemoizedRoute.displayName = 'MemoizedRoute';
-
-// Create a memoized admin route component
-const MemoizedAdminRoute = React.memo(({ path, component }: { path: string, component: React.ComponentType<any> }) => (
-  <Route 
-    path={path} 
-    element={
-      <AdminRouteWrapper 
-        component={component} 
-        loadingFallback={<LoadingFallback />}
-      />
-    } 
-  />
-));
-
-MemoizedAdminRoute.displayName = 'MemoizedAdminRoute';
-
-// Wrap routes with extra error boundary
-const SafeRoutes = React.memo(() => {
+export const AppRoutes = () => {
   const location = useLocation();
-  
-  return (
-    <Routes location={location}>
-      {/* Public Routes */}
-      <Route element={<MainLayout />}>
-        <MemoizedRoute path="/" component={LazyComponents.Home} />
-        <MemoizedRoute path="/donate" component={LazyComponents.Donate} />
-        <MemoizedRoute path="/donate/success" component={LazyComponents.DonateSuccess} />
-        <MemoizedRoute path="/rhca" component={LazyComponents.RHCA} />
-        <MemoizedRoute path="/rhca/directives" component={LazyComponents.RHCADirectives} />
-        <MemoizedRoute path="/igm" component={LazyComponents.IGM} />
-        <MemoizedRoute path="/igm/directives" component={LazyComponents.IGMDirectives} />
-        <MemoizedRoute path="/igm/editorial-committee" component={LazyComponents.IGMEditorialCommittee} />
-        <MemoizedRoute path="/igm/editorial" component={LazyComponents.IGMEditorialCommittee} />
-        <MemoizedRoute path="/editorial-committee" component={LazyComponents.EditorialCommittee} />
-        <MemoizedRoute path="/about" component={LazyComponents.About} />
-        <MemoizedRoute path="/submission" component={LazyComponents.Submission} />
-        <MemoizedRoute path="/annuaire" component={LazyComponents.Annuaire} />
-        <MemoizedRoute path="/jobs" component={LazyComponents.Opportunities} />
-        <MemoizedRoute path="/adc" component={LazyComponents.ADC} />
-        <MemoizedRoute path="/index-medicus" component={LazyComponents.IndexMedicus} />
-        {/* Add specific article route */}
-        <MemoizedRoute path="/articles/:id" component={LazyComponents.ArticleDetail} />
-        
-        {/* Add a 404 catch-all route */}
-        <MemoizedRoute path="*" component={LazyComponents.NotFound} />
-      </Route>
-
-      {/* Admin Routes */}
-      <Route element={<AdminLayout />}>
-        <MemoizedAdminRoute path="/admin" component={LazyComponents.AdminDashboard} />
-        <MemoizedAdminRoute path="/admin/content" component={LazyComponents.AdminContent} />
-        <MemoizedAdminRoute path="/admin/users" component={LazyComponents.AdminUsers} />
-        <MemoizedAdminRoute path="/admin/analytics" component={LazyComponents.AdminAnalytics} />
-        <MemoizedAdminRoute path="/admin/settings" component={LazyComponents.AdminSettings} />
-        
-        {/* Add admin 404 route */}
-        <MemoizedAdminRoute path="/admin/*" component={LazyComponents.AdminNotFound} />
-      </Route>
-    </Routes>
-  );
-});
-
-SafeRoutes.displayName = 'SafeRoutes';
-
-// Memoize the AppRoutes component
-export const AppRoutes = React.memo(() => {
-  const location = useLocation();
-  const { isTransitioning, transitionKey } = usePageTransition(location);
-  
-  // Call useScrollToTop with a stable location key to prevent duplicate scrolling
-  useScrollToTop(transitionKey);
-
-  // Pre-load important routes when the app loads
-  React.useEffect(() => {
-    try {
-      // Create a list of paths to preload
-      const commonRoutes = ['/', '/about', '/rhca', '/igm'];
-      
-      // Use prefetch rel for navigation hints
-      commonRoutes.forEach(route => {
-        if (typeof route === 'string') {
-          try {
-            const link = document.createElement('link');
-            link.rel = 'prefetch';
-            link.href = route;
-            link.setAttribute('as', 'document'); // Specify what we're prefetching
-            document.head.appendChild(link);
-          } catch (err) {
-            // Silently fail on prefetch errors - they're just optimizations
-            logger.debug(`Failed to prefetch ${route}:`, err);
-          }
-        }
-      });
-      
-      logger.log('Preloaded common routes:', commonRoutes);
-    } catch (error) {
-      logger.error(error, { component: 'AppRoutes', context: 'preloadRoutes' });
-    }
-  }, []);
+  useScrollToTop();
 
   return (
-    <ErrorBoundary name="routes">
+    <ErrorBoundary>
       <LazyMotion features={domMax} strict>
-        <m.div
-          key={transitionKey}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2, ease: "easeInOut" }}
-          className="min-h-screen"
-        >
-          <ErrorBoundary name="routes-inner">
-            <SafeRoutes />
-          </ErrorBoundary>
-        </m.div>
+        <AnimatePresence mode="wait" initial={false} onExitComplete={() => window.scrollTo(0, 0)}>
+          <m.div
+            key={location.pathname}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Routes location={location}>
+              {/* Public Routes */}
+              <Route element={<MainLayout />}>
+                <Route path="/" element={<RouteWrapper component={LazyComponents.Home} />} />
+                <Route path="/donate" element={<RouteWrapper component={LazyComponents.Donate} />} />
+                <Route path="/donate/success" element={<RouteWrapper component={LazyComponents.DonateSuccess} />} />
+                <Route path="/rhca" element={<RouteWrapper component={LazyComponents.RHCA} />} />
+                <Route path="/rhca/directives" element={<RouteWrapper component={LazyComponents.RHCADirectives} />} />
+                <Route path="/igm" element={<RouteWrapper component={LazyComponents.IGM} />} />
+                <Route path="/igm/directives" element={<RouteWrapper component={LazyComponents.IGMDirectives} />} />
+                <Route path="/igm/editorial-committee" element={<RouteWrapper component={LazyComponents.IGMEditorialCommittee} />} />
+                <Route path="/igm/editorial" element={<RouteWrapper component={LazyComponents.IGMEditorialCommittee} />} />
+                <Route path="/editorial-committee" element={<RouteWrapper component={LazyComponents.EditorialCommittee} />} />
+                <Route path="/about" element={<RouteWrapper component={LazyComponents.About} />} />
+                <Route path="/submission" element={<RouteWrapper component={LazyComponents.Submission} />} />
+                <Route path="/annuaire" element={<RouteWrapper component={LazyComponents.Annuaire} />} />
+                <Route path="/jobs" element={<RouteWrapper component={LazyComponents.Opportunities} />} />
+                <Route path="/adc" element={<RouteWrapper component={LazyComponents.ADC} />} />
+                <Route path="/index-medicus" element={<RouteWrapper component={LazyComponents.IndexMedicus} />} />
+                {/* Add specific article route */}
+                <Route path="/articles/:id" element={<RouteWrapper component={LazyComponents.ArticleDetail} />} />
+                
+                {/* Add a 404 catch-all route */}
+                <Route path="*" element={<RouteWrapper component={LazyComponents.NotFound} />} />
+              </Route>
+
+              {/* Admin Routes */}
+              <Route element={<AdminLayout />}>
+                <Route path="/admin" element={<AdminRouteWrapper component={LazyComponents.AdminDashboard} />} />
+                <Route path="/admin/content" element={<AdminRouteWrapper component={LazyComponents.AdminContent} />} />
+                <Route path="/admin/users" element={<AdminRouteWrapper component={LazyComponents.AdminUsers} />} />
+                <Route path="/admin/analytics" element={<AdminRouteWrapper component={LazyComponents.AdminAnalytics} />} />
+                <Route path="/admin/settings" element={<AdminRouteWrapper component={LazyComponents.AdminSettings} />} />
+                
+                {/* Add admin 404 route */}
+                <Route path="/admin/*" element={<AdminRouteWrapper component={LazyComponents.AdminNotFound} />} />
+              </Route>
+            </Routes>
+          </m.div>
+        </AnimatePresence>
       </LazyMotion>
     </ErrorBoundary>
   );
-});
-
-AppRoutes.displayName = 'AppRoutes';
+};

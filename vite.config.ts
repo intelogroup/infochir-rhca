@@ -8,7 +8,6 @@ import { componentTagger } from "lovable-tagger";
 export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
-    // Only use development plugins in development mode
     mode === 'development' && componentTagger(),
     mode === 'development' && visualizer({
       template: "treemap",
@@ -78,18 +77,16 @@ export default defineConfig(({ mode }) => ({
       protocol: 'wss'
     },
     headers: {
-      'Content-Security-Policy': mode === 'development' 
-        ? '' // No CSP in development for easier debugging
-        : `
-          default-src 'self' https://*.stripe.com https://*.supabase.co;
-          script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.stripe.com https://*.supabase.co blob:;
-          style-src 'self' 'unsafe-inline';
-          img-src 'self' data: https://*.stripe.com https://*.supabase.co;
-          connect-src 'self' https://*.stripe.com https://*.supabase.co wss://*.supabase.co https://*.lovableproject.com wss://*.lovableproject.com;
-          frame-src 'self' https://*.stripe.com;
-          worker-src 'self' blob:;
-          preload-src 'self';
-        `.replace(/\s+/g, ' ').trim()
+      'Content-Security-Policy': `
+        default-src 'self' https://*.stripe.com https://*.supabase.co;
+        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.stripe.com https://*.supabase.co blob:;
+        style-src 'self' 'unsafe-inline';
+        img-src 'self' data: https://*.stripe.com https://*.supabase.co;
+        connect-src 'self' https://*.stripe.com https://*.supabase.co wss://*.supabase.co https://*.lovableproject.com wss://*.lovableproject.com;
+        frame-src 'self' https://*.stripe.com;
+        worker-src 'self' blob:;
+        preload-src 'self';
+      `.replace(/\s+/g, ' ').trim()
     }
   },
   esbuild: {

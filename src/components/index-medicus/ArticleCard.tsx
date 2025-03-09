@@ -7,10 +7,10 @@ import { ArticleTags } from "./article/ArticleTags";
 import { ArticleCategories } from "./article/ArticleCategories";
 import { ArticleMetadata } from "./article/ArticleMetadata";
 import { ArticleActions } from "./article/ArticleActions";
+import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
 import { toast } from "sonner";
 import { ArticleModal } from "./article/ArticleModal";
 import { motion } from "framer-motion";
-import LazyImage from "@/components/shared/LazyImage";
 
 interface ArticleCardProps {
   article: Article;
@@ -18,8 +18,7 @@ interface ArticleCardProps {
   selectedTags?: string[];
 }
 
-// Use React.memo to prevent unnecessary re-renders
-export const ArticleCard = React.memo(({ article, onTagClick, selectedTags }: ArticleCardProps) => {
+export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick, selectedTags }) => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   const generateCitation = React.useCallback((format: 'APA' | 'MLA' | 'Chicago' | 'Harvard') => {
@@ -56,10 +55,6 @@ export const ArticleCard = React.memo(({ article, onTagClick, selectedTags }: Ar
     toast.success("Lien copié dans le presse-papier");
   }, [article.id]);
 
-  const toggleModal = React.useCallback(() => {
-    setIsModalOpen(prev => !prev);
-  }, []);
-
   return (
     <>
       <motion.div 
@@ -68,12 +63,12 @@ export const ArticleCard = React.memo(({ article, onTagClick, selectedTags }: Ar
       >
         <Card 
           className="hover:shadow-lg transition-shadow overflow-hidden group rounded-xl cursor-pointer bg-white border-gray-100"
-          onClick={toggleModal}
+          onClick={() => setIsModalOpen(true)}
         >
           <div className="flex flex-col md:flex-row">
             {article.imageUrl ? (
               <div className="md:w-48 h-48 md:h-auto relative overflow-hidden">
-                <LazyImage 
+                <ImageOptimizer 
                   src={article.imageUrl}
                   alt={article.title}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
@@ -138,10 +133,8 @@ export const ArticleCard = React.memo(({ article, onTagClick, selectedTags }: Ar
       <ArticleModal
         article={article}
         open={isModalOpen}
-        onClose={toggleModal}
+        onClose={() => setIsModalOpen(false)}
       />
     </>
   );
-});
-
-ArticleCard.displayName = 'ArticleCard';
+};

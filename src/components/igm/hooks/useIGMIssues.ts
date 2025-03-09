@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Issue } from "../types";
 import { toast } from "sonner";
 import { createLogger } from "@/lib/error-logger";
-import { queryKeys } from "@/lib/react-query";
 
 const logger = createLogger('useIGMIssues');
 
@@ -13,35 +12,17 @@ export const useIGMIssues = () => {
   const startTime = Date.now();
 
   return useQuery({
-    queryKey: queryKeys.igmIssues,
+    queryKey: ["igm-issues"],
     queryFn: async () => {
       logger.log(`Starting data fetch at: ${Date.now() - startTime}ms`);
 
       try {
-        // Use a more efficient query with specific SELECT fields
-        // and LIMIT to reduce data transfer
+        // Fetch IGM articles from the articles table instead of igm_unified_view
         const { data, error } = await supabase
           .from("articles")
-          .select(`
-            id, 
-            title, 
-            abstract, 
-            volume, 
-            issue, 
-            publication_date, 
-            authors, 
-            tags, 
-            downloads, 
-            shares, 
-            pdf_url, 
-            image_url, 
-            category, 
-            page_number
-          `)
+          .select('*')
           .eq('source', 'IGM')
-          .order('publication_date', { ascending: false })
-          // Add a reasonable limit to prevent loading too much data at once
-          .limit(50);
+          .order('publication_date', { ascending: false });
 
         logger.log(`Supabase query completed at: ${Date.now() - startTime}ms`);
 
@@ -70,19 +51,19 @@ export const useIGMIssues = () => {
           lastItem: data[data.length - 1]
         });
 
-        // Group articles by volume and issue using a more efficient approach
-        const issuesMap = {};
+        // Group articles by volume and issue
+        const issuesMap = new Map();
 
         data.forEach(article => {
           if (!article.volume || !article.issue) return;
           
           const key = `${article.volume}-${article.issue}`;
           
-          if (!issuesMap[key]) {
+          if (!issuesMap.has(key)) {
             // Use the exact title from the database if available
             const issueTitle = article.title || `INFO GAZETTE MÉDICALE Volume ${article.volume}, No. ${article.issue}`;
             
-            issuesMap[key] = {
+            issuesMap.set(key, {
               id: `igm-${article.volume}-${article.issue}`,
               title: issueTitle,
               volume: article.volume,
@@ -96,11 +77,11 @@ export const useIGMIssues = () => {
               shares: article.shares || 0,
               articles: [],
               categories: article.category ? [article.category] : []
-            };
+            });
           }
           
           // Add article to the issue
-          const issue = issuesMap[key];
+          const issue = issuesMap.get(key);
           issue.articles.push({
             id: article.id,
             title: article.title,
@@ -121,7 +102,7 @@ export const useIGMIssues = () => {
         });
 
         // Convert map to array
-        const issues = Object.values(issuesMap);
+        const issues = Array.from(issuesMap.values());
 
         logger.log('Processed issues:', {
           count: issues.length,
@@ -161,6 +142,6 @@ export const useIGMIssues = () => {
     },
     retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
     staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    gcTime: 10 * 60 * 1000 // 10 minutes
   });
 };

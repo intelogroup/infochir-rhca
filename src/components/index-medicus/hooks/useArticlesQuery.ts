@@ -4,30 +4,13 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Article } from "@/components/index-medicus/types";
 import { toast } from "sonner";
 import { createLogger } from "@/lib/error-logger";
-import { queryKeys } from "@/lib/react-query";
-import { useComponentLifecycle } from "@/hooks/useComponentLifecycle";
-import { useEffect, useRef } from "react";
 
 const logger = createLogger('useArticlesQuery');
 const PAGE_SIZE = 10;
 
 export const useArticlesQuery = (page = 0) => {
-  const { isMounted, createAbortController } = useComponentLifecycle();
-  const controller = createAbortController();
-  const timeoutRef = useRef<number | null>(null);
-  
-  // Clean up timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
-    };
-  }, []);
-  
   return useQuery({
-    queryKey: queryKeys.articles.list(page),
+    queryKey: ["articles", page],
     queryFn: async () => {
       logger.log('Starting articles fetch for page:', page);
       
@@ -38,61 +21,26 @@ export const useArticlesQuery = (page = 0) => {
 
       try {
         // Create a timeout for the request
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
-        }
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
         
-        // Set timeout to abort request after 8 seconds
-        const timeoutPromise = new Promise<never>((_, reject) => {
-          timeoutRef.current = window.setTimeout(() => {
-            if (isMounted()) {
-              controller.abort('Request timeout');
-              reject(new Error('Request timed out after 8 seconds'));
-            }
-          }, 8000);
-        });
+        const { data, error, count } = await supabase
+          .from("articles")
+          .select("*", { count: 'exact' })
+          .order("publication_date", { ascending: false })
+          .range(start, end)
+          .abortSignal(controller.signal);
         
-        // Create the query promise with proper typing
-        const queryPromise = new Promise(async (resolve, reject) => {
-          try {
-            const response = await supabase
-              .from("articles")
-              .select("*", { count: 'exact' })
-              .order("publication_date", { ascending: false })
-              .range(start, end)
-              .abortSignal(controller.signal);
-              
-            resolve(response);
-          } catch (error) {
-            reject(error);
-          }
-        });
-          
-        // Race between the actual query and the timeout
-        const response = await Promise.race([
-          queryPromise,
-          timeoutPromise
-        ]) as any;
-
-        // Clear the timeout since the query completed
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
-          timeoutRef.current = null;
-        }
-        
-        const { data, error, count } = response;
+        // Clear the timeout
+        clearTimeout(timeoutId);
 
         logger.log('Supabase response:', { dataCount: data?.length, error, count });
 
         if (error) {
           logger.error("Supabase query error:", error);
-          
-          // Only show toast if component is still mounted
-          if (isMounted()) {
-            toast.error("Erreur lors du chargement des articles", {
-              description: error.message
-            });
-          }
+          toast.error("Erreur lors du chargement des articles", {
+            description: error.message
+          });
           throw error;
         }
 
@@ -134,19 +82,11 @@ export const useArticlesQuery = (page = 0) => {
         return { articles, totalPages };
       } catch (err) {
         logger.error('Error fetching articles:', err);
-        
-        // Clear the timeout
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
-          timeoutRef.current = null;
-        }
-        
         const errorMessage = err instanceof Error ? err.message : String(err);
         
-        // Don't show toast for aborted requests or if component unmounted
+        // Don't show toast for aborted requests
         if (errorMessage !== 'AbortError: The operation was aborted' && 
-            !errorMessage.includes('aborted') && 
-            isMounted()) {
+            !errorMessage.includes('aborted')) {
           toast.error("Erreur lors du chargement des articles", {
             description: errorMessage
           });

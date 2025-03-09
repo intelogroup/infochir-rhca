@@ -1,11 +1,12 @@
 
 import { Badge } from "@/components/ui/badge";
 import { BookOpen } from "lucide-react";
+import { useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
 import { AtlasCategory } from "../data/atlasCategories";
 import { AtlasChapter } from "../types";
 import { Calendar, User } from "lucide-react";
-import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
 
 interface ModalHeaderProps {
   chapter: AtlasChapter;
@@ -13,19 +14,29 @@ interface ModalHeaderProps {
 }
 
 export const ModalHeader = ({ chapter, category }: ModalHeaderProps) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  
   const defaultCoverImage = "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=800&fit=crop";
   const coverImage = chapter.coverImage || defaultCoverImage;
+  // Optimize the cover image for the modal header
+  const optimizedCoverImage = `${coverImage}?w=800&h=320&fit=cover&q=80`;
   
   return (
     <div className="relative">
       <div className="relative h-40 overflow-hidden">
-        <ImageOptimizer
-          src={coverImage}
+        {!imageLoaded && (
+          <Skeleton className="absolute inset-0 w-full h-full" />
+        )}
+        <img
+          src={optimizedCoverImage}
           alt={chapter.title}
           width={800}
           height={320}
-          className="w-full h-full object-cover"
-          priority={true}
+          className={`w-full h-full object-cover transition-opacity duration-300 ${
+            imageLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+          onLoad={() => setImageLoaded(true)}
+          loading="lazy"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
       </div>

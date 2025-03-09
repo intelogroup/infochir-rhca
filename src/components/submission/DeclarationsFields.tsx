@@ -1,32 +1,19 @@
-
-import React from "react";
-import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from "@/components/ui/form";
+import { FormControl, FormField, FormItem, FormLabel, FormDescription } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
-import { UseFormReturn } from "react-hook-form";
-import { ShieldCheck, AlertTriangle } from "lucide-react";
+import { motion } from "framer-motion";
+import { ShieldCheck, UserCheck, FileCheck } from "lucide-react";
 
-export interface DeclarationsFieldsProps {
-  form: UseFormReturn<any>;
-  disabled?: boolean;
-}
-
-export const DeclarationsFields = ({ form, disabled }: DeclarationsFieldsProps) => {
+export const DeclarationsFields = ({ form }: { form: any }) => {
   return (
-    <div className="space-y-4">
-      <div className="flex gap-2 items-center">
-        <ShieldCheck className="h-5 w-5 text-blue-600" />
-        <h3 className="text-lg font-semibold">Déclarations</h3>
-      </div>
-      
-      <div className={`p-3 bg-amber-50 border border-amber-200 rounded-md ${disabled ? "opacity-70" : ""}`}>
-        <div className="flex gap-2 mb-2">
-          <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-          <p className="text-sm text-amber-800">
-            Veuillez lire attentivement et cocher les déclarations suivantes. 
-            Ces déclarations sont nécessaires pour la soumission de votre article.
-          </p>
-        </div>
-      </div>
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-6"
+    >
+      <h3 className="text-lg font-semibold flex items-center gap-2">
+        <ShieldCheck className="h-5 w-5" />
+        Déclarations
+      </h3>
       
       <FormField
         control={form.control}
@@ -37,7 +24,6 @@ export const DeclarationsFields = ({ form, disabled }: DeclarationsFieldsProps) 
               <Checkbox
                 checked={field.value}
                 onCheckedChange={field.onChange}
-                disabled={disabled}
               />
             </FormControl>
             <div className="space-y-1 leading-none">
@@ -45,13 +31,13 @@ export const DeclarationsFields = ({ form, disabled }: DeclarationsFieldsProps) 
                 Approbation éthique
               </FormLabel>
               <FormDescription>
-                Je confirme que cette recherche a reçu l'approbation éthique appropriée des institutions concernées.
+                Cette recherche a reçu l'approbation éthique nécessaire
               </FormDescription>
             </div>
           </FormItem>
         )}
       />
-      
+
       <FormField
         control={form.control}
         name="noConflict"
@@ -61,21 +47,21 @@ export const DeclarationsFields = ({ form, disabled }: DeclarationsFieldsProps) 
               <Checkbox
                 checked={field.value}
                 onCheckedChange={field.onChange}
-                disabled={disabled}
               />
             </FormControl>
             <div className="space-y-1 leading-none">
-              <FormLabel>
-                Absence de conflit d'intérêts
+              <FormLabel className="flex items-center gap-2">
+                <UserCheck className="h-4 w-4" />
+                Absence de conflit d'intérêt
               </FormLabel>
               <FormDescription>
-                Je déclare qu'il n'y a pas de conflit d'intérêts en lien avec cette soumission.
+                Je déclare n'avoir aucun conflit d'intérêt
               </FormDescription>
             </div>
           </FormItem>
         )}
       />
-      
+
       <FormField
         control={form.control}
         name="originalWork"
@@ -85,20 +71,20 @@ export const DeclarationsFields = ({ form, disabled }: DeclarationsFieldsProps) 
               <Checkbox
                 checked={field.value}
                 onCheckedChange={field.onChange}
-                disabled={disabled}
               />
             </FormControl>
             <div className="space-y-1 leading-none">
-              <FormLabel>
+              <FormLabel className="flex items-center gap-2">
+                <FileCheck className="h-4 w-4" />
                 Travail original
               </FormLabel>
               <FormDescription>
-                Je certifie que ce travail est original et n'a pas été publié ailleurs ni soumis simultanément à d'autres revues.
+                Je confirme que cet article est original et n'est pas en considération avec un autre journal
               </FormDescription>
             </div>
           </FormItem>
         )}
       />
-    </div>
+    </motion.div>
   );
 };

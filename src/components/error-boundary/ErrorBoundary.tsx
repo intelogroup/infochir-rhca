@@ -30,63 +30,30 @@ export class ErrorBoundary extends React.Component<Props, State> {
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error: Error | unknown): State {
-    // Convert to Error object if it's not already one
-    const errorObj = error instanceof Error ? error : new Error(
-      typeof error === 'string' ? error : 'Unknown error'
-    );
-    
-    // Ensure error has a message
-    if (!errorObj.message) {
-      errorObj.message = 'Unknown error';
-    }
-    
+  static getDerivedStateFromError(error: Error): State {
     console.error("[ErrorBoundary] getDerivedStateFromError:", {
-      error: errorObj,
-      message: errorObj.message,
-      stack: errorObj.stack,
-      name: errorObj.name
+      error,
+      message: error.message,
+      stack: error.stack,
+      name: error.name
     });
 
     // Handle context-specific errors
-    if (errorObj.message && errorObj.message.includes('must be used within')) {
-      console.error("[ErrorBoundary] Context provider missing:", errorObj.message);
-    }
-    
-    // Try to detect if it's a React Router error
-    if (errorObj.stack && (
-      errorObj.stack.includes('router.js') || 
-      errorObj.stack.includes('react-router') ||
-      errorObj.stack.includes('index.js:1374') ||
-      errorObj.stack.includes('assets/react-vendor') ||
-      errorObj.stack.includes('at H (router')
-    )) {
-      console.error("[ErrorBoundary] React Router error detected");
-      // For router errors, create a more specific error
-      const routerError = new Error("Navigation error occurred");
-      routerError.name = "NavigationError";
-      routerError.stack = errorObj.stack;
-      return { hasError: true, error: routerError };
+    if (error.message.includes('must be used within')) {
+      console.error("[ErrorBoundary] Context provider missing:", error.message);
     }
 
-    return { hasError: true, error: errorObj };
+    return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     const boundaryName = this.props.name || 'unnamed';
     
-    // Ensure the error has a message
-    if (!error.message) {
-      error.message = `Error in ${boundaryName}`;
-    }
-    
-    // Ensure componentStack is always available
-    const safeErrorInfo = {
+    // Use our enhanced error logger with proper typing
+    // Ensuring the componentStack is always available
+    logReactError(error, {
       componentStack: errorInfo.componentStack || 'No component stack available'
-    };
-    
-    // Use our enhanced error logger
-    logReactError(error, safeErrorInfo, boundaryName);
+    }, boundaryName);
 
     // Add specific error handling for downloads
     if (error.message.includes('download') || error.message.includes('fetch')) {
@@ -105,24 +72,8 @@ export class ErrorBoundary extends React.Component<Props, State> {
       console.error("[ErrorBoundary] Chunk loading diagnostic:", getLoadingDiagnostics());
     }
     
-    // Handle common React Router errors with more detailed logging
-    if (error.stack && (
-      error.stack.includes('router.js') || 
-      error.stack.includes('react-router') ||
-      error.stack.includes('index.js:1374') ||
-      error.stack.includes('assets/react-vendor') ||
-      error.stack.includes('at H (router')
-    )) {
-      console.error("[ErrorBoundary] React Router error detected:", {
-        message: error.message || "Router error",
-        path: window.location.pathname,
-        search: window.location.search,
-        stack: error.stack
-      });
-    }
-    
     // Set error info in state
-    this.setState({ errorInfo: safeErrorInfo });
+    this.setState({ errorInfo });
   }
 
   handleRetry = () => {
@@ -142,9 +93,6 @@ export class ErrorBoundary extends React.Component<Props, State> {
       this.setState({ hasError: false, error: undefined, errorInfo: undefined });
     } else if (errorDetails.type === 'download_error') {
       this.setState({ hasError: false, error: undefined, errorInfo: undefined });
-    } else if (errorDetails.type === 'router_error' || error.name === 'NavigationError') {
-      // For router errors, try navigating to home
-      window.location.href = '/';
     } else {
       window.location.reload();
     }
@@ -154,13 +102,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
     const { error } = this.state;
     if (!error) return null;
 
-    // Ensure we have an error message
-    const safeError = {
-      ...error,
-      message: error.message || "An unknown error occurred"
-    };
-
-    const { title, message, details, type } = getErrorMessage(safeError);
+    const { title, message, details, type } = getErrorMessage(error);
     
     return (
       <Alert variant="destructive" className="p-6">

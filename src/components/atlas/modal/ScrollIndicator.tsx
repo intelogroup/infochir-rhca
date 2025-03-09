@@ -7,35 +7,14 @@ interface ScrollIndicatorProps {
 }
 
 export const ScrollIndicator = ({ show }: ScrollIndicatorProps) => {
-  // Optimized animation with smoother transitions and more reliable exit
-  const indicatorVariants = {
-    hidden: { opacity: 0, y: -10 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { 
-        duration: 0.3,
-        ease: "easeOut"
-      }
-    },
-    exit: { 
-      opacity: 0,
-      transition: { 
-        duration: 0.2,
-        ease: "easeIn"
-      }
-    }
-  };
-
   return (
-    <AnimatePresence mode="wait" initial={false}>
+    <AnimatePresence>
       {show && (
         <motion.div
-          variants={indicatorVariants}
-          initial="hidden"
-          animate="visible"
-          exit="exit"
-          className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-gray-400 pointer-events-none"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-gray-400"
         >
           <ChevronDown className="w-4 h-4 animate-bounce" />
         </motion.div>

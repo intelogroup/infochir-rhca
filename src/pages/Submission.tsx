@@ -8,10 +8,9 @@ import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Save, Send, AlertTriangle } from "lucide-react";
+import { Save, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 import { SubmissionHeader } from "@/components/submission/SubmissionHeader";
 import { PublicationTypeField } from "@/components/submission/PublicationTypeField";
@@ -20,7 +19,6 @@ import { CorrespondingAuthorFields } from "@/components/submission/Corresponding
 import { AbstractField } from "@/components/submission/AbstractField";
 import { DeclarationsFields } from "@/components/submission/DeclarationsFields";
 import { MultiFileUploader } from "@/components/pdf/MultiFileUploader";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 const formSchema = z.object({
   publicationType: z.enum(["RHCA", "IGM"], {
@@ -53,7 +51,6 @@ const Submission = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [articleFiles, setArticleFiles] = useState<string[]>([]);
   const [imageAnnexes, setImageAnnexes] = useState<string[]>([]);
-  const [formError, setFormError] = useState<string | null>(null);
   const navigate = useNavigate();
   
   const form = useForm<z.infer<typeof formSchema>>({
@@ -66,18 +63,13 @@ const Submission = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // Reset error state
-    setFormError(null);
-
     if (articleFiles.length === 0) {
-      setFormError("Veuillez uploader au moins un fichier d'article");
       toast.error("Veuillez uploader au moins un fichier d'article");
       return;
     }
 
     try {
       setIsSubmitting(true);
-      const toastId = toast.loading("Soumission en cours...");
 
       const { data: userSession } = await supabase.auth.getSession();
       
@@ -105,27 +97,19 @@ const Submission = () => {
         .select()
         .single();
 
-      if (error) {
-        console.error("Submission error:", error);
-        setFormError(`Erreur lors de la soumission: ${error.message}`);
-        toast.error("Une erreur est survenue lors de l'envoi", { id: toastId });
-        throw error;
-      }
+      if (error) throw error;
 
-      toast.success("Votre soumission a été envoyée avec succès!", { id: toastId });
+      toast.success("Votre soumission a été envoyée avec succès!");
       
-      // Short delay before redirecting to show success message
-      setTimeout(() => {
-        // Redirect based on publication type
-        if (values.publicationType === 'RHCA') {
-          navigate('/rhca');
-        } else {
-          navigate('/igm');
-        }
-      }, 1500);
-    } catch (error: any) {
+      // Redirect based on publication type
+      if (values.publicationType === 'RHCA') {
+        navigate('/rhca');
+      } else {
+        navigate('/igm');
+      }
+    } catch (error) {
       console.error('Submission error:', error);
-      setFormError(error.message || "Une erreur est survenue lors de l'envoi de votre soumission");
+      toast.error("Une erreur est survenue lors de l'envoi de votre soumission");
     } finally {
       setIsSubmitting(false);
     }
@@ -145,21 +129,13 @@ const Submission = () => {
           >
             <SubmissionHeader />
 
-            {formError && (
-              <Alert variant="destructive" className="animate-in fade-in slide-in-from-top">
-                <AlertTriangle className="h-4 w-4" />
-                <AlertTitle>Erreur</AlertTitle>
-                <AlertDescription>{formError}</AlertDescription>
-              </Alert>
-            )}
-
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <div className="space-y-8 bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-gray-100">
-                  <PublicationTypeField form={form} disabled={isSubmitting} />
-                  <ArticleDetailsFields form={form} disabled={isSubmitting} />
-                  <CorrespondingAuthorFields form={form} disabled={isSubmitting} />
-                  <AbstractField form={form} disabled={isSubmitting} />
+                  <PublicationTypeField form={form} />
+                  <ArticleDetailsFields form={form} />
+                  <CorrespondingAuthorFields form={form} />
+                  <AbstractField form={form} />
                   
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold">Fichiers de l'article</h3>
@@ -171,7 +147,7 @@ const Submission = () => {
                         'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
                       }}
                       maxFileSize={10}
-                      maxFiles={20}
+                      maxFiles={20} // Updated to 20
                       onUploadComplete={setArticleFiles}
                       helperText="Formats acceptés: DOC, DOCX, PDF. Taille max: 10MB. Maximum 20 fichiers"
                     />
@@ -185,14 +161,14 @@ const Submission = () => {
                         'image/*': ['.png', '.jpg', '.jpeg', '.gif']
                       }}
                       maxFileSize={5}
-                      maxFiles={20}
+                      maxFiles={20} // Updated to 20
                       onUploadComplete={setImageAnnexes}
                       helperText="Formats acceptés: PNG, JPEG, GIF. Taille max: 5MB. Maximum 20 fichiers"
                       type="image"
                     />
                   </div>
 
-                  <DeclarationsFields form={form} disabled={isSubmitting} />
+                  <DeclarationsFields form={form} />
                 </div>
 
                 <div className="flex justify-end space-x-4">
@@ -207,33 +183,15 @@ const Submission = () => {
                   </Button>
                   <Button 
                     type="submit"
-                    className="gap-2 relative"
+                    className="gap-2"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? (
-                      <>
-                        <div className="animate-spin h-4 w-4 mr-1 border-2 border-r-transparent rounded-full border-white"></div>
-                        Envoi en cours...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="h-4 w-4" />
-                        Soumettre l'article
-                      </>
-                    )}
+                    <Send className="h-4 w-4" />
+                    {isSubmitting ? "Envoi en cours..." : "Soumettre l'article"}
                   </Button>
                 </div>
               </form>
             </Form>
-
-            {isSubmitting && (
-              <div className="fixed inset-0 bg-black/5 backdrop-blur-sm flex items-center justify-center z-50 pointer-events-none">
-                <div className="bg-white rounded-lg p-6 shadow-lg animate-in fade-in duration-300 max-w-md w-full mx-4">
-                  <LoadingSpinner size="md" variant="medical" text="Soumission en cours" />
-                  <p className="text-center text-sm text-gray-500 mt-4">Veuillez patienter pendant le traitement de votre soumission...</p>
-                </div>
-              </div>
-            )}
           </motion.div>
         </div>
       </div>

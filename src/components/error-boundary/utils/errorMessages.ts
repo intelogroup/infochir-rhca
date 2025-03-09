@@ -1,24 +1,5 @@
 
 export const getErrorMessage = (error: Error) => {
-  // Make sure we have a valid error message
-  if (!error || !error.message) {
-    error = new Error("Unknown error");
-  }
-
-  // Enhanced router error detection with more specific patterns
-  const isRouterError = 
-    (error.stack && (
-      error.stack.includes('router.js') || 
-      error.stack.includes('react-router') ||
-      error.stack.includes('index.js:1374') ||
-      error.stack.includes('assets/react-vendor') ||
-      error.stack.includes('at H (router') ||
-      error.message.includes('route') ||
-      error.message.includes('navigation')
-    )) ||
-    error.name === 'NavigationError' ||
-    error.message === 'Unknown error';  // Often router errors have no message
-  
   const isChunkError = error.message.includes('Failed to fetch dynamically imported module');
   const isStripeError = error.message.includes('Stripe') || 
                        error.message.includes('stripe.com') || 
@@ -27,19 +8,6 @@ export const getErrorMessage = (error: Error) => {
                           error.message.includes('fetch') ||
                           error.message.includes('network') ||
                           error.message.includes('Failed to fetch');
-                          
-  if (isRouterError) {
-    return {
-      title: "Erreur de navigation",
-      message: "Un problème est survenu lors de la navigation. Veuillez réessayer.",
-      type: "router_error",
-      details: [
-        "Essayez de rafraîchir la page",
-        "Vérifiez l'URL que vous essayez d'atteindre",
-        "Retournez à la page d'accueil et réessayez"
-      ]
-    };
-  }
 
   if (isChunkError) {
     return {
