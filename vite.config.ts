@@ -4,9 +4,16 @@ import react from '@vitejs/plugin-react-swc';
 import path from 'path';
 import { componentTagger } from "lovable-tagger";
 
+// Detect preview mode from environment variables or URL pattern
+const isPreview = process.env.VITE_APP_PREVIEW === 'true' || 
+                 (process.env.NODE_ENV !== 'production') ||
+                 (typeof process.env.PREVIEW !== 'undefined') ||
+                 (typeof process.env.LOVABLE_PREVIEW !== 'undefined');
+
+console.log(`Building in ${isPreview ? 'preview' : process.env.NODE_ENV} mode`);
+
 // Environment detection
-const isProduction = process.env.NODE_ENV === 'production';
-const isPreview = process.env.VITE_APP_PREVIEW === 'true';
+const isProduction = process.env.NODE_ENV === 'production' && !isPreview;
 
 export default defineConfig(({ mode }) => ({
   plugins: [
@@ -32,8 +39,8 @@ export default defineConfig(({ mode }) => ({
   },
   define: {
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-    'process.env.VITE_APP_PREVIEW': JSON.stringify(process.env.VITE_APP_PREVIEW),
-    'process.env.DEBUG': JSON.stringify(!isProduction || isPreview),
+    'process.env.VITE_APP_PREVIEW': JSON.stringify(isPreview ? 'true' : 'false'),
+    'process.env.DEBUG': JSON.stringify(!isProduction || isPreview ? 'true' : undefined),
   },
   build: {
     target: ['es2015', 'edge88', 'firefox78', 'chrome87', 'safari13'],
