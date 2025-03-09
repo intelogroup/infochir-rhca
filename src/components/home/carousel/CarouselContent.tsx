@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { 
   Carousel, 
   CarouselContent, 
@@ -28,6 +28,7 @@ export const CarouselContentSection = ({ data, sectionRef }: CarouselContentProp
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<CarouselItem | null>(null);
   const isInView = useInView(sectionRef, { once: false, amount: 0.3 });
+  const carouselRef = useRef<HTMLDivElement>(null);
 
   // Use the autoplay hook
   const { handleManualInteraction } = useCarouselAutoplay({
@@ -66,70 +67,133 @@ export const CarouselContentSection = ({ data, sectionRef }: CarouselContentProp
     if (isInView) {
       setAutoPlay(true);
     }
+
+    // Return focus to the carousel after modal closes
+    setTimeout(() => {
+      carouselRef.current?.focus();
+    }, 10);
   };
 
   // Navigate to the next item in the modal
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (!data) return;
     const nextIndex = (current + 1) % data.length;
     setCurrent(nextIndex);
     setSelectedItem(data[nextIndex]);
     api?.scrollTo(nextIndex);
-  };
+  }, [api, current, data]);
 
   // Navigate to the previous item in the modal
-  const handlePrevious = () => {
+  const handlePrevious = useCallback(() => {
     if (!data) return;
     const prevIndex = (current - 1 + data.length) % data.length;
     setCurrent(prevIndex);
     setSelectedItem(data[prevIndex]);
     api?.scrollTo(prevIndex);
-  };
+  }, [api, current, data]);
+
+  // Handle keyboard navigation
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (modalOpen) return; // Don't handle keyboard events when modal is open
+    
+    switch (e.key) {
+      case 'ArrowLeft':
+        e.preventDefault();
+        handlePrevious();
+        break;
+      case 'ArrowRight':
+        e.preventDefault();
+        handleNext();
+        break;
+      case 'Home':
+        e.preventDefault();
+        api?.scrollTo(0);
+        break;
+      case 'End':
+        e.preventDefault();
+        api?.scrollTo(data.length - 1);
+        break;
+    }
+  }, [api, data?.length, handleNext, handlePrevious, modalOpen]);
 
   return (
     <>
-      <Carousel
-        opts={{ 
-          align: "start", 
-          loop: true,
-        }}
-        setApi={setApi}
-        className="w-full max-w-6xl mx-auto"
+      <div 
+        ref={carouselRef} 
+        tabIndex={0} 
+        onKeyDown={handleKeyDown}
+        className="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-opacity-50 rounded-lg"
+        aria-roledescription="carousel"
+        aria-label="Articles carousel"
       >
-        <CarouselContent className="py-4">
-          {data.map((item, index) => (
-            <CarouselItemUI key={index} className="md:basis-1/2 lg:basis-1/3 h-[400px]">
-              <motion.div 
-                className="h-full" 
-                onClick={() => handleItemSelect(item, index)}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
+        <Carousel
+          opts={{ 
+            align: "start", 
+            loop: true,
+          }}
+          setApi={setApi}
+          className="w-full max-w-6xl mx-auto"
+        >
+          <CarouselContent className="py-4">
+            {data.map((item, index) => (
+              <CarouselItemUI 
+                key={index} 
+                className="md:basis-1/2 lg:basis-1/3 h-[400px]"
+                aria-label={`Slide ${index + 1} of ${data.length}: ${item.title}`}
+                aria-roledescription="slide"
               >
-                <CarouselCard highlight={item} index={index} />
-              </motion.div>
-            </CarouselItemUI>
-          ))}
-        </CarouselContent>
-        
-        {/* Desktop pagination indicator */}
-        <div className="hidden md:flex items-center justify-center mt-4 text-sm text-gray-600">
-          <span>{current + 1} of {data.length}</span>
+                <motion.div 
+                  className="h-full" 
+                  onClick={() => handleItemSelect(item, index)}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleItemSelect(item, index);
+                    }
+                  }}
+                  aria-label={`View details of ${item.title}`}
+                >
+                  <CarouselCard highlight={item} index={index} />
+                </motion.div>
+              </CarouselItemUI>
+            ))}
+          </CarouselContent>
+          
+          {/* Desktop pagination indicator */}
+          <div className="hidden md:flex items-center justify-center mt-4 text-sm text-gray-600">
+            <span>{current + 1} of {data.length}</span>
+          </div>
+
+          <CarouselPrevious 
+            className="hidden md:flex -left-12 lg:-left-16 h-12 w-12 border-2 border-primary/20 bg-white/80 hover:bg-white"
+            aria-label="Previous slide"
+          >
+            <ChevronLeft className="h-6 w-6 text-primary" />
+          </CarouselPrevious>
+          <CarouselNext 
+            className="hidden md:flex -right-12 lg:-right-16 h-12 w-12 border-2 border-primary/20 bg-white/80 hover:bg-white"
+            aria-label="Next slide"
+          >
+            <ChevronRight className="h-6 w-6 text-primary" />
+          </CarouselNext>
+        </Carousel>
+
+        {/* Accessibility instructions for keyboard users */}
+        <div className="sr-only">
+          Use arrow keys to navigate between slides. Press Enter to view details.
         </div>
 
-        <CarouselPrevious className="hidden md:flex -left-12 lg:-left-16 h-12 w-12 border-2 border-primary/20 bg-white/80 hover:bg-white">
-          <ChevronLeft className="h-6 w-6 text-primary" />
-        </CarouselPrevious>
-        <CarouselNext className="hidden md:flex -right-12 lg:-right-16 h-12 w-12 border-2 border-primary/20 bg-white/80 hover:bg-white">
-          <ChevronRight className="h-6 w-6 text-primary" />
-        </CarouselNext>
-      </Carousel>
-
-      <CarouselIndicators 
-        items={data} 
-        currentIndex={current} 
-        onSelect={(index) => api?.scrollTo(index)} 
-      />
+        <CarouselIndicators 
+          items={data} 
+          currentIndex={current} 
+          onSelect={(index) => api?.scrollTo(index)} 
+        />
+      </div>
 
       {/* Global modal for carousel items */}
       {selectedItem && (

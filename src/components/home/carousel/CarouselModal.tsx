@@ -13,6 +13,7 @@ import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
 import { createLogger } from "@/lib/error-logger";
 import { formatDate } from "@/lib/utils";
 import { CarouselItem } from "./types";
+import { useEffect, useRef } from "react";
 
 const logger = createLogger('CarouselModal');
 
@@ -35,30 +36,69 @@ export const CarouselModal = ({
   hasNext = false,
   hasPrevious = false
 }: CarouselModalProps) => {
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
   
   const handleClose = () => {
     logger.debug(`Closing modal for: ${item.title}`);
     onClose();
   };
 
+  // Handle keyboard navigation within the modal
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    switch (e.key) {
+      case 'ArrowLeft':
+        if (hasPrevious && onPrevious) {
+          e.preventDefault();
+          onPrevious();
+        }
+        break;
+      case 'ArrowRight':
+        if (hasNext && onNext) {
+          e.preventDefault();
+          onNext();
+        }
+        break;
+      case 'Escape':
+        e.preventDefault();
+        handleClose();
+        break;
+    }
+  };
+
+  // Focus on close button when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => {
+        closeButtonRef.current?.focus();
+      }, 50);
+    }
+  }, [isOpen, item]);
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="sm:max-w-lg md:max-w-2xl lg:max-w-4xl">
+      <DialogContent 
+        className="sm:max-w-lg md:max-w-2xl lg:max-w-4xl" 
+        onKeyDown={handleKeyDown}
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+      >
         <DialogHeader>
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-2xl font-bold text-blue-800">
+            <DialogTitle className="text-2xl font-bold text-blue-800" id="modal-title">
               {item.title}
             </DialogTitle>
             <Button 
+              ref={closeButtonRef}
               variant="ghost" 
               className="h-8 w-8 p-0" 
               onClick={handleClose}
+              aria-label="Close dialog"
             >
               <X className="h-4 w-4" />
               <span className="sr-only">Close</span>
             </Button>
           </div>
-          <DialogDescription>
+          <DialogDescription id="modal-description">
             {item.category && (
               <span className="inline-block px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800 mr-2">
                 {item.category}
@@ -99,6 +139,7 @@ export const CarouselModal = ({
               <Button
                 className="w-full sm:w-auto"
                 onClick={() => window.open(item.link, '_blank')}
+                aria-label={`Read full article: ${item.title}`}
               >
                 Lire l'article complet
               </Button>
@@ -114,7 +155,7 @@ export const CarouselModal = ({
                 onClick={onPrevious}
                 disabled={!hasPrevious}
                 className="flex items-center gap-1"
-                aria-label="Article précédent"
+                aria-label="Previous article"
               >
                 <ChevronLeft className="h-4 w-4" />
                 Précédent
@@ -125,6 +166,7 @@ export const CarouselModal = ({
           <Button
             variant="outline"
             onClick={handleClose}
+            aria-label="Close dialog"
           >
             Fermer
           </Button>
@@ -136,7 +178,7 @@ export const CarouselModal = ({
                 onClick={onNext}
                 disabled={!hasNext}
                 className="flex items-center gap-1"
-                aria-label="Article suivant"
+                aria-label="Next article"
               >
                 Suivant
                 <ChevronRight className="h-4 w-4" />
@@ -144,6 +186,12 @@ export const CarouselModal = ({
             )}
           </div>
         </DialogFooter>
+
+        {/* Keyboard navigation instructions */}
+        <div className="sr-only">
+          Use left and right arrow keys to navigate between articles.
+          Press Escape to close the dialog.
+        </div>
       </DialogContent>
     </Dialog>
   );

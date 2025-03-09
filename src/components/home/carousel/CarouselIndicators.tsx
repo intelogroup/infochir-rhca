@@ -15,7 +15,11 @@ export const CarouselIndicators = ({
   return (
     <div className="flex flex-col items-center mt-4 md:hidden">
       {/* Dot indicators */}
-      <div className="flex justify-center gap-2">
+      <div 
+        className="flex justify-center gap-2"
+        role="tablist"
+        aria-label="Carousel pagination"
+      >
         {items.map((_, index) => (
           <button
             key={index}
@@ -25,12 +29,14 @@ export const CarouselIndicators = ({
             )}
             onClick={() => onSelect(index)}
             aria-label={`Go to slide ${index + 1}`}
+            aria-selected={currentIndex === index}
+            role="tab"
           />
         ))}
       </div>
       
       {/* Pagination text indicator */}
-      <div className="text-sm text-gray-600 mt-2">
+      <div className="text-sm text-gray-600 mt-2" aria-live="polite">
         {currentIndex + 1} of {items.length}
       </div>
     </div>
