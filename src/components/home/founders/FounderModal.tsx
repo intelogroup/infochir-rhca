@@ -25,7 +25,7 @@ export const FounderModal = ({ founder, isOpen, onClose }: FounderModalProps) =>
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
         <DialogClose asChild className="absolute right-4 top-4">
-          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onClose}>
+          <Button variant="ghost" size="sm" className="h-6 w-6" onClick={onClose}>
             <X className="h-4 w-4" />
             <span className="sr-only">Close</span>
           </Button>
