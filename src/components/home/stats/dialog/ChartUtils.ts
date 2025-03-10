@@ -3,7 +3,7 @@ export const prepareTypeData = (downloadStats: any) => {
   if (!downloadStats?.byType) return [];
   
   return downloadStats.byType.map((item: any) => ({
-    name: item.document_type.toUpperCase(),
+    name: item.document_type.toUpperCase().replace('INDEX-MEDICUS', 'INDEX'),
     downloads: item.count,
     status: item.status
   }));

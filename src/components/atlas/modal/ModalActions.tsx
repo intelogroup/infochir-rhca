@@ -2,10 +2,11 @@
 import { Button } from "@/components/ui/button";
 import { Share2, Download, ArrowUpRight } from "lucide-react";
 import { toast } from "sonner";
-import { trackDownload } from "@/lib/analytics/download";
+import { downloadPDF } from "@/lib/analytics/download";
 import { AtlasChapter } from "../types";
 import { motion } from "framer-motion";
 import { createLogger } from "@/lib/error-logger";
+import { useState } from "react";
 
 const logger = createLogger('ModalActions');
 
@@ -14,6 +15,8 @@ interface ModalActionsProps {
 }
 
 export const ModalActions = ({ chapter }: ModalActionsProps) => {
+  const [isDownloading, setIsDownloading] = useState(false);
+
   const handleShare = () => {
     const shareUrl = `${window.location.origin}/adc/chapters/${chapter.id}`;
     navigator.clipboard.writeText(shareUrl);
@@ -27,29 +30,27 @@ export const ModalActions = ({ chapter }: ModalActionsProps) => {
     }
     
     try {
-      // Track the download event with correct document type
-      await trackDownload({
-        document_id: chapter.id,
-        document_type: "adc", // Changed from "article" to "adc"
-        file_name: chapter.pdfUrl.split('/').pop() || 'document.pdf',
-        status: 'success'
+      setIsDownloading(true);
+      
+      // Use our enhanced download function with tracking
+      const fileName = `ADC-${chapter.title.slice(0, 30)}.pdf`;
+      
+      const success = await downloadPDF({
+        url: chapter.pdfUrl,
+        fileName,
+        documentId: chapter.id,
+        documentType: 'adc',
+        trackingEnabled: true
       });
       
-      // Open the PDF in a new tab
-      window.open(chapter.pdfUrl, '_blank');
-      toast.success("Téléchargement du PDF...");
+      if (!success) {
+        throw new Error('Download failed');
+      }
     } catch (error) {
-      logger.error("Download error:", error);
+      logger.error(error);
       toast.error("Erreur lors du téléchargement");
-      
-      // Track the failed download
-      trackDownload({
-        document_id: chapter.id,
-        document_type: "adc", // Changed from "article" to "adc"
-        file_name: chapter.pdfUrl.split('/').pop() || 'document.pdf',
-        status: 'failed',
-        error_details: error instanceof Error ? error.message : 'Unknown error'
-      }).catch(e => logger.error("Failed to track download error:", e));
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -74,9 +75,9 @@ export const ModalActions = ({ chapter }: ModalActionsProps) => {
         size="sm"
         className="h-8 text-xs gap-1.5 hover:bg-gray-100/80 transition-colors"
         onClick={handleDownload}
-        disabled={!chapter.pdfUrl}
+        disabled={!chapter.pdfUrl || isDownloading}
       >
-        <Download className="w-3 h-3" />
+        <Download className={`w-3 h-3 ${isDownloading ? 'animate-pulse' : ''}`} />
         PDF
       </Button>
       <Button

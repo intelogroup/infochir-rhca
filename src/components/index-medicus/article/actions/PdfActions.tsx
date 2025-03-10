@@ -114,7 +114,7 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
         url: pdfUrl,
         fileName: fileName,
         documentId: articleId || 'unknown',
-        documentType: 'article',
+        documentType: 'index-medicus',
         trackingEnabled: !!articleId
       });
       

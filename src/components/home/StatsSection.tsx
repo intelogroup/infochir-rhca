@@ -4,9 +4,14 @@ import { StatsError } from "./stats/StatsError";
 import { StatsCardGrid } from "./stats/StatsCardGrid";
 import { StatsDetails } from "./stats/StatsDetails";
 import { useStatsData } from "./stats/hooks/useStatsData";
+import { StatsDialog } from "./stats/dialog/StatsDialog";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { ChartIcon } from "lucide-react";
 
 export const StatsSection = () => {
   const { statsData, isLoading, error, refetch } = useStatsData();
+  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
 
   if (isLoading) {
     return <StatsLoading />;
@@ -22,6 +27,22 @@ export const StatsSection = () => {
       <div className="container mx-auto px-4">
         <StatsDetails />
         <StatsCardGrid statsData={statsData} />
+        
+        <div className="mt-8 flex justify-center">
+          <Button 
+            variant="outline" 
+            className="group"
+            onClick={() => setShowDetailsDialog(true)}
+          >
+            <ChartIcon className="mr-2 h-4 w-4 transition-transform group-hover:scale-110" />
+            Voir les statistiques détaillées
+          </Button>
+        </div>
+        
+        <StatsDialog 
+          open={showDetailsDialog} 
+          onOpenChange={setShowDetailsDialog} 
+        />
       </div>
     </section>
   );
