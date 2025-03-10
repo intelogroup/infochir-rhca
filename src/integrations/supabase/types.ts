@@ -1230,6 +1230,10 @@ export type Database = {
           unique_documents: number
         }[]
       }
+      get_total_downloads: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

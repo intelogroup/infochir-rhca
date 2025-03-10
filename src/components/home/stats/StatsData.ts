@@ -1,6 +1,6 @@
 
 import { StatsCardProps } from "@/components/ui/stats-card";
-import { BookOpen, Users, Eye, Quote } from "lucide-react";
+import { BookOpen, Users, Eye, Download } from "lucide-react";
 
 export const defaultStats: StatsCardProps[] = [
   {
@@ -25,10 +25,10 @@ export const defaultStats: StatsCardProps[] = [
     iconClassName: "text-purple-600",
   },
   {
-    title: "Citations",
+    title: "Téléchargements",
     value: "0",
-    description: "Citations académiques",
-    icon: Quote,
+    description: "Documents téléchargés",
+    icon: Download,
     iconClassName: "text-orange-600",
   },
 ];

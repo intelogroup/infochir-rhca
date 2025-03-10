@@ -18,7 +18,7 @@ export const StatsSection = () => {
       
       const { data: articles, error: articlesError } = await supabase
         .from('articles')
-        .select('id, views, citations');
+        .select('id, views');
       
       if (articlesError) throw articlesError;
 
@@ -27,6 +27,12 @@ export const StatsSection = () => {
         .select('id');
       
       if (membersError) throw membersError;
+      
+      // Get total downloads
+      const { data: downloads, error: downloadsError } = await supabase
+        .rpc('get_total_downloads');
+        
+      if (downloadsError) throw downloadsError;
 
       const stats = [...defaultStats];
       
@@ -39,9 +45,8 @@ export const StatsSection = () => {
       const totalViews = articles?.reduce((sum, article) => sum + (article.views || 0), 0);
       stats[2].value = totalViews?.toString() || "0";
       
-      // Update Citations count
-      const totalCitations = articles?.reduce((sum, article) => sum + (article.citations || 0), 0);
-      stats[3].value = totalCitations?.toString() || "0";
+      // Update Downloads count
+      stats[3].value = downloads?.toString() || "0";
 
       console.log('Processed stats:', stats);
       return stats;
