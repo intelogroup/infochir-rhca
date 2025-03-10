@@ -5,6 +5,16 @@ import { createLogger } from "@/lib/error-logger";
 const logger = createLogger('DownloadStorage');
 
 /**
+ * Interface for download statistics returned by our RPC function
+ */
+interface DownloadStatistics {
+  total_downloads: number;
+  successful_downloads: number;
+  failed_downloads: number;
+  document_types?: Record<string, number>;
+}
+
+/**
  * Checks if a file exists in Supabase storage
  */
 export const checkFileExists = async (bucketName: string, filePath: string): Promise<boolean> => {
@@ -84,7 +94,9 @@ export const getTotalDownloadCount = async (): Promise<number> => {
     }
     
     if (data) {
-      return Number(data.total_downloads) || 0;
+      // Safely cast the data to our expected format
+      const stats = data as DownloadStatistics;
+      return stats.total_downloads || 0;
     }
     
     logger.warn('Total download count returned null/undefined from RPC');
@@ -137,7 +149,7 @@ export const getDownloadCountByType = async (documentType: string): Promise<numb
  * Gets complete download statistics for all document types
  * @returns Object with download counts for all document types
  */
-export const getDownloadStatistics = async () => {
+export const getDownloadStatistics = async (): Promise<DownloadStatistics | null> => {
   try {
     const { data, error } = await supabase
       .rpc('get_download_statistics');
@@ -147,7 +159,8 @@ export const getDownloadStatistics = async () => {
       return null;
     }
     
-    return data;
+    // Safely cast the data to our expected format
+    return data as DownloadStatistics;
   } catch (error) {
     logger.error('Exception getting download statistics:', error);
     return null;

@@ -59,7 +59,7 @@ export const useStatsData = () => {
         
         // Get download statistics using our improved function
         const downloadStats = await getDownloadStatistics();
-        const totalDownloads = downloadStats ? Number(downloadStats.total_downloads) : 0;
+        const totalDownloads = downloadStats ? downloadStats.total_downloads : 0;
         
         // Start with default stats
         const stats = [...defaultStats];

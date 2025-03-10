@@ -5,19 +5,48 @@ import { createLogger } from "@/lib/error-logger";
 const logger = createLogger('DownloadStatistics');
 
 /**
- * Gets download statistics by document type
+ * Interface for download statistics by document type
  */
-export const getDownloadStatsByType = async (documentType: string) => {
+interface TypeStats {
+  total: number;
+  successful: number;
+  failed: number;
+}
+
+/**
+ * Get download statistics grouped by document type
+ */
+export const getDownloadStatsByType = async (): Promise<Record<string, TypeStats> | null> => {
   try {
     const { data, error } = await supabase
-      .rpc('get_download_stats_by_type', { doc_type: documentType });
+      .from('download_stats_monitoring')
+      .select('*');
       
     if (error) {
       logger.error('Error fetching download stats by type:', error);
-      throw error;
+      return null;
     }
     
-    return data;
+    // Process data to group by document type
+    const statsByType: Record<string, TypeStats> = {};
+    
+    data.forEach(stat => {
+      const { document_type, status, count } = stat;
+      
+      if (!statsByType[document_type]) {
+        statsByType[document_type] = { total: 0, successful: 0, failed: 0 };
+      }
+      
+      statsByType[document_type].total += Number(count);
+      
+      if (status === 'success') {
+        statsByType[document_type].successful += Number(count);
+      } else if (status === 'failed') {
+        statsByType[document_type].failed += Number(count);
+      }
+    });
+    
+    return statsByType;
   } catch (error) {
     logger.error('Exception in getDownloadStatsByType:', error);
     return null;
@@ -25,7 +54,7 @@ export const getDownloadStatsByType = async (documentType: string) => {
 };
 
 /**
- * Gets download statistics for a specific document
+ * Get download statistics for a specific document
  */
 export const getDocumentDownloadStats = async (documentId: string) => {
   try {
@@ -34,7 +63,7 @@ export const getDocumentDownloadStats = async (documentId: string) => {
       
     if (error) {
       logger.error('Error fetching document download stats:', error);
-      throw error;
+      return null;
     }
     
     return data;
@@ -45,7 +74,7 @@ export const getDocumentDownloadStats = async (documentId: string) => {
 };
 
 /**
- * Gets daily download statistics for the past N days
+ * Get daily download statistics for the specified number of days
  */
 export const getDailyDownloadStats = async (daysBack = 7) => {
   try {
@@ -54,66 +83,64 @@ export const getDailyDownloadStats = async (daysBack = 7) => {
       
     if (error) {
       logger.error('Error fetching daily download stats:', error);
-      throw error;
+      return null;
     }
     
     return data;
   } catch (error) {
     logger.error('Exception in getDailyDownloadStats:', error);
-    return [];
+    return null;
   }
 };
 
 /**
- * Gets download statistics summary for all document types
+ * Get all download statistics aggregated
  */
 export const getOverallDownloadStats = async () => {
   try {
     const { data, error } = await supabase
-      .from('download_stats_monitoring')
-      .select('*')
-      .eq('status', 'success');
+      .rpc('get_download_statistics');
       
     if (error) {
       logger.error('Error fetching overall download stats:', error);
-      throw error;
+      return null;
     }
     
     return data;
   } catch (error) {
     logger.error('Exception in getOverallDownloadStats:', error);
-    return [];
+    return null;
   }
 };
 
 /**
- * Subscribes to real-time download stats updates
- * @param callback Function to call when download stats are updated
- * @returns A cleanup function to unsubscribe
+ * Subscribe to changes in download statistics
+ * @param callback Function to call when download statistics change
+ * @returns Unsubscribe function
  */
-export const subscribeToDownloadStats = (callback: () => void): (() => void) => {
-  logger.log('Setting up real-time subscription to download stats');
-  
-  const channel = supabase
+export const subscribeToDownloadStats = (
+  callback: () => void
+): (() => void) => {
+  // Subscribe to the download_events table for real-time updates
+  const subscription = supabase
     .channel('download-stats-changes')
     .on(
       'postgres_changes',
       {
-        event: '*',
+        event: 'INSERT',
         schema: 'public',
-        table: 'download_stats_monitoring'
+        table: 'download_events',
       },
       (payload) => {
-        logger.log('Received download stats update from Supabase:', payload);
+        logger.log('Download event inserted:', payload.new);
         callback();
       }
     )
-    .subscribe((status) => {
-      logger.log(`Supabase real-time subscription status: ${status}`);
-    });
-
+    .subscribe();
+    
+  // Return unsubscribe function
   return () => {
-    logger.log('Unsubscribing from download stats updates');
-    supabase.removeChannel(channel);
+    logger.log('Unsubscribing from download stats changes');
+    subscription.unsubscribe();
   };
 };
