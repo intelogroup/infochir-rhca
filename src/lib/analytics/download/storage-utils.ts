@@ -10,16 +10,11 @@ const logger = createLogger('StorageUtils');
 export const checkFileExists = async (bucketName: string, filePath: string): Promise<boolean> => {
   try {
     // Get file metadata to check if it exists
-    const { data, error } = await supabase
+    const { data } = await supabase
       .storage
       .from(bucketName)
       .getPublicUrl(filePath);
       
-    if (error) {
-      logger.error(`File check error for ${bucketName}/${filePath}:`, error);
-      return false;
-    }
-    
     // If we have a public URL, try to do a HEAD request to verify it's accessible
     if (data?.publicUrl) {
       try {
