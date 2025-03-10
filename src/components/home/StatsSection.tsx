@@ -7,7 +7,7 @@ import { useStatsData } from "./stats/hooks/useStatsData";
 import { StatsDialog } from "./stats/dialog/StatsDialog";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChartIcon } from "lucide-react";
+import { BarChart } from "lucide-react";
 
 export const StatsSection = () => {
   const { statsData, isLoading, error, refetch } = useStatsData();
@@ -34,7 +34,7 @@ export const StatsSection = () => {
             className="group"
             onClick={() => setShowDetailsDialog(true)}
           >
-            <ChartIcon className="mr-2 h-4 w-4 transition-transform group-hover:scale-110" />
+            <BarChart className="mr-2 h-4 w-4 transition-transform group-hover:scale-110" />
             Voir les statistiques détaillées
           </Button>
         </div>

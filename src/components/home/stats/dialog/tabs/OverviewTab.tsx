@@ -8,6 +8,9 @@ export const OverviewTab = () => {
     queryKey: ['home-stats'],
   });
 
+  // Use default stats if data is not available
+  const stats = Array.isArray(statsData) ? statsData : defaultStats;
+
   return (
     <Card>
       <CardHeader>
@@ -16,7 +19,7 @@ export const OverviewTab = () => {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {(statsData || defaultStats).map((stat, index) => (
+          {stats.map((stat, index) => (
             <div key={index} className="text-center p-4 bg-gray-50 rounded-lg">
               <div className="flex justify-center mb-2">
                 <stat.icon className={`h-6 w-6 ${stat.iconClassName}`} />
