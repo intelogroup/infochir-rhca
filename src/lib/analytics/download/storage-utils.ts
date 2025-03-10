@@ -130,15 +130,32 @@ export const getDownloadCountByType = async (documentType: string): Promise<numb
       return 0;
     }
     
+    // Use our new function with document types breakdown
     const { data, error } = await supabase
-      .rpc('get_downloads_by_type', { doc_type: documentType });
+      .rpc('get_download_statistics');
       
     if (error) {
-      logger.error('Error getting download count by type:', error);
+      logger.error('Error getting download statistics:', error);
       return 0;
     }
     
-    return typeof data === 'number' ? data : 0;
+    if (data && data.document_types) {
+      // Convert document_types from jsonb if needed
+      let docTypes = data.document_types;
+      if (typeof docTypes === 'string') {
+        try {
+          docTypes = JSON.parse(docTypes);
+        } catch (e) {
+          logger.error('Error parsing document_types:', e);
+          return 0;
+        }
+      }
+      
+      return docTypes[documentType] || 0;
+    }
+    
+    logger.warn(`No download data found for document type: ${documentType}`);
+    return 0;
   } catch (error) {
     logger.error('Exception getting download count by type:', error);
     return 0;
@@ -157,6 +174,19 @@ export const getDownloadStatistics = async (): Promise<DownloadStatistics | null
     if (error) {
       logger.error('Error getting download statistics:', error);
       return null;
+    }
+    
+    // Process document_types if needed
+    if (data && data.document_types) {
+      // If document_types is a string (JSON), parse it
+      if (typeof data.document_types === 'string') {
+        try {
+          data.document_types = JSON.parse(data.document_types);
+        } catch (e) {
+          logger.error('Error parsing document_types:', e);
+          data.document_types = {};
+        }
+      }
     }
     
     // Safely cast the data to our expected format

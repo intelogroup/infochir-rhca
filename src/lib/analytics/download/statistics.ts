@@ -14,6 +14,13 @@ interface TypeStats {
 }
 
 /**
+ * Interface for document types statistics returned by our function
+ */
+interface DocumentTypeStats {
+  [key: string]: number;
+}
+
+/**
  * Get download statistics grouped by document type
  */
 export const getDownloadStatsByType = async (): Promise<Record<string, TypeStats> | null> => {
@@ -94,7 +101,7 @@ export const getDailyDownloadStats = async (daysBack = 7) => {
 };
 
 /**
- * Get all download statistics aggregated
+ * Get all download statistics aggregated with document type breakdown
  */
 export const getOverallDownloadStats = async () => {
   try {
@@ -104,6 +111,19 @@ export const getOverallDownloadStats = async () => {
     if (error) {
       logger.error('Error fetching overall download stats:', error);
       return null;
+    }
+    
+    // Convert document_types from jsonb to a proper TypeScript object
+    if (data && data.document_types) {
+      try {
+        // If data.document_types is already an object, it doesn't need parsing
+        if (typeof data.document_types === 'string') {
+          data.document_types = JSON.parse(data.document_types);
+        }
+      } catch (e) {
+        logger.error('Error parsing document_types:', e);
+        data.document_types = {};
+      }
     }
     
     return data;

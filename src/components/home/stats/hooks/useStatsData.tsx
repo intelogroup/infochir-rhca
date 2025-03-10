@@ -70,7 +70,7 @@ export const useStatsData = () => {
         stats[1].value = members?.length?.toString() || "0";
         
         // Update Views count
-        const totalViews = articles?.reduce((sum, article) => sum + (article.views || 0), 0);
+        const totalViews = articles?.reduce((sum, article) => sum + (article.views || 0), 0) || 0;
         stats[2].value = totalViews?.toString() || "0";
         
         // Update Downloads count - ensure we convert to string

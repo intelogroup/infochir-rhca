@@ -1251,6 +1251,15 @@ export type Database = {
           last_download_time: string
         }[]
       }
+      get_download_statistics: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          total_downloads: number
+          successful_downloads: number
+          failed_downloads: number
+          document_types: Json
+        }[]
+      }
       get_download_stats_by_type: {
         Args: {
           doc_type: string
