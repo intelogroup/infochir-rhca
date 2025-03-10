@@ -42,14 +42,20 @@ export const useStatsData = () => {
           .from('articles')
           .select('id, views');
         
-        if (articlesError) throw articlesError;
+        if (articlesError) {
+          logger.error('Error fetching articles:', articlesError);
+          throw articlesError;
+        }
 
         // Get members count
         const { data: members, error: membersError } = await supabase
           .from('members')
           .select('id');
         
-        if (membersError) throw membersError;
+        if (membersError) {
+          logger.error('Error fetching members:', membersError);
+          throw membersError;
+        }
         
         // Get total downloads using the dedicated function
         const { data: downloads, error: downloadsError } = await supabase
@@ -62,6 +68,22 @@ export const useStatsData = () => {
 
         logger.log('Raw downloads count:', downloads);
 
+        // As a fallback, query the download_stats_monitoring table directly
+        if (downloads === null || downloads === undefined) {
+          logger.log('Download count is null or undefined, querying download_stats_monitoring directly');
+          const { data: downloadStats, error: downloadStatsError } = await supabase
+            .from('download_stats_monitoring')
+            .select('count')
+            .eq('status', 'success');
+            
+          if (downloadStatsError) {
+            logger.error('Error fetching download stats:', downloadStatsError);
+          } else if (downloadStats && downloadStats.length > 0) {
+            const totalDownloads = downloadStats.reduce((sum, stat) => sum + (stat.count || 0), 0);
+            logger.log('Total downloads from download_stats_monitoring:', totalDownloads);
+          }
+        }
+
         const stats = [...defaultStats];
         
         // Don't override the first stat value since we've set it statically to 95
@@ -73,8 +95,10 @@ export const useStatsData = () => {
         const totalViews = articles?.reduce((sum, article) => sum + (article.views || 0), 0);
         stats[2].value = totalViews?.toString() || "0";
         
-        // Update Downloads count
-        stats[3].value = downloads?.toString() || "0";
+        // Update Downloads count - ensure we convert to string
+        stats[3].value = downloads !== null && downloads !== undefined 
+          ? downloads.toString() 
+          : "0";
 
         logger.log('Processed stats:', stats);
         return stats;

@@ -42,8 +42,11 @@ export const getDownloadCount = async (documentId: string): Promise<number> => {
     }
     
     // The RPC returns an array, so we need to get the first item
-    if (data && data.length > 0) {
+    if (Array.isArray(data) && data.length > 0) {
       return data[0].successful_downloads || 0;
+    } else if (data && 'successful_downloads' in data) {
+      // Handle case where it might return a single object instead of array
+      return data.successful_downloads || 0;
     }
     
     return 0;

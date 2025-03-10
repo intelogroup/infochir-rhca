@@ -13,12 +13,13 @@ export const getDownloadStatsByType = async (documentType: string) => {
       .rpc('get_download_stats_by_type', { doc_type: documentType });
       
     if (error) {
+      logger.error('Error fetching download stats by type:', error);
       throw error;
     }
     
     return data;
   } catch (error) {
-    logger.error(error);
+    logger.error('Exception in getDownloadStatsByType:', error);
     return null;
   }
 };
@@ -32,12 +33,13 @@ export const getDocumentDownloadStats = async (documentId: string) => {
       .rpc('get_document_download_stats', { doc_id: documentId });
       
     if (error) {
+      logger.error('Error fetching document download stats:', error);
       throw error;
     }
     
     return data;
   } catch (error) {
-    logger.error(error);
+    logger.error('Exception in getDocumentDownloadStats:', error);
     return null;
   }
 };
@@ -51,12 +53,13 @@ export const getDailyDownloadStats = async (daysBack = 7) => {
       .rpc('get_daily_downloads', { days_back: daysBack });
       
     if (error) {
+      logger.error('Error fetching daily download stats:', error);
       throw error;
     }
     
     return data;
   } catch (error) {
-    logger.error(error);
+    logger.error('Exception in getDailyDownloadStats:', error);
     return [];
   }
 };
@@ -72,12 +75,13 @@ export const getOverallDownloadStats = async () => {
       .eq('status', 'success');
       
     if (error) {
+      logger.error('Error fetching overall download stats:', error);
       throw error;
     }
     
     return data;
   } catch (error) {
-    logger.error(error);
+    logger.error('Exception in getOverallDownloadStats:', error);
     return [];
   }
 };
@@ -88,6 +92,8 @@ export const getOverallDownloadStats = async () => {
  * @returns A cleanup function to unsubscribe
  */
 export const subscribeToDownloadStats = (callback: () => void): (() => void) => {
+  logger.log('Setting up real-time subscription to download stats');
+  
   const channel = supabase
     .channel('download-stats-changes')
     .on(
@@ -97,12 +103,14 @@ export const subscribeToDownloadStats = (callback: () => void): (() => void) => 
         schema: 'public',
         table: 'download_stats_monitoring'
       },
-      () => {
-        logger.log('Received download stats update from Supabase');
+      (payload) => {
+        logger.log('Received download stats update from Supabase:', payload);
         callback();
       }
     )
-    .subscribe();
+    .subscribe((status) => {
+      logger.log(`Supabase real-time subscription status: ${status}`);
+    });
 
   return () => {
     logger.log('Unsubscribing from download stats updates');
