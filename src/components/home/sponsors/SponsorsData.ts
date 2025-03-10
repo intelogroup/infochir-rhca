@@ -47,5 +47,25 @@ export const sponsors: Sponsor[] = [
     logo: "/lovable-uploads/6e69fedc-484d-4f68-b95c-63ca2aa91e6c.png",
     type: "sponsor",
     url: "https://www.ofatma.gouv.ht"
+  },
+  {
+    name: "JSA Foundation",
+    logo: "/lovable-uploads/c4ecbe61-7269-4a2c-9db6-e4f656279bde.png",
+    type: "sponsor"
+  },
+  {
+    name: "MSSP",
+    logo: "/lovable-uploads/6ccd716d-4080-4b29-857f-fc454b0a0532.png",
+    type: "partner"
+  },
+  {
+    name: "SOHAD",
+    logo: "/lovable-uploads/2fe4f20b-e98b-4fbd-8ade-0768e8a0a286.png",
+    type: "partner"
+  },
+  {
+    name: "SurgiMed",
+    logo: "/lovable-uploads/113fbe65-07c2-4e94-b069-5c7d6e063317.png",
+    type: "partner"
   }
 ];
