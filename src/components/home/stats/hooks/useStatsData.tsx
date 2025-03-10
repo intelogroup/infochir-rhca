@@ -3,10 +3,29 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { defaultStats } from "../StatsData";
 import { createLogger } from "@/lib/error-logger";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { subscribeToDownloadStats } from "@/lib/analytics/download/statistics";
 
 const logger = createLogger('useStatsData');
 
 export const useStatsData = () => {
+  const queryClient = useQueryClient();
+  
+  // Setup real-time subscription to download stats updates
+  useEffect(() => {
+    logger.log('Setting up real-time subscription to download stats');
+    
+    // Subscribe to download stats updates and invalidate query on changes
+    const unsubscribe = subscribeToDownloadStats(() => {
+      logger.log('Download stats updated, invalidating query');
+      queryClient.invalidateQueries({ queryKey: ['home-stats'] });
+    });
+    
+    // Cleanup subscription on unmount
+    return unsubscribe;
+  }, [queryClient]);
+
   const { 
     data: statsData, 
     isLoading, 

@@ -68,7 +68,8 @@ export const getOverallDownloadStats = async () => {
   try {
     const { data, error } = await supabase
       .from('download_stats_monitoring')
-      .select('*');
+      .select('*')
+      .eq('status', 'success');
       
     if (error) {
       throw error;
@@ -79,4 +80,32 @@ export const getOverallDownloadStats = async () => {
     logger.error(error);
     return [];
   }
+};
+
+/**
+ * Subscribes to real-time download stats updates
+ * @param callback Function to call when download stats are updated
+ * @returns A cleanup function to unsubscribe
+ */
+export const subscribeToDownloadStats = (callback: () => void): (() => void) => {
+  const channel = supabase
+    .channel('download-stats-changes')
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'download_stats_monitoring'
+      },
+      () => {
+        logger.log('Received download stats update from Supabase');
+        callback();
+      }
+    )
+    .subscribe();
+
+  return () => {
+    logger.log('Unsubscribing from download stats updates');
+    supabase.removeChannel(channel);
+  };
 };

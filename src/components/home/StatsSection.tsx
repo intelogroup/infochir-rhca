@@ -9,6 +9,7 @@ import { createLogger } from "@/lib/error-logger";
 const logger = createLogger('StatsSection');
 
 export const StatsSection = () => {
+  // The useStatsData hook now includes real-time subscription logic
   const { statsData, isLoading, error, refetch } = useStatsData();
 
   if (isLoading) {

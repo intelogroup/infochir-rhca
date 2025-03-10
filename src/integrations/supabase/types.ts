@@ -377,6 +377,27 @@ export type Database = {
         }
         Relationships: []
       }
+      download_stats_monitoring: {
+        Row: {
+          count: number | null
+          document_type: string
+          latest_download: string | null
+          status: string
+        }
+        Insert: {
+          count?: number | null
+          document_type: string
+          latest_download?: string | null
+          status: string
+        }
+        Update: {
+          count?: number | null
+          document_type?: string
+          latest_download?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       error_events: {
         Row: {
           component: string | null
@@ -850,15 +871,6 @@ export type Database = {
           user_id?: string | null
           views?: number | null
           volume?: string | null
-        }
-        Relationships: []
-      }
-      download_stats_monitoring: {
-        Row: {
-          count: number | null
-          document_type: string | null
-          latest_download: string | null
-          status: string | null
         }
         Relationships: []
       }
