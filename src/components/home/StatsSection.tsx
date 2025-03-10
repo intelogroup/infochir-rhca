@@ -3,14 +3,34 @@ import { defaultStats } from "./stats/StatsData";
 import { StatsCard } from "@/components/ui/stats-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertTriangle, RefreshCcw } from "lucide-react";
+import { AlertTriangle, RefreshCcw, BarChart } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { motion } from "framer-motion";
+import { useState } from "react";
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription
+} from "@/components/ui/dialog";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell } from 'recharts';
 
 export const StatsSection = () => {
+  const [statsDetailsOpen, setStatsDetailsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
+
   const { data: statsData, isLoading, error, refetch } = useQuery({
     queryKey: ['home-stats'],
     queryFn: async () => {
@@ -56,6 +76,39 @@ export const StatsSection = () => {
     retry: 2,
     retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
+
+  // Query for detailed download stats
+  const { data: downloadStats, isLoading: isLoadingDetails } = useQuery({
+    queryKey: ['download-stats-details'],
+    queryFn: async () => {
+      // Only fetch detailed stats when dialog is open
+      if (!statsDetailsOpen) return null;
+      
+      // Get download stats by type
+      const { data: downloadsByType, error: typeError } = await supabase
+        .from('download_stats_monitoring')
+        .select('*');
+      
+      if (typeError) throw typeError;
+      
+      // Get daily download stats for past 7 days
+      const { data: dailyStats, error: dailyError } = await supabase
+        .rpc('get_daily_downloads', { days_back: 7 });
+        
+      if (dailyError) throw dailyError;
+      
+      return {
+        byType: downloadsByType || [],
+        daily: dailyStats || []
+      };
+    },
+    enabled: statsDetailsOpen,
+    staleTime: 60 * 1000, // 1 minute
+  });
+
+  const openStatsDetails = () => {
+    setStatsDetailsOpen(true);
+  };
 
   if (isLoading) {
     return (
@@ -108,6 +161,30 @@ export const StatsSection = () => {
     );
   }
 
+  // Prepare data for charts
+  const prepareTypeData = () => {
+    if (!downloadStats?.byType) return [];
+    
+    return downloadStats.byType.map(item => ({
+      name: item.document_type.toUpperCase(),
+      downloads: item.count,
+      status: item.status
+    }));
+  };
+  
+  const prepareDailyData = () => {
+    if (!downloadStats?.daily) return [];
+    
+    return downloadStats.daily.map(item => ({
+      date: new Date(item.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }),
+      total: Number(item.total_downloads),
+      success: Number(item.successful_downloads),
+      failed: Number(item.failed_downloads)
+    }));
+  };
+  
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28'];
+
   return (
     <section className="py-16 bg-gradient-to-b from-white to-gray-50" aria-label="Statistiques">
       <div className="container mx-auto px-4">
@@ -123,6 +200,14 @@ export const StatsSection = () => {
           <p className="text-gray-600 max-w-2xl mx-auto">
             L'impact de notre travail en quelques statistiques
           </p>
+          <Button 
+            variant="outline" 
+            className="mt-4"
+            onClick={openStatsDetails}
+          >
+            <BarChart className="h-4 w-4 mr-2" />
+            Voir les détails
+          </Button>
         </motion.div>
         <div 
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
@@ -143,6 +228,123 @@ export const StatsSection = () => {
           ))}
         </div>
       </div>
+
+      {/* Stats Details Dialog */}
+      <Dialog open={statsDetailsOpen} onOpenChange={setStatsDetailsOpen}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle>Analyse détaillée des statistiques</DialogTitle>
+            <DialogDescription>
+              Explorez en détail les téléchargements et autres métriques
+            </DialogDescription>
+          </DialogHeader>
+          
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid grid-cols-2 mb-4">
+              <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
+              <TabsTrigger value="downloads">Téléchargements</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="overview" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Résumé des statistiques</CardTitle>
+                  <CardDescription>Vue générale de nos activités</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {(statsData || defaultStats).map((stat, index) => (
+                      <div key={index} className="text-center p-4 bg-gray-50 rounded-lg">
+                        <div className="flex justify-center mb-2">
+                          <stat.icon className={`h-6 w-6 ${stat.iconClassName}`} />
+                        </div>
+                        <h3 className="text-2xl font-bold">{stat.value}</h3>
+                        <p className="text-sm text-gray-600">{stat.title}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="downloads" className="space-y-4">
+              {isLoadingDetails ? (
+                <Card>
+                  <CardContent className="flex justify-center items-center py-8">
+                    <LoadingSpinner text="Chargement des données" />
+                  </CardContent>
+                </Card>
+              ) : (
+                <>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Téléchargements par jour</CardTitle>
+                      <CardDescription>Les 7 derniers jours</CardDescription>
+                    </CardHeader>
+                    <CardContent className="h-80">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <RechartsBarChart data={prepareDailyData()} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="date" angle={-45} textAnchor="end" height={60} />
+                          <YAxis />
+                          <Tooltip />
+                          <Legend />
+                          <Bar dataKey="success" name="Réussis" fill="#10b981" />
+                          <Bar dataKey="failed" name="Échoués" fill="#ef4444" />
+                        </RechartsBarChart>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Téléchargements par type de document</CardTitle>
+                      <CardDescription>Distribution des téléchargements réussis</CardDescription>
+                    </CardHeader>
+                    <CardContent className="h-80 grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex items-center justify-center">
+                        <ResponsiveContainer width="100%" height={250}>
+                          <PieChart>
+                            <Pie
+                              data={prepareTypeData().filter(item => item.status === 'success')}
+                              cx="50%"
+                              cy="50%"
+                              outerRadius={80}
+                              dataKey="downloads"
+                              nameKey="name"
+                              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                            >
+                              {prepareTypeData().filter(item => item.status === 'success').map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                              ))}
+                            </Pie>
+                            <Tooltip formatter={(value) => [`${value} téléchargements`, 'Quantité']} />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      </div>
+                      
+                      <div className="flex flex-col justify-center">
+                        <h4 className="text-lg font-semibold mb-4">Répartition des téléchargements</h4>
+                        <ul className="space-y-3">
+                          {prepareTypeData()
+                            .filter(item => item.status === 'success')
+                            .map((item, index) => (
+                              <li key={index} className="flex items-center">
+                                <div className="w-4 h-4 rounded-full mr-2" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
+                                <span className="font-medium">{item.name}: </span>
+                                <span className="ml-2">{item.downloads} téléchargements</span>
+                              </li>
+                            ))}
+                        </ul>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </>
+              )}
+            </TabsContent>
+          </Tabs>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };

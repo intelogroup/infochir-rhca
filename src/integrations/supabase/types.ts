@@ -853,6 +853,15 @@ export type Database = {
         }
         Relationships: []
       }
+      download_stats_monitoring: {
+        Row: {
+          count: number | null
+          document_type: string | null
+          latest_download: string | null
+          status: string | null
+        }
+        Relationships: []
+      }
       founders_view: {
         Row: {
           achievements: string[] | null
@@ -1207,6 +1216,17 @@ export type Database = {
           currency: string
         }
         Returns: Json
+      }
+      get_daily_downloads: {
+        Args: {
+          days_back?: number
+        }
+        Returns: {
+          date: string
+          total_downloads: number
+          successful_downloads: number
+          failed_downloads: number
+        }[]
       }
       get_document_download_stats: {
         Args: {
