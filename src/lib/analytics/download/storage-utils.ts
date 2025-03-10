@@ -41,7 +41,12 @@ export const getDownloadCount = async (documentId: string): Promise<number> => {
       throw error;
     }
     
-    return data?.successful_downloads || 0;
+    // The RPC returns an array, so we need to get the first item
+    if (data && data.length > 0) {
+      return data[0].successful_downloads || 0;
+    }
+    
+    return 0;
   } catch (error) {
     logger.error('Error getting download count:', error);
     return 0;
