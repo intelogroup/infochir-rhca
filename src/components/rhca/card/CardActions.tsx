@@ -5,6 +5,10 @@ import { Download, Share2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { RhcaArticle } from "../types";
+import { downloadPDF } from "@/lib/analytics/download";
+import { createLogger } from "@/lib/error-logger";
+
+const logger = createLogger('RhcaCardActions');
 
 interface CardActionsProps {
   article: RhcaArticle;
@@ -12,22 +16,30 @@ interface CardActionsProps {
 }
 
 export const CardActions: React.FC<CardActionsProps> = ({ article, pdfUrl }) => {
-  const handleDownload = () => {
-    if (pdfUrl) {
-      window.open(pdfUrl, '_blank');
-      
-      // Track download count in analytics
-      try {
-        supabase.rpc('increment_count', { 
-          table_name: 'articles', 
-          column_name: 'downloads', 
-          row_id: article.id 
-        });
-      } catch (error) {
-        console.error('[RhcaCard] Error incrementing download count:', error);
-      }
-    } else {
+  const handleDownload = async () => {
+    if (!pdfUrl) {
       toast.error("Le PDF n'est pas disponible pour le moment");
+      return;
+    }
+    
+    try {
+      // Use the standardized downloadPDF function with tracking
+      const fileName = `RHCA-${article.title.slice(0, 30)}.pdf`;
+      
+      const success = await downloadPDF({
+        url: pdfUrl,
+        fileName,
+        documentId: article.id,
+        documentType: 'rhca',
+        trackingEnabled: true
+      });
+      
+      if (!success) {
+        throw new Error('Download failed');
+      }
+    } catch (error) {
+      logger.error(error);
+      toast.error("Une erreur est survenue lors du téléchargement");
     }
   };
   

@@ -5,85 +5,61 @@ import { createLogger } from "@/lib/error-logger";
 const logger = createLogger('StorageUtils');
 
 /**
- * Utility to check if a file exists in Supabase storage
+ * Checks if a file exists in a Supabase storage bucket
  */
-export const checkFileExists = async (
-  bucketName: string, 
-  filePath: string
-): Promise<boolean> => {
+export const checkFileExists = async (bucketName: string, filePath: string): Promise<boolean> => {
   try {
-    logger.log(`Checking if file exists: ${bucketName}/${filePath}`);
-    
-    // Get the public URL
-    const { data } = supabase.storage
+    // Get file metadata to check if it exists
+    const { data, error } = await supabase
+      .storage
       .from(bucketName)
       .getPublicUrl(filePath);
       
-    // Try a HEAD request to check if file exists
-    const response = await fetch(data.publicUrl, { 
-      method: 'HEAD',
-      cache: 'no-store' 
-    });
+    if (error) {
+      logger.error(`File check error for ${bucketName}/${filePath}:`, error);
+      return false;
+    }
     
-    const exists = response.ok;
-    logger.log(`File ${filePath} exists: ${exists}`);
-    return exists;
+    // If we have a public URL, try to do a HEAD request to verify it's accessible
+    if (data?.publicUrl) {
+      try {
+        const response = await fetch(data.publicUrl, { method: 'HEAD' });
+        return response.ok;
+      } catch (fetchError) {
+        logger.error(`File fetch check error for ${data.publicUrl}:`, fetchError);
+        return false;
+      }
+    }
+    
+    return false;
   } catch (error) {
-    logger.error(error);
+    logger.error(`Unexpected error checking file ${bucketName}/${filePath}:`, error);
     return false;
   }
 };
 
 /**
- * Get storage usage statistics
+ * Gets a signed URL with optional expiration (useful for temporary access)
  */
-export const getStorageStats = async (): Promise<{
-  totalFiles: number;
-  totalSize: number;
-  bucketStats: Record<string, { files: number; size: number }>;
-} | null> => {
+export const getSignedUrl = async (
+  bucketName: string, 
+  filePath: string, 
+  expiresIn = 60 // Default 60 seconds
+): Promise<string | null> => {
   try {
-    // Get list of buckets
-    const { data: buckets, error: bucketsError } = await supabase
+    const { data, error } = await supabase
       .storage
-      .listBuckets();
+      .from(bucketName)
+      .createSignedUrl(filePath, expiresIn);
       
-    if (bucketsError) {
-      throw bucketsError;
+    if (error) {
+      logger.error(`Signed URL error for ${bucketName}/${filePath}:`, error);
+      return null;
     }
     
-    const stats = {
-      totalFiles: 0,
-      totalSize: 0,
-      bucketStats: {} as Record<string, { files: number; size: number }>
-    };
-    
-    // Get stats for each bucket
-    for (const bucket of buckets) {
-      const { data: files, error: filesError } = await supabase
-        .storage
-        .from(bucket.name)
-        .list();
-        
-      if (filesError) {
-        logger.error(filesError);
-        continue;
-      }
-      
-      const bucketSize = files.reduce((sum, file) => sum + (file.metadata?.size || 0), 0);
-      
-      stats.totalFiles += files.length;
-      stats.totalSize += bucketSize;
-      stats.bucketStats[bucket.name] = {
-        files: files.length,
-        size: bucketSize
-      };
-    }
-    
-    logger.log(`Storage stats:`, stats);
-    return stats;
+    return data.signedUrl;
   } catch (error) {
-    logger.error(error);
+    logger.error(`Unexpected error getting signed URL for ${bucketName}/${filePath}:`, error);
     return null;
   }
 };

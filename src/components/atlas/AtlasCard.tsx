@@ -11,6 +11,9 @@ import { AtlasCategory } from "./data/atlasCategories";
 import { Badge } from "@/components/ui/badge";
 import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
 import { trackDownload } from "@/lib/analytics/download";
+import { createLogger } from "@/lib/error-logger";
+
+const logger = createLogger('AtlasCard');
 
 interface AtlasCardProps {
   chapter: AtlasChapter;
@@ -33,10 +36,10 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
     }
     
     try {
-      // Track the download event
+      // Track the download event with correct document type
       await trackDownload({
         document_id: chapter.id,
-        document_type: "article", // Changed from "adc" to "article" to match allowed types
+        document_type: "adc", // Changed from "article" to "adc"
         file_name: chapter.pdfUrl.split('/').pop() || 'document.pdf',
         status: 'success'
       });
@@ -45,17 +48,17 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
       window.open(chapter.pdfUrl, '_blank');
       toast.success("Téléchargement du PDF...");
     } catch (error) {
-      console.error("Download error:", error);
+      logger.error("Download error:", error);
       toast.error("Erreur lors du téléchargement");
       
       // Track the failed download
       trackDownload({
         document_id: chapter.id,
-        document_type: "article", // Changed from "adc" to "article" to match allowed types
+        document_type: "adc", // Changed from "article" to "adc"
         file_name: chapter.pdfUrl.split('/').pop() || 'document.pdf',
         status: 'failed',
         error_details: error instanceof Error ? error.message : 'Unknown error'
-      }).catch(e => console.error("Failed to track download error:", e));
+      }).catch(e => logger.error("Failed to track download error:", e));
     }
   };
 

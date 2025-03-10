@@ -6,7 +6,7 @@ const logger = createLogger('DownloadTracking');
 
 export interface DownloadEvent {
   document_id: string;
-  document_type: 'igm' | 'rhca' | 'article' | 'other';
+  document_type: 'igm' | 'rhca' | 'article' | 'adc' | 'other';
   file_name: string;
   status: 'success' | 'failed';
   error_details?: string;

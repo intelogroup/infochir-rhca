@@ -5,6 +5,9 @@ import { toast } from "sonner";
 import { trackDownload } from "@/lib/analytics/download";
 import { AtlasChapter } from "../types";
 import { motion } from "framer-motion";
+import { createLogger } from "@/lib/error-logger";
+
+const logger = createLogger('ModalActions');
 
 interface ModalActionsProps {
   chapter: AtlasChapter;
@@ -24,10 +27,10 @@ export const ModalActions = ({ chapter }: ModalActionsProps) => {
     }
     
     try {
-      // Track the download event
+      // Track the download event with correct document type
       await trackDownload({
         document_id: chapter.id,
-        document_type: "article", // Changed from "adc" to "article" to match allowed types
+        document_type: "adc", // Changed from "article" to "adc"
         file_name: chapter.pdfUrl.split('/').pop() || 'document.pdf',
         status: 'success'
       });
@@ -36,17 +39,17 @@ export const ModalActions = ({ chapter }: ModalActionsProps) => {
       window.open(chapter.pdfUrl, '_blank');
       toast.success("Téléchargement du PDF...");
     } catch (error) {
-      console.error("Download error:", error);
+      logger.error("Download error:", error);
       toast.error("Erreur lors du téléchargement");
       
       // Track the failed download
       trackDownload({
         document_id: chapter.id,
-        document_type: "article", // Changed from "adc" to "article" to match allowed types
+        document_type: "adc", // Changed from "article" to "adc"
         file_name: chapter.pdfUrl.split('/').pop() || 'document.pdf',
         status: 'failed',
         error_details: error instanceof Error ? error.message : 'Unknown error'
-      }).catch(e => console.error("Failed to track download error:", e));
+      }).catch(e => logger.error("Failed to track download error:", e));
     }
   };
 

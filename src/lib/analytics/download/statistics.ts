@@ -1,43 +1,22 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger } from "@/lib/error-logger";
-import type { DownloadEvent } from "./track-downloads";
 
-const logger = createLogger('DownloadStats');
+const logger = createLogger('DownloadStatistics');
 
 /**
- * Get download statistics for a specific document
+ * Gets download statistics by document type
  */
-export const getDocumentDownloadStats = async (documentId: string): Promise<{
-  totalDownloads: number;
-  successfulDownloads: number;
-  failedDownloads: number;
-  lastDownloadTime: string | null;
-} | null> => {
+export const getDownloadStatsByType = async (documentType: string) => {
   try {
     const { data, error } = await supabase
-      .rpc('get_document_download_stats', { doc_id: documentId });
+      .rpc('get_download_stats_by_type', { doc_type: documentType });
       
     if (error) {
-      logger.error(error);
-      return null;
+      throw error;
     }
     
-    if (!data || data.length === 0) {
-      return {
-        totalDownloads: 0,
-        successfulDownloads: 0,
-        failedDownloads: 0,
-        lastDownloadTime: null
-      };
-    }
-    
-    return {
-      totalDownloads: Number(data[0].total_downloads),
-      successfulDownloads: Number(data[0].successful_downloads),
-      failedDownloads: Number(data[0].failed_downloads),
-      lastDownloadTime: data[0].last_download_time
-    };
+    return data;
   } catch (error) {
     logger.error(error);
     return null;
@@ -45,40 +24,59 @@ export const getDocumentDownloadStats = async (documentId: string): Promise<{
 };
 
 /**
- * Get download statistics for a document type (igm, rhca, etc)
+ * Gets download statistics for a specific document
  */
-export const getDownloadStatsByType = async (documentType: DownloadEvent['document_type']): Promise<{
-  totalDownloads: number;
-  successfulDownloads: number;
-  failedDownloads: number;
-  uniqueDocuments: number;
-} | null> => {
+export const getDocumentDownloadStats = async (documentId: string) => {
   try {
     const { data, error } = await supabase
-      .rpc('get_download_stats_by_type', { doc_type: documentType });
+      .rpc('get_document_download_stats', { doc_id: documentId });
       
     if (error) {
-      logger.error(error);
-      return null;
+      throw error;
     }
     
-    if (!data || data.length === 0) {
-      return {
-        totalDownloads: 0,
-        successfulDownloads: 0,
-        failedDownloads: 0,
-        uniqueDocuments: 0
-      };
-    }
-    
-    return {
-      totalDownloads: Number(data[0].total_downloads),
-      successfulDownloads: Number(data[0].successful_downloads),
-      failedDownloads: Number(data[0].failed_downloads),
-      uniqueDocuments: Number(data[0].unique_documents)
-    };
+    return data;
   } catch (error) {
     logger.error(error);
     return null;
+  }
+};
+
+/**
+ * Gets daily download statistics for the past N days
+ */
+export const getDailyDownloadStats = async (daysBack = 7) => {
+  try {
+    const { data, error } = await supabase
+      .rpc('get_daily_downloads', { days_back: daysBack });
+      
+    if (error) {
+      throw error;
+    }
+    
+    return data;
+  } catch (error) {
+    logger.error(error);
+    return [];
+  }
+};
+
+/**
+ * Gets download statistics summary for all document types
+ */
+export const getOverallDownloadStats = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('download_stats_monitoring')
+      .select('*');
+      
+    if (error) {
+      throw error;
+    }
+    
+    return data;
+  } catch (error) {
+    logger.error(error);
+    return [];
   }
 };

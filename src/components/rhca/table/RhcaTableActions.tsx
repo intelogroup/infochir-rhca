@@ -13,6 +13,10 @@ import { Download, Share2, MoreVertical } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { RhcaArticle } from "../types";
+import { downloadPDF } from "@/lib/analytics/download";
+import { createLogger } from "@/lib/error-logger";
+
+const logger = createLogger('RhcaTableActions');
 
 interface RhcaTableActionsProps {
   article: RhcaArticle;
@@ -21,28 +25,31 @@ interface RhcaTableActionsProps {
 export const RhcaTableActions: React.FC<RhcaTableActionsProps> = ({ article }) => {
   const handleDownload = async () => {
     try {
-      if (article.pdfFileName) {
-        const { data } = await supabase.storage
-          .from('rhca-pdfs')
-          .getPublicUrl(article.pdfFileName);
-          
-        window.open(data.publicUrl, '_blank');
-        
-        // Track download
-        try {
-          await supabase.rpc('increment_count', { 
-            table_name: 'articles', 
-            column_name: 'downloads', 
-            row_id: article.id 
-          });
-        } catch (error) {
-          console.error('[RhcaTable] Error incrementing download count:', error);
-        }
-      } else {
+      if (!article.pdfFileName) {
         toast.error("PDF non disponible");
+        return;
+      }
+      
+      const { data } = await supabase.storage
+        .from('rhca-pdfs')
+        .getPublicUrl(article.pdfFileName);
+        
+      // Use the standardized downloadPDF function with tracking
+      const fileName = `RHCA-${article.title.slice(0, 30)}.pdf`;
+      
+      const success = await downloadPDF({
+        url: data.publicUrl,
+        fileName,
+        documentId: article.id,
+        documentType: 'rhca',
+        trackingEnabled: true
+      });
+      
+      if (!success) {
+        throw new Error('Download failed');
       }
     } catch (error) {
-      console.error('[RhcaTable] Error downloading PDF:', error);
+      logger.error(error);
       toast.error("Erreur lors du téléchargement");
     }
   };
