@@ -5,7 +5,7 @@ import { defaultStats } from "../StatsData";
 import { createLogger } from "@/lib/error-logger";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { subscribeToDownloadStats, getTotalDownloadCount } from "@/lib/analytics/download";
+import { subscribeToDownloadStats, getDownloadStatistics } from "@/lib/analytics/download";
 
 const logger = createLogger('useStatsData');
 
@@ -57,8 +57,9 @@ export const useStatsData = () => {
           throw membersError;
         }
         
-        // Get total downloads using the dedicated function
-        const totalDownloads = await getTotalDownloadCount();
+        // Get download statistics using our improved function
+        const downloadStats = await getDownloadStatistics();
+        const totalDownloads = downloadStats ? Number(downloadStats.total_downloads) : 0;
         
         // Start with default stats
         const stats = [...defaultStats];
@@ -82,8 +83,8 @@ export const useStatsData = () => {
         throw error;
       }
     },
-    staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes (reduced from 10 for more frequent updates)
-    gcTime: 10 * 60 * 1000, // Keep unused data in cache for 10 minutes (reduced from 15)
+    staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
+    gcTime: 10 * 60 * 1000, // Keep unused data in cache for 10 minutes
     retry: 2,
     retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
   });

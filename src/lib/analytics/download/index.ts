@@ -11,7 +11,8 @@ export {
   checkFileExists, 
   getDownloadCount, 
   getTotalDownloadCount,
-  getDownloadCountByType
+  getDownloadCountByType,
+  getDownloadStatistics
 } from './storage-utils';
 
 // Export statistics utilities

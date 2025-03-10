@@ -74,21 +74,17 @@ export const getDownloadCount = async (documentId: string): Promise<number> => {
  */
 export const getTotalDownloadCount = async (): Promise<number> => {
   try {
+    // Use our new RPC function that handles all type conversion internally
     const { data, error } = await supabase
-      .rpc('get_total_downloads');
+      .rpc('get_download_statistics');
       
     if (error) {
       logger.error('Error getting total download count:', error);
       return 0;
     }
     
-    // Fix type issue: properly handle the 'unknown' type from RPC response
-    if (data !== null && data !== undefined) {
-      // Use explicit type checking and conversion
-      return typeof data === 'number' ? data : 
-             typeof data === 'string' ? parseInt(data, 10) : 
-             typeof data === 'object' && data !== null ? 
-               ('count' in data && typeof data.count === 'number' ? data.count : 0) : 0;
+    if (data) {
+      return Number(data.total_downloads) || 0;
     }
     
     logger.warn('Total download count returned null/undefined from RPC');
@@ -134,5 +130,26 @@ export const getDownloadCountByType = async (documentType: string): Promise<numb
   } catch (error) {
     logger.error('Exception getting download count by type:', error);
     return 0;
+  }
+};
+
+/**
+ * Gets complete download statistics for all document types
+ * @returns Object with download counts for all document types
+ */
+export const getDownloadStatistics = async () => {
+  try {
+    const { data, error } = await supabase
+      .rpc('get_download_statistics');
+      
+    if (error) {
+      logger.error('Error getting download statistics:', error);
+      return null;
+    }
+    
+    return data;
+  } catch (error) {
+    logger.error('Exception getting download statistics:', error);
+    return null;
   }
 };
