@@ -2,6 +2,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { defaultStats } from "../StatsData";
+import { createLogger } from "@/lib/error-logger";
+
+const logger = createLogger('useStatsData');
 
 export const useStatsData = () => {
   const { 
@@ -12,25 +15,32 @@ export const useStatsData = () => {
   } = useQuery({
     queryKey: ['home-stats'],
     queryFn: async () => {
-      console.log('Fetching home stats...');
+      logger.log('Fetching home stats...');
       
+      // Get articles count
       const { data: articles, error: articlesError } = await supabase
         .from('articles')
         .select('id, views');
       
       if (articlesError) throw articlesError;
 
+      // Get members count
       const { data: members, error: membersError } = await supabase
         .from('members')
         .select('id');
       
       if (membersError) throw membersError;
       
-      // Get total downloads
+      // Get total downloads using the dedicated function
       const { data: downloads, error: downloadsError } = await supabase
         .rpc('get_total_downloads');
         
-      if (downloadsError) throw downloadsError;
+      if (downloadsError) {
+        logger.error('Error fetching download count:', downloadsError);
+        throw downloadsError;
+      }
+
+      logger.log('Raw downloads count:', downloads);
 
       const stats = [...defaultStats];
       
@@ -46,11 +56,11 @@ export const useStatsData = () => {
       // Update Downloads count
       stats[3].value = downloads?.toString() || "0";
 
-      console.log('Processed stats:', stats);
+      logger.log('Processed stats:', stats);
       return stats;
     },
-    staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
-    gcTime: 10 * 60 * 1000, // Keep unused data in cache for 10 minutes
+    staleTime: 10 * 60 * 1000, // Data stays fresh for 10 minutes
+    gcTime: 15 * 60 * 1000, // Keep unused data in cache for 15 minutes
     retry: 2,
     retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
