@@ -20,5 +20,5 @@ export {
   getDocumentDownloadStats,
   getDailyDownloadStats,
   getOverallDownloadStats,
-  subscribeToDownloadStats  // Add this export
+  subscribeToDownloadStats
 } from './statistics';
