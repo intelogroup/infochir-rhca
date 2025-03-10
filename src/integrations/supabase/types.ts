@@ -1250,6 +1250,12 @@ export type Database = {
           unique_documents: number
         }[]
       }
+      get_downloads_by_type: {
+        Args: {
+          doc_type: string
+        }
+        Returns: number
+      }
       get_total_downloads: {
         Args: Record<PropertyKey, never>
         Returns: number

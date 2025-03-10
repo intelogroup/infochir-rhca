@@ -2,59 +2,86 @@
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger } from "@/lib/error-logger";
 
-const logger = createLogger('StorageUtils');
+const logger = createLogger('DownloadStorage');
 
 /**
- * Checks if a file exists in a Supabase storage bucket
+ * Checks if a file exists in Supabase storage
  */
 export const checkFileExists = async (bucketName: string, filePath: string): Promise<boolean> => {
   try {
-    // Get file metadata to check if it exists
-    const { data } = await supabase
+    const { data, error } = await supabase
       .storage
       .from(bucketName)
-      .getPublicUrl(filePath);
+      .list('', {
+        limit: 1,
+        offset: 0,
+        search: filePath
+      });
       
-    // If we have a public URL, try to do a HEAD request to verify it's accessible
-    if (data?.publicUrl) {
-      try {
-        const response = await fetch(data.publicUrl, { method: 'HEAD' });
-        return response.ok;
-      } catch (fetchError) {
-        logger.error(`File fetch check error for ${data.publicUrl}:`, fetchError);
-        return false;
-      }
+    if (error) {
+      throw error;
     }
     
-    return false;
+    return !!data && data.length > 0 && data.some(file => file.name === filePath);
   } catch (error) {
-    logger.error(`Unexpected error checking file ${bucketName}/${filePath}:`, error);
+    logger.error('Error checking if file exists:', error);
     return false;
   }
 };
 
 /**
- * Gets a signed URL with optional expiration (useful for temporary access)
+ * Gets the download count for a specific document
  */
-export const getSignedUrl = async (
-  bucketName: string, 
-  filePath: string, 
-  expiresIn = 60 // Default 60 seconds
-): Promise<string | null> => {
+export const getDownloadCount = async (documentId: string): Promise<number> => {
   try {
     const { data, error } = await supabase
-      .storage
-      .from(bucketName)
-      .createSignedUrl(filePath, expiresIn);
+      .rpc('get_document_download_stats', { doc_id: documentId });
       
     if (error) {
-      logger.error(`Signed URL error for ${bucketName}/${filePath}:`, error);
-      return null;
+      throw error;
     }
     
-    return data.signedUrl;
+    return data?.successful_downloads || 0;
   } catch (error) {
-    logger.error(`Unexpected error getting signed URL for ${bucketName}/${filePath}:`, error);
-    return null;
+    logger.error('Error getting download count:', error);
+    return 0;
+  }
+};
+
+/**
+ * Gets the total download count across all documents
+ */
+export const getTotalDownloadCount = async (): Promise<number> => {
+  try {
+    const { data, error } = await supabase
+      .rpc('get_total_downloads');
+      
+    if (error) {
+      throw error;
+    }
+    
+    return data || 0;
+  } catch (error) {
+    logger.error('Error getting total download count:', error);
+    return 0;
+  }
+};
+
+/**
+ * Gets the download count for a specific document type
+ */
+export const getDownloadCountByType = async (documentType: string): Promise<number> => {
+  try {
+    const { data, error } = await supabase
+      .rpc('get_downloads_by_type', { doc_type: documentType });
+      
+    if (error) {
+      throw error;
+    }
+    
+    return data || 0;
+  } catch (error) {
+    logger.error('Error getting download count by type:', error);
+    return 0;
   }
 };
