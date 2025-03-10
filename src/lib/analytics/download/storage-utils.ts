@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger } from "@/lib/error-logger";
 
@@ -83,7 +84,11 @@ export const getTotalDownloadCount = async (): Promise<number> => {
     
     // Fix type issue: properly handle the 'unknown' type from RPC response
     if (data !== null && data !== undefined) {
-      return typeof data === 'number' ? data : 0;
+      // Use explicit type checking and conversion
+      return typeof data === 'number' ? data : 
+             typeof data === 'string' ? parseInt(data, 10) : 
+             typeof data === 'object' && data !== null ? 
+               ('count' in data && typeof data.count === 'number' ? data.count : 0) : 0;
     }
     
     logger.warn('Total download count returned null/undefined from RPC');
