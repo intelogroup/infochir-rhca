@@ -83,6 +83,7 @@ export const getTotalDownloadCount = async (): Promise<number> => {
     }
     
     // Ensure we have a valid number
+    // Fix for the type 'unknown' not assignable to type 'number'
     if (data !== null && data !== undefined) {
       return typeof data === 'number' ? data : 0;
     }
