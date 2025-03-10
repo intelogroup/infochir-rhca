@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger } from "@/lib/error-logger";
 
@@ -64,10 +65,10 @@ export const getDownloadCount = async (documentId: string): Promise<number> => {
     
     // The RPC returns an array, so we need to get the first item
     if (Array.isArray(data) && data.length > 0) {
-      return data[0].successful_downloads || 0;
+      return Number(data[0].successful_downloads) || 0;
     } else if (data && typeof data === 'object' && 'successful_downloads' in data) {
       // Handle case where it might return a single object instead of array
-      return data.successful_downloads || 0;
+      return Number(data.successful_downloads) || 0;
     }
     
     logger.warn(`No download data found for document ID: ${documentId}`);
@@ -94,7 +95,7 @@ export const getTotalDownloadCount = async (): Promise<number> => {
     
     if (data && Array.isArray(data) && data.length > 0) {
       // The function returns an array with a single row
-      return data[0]?.total_downloads || 0;
+      return Number(data[0]?.total_downloads) || 0;
     }
     
     logger.warn('Total download count returned null/undefined from RPC');
@@ -137,9 +138,9 @@ export const getDownloadCountByType = async (documentType: string): Promise<numb
       return 0;
     }
     
-    if (data && data.document_types) {
-      // Convert document_types from jsonb if needed
-      let docTypes = data.document_types;
+    if (data && Array.isArray(data) && data.length > 0 && data[0].document_types) {
+      // Get the document_types from the first item in the array
+      let docTypes = data[0].document_types;
       if (typeof docTypes === 'string') {
         try {
           docTypes = JSON.parse(docTypes);
@@ -149,7 +150,7 @@ export const getDownloadCountByType = async (documentType: string): Promise<numb
         }
       }
       
-      return docTypes[documentType] || 0;
+      return (docTypes as Record<string, number>)[documentType] || 0;
     }
     
     logger.warn(`No download data found for document type: ${documentType}`);
@@ -192,7 +193,12 @@ export const getDownloadStatistics = async (): Promise<DownloadStatistics | null
       }
       
       // Return the first (and only) item from the array
-      return stats as DownloadStatistics;
+      return {
+        total_downloads: Number(stats.total_downloads) || 0,
+        successful_downloads: Number(stats.successful_downloads) || 0,
+        failed_downloads: Number(stats.failed_downloads) || 0,
+        document_types: stats.document_types as Record<string, number>
+      };
     }
     
     logger.warn('No download statistics returned from database');

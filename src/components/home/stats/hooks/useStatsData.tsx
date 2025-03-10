@@ -59,9 +59,11 @@ export const useStatsData = () => {
         
         // Get download statistics using our improved function
         const downloadStats = await getDownloadStatistics();
+        logger.log('Download stats fetched:', downloadStats);
         
         // Safely extract download count with fallback to 0
         const totalDownloads = downloadStats?.total_downloads || 0;
+        logger.log('Total downloads:', totalDownloads);
         
         // Start with default stats
         const stats = [...defaultStats];

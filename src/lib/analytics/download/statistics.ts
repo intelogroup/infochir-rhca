@@ -113,20 +113,27 @@ export const getOverallDownloadStats = async () => {
       return null;
     }
     
-    // Convert document_types from jsonb to a proper TypeScript object
-    if (data && data.document_types) {
-      try {
-        // If data.document_types is already an object, it doesn't need parsing
-        if (typeof data.document_types === 'string') {
-          data.document_types = JSON.parse(data.document_types);
+    // Since the function returns an array with one object, extract the first item
+    if (data && Array.isArray(data) && data.length > 0) {
+      const stats = data[0];
+      
+      // Convert document_types from jsonb to a proper TypeScript object
+      if (stats && stats.document_types) {
+        try {
+          // If data.document_types is already an object, it doesn't need parsing
+          if (typeof stats.document_types === 'string') {
+            stats.document_types = JSON.parse(stats.document_types);
+          }
+        } catch (e) {
+          logger.error('Error parsing document_types:', e);
+          stats.document_types = {};
         }
-      } catch (e) {
-        logger.error('Error parsing document_types:', e);
-        data.document_types = {};
       }
+      
+      return stats;
     }
     
-    return data;
+    return null;
   } catch (error) {
     logger.error('Exception in getOverallDownloadStats:', error);
     return null;
