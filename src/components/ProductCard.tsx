@@ -99,10 +99,10 @@ export const ProductCard = ({
                 <ProductIcon icon={icon} logo={logo} title={title} />
               )}
             </div>
-            <CardTitle className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#1E40AF] via-[#41b06e] to-[#41b06e] text-center truncate min-h-[2rem] flex items-center justify-center">
+            <CardTitle className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#1E40AF] via-[#41b06e] to-[#41b06e] text-left truncate min-h-[2rem] flex items-center">
               {getFullProductName(title)}
             </CardTitle>
-            <CardDescription className="text-gray-600 dark:text-gray-300 text-center text-sm leading-tight line-clamp-2 min-h-[2.75rem] mt-2">
+            <CardDescription className="text-gray-600 dark:text-gray-300 text-left text-sm leading-tight line-clamp-2 min-h-[2.75rem] mt-2">
               {description}
             </CardDescription>
           </CardHeader>

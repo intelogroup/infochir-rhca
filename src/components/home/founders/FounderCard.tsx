@@ -20,6 +20,12 @@ export const FounderCard = ({ founder, onClick, memorialStyle = false }: Founder
     .substring(0, 2)
     .toUpperCase();
 
+  // Special handling for Jolicoeur
+  const isJolicoeur = founder.name.toLowerCase().includes("jolicoeur");
+  const avatarImage = isJolicoeur 
+    ? "/lovable-uploads/f4b5407c-cdd2-444f-8dd3-1746a442a0b4.png" 
+    : founder.image;
+  
   return (
     <Card 
       className={cn(
@@ -35,7 +41,7 @@ export const FounderCard = ({ founder, onClick, memorialStyle = false }: Founder
       <div className="flex flex-col items-center p-6 text-center gap-4">
         <Avatar className="h-32 w-32 border-2 border-white shadow-md">
           <AvatarImage 
-            src={founder.image} 
+            src={avatarImage} 
             alt={founder.name} 
             className="object-cover"
           />

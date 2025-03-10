@@ -50,14 +50,14 @@ export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
       </div>
       
       <div className="p-5 flex flex-col flex-grow">
-        <h3 className="font-bold text-xl mb-2 line-clamp-2">{highlight.title}</h3>
-        <p className="text-gray-600 text-sm line-clamp-2 mb-4 flex-grow">
+        <h3 className="font-bold text-xl mb-2 line-clamp-2 text-left">{highlight.title}</h3>
+        <p className="text-gray-600 text-sm line-clamp-2 mb-4 flex-grow text-left">
           {highlight.description}
         </p>
         
         <div className="mt-auto">
           {highlight.author && (
-            <p className="text-xs text-gray-500 mb-3 line-clamp-2">
+            <p className="text-xs text-gray-500 mb-3 line-clamp-2 text-left">
               Par {highlight.author}
             </p>
           )}
