@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger } from "@/lib/error-logger";
 
@@ -93,10 +92,9 @@ export const getTotalDownloadCount = async (): Promise<number> => {
       return 0;
     }
     
-    if (data) {
-      // Safely cast the data to our expected format
-      const stats = data as DownloadStatistics;
-      return stats.total_downloads || 0;
+    if (data && Array.isArray(data) && data.length > 0) {
+      // The function returns an array with a single row
+      return data[0]?.total_downloads || 0;
     }
     
     logger.warn('Total download count returned null/undefined from RPC');
@@ -176,21 +174,29 @@ export const getDownloadStatistics = async (): Promise<DownloadStatistics | null
       return null;
     }
     
-    // Process document_types if needed
-    if (data && data.document_types) {
-      // If document_types is a string (JSON), parse it
-      if (typeof data.document_types === 'string') {
-        try {
-          data.document_types = JSON.parse(data.document_types);
-        } catch (e) {
-          logger.error('Error parsing document_types:', e);
-          data.document_types = {};
+    // Since the function returns an array with one object, extract the first item
+    if (data && Array.isArray(data) && data.length > 0) {
+      const stats = data[0];
+      
+      // Process document_types if needed
+      if (stats && stats.document_types) {
+        // If document_types is a string (JSON), parse it
+        if (typeof stats.document_types === 'string') {
+          try {
+            stats.document_types = JSON.parse(stats.document_types);
+          } catch (e) {
+            logger.error('Error parsing document_types:', e);
+            stats.document_types = {};
+          }
         }
       }
+      
+      // Return the first (and only) item from the array
+      return stats as DownloadStatistics;
     }
     
-    // Safely cast the data to our expected format
-    return data as DownloadStatistics;
+    logger.warn('No download statistics returned from database');
+    return null;
   } catch (error) {
     logger.error('Exception getting download statistics:', error);
     return null;

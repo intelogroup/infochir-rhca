@@ -59,7 +59,9 @@ export const useStatsData = () => {
         
         // Get download statistics using our improved function
         const downloadStats = await getDownloadStatistics();
-        const totalDownloads = downloadStats ? downloadStats.total_downloads : 0;
+        
+        // Safely extract download count with fallback to 0
+        const totalDownloads = downloadStats?.total_downloads || 0;
         
         // Start with default stats
         const stats = [...defaultStats];
@@ -71,10 +73,10 @@ export const useStatsData = () => {
         
         // Update Views count
         const totalViews = articles?.reduce((sum, article) => sum + (article.views || 0), 0) || 0;
-        stats[2].value = totalViews?.toString() || "0";
+        stats[2].value = totalViews.toString() || "0";
         
-        // Update Downloads count - ensure we convert to string
-        stats[3].value = totalDownloads.toString();
+        // Update Downloads count - ensure we convert to string using a safe approach
+        stats[3].value = String(totalDownloads);
 
         logger.log('Processed stats:', stats);
         return stats;
