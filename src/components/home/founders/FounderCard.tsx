@@ -23,7 +23,7 @@ export const FounderCard = ({ founder, onClick, memorialStyle = false }: Founder
   // Special handling for Jolicoeur
   const isJolicoeur = founder.name.toLowerCase().includes("jolicoeur");
   const avatarImage = isJolicoeur 
-    ? "/lovable-uploads/f4b5407c-cdd2-444f-8dd3-1746a442a0b4.png" 
+    ? "/lovable-uploads/b4977347-5aa4-4efd-92de-37bc2f9cb68d.png" 
     : founder.image;
   
   return (
