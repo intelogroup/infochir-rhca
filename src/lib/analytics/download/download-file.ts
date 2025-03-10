@@ -21,7 +21,7 @@ export const downloadPDF = async ({
   documentType?: DownloadEvent['document_type'];
   trackingEnabled?: boolean;
 }): Promise<boolean> => {
-  logger.log(`Starting download for: ${fileName}`);
+  logger.log(`Starting download for: ${fileName} from ${url}`);
   
   try {
     // Show loading toast
@@ -47,21 +47,60 @@ export const downloadPDF = async ({
       return false;
     }
     
-    // Try to fetch the file
-    const response = await fetch(url, { 
-      method: 'GET',
-      headers: {
-        'Cache-Control': 'no-cache',
-      }
-    });
+    // Try to fetch the file with timeout and retry logic
+    let response;
+    let retryCount = 0;
+    const maxRetries = 2;
     
-    if (!response.ok) {
-      const errorMessage = `HTTP error! status: ${response.status}`;
+    while (retryCount <= maxRetries) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+        
+        response = await fetch(url, { 
+          method: 'GET',
+          headers: {
+            'Cache-Control': 'no-cache',
+          },
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (response.ok) break;
+        
+        logger.warn(`Retry ${retryCount + 1}/${maxRetries} for download, status: ${response.status}`);
+        retryCount++;
+        
+        if (retryCount <= maxRetries) {
+          // Wait before retrying (exponential backoff)
+          await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retryCount)));
+        }
+      } catch (fetchError) {
+        logger.error('Fetch error:', fetchError);
+        
+        if (fetchError.name === 'AbortError') {
+          logger.warn('Download request timed out');
+        }
+        
+        retryCount++;
+        
+        if (retryCount > maxRetries) {
+          throw fetchError;
+        }
+        
+        // Wait before retrying
+        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retryCount)));
+      }
+    }
+    
+    if (!response || !response.ok) {
+      const errorMessage = response ? `HTTP error! status: ${response.status}` : 'Network error';
       logger.error(new Error(errorMessage));
       
       toast.error("Échec du téléchargement", {
         id: toastId,
-        description: `Impossible d'accéder au fichier (${response.status})`
+        description: `Impossible d'accéder au fichier ${response ? `(${response.status})` : ''}`
       });
       
       if (trackingEnabled) {
@@ -79,6 +118,28 @@ export const downloadPDF = async ({
     
     // Get the file content
     const blob = await response.blob();
+    
+    // Check if the blob is valid
+    if (!blob || blob.size === 0) {
+      logger.error('Downloaded blob is empty or invalid');
+      
+      toast.error("Fichier invalide", {
+        id: toastId,
+        description: "Le fichier téléchargé est vide ou corrompu."
+      });
+      
+      if (trackingEnabled) {
+        await trackDownload({
+          document_id: documentId,
+          document_type: documentType,
+          file_name: fileName,
+          status: 'failed',
+          error_details: 'Empty or invalid blob'
+        });
+      }
+      
+      return false;
+    }
     
     // Create download link
     const downloadUrl = window.URL.createObjectURL(blob);
@@ -112,7 +173,7 @@ export const downloadPDF = async ({
     
     return true;
   } catch (error) {
-    logger.error(error);
+    logger.error('Download error:', error);
     
     toast.error("Échec du téléchargement", {
       description: "Une erreur inattendue est survenue"

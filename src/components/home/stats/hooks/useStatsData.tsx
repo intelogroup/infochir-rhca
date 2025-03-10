@@ -5,7 +5,7 @@ import { defaultStats } from "../StatsData";
 import { createLogger } from "@/lib/error-logger";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { subscribeToDownloadStats } from "@/lib/analytics/download/statistics";
+import { subscribeToDownloadStats, getTotalDownloadCount } from "@/lib/analytics/download";
 
 const logger = createLogger('useStatsData');
 
@@ -58,32 +58,9 @@ export const useStatsData = () => {
         }
         
         // Get total downloads using the dedicated function
-        const { data: downloads, error: downloadsError } = await supabase
-          .rpc('get_total_downloads');
-          
-        if (downloadsError) {
-          logger.error('Error fetching download count:', downloadsError);
-          throw downloadsError;
-        }
-
-        logger.log('Raw downloads count:', downloads);
-
-        // As a fallback, query the download_stats_monitoring table directly
-        if (downloads === null || downloads === undefined) {
-          logger.log('Download count is null or undefined, querying download_stats_monitoring directly');
-          const { data: downloadStats, error: downloadStatsError } = await supabase
-            .from('download_stats_monitoring')
-            .select('count')
-            .eq('status', 'success');
-            
-          if (downloadStatsError) {
-            logger.error('Error fetching download stats:', downloadStatsError);
-          } else if (downloadStats && downloadStats.length > 0) {
-            const totalDownloads = downloadStats.reduce((sum, stat) => sum + (stat.count || 0), 0);
-            logger.log('Total downloads from download_stats_monitoring:', totalDownloads);
-          }
-        }
-
+        const totalDownloads = await getTotalDownloadCount();
+        
+        // Start with default stats
         const stats = [...defaultStats];
         
         // Don't override the first stat value since we've set it statically to 95
@@ -96,9 +73,7 @@ export const useStatsData = () => {
         stats[2].value = totalViews?.toString() || "0";
         
         // Update Downloads count - ensure we convert to string
-        stats[3].value = downloads !== null && downloads !== undefined 
-          ? downloads.toString() 
-          : "0";
+        stats[3].value = totalDownloads.toString();
 
         logger.log('Processed stats:', stats);
         return stats;
@@ -107,8 +82,8 @@ export const useStatsData = () => {
         throw error;
       }
     },
-    staleTime: 10 * 60 * 1000, // Data stays fresh for 10 minutes
-    gcTime: 15 * 60 * 1000, // Keep unused data in cache for 15 minutes
+    staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes (reduced from 10 for more frequent updates)
+    gcTime: 10 * 60 * 1000, // Keep unused data in cache for 10 minutes (reduced from 15)
     retry: 2,
     retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
