@@ -38,14 +38,50 @@ export const useAtlasArticles = () => {
 
         logger.log(`Found ${data.length} ADC articles in the articles table`);
 
+        // Check available storage buckets for debugging (only in preview mode)
+        if (isPreviewMode) {
+          try {
+            const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
+            
+            if (bucketsError) {
+              logger.error('Error listing storage buckets:', bucketsError);
+            } else {
+              logger.log('Available storage buckets:', buckets.map(b => b.name));
+              
+              // Check contents of relevant buckets
+              const bucketNames = ['adc_covers', 'adc_articles_view'];
+              
+              for (const bucketName of bucketNames) {
+                const { data: files, error: filesError } = await supabase.storage.from(bucketName).list();
+                
+                if (filesError) {
+                  logger.error(`Error listing files in bucket ${bucketName}:`, filesError);
+                } else {
+                  logger.log(`Contents of bucket ${bucketName}:`, files.map(f => f.name).slice(0, 5));
+                }
+              }
+            }
+          } catch (bucketsErr) {
+            logger.error('Error in bucket debugging:', bucketsErr);
+          }
+        }
+
         const chapters: AtlasChapter[] = data?.map(item => {
           // Get cover image using the new method with proper fallbacks
           let coverImage = '';
           
           if (item.cover_image_filename) {
             try {
-              // Use the getStorageUrl function to properly get the image from 'adc_covers' bucket
-              coverImage = getStorageUrl('adc_covers', item.cover_image_filename);
+              // First, try with adc_covers bucket
+              let imgUrl = getStorageUrl('adc_covers', item.cover_image_filename);
+              
+              if (!imgUrl) {
+                // If that doesn't work, try with adc_articles_view bucket
+                logger.log(`Trying alternative bucket for ${item.id}`);
+                imgUrl = getStorageUrl('adc_articles_view', item.cover_image_filename);
+              }
+              
+              coverImage = imgUrl;
               logger.log(`Using cover image from storage: ${coverImage}`);
               
               // Add a cache buster in preview mode

@@ -7,7 +7,7 @@ import { AtlasCategory } from "../data/atlasCategories";
 import { AtlasChapter } from "../types";
 import { Calendar, User, ImageOff } from "lucide-react";
 import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
-import { getADCCoverUrl } from "@/integrations/supabase/client";
+import { getADCCoverUrl, supabase } from "@/integrations/supabase/client";
 
 interface ModalHeaderProps {
   chapter: AtlasChapter;
@@ -21,7 +21,7 @@ export const ModalHeader = ({ chapter, category }: ModalHeaderProps) => {
   
   // Use the chapter's cover image if available
   useEffect(() => {
-    const loadCoverImage = () => {
+    const loadCoverImage = async () => {
       setIsImageLoading(true);
       setImageError(false);
       
@@ -33,9 +33,32 @@ export const ModalHeader = ({ chapter, category }: ModalHeaderProps) => {
       }
       
       try {
+        // Try the normal bucket first
         const url = getADCCoverUrl(chapter.coverImage);
         console.log(`[ModalHeader] Generated cover URL for ${chapter.id}:`, url);
-        setCoverUrl(url);
+        
+        // Verify the URL exists by doing a HEAD request
+        try {
+          const response = await fetch(url, { method: 'HEAD' });
+          if (response.ok) {
+            console.log(`[ModalHeader] Image URL is valid for chapter ${chapter.id}`);
+            setCoverUrl(url);
+          } else {
+            console.warn(`[ModalHeader] Image URL returned ${response.status} for chapter ${chapter.id}`);
+            
+            // Try with the adc_articles_view bucket as a fallback
+            const filename = chapter.coverImage.replace('/adc_covers/', '').replace('adc_covers/', '');
+            const fallbackUrl = supabase.storage.from('adc_articles_view').getPublicUrl(filename).data.publicUrl;
+            
+            console.log(`[ModalHeader] Trying fallback URL for ${chapter.id}:`, fallbackUrl);
+            setCoverUrl(fallbackUrl);
+          }
+        } catch (fetchError) {
+          console.error(`[ModalHeader] Error checking image URL for ${chapter.id}:`, fetchError);
+          
+          // Still set the URL, image component will handle error
+          setCoverUrl(url);
+        }
       } catch (error) {
         console.error(`[ModalHeader] Error loading cover for ${chapter.id}:`, error);
         setImageError(true);

@@ -1,3 +1,4 @@
+
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
@@ -105,6 +106,27 @@ export const getStorageUrl = (bucket: string, path: string): string => {
       console.log(`Generating storage URL for ${bucket}/${path}`);
     }
     
+    // Check if the bucket exists and we have permissions
+    const verifyBucket = async () => {
+      try {
+        const { data, error } = await supabase.storage.getBucket(bucket);
+        if (error) {
+          console.error(`Bucket verification failed for ${bucket}:`, error);
+          return false;
+        }
+        console.log(`Bucket ${bucket} verified:`, data);
+        return true;
+      } catch (err) {
+        console.error(`Error checking bucket ${bucket}:`, err);
+        return false;
+      }
+    };
+    
+    // We won't await this, but it will run in the background for debugging
+    if (isDebugMode) {
+      verifyBucket();
+    }
+    
     const { data } = supabase.storage
       .from(bucket)
       .getPublicUrl(path);
@@ -113,6 +135,15 @@ export const getStorageUrl = (bucket: string, path: string): string => {
     
     if (isDebugMode) {
       console.log(`Generated Supabase storage URL for ${bucket}/${path}: ${publicUrl}`);
+      
+      // Test if the URL is accessible
+      fetch(publicUrl, { method: 'HEAD' })
+        .then(response => {
+          console.log(`URL check for ${publicUrl}: ${response.status} ${response.statusText}`);
+        })
+        .catch(err => {
+          console.error(`URL check failed for ${publicUrl}:`, err);
+        });
     }
       
     return publicUrl;
@@ -166,11 +197,44 @@ export const getADCCoverUrl = (imagePath: string): string => {
     console.log(`[getADCCoverUrl] Cleaned path: ${cleanPath}`);
   }
   
-  // Get the URL from Supabase storage
-  const url = getStorageUrl('adc_covers', cleanPath);
+  // Get the URL from Supabase storage - try the requested bucket first (adc_covers)
+  let url = getStorageUrl('adc_covers', cleanPath);
+  
+  // If the user mentioned to use adc_articles_view, let's try that as a fallback
+  if (isDebugMode && !url) {
+    console.log(`[getADCCoverUrl] Trying alternative bucket: adc_articles_view`);
+    url = getStorageUrl('adc_articles_view', cleanPath);
+  }
   
   if (isDebugMode) {
     console.log(`[getADCCoverUrl] Final URL: ${url}`);
+    
+    // For debugging in preview mode, try both buckets
+    if (isPreviewMode) {
+      try {
+        supabase.storage.from('adc_covers').list('', {
+          limit: 5,
+        }).then(({ data, error }) => {
+          if (error) {
+            console.error(`[getADCCoverUrl] Error listing adc_covers bucket:`, error);
+          } else {
+            console.log(`[getADCCoverUrl] adc_covers bucket contents:`, data);
+          }
+        });
+        
+        supabase.storage.from('adc_articles_view').list('', {
+          limit: 5,
+        }).then(({ data, error }) => {
+          if (error) {
+            console.error(`[getADCCoverUrl] Error listing adc_articles_view bucket:`, error);
+          } else {
+            console.log(`[getADCCoverUrl] adc_articles_view bucket contents:`, data);
+          }
+        });
+      } catch (err) {
+        console.error(`[getADCCoverUrl] Error listing buckets:`, err);
+      }
+    }
   }
   
   return url;
