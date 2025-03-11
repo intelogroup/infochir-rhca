@@ -1,3 +1,4 @@
+
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
@@ -45,6 +46,7 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, 
   global: {
     headers: {
       'X-Client-Info': `infochir-app/${getEnvironment()}`,
+      'Access-Control-Allow-Origin': '*', // Add CORS header
       'X-Client-Mode': isDebugMode ? 'development' : 'production'
     }
   },
