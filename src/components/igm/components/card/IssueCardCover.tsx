@@ -15,7 +15,7 @@ export const IssueCardCover = ({ coverImage, title }: IssueCardCoverProps) => {
         alt={`Couverture ${title}`}
         width={120}
         height={160}
-        className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
+        className="w-full h-full object-cover object-top transition-all duration-300 group-hover:scale-105"
         fallbackText="Image non disponible"
       />
     </AspectRatio>

@@ -1,3 +1,4 @@
+
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
@@ -100,7 +101,7 @@ export const getStorageUrl = (bucket: string, path: string): string => {
   if (!path) return '';
   
   try {
-    // Simply construct a direct URL to the file, removing any complexity
+    // Simply construct a direct URL to the file
     const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`;
     
     if (isDebugMode) {
@@ -164,8 +165,13 @@ export const getADCCoverUrl = (imagePath: string): string => {
     filename = filename.split('?')[0];
   }
   
+  // Ensure it has the correct extension (jpg)
+  const filenameWithCorrectExt = filename.endsWith('.jpg') 
+    ? filename 
+    : filename.replace(/\.\w+$/, '.jpg');
+  
   // Create direct URL to atlas_covers bucket
-  const directUrl = `${SUPABASE_URL}/storage/v1/object/public/atlas_covers/${filename}`;
+  const directUrl = `${SUPABASE_URL}/storage/v1/object/public/atlas_covers/${filenameWithCorrectExt}`;
   
   if (isDebugMode) {
     console.log(`[getADCCoverUrl] Using direct URL: ${directUrl}`);

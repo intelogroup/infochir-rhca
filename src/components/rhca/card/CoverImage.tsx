@@ -25,7 +25,7 @@ export const CoverImage: React.FC<CoverImageProps> = ({
           alt={article.title}
           width={150}
           height={200}
-          className="w-auto h-auto max-w-full max-h-full object-contain"
+          className="w-auto h-auto max-w-full max-h-full object-contain object-top"
           fallbackText={article.title}
         />
       </div>

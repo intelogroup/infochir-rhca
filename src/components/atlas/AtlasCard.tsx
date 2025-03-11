@@ -91,7 +91,7 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
                 alt={chapter.title}
                 width={320}
                 height={240}
-                className="w-full h-full object-cover transition-all duration-300 group-hover:scale-105"
+                className="w-full h-full object-cover object-top transition-all duration-300 group-hover:scale-105"
                 fallbackText={chapter.title}
                 onLoad={() => setImageLoading(false)}
                 onError={() => {

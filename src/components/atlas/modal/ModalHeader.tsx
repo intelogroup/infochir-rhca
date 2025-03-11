@@ -18,7 +18,7 @@ export const ModalHeader = ({ chapter, category }: ModalHeaderProps) => {
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
   
-  // Direct URL to image from coverImage or construct one if needed
+  // Direct URL to image from coverImage
   const imageUrl = chapter.coverImage || '';
 
   // Handle image loading events
@@ -53,7 +53,7 @@ export const ModalHeader = ({ chapter, category }: ModalHeaderProps) => {
             alt={chapter.title}
             width={800}
             height={320}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-top"
             priority={true}
             fallbackText={chapter.title}
             onLoad={handleImageLoad}

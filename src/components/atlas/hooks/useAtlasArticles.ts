@@ -39,21 +39,26 @@ export const useAtlasArticles = () => {
         logger.log(`Found ${data.length} ADC articles in the articles table`);
 
         const chapters: AtlasChapter[] = data?.map(item => {
-          // Process cover image directly with fixed bucket and paths
+          // Process cover image with correct bucket
           let coverImage = '';
           
           if (item.cover_image_filename) {
             try {
               // Create direct URL to atlas_covers bucket
               const filename = item.cover_image_filename;
-              coverImage = `${SUPABASE_URL}/storage/v1/object/public/atlas_covers/${filename}`;
               
-              logger.log(`Using direct image URL: ${coverImage}`);
+              // Make sure we're using the correct file extension
+              const filenameWithCorrectExt = filename.endsWith('.jpg') 
+                ? filename 
+                : filename.replace(/\.\w+$/, '.jpg');
+                
+              coverImage = `${SUPABASE_URL}/storage/v1/object/public/atlas_covers/${filenameWithCorrectExt}`;
+              
+              logger.log(`Using direct image URL for ${item.id}: ${coverImage}`);
               
               // Add a cache buster in preview mode
               if (isPreviewMode && coverImage) {
                 coverImage = `${coverImage}?t=${Date.now()}`;
-                logger.log(`Added cache buster to URL: ${coverImage}`);
               }
             } catch (imageError) {
               logger.error(`Failed to generate image URL for ${item.cover_image_filename}`, imageError);
@@ -108,10 +113,8 @@ export const useAtlasArticles = () => {
           
           logger.warn('Returning empty array due to network/CORS/CORB error');
           
-          // If in preview mode, log additional context to help with debugging
           if (isPreviewMode) {
-            logger.warn('CORS issues are more common in preview environments. ' +
-                        'This should resolve in production deployment.');
+            logger.warn('CORS issues are more common in preview environments.');
           }
           
           return [];
@@ -122,7 +125,6 @@ export const useAtlasArticles = () => {
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 30 * 60 * 1000, // 30 minutes
-    retry: isPreviewMode ? 1 : 2, // Fewer retries in preview mode to prevent excessive CORB warnings
-    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
+    retry: isPreviewMode ? 1 : 2, // Fewer retries in preview mode
   });
 };
