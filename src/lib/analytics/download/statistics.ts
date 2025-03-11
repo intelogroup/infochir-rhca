@@ -7,7 +7,7 @@ const logger = createLogger('DownloadStatistics');
 /**
  * Interface for download statistics by document type
  */
-interface TypeStats {
+export interface TypeStats {
   total: number;
   successful: number;
   failed: number;
@@ -16,7 +16,7 @@ interface TypeStats {
 /**
  * Interface for document types statistics returned by our function
  */
-interface DocumentTypeStats {
+export interface DocumentTypeStats {
   [key: string]: number;
 }
 
