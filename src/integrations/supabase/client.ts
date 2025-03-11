@@ -1,4 +1,3 @@
-
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
@@ -144,7 +143,14 @@ export const getADCCoverUrl = (imagePath: string): string => {
   }
   
   // If the image path is already a full URL, return it as is
-  if (imagePath.startsWith('/lovable-uploads/') || imagePath.startsWith('http')) {
+  if (imagePath.startsWith('/lovable-uploads/') || 
+      imagePath.startsWith('http://') || 
+      imagePath.startsWith('https://')) {
+    return imagePath;
+  }
+  
+  // If the image path is a full Supabase URL, return it as is
+  if (imagePath.includes('/storage/v1/object/public/')) {
     return imagePath;
   }
   
@@ -165,13 +171,11 @@ export const getADCCoverUrl = (imagePath: string): string => {
     filename = filename.split('?')[0];
   }
   
-  // Ensure it has the correct extension (jpg)
-  const filenameWithCorrectExt = filename.endsWith('.jpg') 
-    ? filename 
-    : filename.replace(/\.\w+$/, '.jpg');
+  // Keep the file extension as is - no forced extension change
+  // This allows for both jpg, png and other formats
   
-  // Create direct URL to atlas_covers bucket
-  const directUrl = `${SUPABASE_URL}/storage/v1/object/public/atlas_covers/${filenameWithCorrectExt}`;
+  // Create direct URL to atlas_covers bucket (primary location)
+  const directUrl = `${SUPABASE_URL}/storage/v1/object/public/atlas_covers/${filename}`;
   
   if (isDebugMode) {
     console.log(`[getADCCoverUrl] Using direct URL: ${directUrl}`);
@@ -179,3 +183,44 @@ export const getADCCoverUrl = (imagePath: string): string => {
   
   return directUrl;
 };
+
+/**
+ * Gets the URL for an ADC or Atlas image with proper fallback handling
+ * @param filename The filename or path to the image
+ * @returns The full public URL
+ */
+export const getAtlasImageUrl = (filename: string | null | undefined): string => {
+  if (!filename) return '';
+  
+  // Try multiple storage buckets if needed
+  const buckets = ['atlas_covers', 'adc_covers', 'adc_articles_view'];
+  
+  // Start with the ADC cover URL approach
+  const primaryUrl = getADCCoverUrl(filename);
+  if (primaryUrl) return primaryUrl;
+  
+  // If that fails, try each bucket directly
+  for (const bucket of buckets) {
+    try {
+      const cleanFilename = filename
+        .replace(/^\//, '') // Remove leading slash
+        .split('/').pop() || filename; // Get just filename if path
+        
+      const url = getStorageUrl(bucket, cleanFilename);
+      
+      if (isDebugMode) {
+        console.log(`[getAtlasImageUrl] Trying ${bucket} bucket: ${url}`);
+      }
+      
+      return url;
+    } catch (error) {
+      if (isDebugMode) {
+        console.error(`[getAtlasImageUrl] Error with ${bucket} bucket:`, error);
+      }
+    }
+  }
+  
+  // Last resort, return the filename as is (might be a full URL)
+  return filename;
+};
+

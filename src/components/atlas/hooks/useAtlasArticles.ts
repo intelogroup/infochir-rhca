@@ -1,6 +1,6 @@
 
 import { useQuery } from "@tanstack/react-query";
-import { supabase, SUPABASE_URL } from "@/integrations/supabase/client";
+import { supabase, SUPABASE_URL, getADCCoverUrl } from "@/integrations/supabase/client";
 import type { AtlasChapter } from "../types";
 import { createLogger } from "@/lib/error-logger";
 
@@ -39,14 +39,14 @@ export const useAtlasArticles = () => {
         logger.log(`Found ${data.length} ADC articles in the articles table`);
 
         const chapters: AtlasChapter[] = data?.map(item => {
-          // Process cover image with correct bucket
+          // Process cover image with correct bucket and proper path handling
           let coverImage = '';
           
           if (item.cover_image_filename) {
             try {
-              // Direct URL to atlas_covers bucket
-              coverImage = `${SUPABASE_URL}/storage/v1/object/public/atlas_covers/${item.cover_image_filename}`;
-              logger.log(`Generated direct URL for ${item.id}: ${coverImage}`);
+              // Use the utility function to get the correct URL
+              coverImage = getADCCoverUrl(item.cover_image_filename);
+              logger.log(`Generated cover URL for ${item.id}: ${coverImage}`);
               
               // Add a cache buster in preview mode
               if (isPreviewMode) {

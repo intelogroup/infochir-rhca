@@ -115,4 +115,3 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
     </div>
   );
 };
-

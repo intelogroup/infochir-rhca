@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, User, Eye, Share2, Download, BookOpen, ImageOff } from "lucide-react";
 import { AtlasChapter } from "./types";
 import { toast } from "sonner";
-import { useState, memo } from "react";
+import { useState, memo, useEffect } from "react";
 import { AtlasModal } from "./AtlasModal";
 import { motion } from "framer-motion";
 import { AtlasCategory } from "./data/atlasCategories";
@@ -24,6 +24,20 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
   const [showModal, setShowModal] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
+  const [imageSrc, setImageSrc] = useState<string>(chapter.coverImage || '');
+
+  // Effect to handle image validation
+  useEffect(() => {
+    // Reset state when chapter changes
+    setImageSrc(chapter.coverImage || '');
+    setImageLoading(true);
+    setImageError(false);
+    
+    if (!chapter.coverImage) {
+      setImageError(true);
+      setImageLoading(false);
+    }
+  }, [chapter.coverImage]);
 
   const handleShare = () => {
     const shareUrl = `${window.location.origin}/adc/chapters/${chapter.id}`;
@@ -87,7 +101,7 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
               </div>
             ) : (
               <ImageOptimizer
-                src={chapter.coverImage || ''}
+                src={imageSrc}
                 alt={chapter.title}
                 width={320}
                 height={240}
@@ -95,7 +109,7 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
                 fallbackText={chapter.title}
                 onLoad={() => setImageLoading(false)}
                 onError={() => {
-                  console.error(`[AtlasCard] Image load error for ${chapter.id}`);
+                  logger.error(`[AtlasCard] Image load error for ${chapter.id}: ${imageSrc}`);
                   setImageError(true);
                   setImageLoading(false);
                 }}

@@ -1,12 +1,15 @@
 
 import { Badge } from "@/components/ui/badge";
 import { BookOpen } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { AtlasCategory } from "../data/atlasCategories";
 import { AtlasChapter } from "../types";
 import { Calendar, User, ImageOff } from "lucide-react";
 import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
+import { createLogger } from "@/lib/error-logger";
+
+const logger = createLogger('ModalHeader');
 
 interface ModalHeaderProps {
   chapter: AtlasChapter;
@@ -16,18 +19,31 @@ interface ModalHeaderProps {
 export const ModalHeader = ({ chapter, category }: ModalHeaderProps) => {
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
+  const [imageSrc, setImageSrc] = useState<string>(chapter.coverImage || '');
   
-  // Direct URL to image from coverImage
-  const imageUrl = chapter.coverImage || '';
+  // Effect to handle image validation
+  useEffect(() => {
+    // Reset state when chapter changes
+    setImageSrc(chapter.coverImage || '');
+    setIsImageLoading(true);
+    setImageError(false);
+    
+    if (!chapter.coverImage) {
+      setImageError(true);
+      setIsImageLoading(false);
+    }
+    
+    logger.log(`[ModalHeader] Image URL for chapter ${chapter.id}: ${chapter.coverImage}`);
+  }, [chapter.coverImage, chapter.id]);
 
   // Handle image loading events
   const handleImageLoad = () => {
-    console.log(`[ModalHeader] Image loaded successfully for chapter: ${chapter.id}`);
+    logger.log(`[ModalHeader] Image loaded successfully for chapter: ${chapter.id}`);
     setIsImageLoading(false);
   };
 
   const handleImageError = () => {
-    console.error(`[ModalHeader] Image failed to load for chapter: ${chapter.id}, URL: ${imageUrl}`);
+    logger.error(`[ModalHeader] Image failed to load for chapter: ${chapter.id}, URL: ${imageSrc}`);
     setImageError(true);
     setIsImageLoading(false);
   };
@@ -48,7 +64,7 @@ export const ModalHeader = ({ chapter, category }: ModalHeaderProps) => {
           </div>
         ) : (
           <ImageOptimizer
-            src={imageUrl}
+            src={imageSrc}
             alt={chapter.title}
             width={800}
             height={320}
