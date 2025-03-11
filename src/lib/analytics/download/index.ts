@@ -6,21 +6,22 @@ export { downloadPDF } from './download-file';
 export { trackDownload } from './track-downloads';
 export type { DownloadEvent } from './track-downloads';
 
-// Export storage utilities
+// Export storage utilities (updated path)
 export { 
   checkFileExists, 
   getDownloadCount, 
   getTotalDownloadCount,
   getDownloadCountByType,
   getDownloadStatistics
-} from './storage-utils';
+} from './storage';
 
-// Export statistics utilities
+// Export statistics utilities (updated path)
 export {
   getDownloadStatsByType,
   getDocumentDownloadStats,
   getDailyDownloadStats,
   getOverallDownloadStats,
-  subscribeToDownloadStats
+  subscribeToDownloadStats,
+  type TypeStats,
+  type DocumentTypeStats
 } from './statistics';
-

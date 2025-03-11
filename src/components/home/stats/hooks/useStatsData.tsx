@@ -5,7 +5,10 @@ import { defaultStats } from "../StatsData";
 import { createLogger } from "@/lib/error-logger";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { subscribeToDownloadStats, getDownloadStatistics } from "@/lib/analytics/download";
+import { 
+  subscribeToDownloadStats, 
+  getDownloadStatistics 
+} from "@/lib/analytics/download";
 
 const logger = createLogger('useStatsData');
 

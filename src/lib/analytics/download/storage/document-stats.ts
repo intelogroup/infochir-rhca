@@ -1,48 +1,18 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger } from "@/lib/error-logger";
 
-const logger = createLogger('DownloadStorage');
+const logger = createLogger('DocumentStats');
 
 /**
  * Interface for download statistics returned by our RPC function
  */
-interface DownloadStatistics {
+export interface DownloadStatistics {
   total_downloads: number;
   successful_downloads: number;
   failed_downloads: number;
   document_types_stats?: Record<string, number>;
 }
-
-/**
- * Checks if a file exists in Supabase storage
- */
-export const checkFileExists = async (bucketName: string, filePath: string): Promise<boolean> => {
-  try {
-    if (!bucketName || !filePath) {
-      logger.warn('Invalid bucket name or file path provided');
-      return false;
-    }
-    
-    const { data, error } = await supabase
-      .storage
-      .from(bucketName)
-      .list('', {
-        limit: 1,
-        offset: 0,
-        search: filePath
-      });
-      
-    if (error) {
-      logger.error('Error checking if file exists:', error);
-      return false;
-    }
-    
-    return !!data && data.length > 0 && data.some(file => file.name === filePath);
-  } catch (error) {
-    logger.error('Exception checking if file exists:', error);
-    return false;
-  }
-};
 
 /**
  * Gets the download count for a specific document
@@ -80,11 +50,11 @@ export const getDownloadCount = async (documentId: string): Promise<number> => {
 
 /**
  * Gets the total download count across all documents
- * Now using the overall_download_stats_view for more efficient queries
+ * Using overall_download_stats_view for efficient queries
  */
 export const getTotalDownloadCount = async (): Promise<number> => {
   try {
-    // Use our new view for more efficient queries
+    // Use the view for more efficient queries
     const { data, error } = await supabase
       .from('overall_download_stats_view')
       .select('total_downloads')
@@ -104,7 +74,7 @@ export const getTotalDownloadCount = async (): Promise<number> => {
 
 /**
  * Gets the download count for a specific document type
- * Now using the download_stats_view for more efficient queries
+ * Using download_stats_view for efficient queries
  */
 export const getDownloadCountByType = async (documentType: string): Promise<number> => {
   try {
@@ -113,7 +83,7 @@ export const getDownloadCountByType = async (documentType: string): Promise<numb
       return 0;
     }
     
-    // Use our new view for more efficient queries
+    // Use the view for more efficient queries
     const { data, error } = await supabase
       .from('download_stats_view')
       .select('successful_downloads')
@@ -134,8 +104,7 @@ export const getDownloadCountByType = async (documentType: string): Promise<numb
 
 /**
  * Gets complete download statistics for all document types
- * Now using overall_download_stats_view for more efficient queries
- * @returns Object with download counts for all document types
+ * Using overall_download_stats_view for efficient queries
  */
 export const getDownloadStatistics = async (): Promise<DownloadStatistics | null> => {
   try {
