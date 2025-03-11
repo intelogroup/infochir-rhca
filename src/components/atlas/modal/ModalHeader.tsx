@@ -1,12 +1,13 @@
 
 import { Badge } from "@/components/ui/badge";
 import { BookOpen } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { AtlasCategory } from "../data/atlasCategories";
 import { AtlasChapter } from "../types";
-import { Calendar, User } from "lucide-react";
+import { Calendar, User, ImageOff } from "lucide-react";
 import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
+import { getADCCoverUrl } from "@/integrations/supabase/client";
 
 interface ModalHeaderProps {
   chapter: AtlasChapter;
@@ -14,21 +15,76 @@ interface ModalHeaderProps {
 }
 
 export const ModalHeader = ({ chapter, category }: ModalHeaderProps) => {
+  const [coverUrl, setCoverUrl] = useState<string>('');
+  const [isImageLoading, setIsImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
+  
   // Use the chapter's cover image if available
-  const coverImage = chapter.coverImage || '';
+  useEffect(() => {
+    const loadCoverImage = () => {
+      setIsImageLoading(true);
+      setImageError(false);
+      
+      if (!chapter.coverImage) {
+        console.log(`[ModalHeader] No cover image for chapter: ${chapter.id}`);
+        setIsImageLoading(false);
+        setImageError(true);
+        return;
+      }
+      
+      try {
+        const url = getADCCoverUrl(chapter.coverImage);
+        console.log(`[ModalHeader] Generated cover URL for ${chapter.id}:`, url);
+        setCoverUrl(url);
+      } catch (error) {
+        console.error(`[ModalHeader] Error loading cover for ${chapter.id}:`, error);
+        setImageError(true);
+      } finally {
+        setIsImageLoading(false);
+      }
+    };
+    
+    loadCoverImage();
+  }, [chapter.id, chapter.coverImage]);
+
+  const handleImageLoad = () => {
+    console.log(`[ModalHeader] Image loaded successfully for chapter: ${chapter.id}`);
+    setIsImageLoading(false);
+  };
+
+  const handleImageError = () => {
+    console.error(`[ModalHeader] Image failed to load for chapter: ${chapter.id}`);
+    setImageError(true);
+    setIsImageLoading(false);
+  };
   
   return (
     <div className="relative">
       <div className="relative h-40 overflow-hidden">
-        <ImageOptimizer
-          src={coverImage}
-          alt={chapter.title}
-          width={800}
-          height={320}
-          className="w-full h-full object-cover"
-          priority={true}
-          fallbackText={chapter.title}
-        />
+        {isImageLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+            <div className="animate-pulse h-full w-full bg-gray-200"></div>
+          </div>
+        )}
+        
+        {imageError ? (
+          <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100">
+            <ImageOff className="h-8 w-8 text-gray-400 mb-2" />
+            <span className="text-sm text-gray-500">Image unavailable</span>
+          </div>
+        ) : (
+          <ImageOptimizer
+            src={coverUrl}
+            alt={chapter.title}
+            width={800}
+            height={320}
+            className="w-full h-full object-cover"
+            priority={true}
+            fallbackText={chapter.title}
+            onLoad={handleImageLoad}
+            onError={handleImageError}
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
       </div>
 

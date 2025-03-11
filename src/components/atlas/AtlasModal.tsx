@@ -1,5 +1,5 @@
 
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AtlasChapter } from "./types";
 import { AtlasCategory } from "./data/atlasCategories";
@@ -8,6 +8,7 @@ import { ModalHeader } from "./modal/ModalHeader";
 import { ModalContent } from "./modal/ModalContent";
 import { ModalActions } from "./modal/ModalActions";
 import { ScrollIndicator } from "./modal/ScrollIndicator";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 interface AtlasModalProps {
   chapter: AtlasChapter;
@@ -31,6 +32,10 @@ export const AtlasModal = ({ chapter, category, open, onOpenChange }: AtlasModal
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl p-0 overflow-hidden bg-white/80 backdrop-blur-xl">
+        <VisuallyHidden>
+          <DialogTitle>{chapter.title}</DialogTitle>
+        </VisuallyHidden>
+        
         <ModalHeader chapter={chapter} category={category} />
 
         <ScrollArea className="max-h-[60vh] overflow-y-auto">

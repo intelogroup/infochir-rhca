@@ -101,6 +101,10 @@ export const getStorageUrl = (bucket: string, path: string): string => {
   if (!path) return '';
   
   try {
+    if (isDebugMode) {
+      console.log(`Generating storage URL for ${bucket}/${path}`);
+    }
+    
     const { data } = supabase.storage
       .from(bucket)
       .getPublicUrl(path);
@@ -141,13 +145,33 @@ export const getFounderAvatarUrl = (imagePath: string): string => {
  * @returns The full public URL for the ADC cover image
  */
 export const getADCCoverUrl = (imagePath: string): string => {
-  if (!imagePath) return '';
+  if (!imagePath) {
+    console.log('[getADCCoverUrl] Empty image path provided');
+    return '';
+  }
   
   // If the image path is already a full URL, return it as is
   if (imagePath.startsWith('/lovable-uploads/') || imagePath.startsWith('http')) {
+    if (isDebugMode) {
+      console.log(`[getADCCoverUrl] Using direct URL: ${imagePath}`);
+    }
     return imagePath;
   }
   
-  // Otherwise, get the URL from Supabase storage
-  return getStorageUrl('adc_covers', imagePath.replace('/adc_covers/', ''));
+  // Handle paths with or without bucket prefix
+  const cleanPath = imagePath.replace('/adc_covers/', '').replace('adc_covers/', '');
+  
+  if (isDebugMode) {
+    console.log(`[getADCCoverUrl] Processing image path: ${imagePath}`);
+    console.log(`[getADCCoverUrl] Cleaned path: ${cleanPath}`);
+  }
+  
+  // Get the URL from Supabase storage
+  const url = getStorageUrl('adc_covers', cleanPath);
+  
+  if (isDebugMode) {
+    console.log(`[getADCCoverUrl] Final URL: ${url}`);
+  }
+  
+  return url;
 };
