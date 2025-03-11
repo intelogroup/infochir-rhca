@@ -26,7 +26,7 @@ interface DocumentTypeStats {
 export const getDownloadStatsByType = async (): Promise<Record<string, TypeStats> | null> => {
   try {
     const { data, error } = await supabase
-      .from('download_stats_monitoring')
+      .from('download_stats_view')
       .select('*');
       
     if (error) {
@@ -38,19 +38,13 @@ export const getDownloadStatsByType = async (): Promise<Record<string, TypeStats
     const statsByType: Record<string, TypeStats> = {};
     
     data.forEach(stat => {
-      const { document_type, status, count } = stat;
+      const { document_type, successful_downloads, failed_downloads, total_downloads } = stat;
       
-      if (!statsByType[document_type]) {
-        statsByType[document_type] = { total: 0, successful: 0, failed: 0 };
-      }
-      
-      statsByType[document_type].total += Number(count);
-      
-      if (status === 'success') {
-        statsByType[document_type].successful += Number(count);
-      } else if (status === 'failed') {
-        statsByType[document_type].failed += Number(count);
-      }
+      statsByType[document_type] = { 
+        total: Number(total_downloads), 
+        successful: Number(successful_downloads), 
+        failed: Number(failed_downloads) 
+      };
     });
     
     return statsByType;
@@ -102,38 +96,34 @@ export const getDailyDownloadStats = async (daysBack = 7) => {
 
 /**
  * Get all download statistics aggregated with document type breakdown
+ * Now using the overall_download_stats_view for more efficient queries
  */
 export const getOverallDownloadStats = async () => {
   try {
     const { data, error } = await supabase
-      .rpc('get_download_statistics');
+      .from('overall_download_stats_view')
+      .select('*')
+      .single();
       
     if (error) {
       logger.error('Error fetching overall download stats:', error);
       return null;
     }
     
-    // Since the function returns an array with one object, extract the first item
-    if (data && Array.isArray(data) && data.length > 0) {
-      const stats = data[0];
-      
-      // Convert document_types from jsonb to a proper TypeScript object
-      if (stats && stats.document_types) {
+    // Process document_types if needed
+    if (data && data.document_types_stats) {
+      // If document_types_stats is a string (JSON), parse it
+      if (typeof data.document_types_stats === 'string') {
         try {
-          // If data.document_types is already an object, it doesn't need parsing
-          if (typeof stats.document_types === 'string') {
-            stats.document_types = JSON.parse(stats.document_types);
-          }
+          data.document_types_stats = JSON.parse(data.document_types_stats);
         } catch (e) {
-          logger.error('Error parsing document_types:', e);
-          stats.document_types = {};
+          logger.error('Error parsing document_types_stats:', e);
+          data.document_types_stats = {};
         }
       }
-      
-      return stats;
     }
     
-    return null;
+    return data;
   } catch (error) {
     logger.error('Exception in getOverallDownloadStats:', error);
     return null;

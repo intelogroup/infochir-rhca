@@ -874,6 +874,16 @@ export type Database = {
         }
         Relationships: []
       }
+      download_stats_view: {
+        Row: {
+          document_type: string | null
+          failed_downloads: number | null
+          latest_download_time: string | null
+          successful_downloads: number | null
+          total_downloads: number | null
+        }
+        Relationships: []
+      }
       founders_view: {
         Row: {
           achievements: string[] | null
@@ -1106,6 +1116,15 @@ export type Database = {
           shares: number | null
           title: string | null
           volume: string | null
+        }
+        Relationships: []
+      }
+      overall_download_stats_view: {
+        Row: {
+          document_types_stats: Json | null
+          failed_downloads: number | null
+          successful_downloads: number | null
+          total_downloads: number | null
         }
         Relationships: []
       }

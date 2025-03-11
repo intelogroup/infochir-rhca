@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger } from "@/lib/error-logger";
 
@@ -11,7 +10,7 @@ interface DownloadStatistics {
   total_downloads: number;
   successful_downloads: number;
   failed_downloads: number;
-  document_types?: Record<string, number>;
+  document_types_stats?: Record<string, number>;
 }
 
 /**
@@ -81,38 +80,22 @@ export const getDownloadCount = async (documentId: string): Promise<number> => {
 
 /**
  * Gets the total download count across all documents
+ * Now using the overall_download_stats_view for more efficient queries
  */
 export const getTotalDownloadCount = async (): Promise<number> => {
   try {
-    // Use our new RPC function that handles all type conversion internally
+    // Use our new view for more efficient queries
     const { data, error } = await supabase
-      .rpc('get_download_statistics');
+      .from('overall_download_stats_view')
+      .select('total_downloads')
+      .single();
       
     if (error) {
       logger.error('Error getting total download count:', error);
       return 0;
     }
     
-    if (data && Array.isArray(data) && data.length > 0) {
-      // The function returns an array with a single row
-      return Number(data[0]?.total_downloads) || 0;
-    }
-    
-    logger.warn('Total download count returned null/undefined from RPC');
-    
-    // Fallback: Query download_stats_monitoring directly
-    const { data: statsData, error: statsError } = await supabase
-      .from('download_stats_monitoring')
-      .select('count')
-      .eq('status', 'success');
-      
-    if (statsError) {
-      logger.error('Error querying download_stats_monitoring:', statsError);
-      return 0;
-    }
-    
-    const totalDownloads = statsData?.reduce((sum, stat) => sum + (Number(stat.count) || 0), 0) || 0;
-    return totalDownloads;
+    return Number(data?.total_downloads) || 0;
   } catch (error) {
     logger.error('Exception getting total download count:', error);
     return 0;
@@ -121,6 +104,7 @@ export const getTotalDownloadCount = async (): Promise<number> => {
 
 /**
  * Gets the download count for a specific document type
+ * Now using the download_stats_view for more efficient queries
  */
 export const getDownloadCountByType = async (documentType: string): Promise<number> => {
   try {
@@ -129,32 +113,19 @@ export const getDownloadCountByType = async (documentType: string): Promise<numb
       return 0;
     }
     
-    // Use our new function with document types breakdown
+    // Use our new view for more efficient queries
     const { data, error } = await supabase
-      .rpc('get_download_statistics');
+      .from('download_stats_view')
+      .select('successful_downloads')
+      .eq('document_type', documentType)
+      .single();
       
     if (error) {
-      logger.error('Error getting download statistics:', error);
+      logger.error('Error getting download count by type:', error);
       return 0;
     }
     
-    if (data && Array.isArray(data) && data.length > 0 && data[0].document_types) {
-      // Get the document_types from the first item in the array
-      let docTypes = data[0].document_types;
-      if (typeof docTypes === 'string') {
-        try {
-          docTypes = JSON.parse(docTypes);
-        } catch (e) {
-          logger.error('Error parsing document_types:', e);
-          return 0;
-        }
-      }
-      
-      return (docTypes as Record<string, number>)[documentType] || 0;
-    }
-    
-    logger.warn(`No download data found for document type: ${documentType}`);
-    return 0;
+    return Number(data?.successful_downloads) || 0;
   } catch (error) {
     logger.error('Exception getting download count by type:', error);
     return 0;
@@ -163,46 +134,41 @@ export const getDownloadCountByType = async (documentType: string): Promise<numb
 
 /**
  * Gets complete download statistics for all document types
+ * Now using overall_download_stats_view for more efficient queries
  * @returns Object with download counts for all document types
  */
 export const getDownloadStatistics = async (): Promise<DownloadStatistics | null> => {
   try {
     const { data, error } = await supabase
-      .rpc('get_download_statistics');
+      .from('overall_download_stats_view')
+      .select('*')
+      .single();
       
     if (error) {
       logger.error('Error getting download statistics:', error);
       return null;
     }
     
-    // Since the function returns an array with one object, extract the first item
-    if (data && Array.isArray(data) && data.length > 0) {
-      const stats = data[0];
-      
-      // Process document_types if needed
-      if (stats && stats.document_types) {
-        // If document_types is a string (JSON), parse it
-        if (typeof stats.document_types === 'string') {
-          try {
-            stats.document_types = JSON.parse(stats.document_types);
-          } catch (e) {
-            logger.error('Error parsing document_types:', e);
-            stats.document_types = {};
-          }
+    // Process document_types_stats if needed
+    if (data && data.document_types_stats) {
+      // If document_types_stats is a string (JSON), parse it
+      if (typeof data.document_types_stats === 'string') {
+        try {
+          data.document_types_stats = JSON.parse(data.document_types_stats);
+        } catch (e) {
+          logger.error('Error parsing document_types_stats:', e);
+          data.document_types_stats = {};
         }
       }
-      
-      // Return the first (and only) item from the array
-      return {
-        total_downloads: Number(stats.total_downloads) || 0,
-        successful_downloads: Number(stats.successful_downloads) || 0,
-        failed_downloads: Number(stats.failed_downloads) || 0,
-        document_types: stats.document_types as Record<string, number>
-      };
     }
     
-    logger.warn('No download statistics returned from database');
-    return null;
+    // Return the processed statistics
+    return {
+      total_downloads: Number(data.total_downloads) || 0,
+      successful_downloads: Number(data.successful_downloads) || 0,
+      failed_downloads: Number(data.failed_downloads) || 0,
+      document_types_stats: data.document_types_stats as Record<string, number>
+    };
   } catch (error) {
     logger.error('Exception getting download statistics:', error);
     return null;

@@ -57,11 +57,12 @@ export const useStatsData = () => {
           throw membersError;
         }
         
-        // Get download statistics using our improved function
+        // Get download statistics using our optimized function
+        // This now uses the overall_download_stats_view
         const downloadStats = await getDownloadStatistics();
         logger.log('Download stats fetched:', downloadStats);
         
-        // Safely extract download count with fallback to 0
+        // Extract total downloads with fallback to 0
         const totalDownloads = downloadStats?.total_downloads || 0;
         logger.log('Total downloads:', totalDownloads);
         
@@ -77,7 +78,7 @@ export const useStatsData = () => {
         const totalViews = articles?.reduce((sum, article) => sum + (article.views || 0), 0) || 0;
         stats[2].value = totalViews.toString() || "0";
         
-        // Update Downloads count - ensure we convert to string using a safe approach
+        // Update Downloads count from our new view
         stats[3].value = String(totalDownloads);
 
         logger.log('Processed stats:', stats);
