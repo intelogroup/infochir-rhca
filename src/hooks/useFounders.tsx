@@ -91,10 +91,11 @@ export const useFounders = () => {
         logger.info('Starting founders data fetch...');
         setLoading(true);
         
-        // Using the new founders_view which is already ordered
+        // Using the new founders_view which is already ordered by display_order
         const { data: foundersData, error: foundersError } = await supabase
           .from('founders_view')
-          .select('*');
+          .select('*')
+          .order('display_order', { ascending: true });
           
         if (foundersError) {
           const errorMessage = typeof foundersError.message === 'string' 
