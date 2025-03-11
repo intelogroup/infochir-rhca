@@ -44,7 +44,7 @@ export const ImageOptimizer = ({
         width={width}
         height={height}
         className={className}
-        fallbackText={fallbackText}
+        fallbackText={fallbackText || "Image non disponible"}
       />
     );
   }
@@ -57,6 +57,7 @@ export const ImageOptimizer = ({
 
   // Handle load error
   const handleError = () => {
+    console.error(`[ImageOptimizer] Failed to load image: ${src}`);
     setError(true);
     if (onError) onError();
   };
@@ -69,7 +70,7 @@ export const ImageOptimizer = ({
         width={width}
         height={height}
         className={className}
-        fallbackText={fallbackText}
+        fallbackText={fallbackText || "Image non disponible"}
       />
     );
   }

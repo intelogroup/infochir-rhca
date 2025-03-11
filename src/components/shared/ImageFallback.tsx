@@ -18,14 +18,14 @@ export const ImageFallback: React.FC<ImageFallbackProps> = ({
   fallbackText
 }) => (
   <div 
-    className={`${className} flex items-center justify-center bg-emerald-50/50 border border-emerald-100/50 rounded-lg`}
-    style={{ width, height }}
+    className={`${className} flex items-center justify-center bg-gray-100 border border-gray-200 rounded-lg`}
+    style={{ width, height, minHeight: '100px' }}
     role="img"
     aria-label={alt}
   >
-    <div className="flex flex-col items-center text-emerald-600/50">
-      <FileText className="h-8 w-8 mb-2" />
-      <span className="text-sm font-medium">{fallbackText || "Image non disponible"}</span>
+    <div className="flex flex-col items-center text-gray-500">
+      <FileText className="h-8 w-8 mb-2 text-gray-400" />
+      <span className="text-sm font-medium px-2 text-center">{fallbackText || "Image non disponible"}</span>
     </div>
   </div>
 );

@@ -1,13 +1,12 @@
 
 import { Badge } from "@/components/ui/badge";
 import { BookOpen } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { AtlasCategory } from "../data/atlasCategories";
 import { AtlasChapter } from "../types";
 import { Calendar, User, ImageOff } from "lucide-react";
 import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
-import { SUPABASE_URL } from "@/integrations/supabase/client";
 
 interface ModalHeaderProps {
   chapter: AtlasChapter;
@@ -28,7 +27,7 @@ export const ModalHeader = ({ chapter, category }: ModalHeaderProps) => {
   };
 
   const handleImageError = () => {
-    console.error(`[ModalHeader] Image failed to load for chapter: ${chapter.id}`);
+    console.error(`[ModalHeader] Image failed to load for chapter: ${chapter.id}, URL: ${imageUrl}`);
     setImageError(true);
     setIsImageLoading(false);
   };

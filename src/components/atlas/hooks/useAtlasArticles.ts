@@ -44,25 +44,16 @@ export const useAtlasArticles = () => {
           
           if (item.cover_image_filename) {
             try {
-              // Create direct URL to atlas_covers bucket
-              const filename = item.cover_image_filename;
-              
-              // Make sure we're using the correct file extension
-              const filenameWithCorrectExt = filename.endsWith('.jpg') 
-                ? filename 
-                : filename.replace(/\.\w+$/, '.jpg');
-                
-              coverImage = `${SUPABASE_URL}/storage/v1/object/public/atlas_covers/${filenameWithCorrectExt}`;
-              
-              logger.log(`Using direct image URL for ${item.id}: ${coverImage}`);
+              // Direct URL to atlas_covers bucket
+              coverImage = `${SUPABASE_URL}/storage/v1/object/public/atlas_covers/${item.cover_image_filename}`;
+              logger.log(`Generated direct URL for ${item.id}: ${coverImage}`);
               
               // Add a cache buster in preview mode
-              if (isPreviewMode && coverImage) {
+              if (isPreviewMode) {
                 coverImage = `${coverImage}?t=${Date.now()}`;
               }
             } catch (imageError) {
               logger.error(`Failed to generate image URL for ${item.cover_image_filename}`, imageError);
-              coverImage = item.image_url || '';
             }
           } else if (item.image_url) {
             coverImage = item.image_url;
