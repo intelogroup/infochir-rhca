@@ -1,6 +1,6 @@
 
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, getADCCoverUrl } from "@/integrations/supabase/client";
 import { highlights } from "@/components/home/carousel/carouselData";
 import { CarouselItem } from "./types";
 import { createLogger } from "@/lib/error-logger";
@@ -42,15 +42,30 @@ export const useCarouselData = () => {
       
       logger.debug(`Found ${latestArticles.length} latest articles from specified sources`);
 
-      return latestArticles.map(article => ({
-        title: article.title,
-        description: article.abstract,
-        image: article.image_url || 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&auto=format&fit=crop&q=80',
-        date: new Date(article.publication_date).toLocaleDateString('fr-FR'),
-        category: article.source,
-        author: article.authors ? article.authors.join(', ') : undefined,
-        link: `/articles/${article.id}`,
-      })) as CarouselItem[];
+      return latestArticles.map(article => {
+        // Generate the proper image URL based on source
+        let imageUrl = article.image_url || 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&auto=format&fit=crop&q=80';
+        
+        // Generate proper cover image URL for ADC articles
+        if (article.source === 'ADC' && article.cover_image_filename) {
+          try {
+            imageUrl = getADCCoverUrl(article.cover_image_filename);
+            logger.debug(`Generated ADC cover URL for carousel: ${imageUrl}`);
+          } catch (imageError) {
+            logger.error(`Failed to generate ADC image URL for carousel: ${article.cover_image_filename}`, imageError);
+          }
+        }
+        
+        return {
+          title: article.title,
+          description: article.abstract,
+          image: imageUrl,
+          date: new Date(article.publication_date).toLocaleDateString('fr-FR'),
+          category: article.source,
+          author: article.authors ? (Array.isArray(article.authors) ? article.authors.join(', ') : article.authors) : undefined,
+          link: `/articles/${article.id}`,
+        };
+      }) as CarouselItem[];
     },
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,

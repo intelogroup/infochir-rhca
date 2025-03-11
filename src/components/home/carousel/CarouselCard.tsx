@@ -3,6 +3,11 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { CarouselItem } from "./types";
+import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
+import { useState } from "react";
+import { createLogger } from "@/lib/error-logger";
+
+const logger = createLogger('CarouselCard');
 
 interface CarouselCardProps {
   highlight: CarouselItem;
@@ -10,6 +15,8 @@ interface CarouselCardProps {
 }
 
 export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
+  const [imageError, setImageError] = useState(false);
+  
   const getCategoryColor = (category?: string) => {
     if (!category) return "bg-gray-500";
     
@@ -24,6 +31,11 @@ export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
     return categories[category] || "bg-gray-500";
   };
 
+  const handleImageError = () => {
+    logger.error(`Image failed to load for highlight: ${highlight.title}, URL: ${highlight.image}`);
+    setImageError(true);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -31,11 +43,24 @@ export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
       transition={{ duration: 0.5, delay: index * 0.1 }}
       className="bg-white h-full rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col border border-gray-100 cursor-pointer"
     >
-      <div 
-        className="h-[30%] bg-cover bg-top" 
-        style={{ backgroundImage: `url(${highlight.image})` }}
-      >
-        <div className="p-4 flex justify-between">
+      <div className="h-[30%] relative overflow-hidden">
+        {imageError ? (
+          <div className="w-full h-full bg-gray-100 flex flex-col items-center justify-center">
+            <span className="text-sm text-gray-500">Image non disponible</span>
+          </div>
+        ) : (
+          <ImageOptimizer
+            src={highlight.image}
+            alt={highlight.title}
+            width={400}
+            height={200}
+            className="w-full h-full object-cover object-top"
+            fallbackText={highlight.title}
+            onError={handleImageError}
+          />
+        )}
+        
+        <div className="absolute top-0 left-0 right-0 p-4 flex justify-between z-10">
           {highlight.category && (
             <span className={cn("text-xs font-semibold px-2 py-1 rounded-full text-white", getCategoryColor(highlight.category))}>
               {highlight.category}
