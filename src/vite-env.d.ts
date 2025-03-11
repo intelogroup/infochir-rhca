@@ -33,3 +33,7 @@ declare module "@/components/igm/components/IssuesGridContent" {
   export const IssuesGridContent: React.FC<any>;
 }
 
+// Add window interface augmentation for heroImagesPreloaded
+interface Window {
+  heroImagesPreloaded?: boolean;
+}

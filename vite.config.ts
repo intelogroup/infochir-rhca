@@ -20,8 +20,8 @@ export default defineConfig(({ mode }) => ({
     react({
       // Optimize React plugin
       jsxImportSource: undefined,
-      tsDecorators: false,
-      fastRefresh: true
+      tsDecorators: false
+      // Removed invalid 'fastRefresh' option
     }),
     mode === 'development' && componentTagger(),
   ].filter(Boolean),

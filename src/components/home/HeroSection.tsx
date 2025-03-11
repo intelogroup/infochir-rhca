@@ -1,4 +1,3 @@
-
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState, useRef } from "react";
@@ -17,6 +16,8 @@ const gradients = [
   'from-[#0C4A6E] via-[#307045] to-[#307045]'
 ];
 
+let imagesPreloaded = false;
+
 export const HeroSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [cycleCount, setCycleCount] = useState(0);
@@ -28,7 +29,6 @@ export const HeroSection = () => {
   const startImageCycle = () => {
     if (cycleCount >= 3) return;
     
-    // Increase interval time from 6000ms to 8000ms to reduce CPU usage
     intervalRef.current = setInterval(() => {
       setCurrentIndex((prev) => {
         const nextIndex = (prev + 1) % images.length;
@@ -41,10 +41,8 @@ export const HeroSection = () => {
   };
 
   useEffect(() => {
-    // Use a more efficient intersection observer with higher threshold
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // Only update state if visibility has changed
         if (isVisible !== entry.isIntersecting) {
           setIsVisible(entry.isIntersecting);
           
@@ -82,14 +80,10 @@ export const HeroSection = () => {
     }
   }, [cycleCount]);
 
-  // Preload hero images
   useEffect(() => {
-    // Only preload in production or if not already preloaded
-    if (typeof window !== 'undefined' && !window.heroImagesPreloaded) {
-      // Mark as preloaded to avoid duplicate work
-      window.heroImagesPreloaded = true;
+    if (typeof window !== 'undefined' && !imagesPreloaded) {
+      imagesPreloaded = true;
       
-      // Preload images after a short delay to not block critical rendering
       const timer = setTimeout(() => {
         images.forEach((src) => {
           const img = new Image();
@@ -103,10 +97,8 @@ export const HeroSection = () => {
 
   return (
     <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(70vh-4rem)] sm:min-h-[calc(80vh-4rem-30px)] pt-16 sm:pt-20 md:pt-28 z-0 content-visibility-auto">
-      {/* Base gradient background layer - simplified for performance */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#348d57] to-[#348d57] opacity-90 z-0"></div>
       
-      {/* Animated product image layer - optimized with will-change */}
       <AnimatePresence mode="wait">
         <div
           key={currentIndex}
@@ -135,7 +127,6 @@ export const HeroSection = () => {
         </div>
       </AnimatePresence>
       
-      {/* Surgical background pattern - using a simpler pattern for performance */}
       <div 
         className="absolute inset-0 z-3 pointer-events-none"
         style={{ 
@@ -147,7 +138,6 @@ export const HeroSection = () => {
         }}
       ></div>
       
-      {/* Content layer */}
       <div className="relative max-w-7xl mx-auto text-left z-10">
         <div className="max-w-xl lg:max-w-3xl">
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 animate-fade-up tracking-tight md:whitespace-nowrap whitespace-normal">
