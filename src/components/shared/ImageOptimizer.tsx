@@ -1,6 +1,5 @@
 
 import { useState, useEffect } from 'react';
-import Image from 'react-native-fast-image';
 import { ImageFallback } from './ImageFallback';
 
 interface ImageOptimizerProps {
@@ -75,7 +74,7 @@ export const ImageOptimizer = ({
     );
   }
 
-  // Note: For web we use the img tag, React Native Fast Image is not used in web
+  // Return standard img tag for web environments
   return (
     <img
       src={src}
