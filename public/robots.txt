@@ -1,3 +1,10 @@
 
+# Allow crawling of all content
 User-agent: *
-Disallow: /
+Allow: /
+
+# Sitemap location
+Sitemap: https://info-chir.org/sitemap.xml
+
+# Optimize crawl rate
+Crawl-delay: 10

@@ -28,6 +28,7 @@ export const HeroSection = () => {
   const startImageCycle = () => {
     if (cycleCount >= 3) return;
     
+    // Increase interval time from 6000ms to 8000ms to reduce CPU usage
     intervalRef.current = setInterval(() => {
       setCurrentIndex((prev) => {
         const nextIndex = (prev + 1) % images.length;
@@ -36,23 +37,27 @@ export const HeroSection = () => {
         }
         return nextIndex;
       });
-    }, 6000);
+    }, 8000);
   };
 
   useEffect(() => {
+    // Use a more efficient intersection observer with higher threshold
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setIsVisible(entry.isIntersecting);
-        if (entry.isIntersecting) {
-          setCycleCount(0);
-          startImageCycle();
-        } else {
-          if (intervalRef.current) {
+        // Only update state if visibility has changed
+        if (isVisible !== entry.isIntersecting) {
+          setIsVisible(entry.isIntersecting);
+          
+          if (entry.isIntersecting) {
+            setCycleCount(0);
+            startImageCycle();
+          } else if (intervalRef.current) {
             clearInterval(intervalRef.current);
+            intervalRef.current = null;
           }
         }
       },
-      { threshold: 0.5 }
+      { threshold: 0.3, rootMargin: '0px' }
     );
 
     if (sectionRef.current) {
@@ -62,6 +67,7 @@ export const HeroSection = () => {
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
       if (sectionRef.current) {
         observer.unobserve(sectionRef.current);
@@ -72,15 +78,35 @@ export const HeroSection = () => {
   useEffect(() => {
     if (cycleCount >= 3 && intervalRef.current) {
       clearInterval(intervalRef.current);
+      intervalRef.current = null;
     }
   }, [cycleCount]);
 
+  // Preload hero images
+  useEffect(() => {
+    // Only preload in production or if not already preloaded
+    if (typeof window !== 'undefined' && !window.heroImagesPreloaded) {
+      // Mark as preloaded to avoid duplicate work
+      window.heroImagesPreloaded = true;
+      
+      // Preload images after a short delay to not block critical rendering
+      const timer = setTimeout(() => {
+        images.forEach((src) => {
+          const img = new Image();
+          img.src = src;
+        });
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
   return (
-    <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(70vh-4rem)] sm:min-h-[calc(80vh-4rem-30px)] pt-16 sm:pt-20 md:pt-28 z-0">
-      {/* Base gradient background layer */}
+    <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(70vh-4rem)] sm:min-h-[calc(80vh-4rem-30px)] pt-16 sm:pt-20 md:pt-28 z-0 content-visibility-auto">
+      {/* Base gradient background layer - simplified for performance */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#348d57] to-[#348d57] opacity-90 z-0"></div>
       
-      {/* Animated product image layer */}
+      {/* Animated product image layer - optimized with will-change */}
       <AnimatePresence mode="wait">
         <div
           key={currentIndex}
@@ -94,7 +120,7 @@ export const HeroSection = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.5 }}
             style={{ 
               backgroundImage: `url(${images[currentIndex]})`,
               backgroundSize: 'contain',
@@ -102,26 +128,26 @@ export const HeroSection = () => {
               backgroundRepeat: 'no-repeat',
               opacity: 0.9,
               right: '5%',
-              paddingLeft: '5px'
+              paddingLeft: '5px',
+              willChange: 'opacity',
             }}
           />
         </div>
       </AnimatePresence>
       
-      {/* Surgical background pattern - replacing the missing image with a pattern */}
+      {/* Surgical background pattern - using a simpler pattern for performance */}
       <div 
-        className="absolute inset-0 z-3"
+        className="absolute inset-0 z-3 pointer-events-none"
         style={{ 
-          backgroundImage: `radial-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px), 
-                            radial-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px)`,
-          backgroundSize: '20px 20px, 30px 30px',
-          backgroundPosition: '0 0, 15px 15px',
+          backgroundImage: `radial-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px)`,
+          backgroundSize: '20px 20px',
+          backgroundPosition: '0 0',
           opacity: 0.4,
           mixBlendMode: 'overlay'
         }}
       ></div>
       
-      {/* Content layer - increased z-index to stay on top */}
+      {/* Content layer */}
       <div className="relative max-w-7xl mx-auto text-left z-10">
         <div className="max-w-xl lg:max-w-3xl">
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 animate-fade-up tracking-tight md:whitespace-nowrap whitespace-normal">

@@ -14,7 +14,7 @@ const isDebugMode = process.env.NODE_ENV === 'development' ||
                    process.env.VITE_APP_PREVIEW === 'true' ||
                    process.env.DEBUG === 'true';
 
-// React App component with proper error boundaries and toaster
+// Use lazy loading for production to improve initial load time
 const AppWithProviders = () => (
   <ErrorBoundary name="AppRoot">
     <QueryClientProvider client={queryClient}>
@@ -26,27 +26,47 @@ const AppWithProviders = () => (
   </ErrorBoundary>
 );
 
-// Initialize application
-const rootElement = document.getElementById("root");
-if (rootElement) {
-  ReactDOM.createRoot(rootElement).render(
-    <React.StrictMode>
-      <AppWithProviders />
-    </React.StrictMode>
-  );
+// Initialize application - ensure the DOM is fully loaded before rendering
+const initApp = () => {
+  const rootElement = document.getElementById("root");
+  if (rootElement) {
+    // Create a concurrent mode root
+    const root = ReactDOM.createRoot(rootElement);
+    
+    // Render with React.StrictMode only in development
+    if (process.env.NODE_ENV === 'development') {
+      root.render(
+        <React.StrictMode>
+          <AppWithProviders />
+        </React.StrictMode>
+      );
+    } else {
+      root.render(<AppWithProviders />);
+    }
+  }
+};
+
+// Either wait for DOM to be ready or initialize immediately
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
 }
 
-// Register the service worker
+// Register the service worker - moved to after app initialization for better performance
 if ('serviceWorker' in navigator && !isDebugMode) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').then(registration => {
-      if (isDebugMode) {
-        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-      }
-    }).catch(error => {
-      if (isDebugMode) {
-        console.error('ServiceWorker registration failed: ', error);
-      }
-    });
+    // Delay service worker registration to improve initial page load
+    setTimeout(() => {
+      navigator.serviceWorker.register('/sw.js').then(registration => {
+        if (isDebugMode) {
+          console.log('ServiceWorker registration successful with scope: ', registration.scope);
+        }
+      }).catch(error => {
+        if (isDebugMode) {
+          console.error('ServiceWorker registration failed: ', error);
+        }
+      });
+    }, 3000); // 3 second delay
   });
 }

@@ -36,7 +36,7 @@ export const ImageOptimizer = ({
   priority = false,
   crossOrigin = "anonymous"
 }: ImageOptimizerProps) => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!priority); // Don't show loading state for priority images
   const [hasError, setHasError] = useState(false);
   
   // Optimize the src URL if dimensions are provided
@@ -66,6 +66,12 @@ export const ImageOptimizer = ({
         url.searchParams.append('h', height.toString());
       }
       
+      // Quality parameter for jpg/jpeg/png files
+      if ((src.includes('.jpg') || src.includes('.jpeg') || src.includes('.png')) && 
+          !url.searchParams.has('q') && !url.searchParams.has('quality')) {
+        url.searchParams.append('q', '80'); // 80% quality is a good balance
+      }
+      
       // For Supabase storage URLs in preview mode, attempt to add a timestamp to bust cache
       if (isPreviewMode && isSupabaseUrl) {
         url.searchParams.append('t', Date.now().toString());
@@ -85,7 +91,10 @@ export const ImageOptimizer = ({
       return;
     }
     
-    setIsLoading(true);
+    // Skip loading state for priority images or images already in browser cache
+    if (!priority) {
+      setIsLoading(true);
+    }
     setHasError(false);
     
     // For priority images, preload immediately
@@ -102,11 +111,13 @@ export const ImageOptimizer = ({
       
       // Clean up preload link
       return () => {
-        document.head.removeChild(link);
+        if (document.head.contains(link)) {
+          document.head.removeChild(link);
+        }
       };
     }
     
-    // Otherwise load normally
+    // For non-priority images, load normally
     const img = new Image();
     img.src = optimizedSrc;
     
@@ -162,6 +173,7 @@ export const ImageOptimizer = ({
       height={height}
       loading={priority ? "eager" : "lazy"}
       decoding={priority ? "sync" : "async"}
+      fetchPriority={priority ? "high" : "auto"}
       crossOrigin={
         // Add crossOrigin attribute for CORS images
         (optimizedSrc.includes('supabase.co') || !optimizedSrc.includes(window.location.hostname)) 

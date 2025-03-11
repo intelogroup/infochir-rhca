@@ -17,7 +17,12 @@ const isProduction = process.env.NODE_ENV === 'production' && !isPreview;
 
 export default defineConfig(({ mode }) => ({
   plugins: [
-    react(),
+    react({
+      // Optimize React plugin
+      jsxImportSource: undefined,
+      tsDecorators: false,
+      fastRefresh: true
+    }),
     mode === 'development' && componentTagger(),
   ].filter(Boolean),
   resolve: {
@@ -35,7 +40,10 @@ export default defineConfig(({ mode }) => ({
       '@tanstack/react-query',
       'sonner',
       '@stripe/stripe-js'
-    ]
+    ],
+    esbuildOptions: {
+      target: 'es2020', // Modern target for better tree-shaking
+    }
   },
   define: {
     'import.meta.env.MODE': JSON.stringify(mode),
@@ -44,7 +52,9 @@ export default defineConfig(({ mode }) => ({
     'import.meta.env.DEBUG': JSON.stringify(!isProduction || isPreview ? 'true' : undefined),
   },
   build: {
-    target: ['es2015', 'edge88', 'firefox78', 'chrome87', 'safari13'],
+    target: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari13'],
+    cssCodeSplit: true, // Split CSS for better caching
+    reportCompressedSize: false, // Disable for faster builds
     rollupOptions: {
       output: {
         manualChunks: {
@@ -52,8 +62,15 @@ export default defineConfig(({ mode }) => ({
           'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-slot', '@radix-ui/react-tabs'],
           'motion-vendor': ['framer-motion'],
           'query-vendor': ['@tanstack/react-query'],
-          'stripe-vendor': ['@stripe/stripe-js']
-        }
+          'stripe-vendor': ['@stripe/stripe-js'],
+          // Additional chunks
+          'form-vendor': ['react-hook-form', 'zod'],
+          'date-vendor': ['date-fns']
+        },
+        // Optimize chunk size
+        chunkFileNames: isProduction ? 'assets/[hash].js' : 'assets/[name]-[hash].js',
+        entryFileNames: isProduction ? 'assets/[hash].js' : 'assets/[name]-[hash].js',
+        assetFileNames: isProduction ? 'assets/[hash][extname]' : 'assets/[name]-[hash][extname]',
       }
     },
     sourcemap: !isProduction || isPreview,
@@ -75,6 +92,14 @@ export default defineConfig(({ mode }) => ({
       'Cache-Control': 'no-cache, no-store, must-revalidate',
       'Cross-Origin-Opener-Policy': 'same-origin',
       'Cross-Origin-Embedder-Policy': 'require-corp'
+    }
+  },
+  preview: {
+    // Optimize preview server
+    port: 8080,
+    strictPort: true,
+    headers: {
+      'Cache-Control': 'public, max-age=600',
     }
   }
 }));
