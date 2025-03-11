@@ -41,7 +41,7 @@ const RHCAHeader: React.FC<RHCAHeaderProps> = () => {
             whileHover={{ scale: 1.05 }}
           >
             <img 
-              src="/lovable-uploads/f65134f5-3929-4504-9567-104510b21f5d.png"
+              src="/lovable-uploads/d58e1745-03a7-4274-9d8f-889b058635f6.png"
               alt="RHCA Logo"
               className="h-40 w-40 object-contain"
             />

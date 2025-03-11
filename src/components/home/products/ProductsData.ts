@@ -7,7 +7,7 @@ export const products = [
     description: "Publiez vos articles scientifiques et contribuez à l'avancement des connaissances en chirurgie",
     href: "/rhca",
     icon: BookOpen,
-    logo: "/lovable-uploads/f65134f5-3929-4504-9567-104510b21f5d.png",
+    logo: "/lovable-uploads/d58e1745-03a7-4274-9d8f-889b058635f6.png",
     fullName: "Revue Haïtienne de Chirurgie et d'Anesthésiologie"
   },
   {
