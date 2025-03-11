@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
 import { trackDownload } from "@/lib/analytics/download";
 import { createLogger } from "@/lib/error-logger";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, SUPABASE_URL } from "@/integrations/supabase/client";
 
 const logger = createLogger('AtlasCard');
 
@@ -25,78 +25,50 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
   const [showModal, setShowModal] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
-  const [checkedCoverUrl, setCheckedCoverUrl] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
 
-  // Verify and adjust the image URL if needed
+  // Process and set the image URL
   useEffect(() => {
-    const checkImageUrl = async () => {
+    const processImage = () => {
       if (!chapter.coverImage) {
+        console.log(`[AtlasCard] No cover image for chapter: ${chapter.id}`);
         setImageError(true);
         setImageLoading(false);
         return;
       }
 
       try {
-        // Extract the filename from the path
-        const fileName = chapter.coverImage.replace('/adc_covers/', '').replace('adc_covers/', '');
+        // Extract just the filename without path or query parameters
+        let filename = chapter.coverImage;
         
-        // Log the original image path for debugging
-        console.log(`[AtlasCard] Original image path for ${chapter.id}:`, chapter.coverImage);
-        console.log(`[AtlasCard] Extracted filename for ${chapter.id}:`, fileName);
-
-        // Check if the image exists in both buckets
-        const checkBucket = async (bucketName: string) => {
-          try {
-            const { data, error } = await supabase.storage.from(bucketName).list('', {
-              search: fileName
-            });
-            
-            if (error) {
-              console.error(`[AtlasCard] Error checking ${bucketName} for ${fileName}:`, error);
-              return false;
-            }
-            
-            const fileExists = data.some(item => item.name === fileName);
-            console.log(`[AtlasCard] File ${fileName} exists in ${bucketName}:`, fileExists);
-            
-            if (fileExists) {
-              const url = supabase.storage.from(bucketName).getPublicUrl(fileName).data.publicUrl;
-              console.log(`[AtlasCard] Using URL from ${bucketName} for ${chapter.id}:`, url);
-              return url;
-            }
-            
-            return null;
-          } catch (err) {
-            console.error(`[AtlasCard] Error checking ${bucketName}:`, err);
-            return null;
-          }
-        };
-
-        // Try both buckets and use the first valid URL
-        const adcCoversUrl = await checkBucket('adc_covers');
-        if (adcCoversUrl) {
-          setCheckedCoverUrl(adcCoversUrl);
-          return;
+        // Remove any bucket prefixes
+        filename = filename.replace('/adc_covers/', '')
+                          .replace('adc_covers/', '')
+                          .replace('/adc_articles_view/', '')
+                          .replace('adc_articles_view/', '');
+        
+        // Remove any query parameters
+        if (filename.includes('?')) {
+          filename = filename.split('?')[0];
         }
         
-        const adcArticlesViewUrl = await checkBucket('adc_articles_view');
-        if (adcArticlesViewUrl) {
-          setCheckedCoverUrl(adcArticlesViewUrl);
-          return;
-        }
-
-        // If we get here, the image doesn't exist in either bucket
-        console.warn(`[AtlasCard] Image not found in any bucket for ${chapter.id}`);
-        setImageError(true);
+        console.log(`[AtlasCard] Processing image for ${chapter.id}, filename: ${filename}`);
+        
+        // Create direct URLs to both buckets
+        const articlesViewUrl = `${SUPABASE_URL}/storage/v1/object/public/adc_articles_view/${filename}`;
+        
+        // Set the URL directly without checking if it exists
+        setImageUrl(articlesViewUrl);
+        setImageLoading(false);
+        
       } catch (error) {
-        console.error(`[AtlasCard] Error checking image for ${chapter.id}:`, error);
+        console.error(`[AtlasCard] Error processing image for ${chapter.id}:`, error);
         setImageError(true);
-      } finally {
         setImageLoading(false);
       }
     };
 
-    checkImageUrl();
+    processImage();
   }, [chapter.id, chapter.coverImage]);
 
   const handleShare = () => {
@@ -161,7 +133,7 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
               </div>
             ) : (
               <ImageOptimizer
-                src={checkedCoverUrl || chapter.coverImage || ''}
+                src={imageUrl || ''}
                 alt={chapter.title}
                 width={320}
                 height={240}

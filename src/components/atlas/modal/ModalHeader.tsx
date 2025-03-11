@@ -7,7 +7,7 @@ import { AtlasCategory } from "../data/atlasCategories";
 import { AtlasChapter } from "../types";
 import { Calendar, User, ImageOff } from "lucide-react";
 import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
-import { getADCCoverUrl, supabase } from "@/integrations/supabase/client";
+import { SUPABASE_URL } from "@/integrations/supabase/client";
 
 interface ModalHeaderProps {
   chapter: AtlasChapter;
@@ -19,55 +19,47 @@ export const ModalHeader = ({ chapter, category }: ModalHeaderProps) => {
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
   
-  // Use the chapter's cover image if available
+  // Process and set the image URL
   useEffect(() => {
-    const loadCoverImage = async () => {
-      setIsImageLoading(true);
-      setImageError(false);
-      
+    const processImage = () => {
       if (!chapter.coverImage) {
         console.log(`[ModalHeader] No cover image for chapter: ${chapter.id}`);
-        setIsImageLoading(false);
         setImageError(true);
+        setIsImageLoading(false);
         return;
       }
-      
+
       try {
-        // Try the normal bucket first
-        const url = getADCCoverUrl(chapter.coverImage);
-        console.log(`[ModalHeader] Generated cover URL for ${chapter.id}:`, url);
+        // Extract just the filename without path or query parameters
+        let filename = chapter.coverImage;
         
-        // Verify the URL exists by doing a HEAD request
-        try {
-          const response = await fetch(url, { method: 'HEAD' });
-          if (response.ok) {
-            console.log(`[ModalHeader] Image URL is valid for chapter ${chapter.id}`);
-            setCoverUrl(url);
-          } else {
-            console.warn(`[ModalHeader] Image URL returned ${response.status} for chapter ${chapter.id}`);
-            
-            // Try with the adc_articles_view bucket as a fallback
-            const filename = chapter.coverImage.replace('/adc_covers/', '').replace('adc_covers/', '');
-            const fallbackUrl = supabase.storage.from('adc_articles_view').getPublicUrl(filename).data.publicUrl;
-            
-            console.log(`[ModalHeader] Trying fallback URL for ${chapter.id}:`, fallbackUrl);
-            setCoverUrl(fallbackUrl);
-          }
-        } catch (fetchError) {
-          console.error(`[ModalHeader] Error checking image URL for ${chapter.id}:`, fetchError);
-          
-          // Still set the URL, image component will handle error
-          setCoverUrl(url);
+        // Remove any bucket prefixes
+        filename = filename.replace('/adc_covers/', '')
+                          .replace('adc_covers/', '')
+                          .replace('/adc_articles_view/', '')
+                          .replace('adc_articles_view/', '');
+        
+        // Remove any query parameters
+        if (filename.includes('?')) {
+          filename = filename.split('?')[0];
         }
+        
+        console.log(`[ModalHeader] Using filename for ${chapter.id}: ${filename}`);
+        
+        // Create direct URL to adc_articles_view bucket
+        const url = `${SUPABASE_URL}/storage/v1/object/public/adc_articles_view/${filename}`;
+        console.log(`[ModalHeader] Using image URL: ${url}`);
+        
+        setCoverUrl(url);
+        setIsImageLoading(false);
       } catch (error) {
-        console.error(`[ModalHeader] Error loading cover for ${chapter.id}:`, error);
+        console.error(`[ModalHeader] Error processing image for ${chapter.id}:`, error);
         setImageError(true);
-      } finally {
         setIsImageLoading(false);
       }
     };
-    
-    loadCoverImage();
+
+    processImage();
   }, [chapter.id, chapter.coverImage]);
 
   const handleImageLoad = () => {
