@@ -14,9 +14,8 @@ interface ModalHeaderProps {
 }
 
 export const ModalHeader = ({ chapter, category }: ModalHeaderProps) => {
-  const defaultCoverImage = "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=800&fit=crop";
-  // Use the chapter's cover image from Supabase if available, otherwise use default
-  const coverImage = chapter.coverImage || defaultCoverImage;
+  // Use the chapter's cover image if available
+  const coverImage = chapter.coverImage || '';
   
   return (
     <div className="relative">
@@ -28,6 +27,7 @@ export const ModalHeader = ({ chapter, category }: ModalHeaderProps) => {
           height={320}
           className="w-full h-full object-cover"
           priority={true}
+          fallbackText={chapter.title}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
       </div>

@@ -1,158 +1,44 @@
 
-import React, { useState, useEffect, useMemo } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { ImageFallback } from "./ImageFallback";
-
-// Helper to determine if we're debugging
-const isDebugMode = import.meta.env.DEV || 
-                   import.meta.env.VITE_APP_PREVIEW === 'true' || 
-                   import.meta.env.DEBUG === 'true';
-
-// Detect if we're in preview mode (for CORS handling)
-const isPreviewMode = 
-  typeof window !== 'undefined' && 
-  (window.location.hostname.includes('preview') || 
-   window.location.hostname.includes('lovable.app')) ||
-  import.meta.env.VITE_APP_PREVIEW === 'true';
+import { useState, useEffect } from 'react';
+import Image from 'react-native-fast-image';
+import { ImageFallback } from './ImageFallback';
 
 interface ImageOptimizerProps {
-  src: string | undefined;
+  src: string;
   alt: string;
+  width: number;
+  height: number;
   className?: string;
-  width?: number;
-  height?: number;
   fallbackText?: string;
   priority?: boolean;
-  crossOrigin?: "anonymous" | "use-credentials" | "";
+  loading?: 'eager' | 'lazy';
+  onLoad?: () => void;
+  onError?: () => void;
 }
 
-export const ImageOptimizer = ({ 
-  src, 
-  alt, 
-  className = "", 
-  width = 400,
-  height = 300,
+export const ImageOptimizer = ({
+  src,
+  alt,
+  width,
+  height,
+  className = "",
   fallbackText,
   priority = false,
-  crossOrigin = "anonymous"
+  loading,
+  onLoad,
+  onError
 }: ImageOptimizerProps) => {
-  const [isLoading, setIsLoading] = useState(!priority); // Don't show loading state for priority images
-  const [hasError, setHasError] = useState(false);
-  
-  // Optimize the src URL if dimensions are provided
-  const optimizedSrc = useMemo(() => {
-    if (!src) return '';
-    
-    // Don't modify if it's a data URL or SVG
-    if (src.startsWith('data:') || src.endsWith('.svg')) return src;
-    
-    // Check if it's a Supabase URL and log for debugging
-    const isSupabaseUrl = src.includes('supabase.co') || src.includes('llxzstqejdrplmxdjxlu');
-    
-    if (isDebugMode && isSupabaseUrl) {
-      console.log(`Loading Supabase image: ${src}`);
-    }
-    
-    // Add width and height for remote images when possible
-    try {
-      const url = new URL(src);
-      
-      // Only add dimensions if not already present
-      if (!url.searchParams.has('w') && !url.searchParams.has('width') && width) {
-        url.searchParams.append('w', width.toString());
-      }
-      
-      if (!url.searchParams.has('h') && !url.searchParams.has('height') && height) {
-        url.searchParams.append('h', height.toString());
-      }
-      
-      // Quality parameter for jpg/jpeg/png files
-      if ((src.includes('.jpg') || src.includes('.jpeg') || src.includes('.png')) && 
-          !url.searchParams.has('q') && !url.searchParams.has('quality')) {
-        url.searchParams.append('q', '80'); // 80% quality is a good balance
-      }
-      
-      // For Supabase storage URLs in preview mode, attempt to add a timestamp to bust cache
-      if (isPreviewMode && isSupabaseUrl) {
-        url.searchParams.append('t', Date.now().toString());
-      }
-      
-      return url.toString();
-    } catch (e) {
-      // If URL parsing fails, return the original
-      return src;
-    }
-  }, [src, width, height]);
-  
+  const [error, setError] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Reset error state when src changes
   useEffect(() => {
-    if (!optimizedSrc) {
-      setHasError(true);
-      setIsLoading(false);
-      return;
-    }
-    
-    // Skip loading state for priority images or images already in browser cache
-    if (!priority) {
-      setIsLoading(true);
-    }
-    setHasError(false);
-    
-    // For priority images, preload immediately
-    if (priority) {
-      const link = document.createElement('link');
-      link.rel = 'preload';
-      link.as = 'image';
-      link.href = optimizedSrc;
-      // Add crossOrigin attribute for CORS images
-      if (optimizedSrc.includes('supabase.co') || !optimizedSrc.includes(window.location.hostname)) {
-        link.crossOrigin = crossOrigin;
-      }
-      document.head.appendChild(link);
-      
-      // Clean up preload link
-      return () => {
-        if (document.head.contains(link)) {
-          document.head.removeChild(link);
-        }
-      };
-    }
-    
-    // For non-priority images, load normally
-    const img = new Image();
-    img.src = optimizedSrc;
-    
-    // Add crossOrigin attribute for CORS images
-    if (optimizedSrc.includes('supabase.co') || !optimizedSrc.includes(window.location.hostname)) {
-      img.crossOrigin = crossOrigin;
-    }
-    
-    img.onload = () => {
-      setIsLoading(false);
-      if (isDebugMode && (optimizedSrc.includes('supabase.co') || optimizedSrc.includes('llxzstqejdrplmxdjxlu'))) {
-        console.log(`Successfully loaded Supabase image: ${optimizedSrc}`);
-      }
-    };
-    
-    img.onerror = (e) => {
-      setHasError(true);
-      setIsLoading(false);
-      if (isDebugMode) {
-        const isSupabaseUrl = optimizedSrc.includes('supabase.co') || optimizedSrc.includes('llxzstqejdrplmxdjxlu');
-        console.error(`Failed to load image${isSupabaseUrl ? ' from Supabase' : ''}: ${optimizedSrc}`, e);
-      }
-    };
-    
-    return () => {
-      img.onload = null;
-      img.onerror = null;
-    };
-  }, [optimizedSrc, priority, crossOrigin]);
+    setError(false);
+    setIsLoaded(false);
+  }, [src]);
 
-  if (isLoading) {
-    return <Skeleton className={`${className} bg-muted`} style={{ width, height }} />;
-  }
-
-  if (hasError || !optimizedSrc) {
+  // If no src or empty string, show fallback immediately
+  if (!src || src === "") {
     return (
       <ImageFallback
         alt={alt}
@@ -164,23 +50,43 @@ export const ImageOptimizer = ({
     );
   }
 
+  // Handle successful load
+  const handleLoad = () => {
+    setIsLoaded(true);
+    if (onLoad) onLoad();
+  };
+
+  // Handle load error
+  const handleError = () => {
+    setError(true);
+    if (onError) onError();
+  };
+
+  // Show fallback on error
+  if (error) {
+    return (
+      <ImageFallback
+        alt={alt}
+        width={width}
+        height={height}
+        className={className}
+        fallbackText={fallbackText}
+      />
+    );
+  }
+
+  // Note: For web we use the img tag, React Native Fast Image is not used in web
   return (
-    <img 
-      src={optimizedSrc}
+    <img
+      src={src}
       alt={alt}
-      className={className}
       width={width}
       height={height}
-      loading={priority ? "eager" : "lazy"}
-      decoding={priority ? "sync" : "async"}
-      fetchPriority={priority ? "high" : "auto"}
-      crossOrigin={
-        // Add crossOrigin attribute for CORS images
-        (optimizedSrc.includes('supabase.co') || !optimizedSrc.includes(window.location.hostname)) 
-          ? crossOrigin 
-          : undefined
-      }
-      onError={() => setHasError(true)}
+      className={className}
+      loading={loading || (priority ? 'eager' : 'lazy')}
+      onLoad={handleLoad}
+      onError={handleError}
+      style={{ opacity: isLoaded ? 1 : 0, transition: 'opacity 0.3s' }}
     />
   );
 };

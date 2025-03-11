@@ -1,4 +1,3 @@
-
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
@@ -134,4 +133,21 @@ export const getFounderAvatarUrl = (imagePath: string): string => {
   
   // Otherwise, get the URL from Supabase storage
   return getStorageUrl('founder_avatars', imagePath.replace('/founder_avatars/', ''));
+};
+
+/**
+ * Gets the full URL for an ADC chapter cover image
+ * @param imagePath The path to the image in the adc_covers bucket
+ * @returns The full public URL for the ADC cover image
+ */
+export const getADCCoverUrl = (imagePath: string): string => {
+  if (!imagePath) return '';
+  
+  // If the image path is already a full URL, return it as is
+  if (imagePath.startsWith('/lovable-uploads/') || imagePath.startsWith('http')) {
+    return imagePath;
+  }
+  
+  // Otherwise, get the URL from Supabase storage
+  return getStorageUrl('adc_covers', imagePath.replace('/adc_covers/', ''));
 };

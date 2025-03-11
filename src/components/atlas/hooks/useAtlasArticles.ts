@@ -39,11 +39,12 @@ export const useAtlasArticles = () => {
         logger.log(`Found ${data.length} ADC articles in the articles table`);
 
         const chapters: AtlasChapter[] = data?.map(item => {
-          // Handle cover image from Supabase storage if a filename is provided
-          let coverImage = item.image_url || '';
+          // Get cover image using the new method with proper fallbacks
+          let coverImage = '';
           
           if (item.cover_image_filename) {
             try {
+              // Use the getStorageUrl function to properly get the image from 'adc_covers' bucket
               coverImage = getStorageUrl('adc_covers', item.cover_image_filename);
               logger.log(`Using cover image from storage: ${coverImage}`);
               
@@ -54,10 +55,10 @@ export const useAtlasArticles = () => {
               }
             } catch (imageError) {
               logger.error(`Failed to generate storage URL for ${item.cover_image_filename}`, imageError);
-              // Fallback to default image or external URL if available
               coverImage = item.image_url || '';
             }
           } else if (item.image_url) {
+            coverImage = item.image_url;
             logger.log(`Using external image URL: ${item.image_url}`);
           } else {
             logger.log(`No cover image found for article: ${item.id} - ${item.title}`);
