@@ -16,7 +16,7 @@ export const CarouselIndicators = ({
     <div className="flex flex-col items-center mt-4 md:hidden">
       {/* Dot indicators */}
       <div 
-        className="flex justify-center gap-2"
+        className="flex justify-center gap-1"
         role="tablist"
         aria-label="Carousel pagination"
       >
@@ -24,14 +24,22 @@ export const CarouselIndicators = ({
           <button
             key={index}
             className={cn(
-              "h-2 w-2 rounded-full transition-all duration-300",
-              currentIndex === index ? "bg-primary w-4" : "bg-primary/20"
+              "relative flex items-center justify-center p-3", // Added padding for larger hit area
+              "touch-manipulation" // Better touch behavior
             )}
             onClick={() => onSelect(index)}
             aria-label={`Go to slide ${index + 1}`}
             aria-selected={currentIndex === index}
             role="tab"
-          />
+          >
+            {/* Visual indicator inside larger tap target */}
+            <span 
+              className={cn(
+                "h-2 rounded-full transition-all duration-300 absolute",
+                currentIndex === index ? "bg-primary w-4" : "bg-primary/20 w-2"
+              )} 
+            />
+          </button>
         ))}
       </div>
       
