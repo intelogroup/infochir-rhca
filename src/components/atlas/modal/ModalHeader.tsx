@@ -15,53 +15,13 @@ interface ModalHeaderProps {
 }
 
 export const ModalHeader = ({ chapter, category }: ModalHeaderProps) => {
-  const [coverUrl, setCoverUrl] = useState<string>('');
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
   
-  // Process and set the image URL
-  useEffect(() => {
-    const processImage = () => {
-      if (!chapter.coverImage) {
-        console.log(`[ModalHeader] No cover image for chapter: ${chapter.id}`);
-        setImageError(true);
-        setIsImageLoading(false);
-        return;
-      }
+  // Direct URL to image from coverImage or construct one if needed
+  const imageUrl = chapter.coverImage || '';
 
-      try {
-        // Extract just the filename without path or query parameters
-        let filename = chapter.coverImage;
-        
-        // Remove any bucket prefixes
-        filename = filename.replace('/adc_covers/', '')
-                          .replace('adc_covers/', '')
-                          .replace('/adc_articles_view/', '')
-                          .replace('adc_articles_view/', '');
-        
-        // Remove any query parameters
-        if (filename.includes('?')) {
-          filename = filename.split('?')[0];
-        }
-        
-        console.log(`[ModalHeader] Using filename for ${chapter.id}: ${filename}`);
-        
-        // Create direct URL to adc_articles_view bucket
-        const url = `${SUPABASE_URL}/storage/v1/object/public/adc_articles_view/${filename}`;
-        console.log(`[ModalHeader] Using image URL: ${url}`);
-        
-        setCoverUrl(url);
-        setIsImageLoading(false);
-      } catch (error) {
-        console.error(`[ModalHeader] Error processing image for ${chapter.id}:`, error);
-        setImageError(true);
-        setIsImageLoading(false);
-      }
-    };
-
-    processImage();
-  }, [chapter.id, chapter.coverImage]);
-
+  // Handle image loading events
   const handleImageLoad = () => {
     console.log(`[ModalHeader] Image loaded successfully for chapter: ${chapter.id}`);
     setIsImageLoading(false);
@@ -89,7 +49,7 @@ export const ModalHeader = ({ chapter, category }: ModalHeaderProps) => {
           </div>
         ) : (
           <ImageOptimizer
-            src={coverUrl}
+            src={imageUrl}
             alt={chapter.title}
             width={800}
             height={320}

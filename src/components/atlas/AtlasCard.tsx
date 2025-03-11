@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, User, Eye, Share2, Download, BookOpen, ImageOff } from "lucide-react";
 import { AtlasChapter } from "./types";
 import { toast } from "sonner";
-import { useState, memo, useEffect } from "react";
+import { useState, memo } from "react";
 import { AtlasModal } from "./AtlasModal";
 import { motion } from "framer-motion";
 import { AtlasCategory } from "./data/atlasCategories";
@@ -12,7 +12,6 @@ import { Badge } from "@/components/ui/badge";
 import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
 import { trackDownload } from "@/lib/analytics/download";
 import { createLogger } from "@/lib/error-logger";
-import { supabase, SUPABASE_URL } from "@/integrations/supabase/client";
 
 const logger = createLogger('AtlasCard');
 
@@ -25,51 +24,6 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
   const [showModal, setShowModal] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-
-  // Process and set the image URL
-  useEffect(() => {
-    const processImage = () => {
-      if (!chapter.coverImage) {
-        console.log(`[AtlasCard] No cover image for chapter: ${chapter.id}`);
-        setImageError(true);
-        setImageLoading(false);
-        return;
-      }
-
-      try {
-        // Extract just the filename without path or query parameters
-        let filename = chapter.coverImage;
-        
-        // Remove any bucket prefixes
-        filename = filename.replace('/adc_covers/', '')
-                          .replace('adc_covers/', '')
-                          .replace('/adc_articles_view/', '')
-                          .replace('adc_articles_view/', '');
-        
-        // Remove any query parameters
-        if (filename.includes('?')) {
-          filename = filename.split('?')[0];
-        }
-        
-        console.log(`[AtlasCard] Processing image for ${chapter.id}, filename: ${filename}`);
-        
-        // Create direct URLs to both buckets
-        const articlesViewUrl = `${SUPABASE_URL}/storage/v1/object/public/adc_articles_view/${filename}`;
-        
-        // Set the URL directly without checking if it exists
-        setImageUrl(articlesViewUrl);
-        setImageLoading(false);
-        
-      } catch (error) {
-        console.error(`[AtlasCard] Error processing image for ${chapter.id}:`, error);
-        setImageError(true);
-        setImageLoading(false);
-      }
-    };
-
-    processImage();
-  }, [chapter.id, chapter.coverImage]);
 
   const handleShare = () => {
     const shareUrl = `${window.location.origin}/adc/chapters/${chapter.id}`;
@@ -87,7 +41,7 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
       // Track the download event with correct document type
       await trackDownload({
         document_id: chapter.id,
-        document_type: "adc", // Changed from "article" to "adc"
+        document_type: "adc", 
         file_name: chapter.pdfUrl.split('/').pop() || 'document.pdf',
         status: 'success'
       });
@@ -102,7 +56,7 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
       // Track the failed download
       trackDownload({
         document_id: chapter.id,
-        document_type: "adc", // Changed from "article" to "adc"
+        document_type: "adc",
         file_name: chapter.pdfUrl.split('/').pop() || 'document.pdf',
         status: 'failed',
         error_details: error instanceof Error ? error.message : 'Unknown error'
@@ -133,7 +87,7 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
               </div>
             ) : (
               <ImageOptimizer
-                src={imageUrl || ''}
+                src={chapter.coverImage || ''}
                 alt={chapter.title}
                 width={320}
                 height={240}

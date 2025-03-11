@@ -39,16 +39,16 @@ export const useAtlasArticles = () => {
         logger.log(`Found ${data.length} ADC articles in the articles table`);
 
         const chapters: AtlasChapter[] = data?.map(item => {
-          // Process cover image
+          // Process cover image directly with fixed bucket and paths
           let coverImage = '';
           
           if (item.cover_image_filename) {
             try {
-              // Create direct URL to adc_articles_view bucket
+              // Create direct URL to atlas_covers bucket
               const filename = item.cover_image_filename;
-              coverImage = `${SUPABASE_URL}/storage/v1/object/public/adc_articles_view/${filename}`;
+              coverImage = `${SUPABASE_URL}/storage/v1/object/public/atlas_covers/${filename}`;
               
-              logger.log(`Using cover image URL for ${item.id}: ${coverImage}`);
+              logger.log(`Using direct image URL: ${coverImage}`);
               
               // Add a cache buster in preview mode
               if (isPreviewMode && coverImage) {
@@ -56,7 +56,7 @@ export const useAtlasArticles = () => {
                 logger.log(`Added cache buster to URL: ${coverImage}`);
               }
             } catch (imageError) {
-              logger.error(`Failed to generate storage URL for ${item.cover_image_filename}`, imageError);
+              logger.error(`Failed to generate image URL for ${item.cover_image_filename}`, imageError);
               coverImage = item.image_url || '';
             }
           } else if (item.image_url) {
