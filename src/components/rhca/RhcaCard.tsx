@@ -5,6 +5,7 @@ import { getStorageUrl } from "@/integrations/supabase/client";
 import { CoverImage } from "./card/CoverImage";
 import { CardContent } from "./card/CardContent";
 import type { RhcaArticle } from "./types";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Check if we're in debug mode
 const isDebugMode = process.env.NODE_ENV === 'development' || 
@@ -19,6 +20,7 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
   const [coverUrl, setCoverUrl] = useState<string | null>(null);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [imageLoading, setImageLoading] = useState(true);
+  const isMobile = useIsMobile();
   
   useEffect(() => {
     const loadResources = async () => {
@@ -66,8 +68,8 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
   }, [article]);
   
   return (
-    <Card className="overflow-hidden transition-all hover:shadow-md flex flex-col md:flex-row min-h-[180px] max-h-[240px] md:min-h-[220px] md:max-h-[240px] w-full md:max-w-[480px]">
-      <div className="w-full md:w-[35%] min-h-[140px] md:h-auto flex-shrink-0 p-2 flex items-center justify-center">
+    <Card className={`overflow-hidden transition-all hover:shadow-md flex ${isMobile ? 'flex-col' : 'flex-col md:flex-row'} min-h-[180px] ${isMobile ? 'max-h-none' : 'max-h-[240px] md:min-h-[220px] md:max-h-[240px]'} w-full md:max-w-[480px]`}>
+      <div className={`${isMobile ? 'w-full h-[140px]' : 'w-full md:w-[35%] min-h-[140px]'} md:h-auto flex-shrink-0 p-2 flex items-center justify-center`}>
         <CoverImage 
           article={article} 
           coverUrl={coverUrl} 
@@ -76,7 +78,7 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
         />
       </div>
       
-      <CardContentUI className="p-3 w-full md:w-[65%] flex-grow flex flex-col overflow-hidden">
+      <CardContentUI className={`p-3 w-full ${isMobile ? '' : 'md:w-[65%]'} flex-grow flex flex-col overflow-hidden`}>
         <CardContent article={article} pdfUrl={pdfUrl} />
       </CardContentUI>
     </Card>

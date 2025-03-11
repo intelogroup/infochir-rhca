@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface UnifiedArticleListProps {
   rhcaArticles?: RhcaArticle[];
@@ -36,6 +37,8 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
   selectedTags = [],
   isLoading = false,
 }) => {
+  const isMobile = useIsMobile();
+
   if (isLoading) {
     return (
       <div className="py-8 mt-[50px]">
@@ -49,7 +52,7 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
       {variant === 'index-medicus' && articles.length > 0 && (
         <div>
           {viewMode === "grid" ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {articles.map((article) => (
                 <IndexMedicusCard 
                   key={article.id} 
@@ -81,7 +84,7 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
       {igmIssues.length > 0 && (
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-4">IGM Issues</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {igmIssues.map((issue) => (
               <IssueCard key={issue.id} issue={issue} />
             ))}
@@ -93,8 +96,8 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
         <div>
           <h2 className="text-xl font-semibold mb-4">RHCA Articles</h2>
           {viewMode === "grid" ? (
-            <ScrollArea className="h-[600px] pr-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-4">
+            <ScrollArea className={isMobile ? "h-[500px]" : "h-[600px]"} className="pr-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 pb-4">
                 {rhcaArticles.map((article) => (
                   <RhcaCard key={article.id} article={article} />
                 ))}

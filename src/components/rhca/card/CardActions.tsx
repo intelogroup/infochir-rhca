@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import type { RhcaArticle } from "../types";
 import { downloadPDF } from "@/lib/analytics/download";
 import { createLogger } from "@/lib/error-logger";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const logger = createLogger('RhcaCardActions');
 
@@ -16,6 +17,8 @@ interface CardActionsProps {
 }
 
 export const CardActions: React.FC<CardActionsProps> = ({ article, pdfUrl }) => {
+  const isMobile = useIsMobile();
+  
   const handleDownload = async () => {
     if (!pdfUrl) {
       toast.error("Le PDF n'est pas disponible pour le moment");
@@ -71,25 +74,25 @@ export const CardActions: React.FC<CardActionsProps> = ({ article, pdfUrl }) => 
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 flex-wrap">
       <Button 
         variant="outline" 
-        size="sm" 
-        className="h-8 px-2"
+        size={isMobile ? "sm" : "default"}
+        className={isMobile ? "h-9 px-2 py-1 text-xs w-full sm:w-auto" : "h-8 px-2"}
         onClick={handleDownload}
         disabled={!pdfUrl}
       >
-        <Download className="h-4 w-4 mr-1" />
+        <Download className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'} mr-1`} />
         PDF
       </Button>
       
       <Button 
         variant="outline" 
-        size="sm"
-        className="h-8 px-2"
+        size={isMobile ? "sm" : "default"}
+        className={isMobile ? "h-9 px-2 py-1 text-xs w-full sm:w-auto" : "h-8 px-2"}
         onClick={handleShare}
       >
-        <Share2 className="h-4 w-4 mr-1" />
+        <Share2 className={`${isMobile ? 'h-3 w-3' : 'h-4 w-4'} mr-1`} />
         Partager
       </Button>
     </div>

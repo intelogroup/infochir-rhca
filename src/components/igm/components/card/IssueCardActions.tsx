@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { downloadPDF } from "@/lib/analytics/download";
 import { createLogger } from "@/lib/error-logger";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const logger = createLogger('IssueCardActions');
 
@@ -21,6 +22,7 @@ export const IssueCardActions: React.FC<IssueCardActionsProps> = ({
   title
 }) => {
   const [isDownloading, setIsDownloading] = React.useState(false);
+  const isMobile = useIsMobile();
 
   const handleDownload = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -90,23 +92,37 @@ export const IssueCardActions: React.FC<IssueCardActionsProps> = ({
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-1 flex-wrap justify-end">
       <Button
         variant="outline"
-        size="sm"
-        className="h-7 w-7 p-0"
+        size={isMobile ? "sm" : "sm"}
+        className={isMobile ? "h-8 px-2 py-1 text-xs flex-grow sm:flex-grow-0" : "h-7 w-7 p-0"}
         onClick={handleShare}
       >
-        <Share2 className="h-3.5 w-3.5" />
+        {isMobile ? (
+          <>
+            <Share2 className="h-3 w-3 mr-1" />
+            <span className="text-xs">Partager</span>
+          </>
+        ) : (
+          <Share2 className="h-3.5 w-3.5" />
+        )}
       </Button>
       <Button
         variant="outline"
-        size="sm"
-        className="h-7 w-7 p-0"
+        size={isMobile ? "sm" : "sm"}
+        className={isMobile ? "h-8 px-2 py-1 text-xs flex-grow sm:flex-grow-0" : "h-7 w-7 p-0"}
         onClick={handleDownload}
         disabled={!pdfUrl || isDownloading}
       >
-        <Download className={`h-3.5 w-3.5 ${isDownloading ? 'animate-pulse' : ''}`} />
+        {isMobile ? (
+          <>
+            <Download className={`h-3 w-3 mr-1 ${isDownloading ? 'animate-pulse' : ''}`} />
+            <span className="text-xs">PDF</span>
+          </>
+        ) : (
+          <Download className={`h-3.5 w-3.5 ${isDownloading ? 'animate-pulse' : ''}`} />
+        )}
       </Button>
     </div>
   );

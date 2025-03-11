@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import type { RhcaArticle } from "../types";
 import { downloadPDF } from "@/lib/analytics/download";
 import { createLogger } from "@/lib/error-logger";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const logger = createLogger('RhcaTableActions');
 
@@ -23,6 +24,8 @@ interface RhcaTableActionsProps {
 }
 
 export const RhcaTableActions: React.FC<RhcaTableActionsProps> = ({ article }) => {
+  const isMobile = useIsMobile();
+
   const handleDownload = async () => {
     try {
       if (!article.pdfFileName) {
@@ -79,6 +82,31 @@ export const RhcaTableActions: React.FC<RhcaTableActionsProps> = ({ article }) =
       console.error('[RhcaTable] Error incrementing share count:', error);
     }
   };
+
+  if (isMobile) {
+    return (
+      <div className="flex flex-wrap gap-1 justify-end">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="h-8 px-2 py-1 text-xs"
+          onClick={handleDownload}
+        >
+          <Download className="h-3 w-3 mr-1" />
+          PDF
+        </Button>
+        <Button 
+          variant="outline" 
+          size="sm"
+          className="h-8 px-2 py-1 text-xs"
+          onClick={handleShare}
+        >
+          <Share2 className="h-3 w-3 mr-1" />
+          Partager
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex justify-end">

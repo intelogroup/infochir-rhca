@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { checkFileExists, downloadPDF } from "@/lib/analytics/download";
 import { createLogger } from "@/lib/error-logger";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const logger = createLogger('PdfActions');
 
@@ -30,6 +31,7 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [fileExists, setFileExists] = useState<boolean | null>(null);
+  const isMobile = useIsMobile();
 
   // Check if file exists when component mounts
   useEffect(() => {
@@ -161,6 +163,38 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
     );
   }
   
+  // Mobile view with direct buttons
+  if (isMobile) {
+    return (
+      <div className="flex gap-1 flex-wrap">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 px-2 py-1 text-xs"
+          onClick={handleOpenPdf}
+        >
+          <ExternalLink className="h-3 w-3 mr-1" />
+          <span className="text-xs">Ouvrir</span>
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-8 px-2 py-1 text-xs"
+          onClick={handleDownloadPdf}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+          ) : (
+            <Download className="h-3 w-3 mr-1" />
+          )}
+          <span className="text-xs">Télécharger</span>
+        </Button>
+      </div>
+    );
+  }
+  
+  // Desktop view with dropdown
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
