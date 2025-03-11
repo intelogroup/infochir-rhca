@@ -96,7 +96,7 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
         <div>
           <h2 className="text-xl font-semibold mb-4">RHCA Articles</h2>
           {viewMode === "grid" ? (
-            <ScrollArea className={isMobile ? "h-[500px]" : "h-[600px]"} className="pr-4">
+            <ScrollArea className={isMobile ? "h-[500px] pr-4" : "h-[600px] pr-4"}>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 pb-4">
                 {rhcaArticles.map((article) => (
                   <RhcaCard key={article.id} article={article} />
@@ -115,3 +115,4 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
     </div>
   );
 };
+
