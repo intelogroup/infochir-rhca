@@ -42,15 +42,20 @@ export const useFounders = () => {
           .select('*');
           
         if (foundersError) {
-          // Enhanced error logging
+          // Enhanced error logging with more specific message
+          const errorMessage = typeof foundersError.message === 'string' 
+            ? foundersError.message 
+            : 'Failed to fetch founders data';
+            
           logger.error(foundersError, {
             endpoint: 'founders_view',
             query: 'SELECT * FROM founders_view',
-            errorCode: foundersError.code,
-            errorMessage: foundersError.message,
+            errorCode: foundersError.code || '',
+            errorMessage: errorMessage,
             context: 'Fetching founders data'
           });
-          throw foundersError;
+          
+          throw new Error(errorMessage);
         }
         
         if (!foundersData || foundersData.length === 0) {
@@ -130,14 +135,16 @@ export const useFounders = () => {
         
         setFounders(transformedFounders);
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : String(err);
+        // Improved error handling for better user experience
+        const errorMessage = err instanceof Error ? err.message : 'Une erreur inconnue est survenue';
+        
         logger.error(err, {
           context: 'useFounders hook',
           stackTrace: err instanceof Error ? err.stack : undefined,
           message: errorMessage
         });
         
-        setError(err instanceof Error ? err : new Error(String(err)));
+        setError(err instanceof Error ? err : new Error(errorMessage));
         toast.error("Erreur lors du chargement des fondateurs");
       } finally {
         setLoading(false);
@@ -162,7 +169,7 @@ export const useFounders = () => {
   
   useEffect(() => {
     if (error) {
-      logger.error(error, { context: 'Error state changed' });
+      logger.error('Error state changed:', error.message, { context: 'Error state changed' });
     }
   }, [error]);
 
