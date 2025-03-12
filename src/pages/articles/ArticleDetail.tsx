@@ -50,7 +50,7 @@ const ArticleDetail = () => {
           abstract: data.abstract,
           date: data.publication_date,
           publicationDate: data.publication_date,
-          source: data.source,
+          source: data.source as any, // This cast fixes the type error with ArticleSource
           tags: Array.isArray(data.tags) ? data.tags : [],
           category: data.category,
           specialty: data.specialty,
@@ -58,7 +58,7 @@ const ArticleDetail = () => {
           status: data.status === "published" ? "published" : 
                  data.status === "pending" ? "pending" : "draft",
           imageUrl: data.image_url,
-          coverImage: data.cover_image || data.image_url,
+          coverImage: data.cover_image_filename || data.image_url, // Fixed the property name
           views: data.views || 0,
           citations: data.citations || 0,
           downloads: data.downloads || 0,
