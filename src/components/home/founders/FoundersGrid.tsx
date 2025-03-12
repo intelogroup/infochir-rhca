@@ -22,12 +22,6 @@ export const FoundersGrid = ({
   
   return (
     <>
-      {isDeceased && (
-        <div className="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4 mt-8 mb-4 text-center">
-          <h3 className="text-xl font-semibold text-gray-700">In Memoriam</h3>
-        </div>
-      )}
-      
       <div className="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
         {founders.map((founder, index) => (
           <motion.div
@@ -41,10 +35,10 @@ export const FoundersGrid = ({
             <FounderCard 
               founder={founder}
               onClick={() => {
-                logger.info(`${isDeceased ? 'Deceased f' : 'F'}ounder card clicked: ${founder.name}`);
+                logger.info(`Founder card clicked: ${founder.name}`);
                 onSelectFounder(founder);
               }}
-              memorialStyle={isDeceased}
+              memorialStyle={false}
             />
           </motion.div>
         ))}

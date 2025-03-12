@@ -35,10 +35,6 @@ export const FoundersSection = () => {
     } else {
       logger.info(`Founders loaded: ${founders.length} founders`);
       
-      // Log deceased vs non-deceased counts
-      const deceasedCount = founders.filter(f => f.isDeceased).length;
-      logger.info(`Founders breakdown: ${founders.length - deceasedCount} active, ${deceasedCount} deceased`);
-      
       // Log display order for debugging
       logger.debug('Display order:', founders.map(f => `${f.name}: ${f.displayOrder}`));
     }
@@ -80,11 +76,10 @@ export const FoundersSection = () => {
     );
   }
 
-  // Separate founders into active and deceased
-  const nonDeceasedFounders = founders.filter(founder => !founder.isDeceased);
-  const deceasedFounders = founders.filter(founder => founder.isDeceased);
-
-  logger.info(`Rendering founders section with ${nonDeceasedFounders.length} active and ${deceasedFounders.length} deceased founders`);
+  // Combine all founders into a single array
+  const allFounders = [...founders];
+  
+  logger.info(`Rendering founders section with ${allFounders.length} founders`);
 
   return (
     <section 
@@ -103,17 +98,9 @@ export const FoundersSection = () => {
           aria-label="Liste des membres fondateurs"
         >
           <FoundersGrid 
-            founders={nonDeceasedFounders} 
+            founders={allFounders} 
             onSelectFounder={setSelectedFounder} 
           />
-          
-          {deceasedFounders.length > 0 && (
-            <FoundersGrid 
-              founders={deceasedFounders} 
-              onSelectFounder={setSelectedFounder} 
-              isDeceased={true}
-            />
-          )}
         </div>
       </div>
 
