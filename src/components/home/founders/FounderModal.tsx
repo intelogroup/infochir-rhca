@@ -1,5 +1,5 @@
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
@@ -40,9 +40,6 @@ export const FounderModal = ({ founder, isOpen, onClose }: FounderModalProps) =>
               <span className="sr-only">Close</span>
             </Button>
           </div>
-          <DialogDescription>
-            Membre fondateur de l'Association pour le Développement de la Chirurgie en Haïti
-          </DialogDescription>
         </DialogHeader>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -76,7 +73,7 @@ export const FounderModal = ({ founder, isOpen, onClose }: FounderModalProps) =>
           <div className="md:col-span-2 space-y-4">
             {founder.bio && (
               <div>
-                <h4 className="font-semibold text-gray-700 mb-2">Biography</h4>
+                <h4 className="font-semibold text-gray-700 mb-2">Bio</h4>
                 <p className="text-gray-600">{founder.bio}</p>
               </div>
             )}
