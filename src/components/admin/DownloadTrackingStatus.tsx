@@ -18,31 +18,40 @@ import { supabase } from "@/integrations/supabase/client";
 
 const logger = createLogger('DownloadTrackingStatus');
 
+// Define TypeScript interfaces for our state
+interface TypeStat {
+  type: string;
+  count: number;
+  successful: number;
+  failed: number;
+}
+
+interface ConnectionStat {
+  connected: boolean;
+  count: number;
+  recentEvents: any[];
+  error?: string;
+}
+
+interface DailyStat {
+  date: string;
+  total: number;
+  successful: number;
+  failed: number;
+}
+
+interface SystemStatus {
+  isWorking: boolean;
+  message: string;
+  details?: any;
+}
+
 export const DownloadTrackingStatus = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [systemStatus, setSystemStatus] = useState<{
-    isWorking: boolean;
-    message: string;
-    details?: any;
-  } | null>(null);
-  const [typeStats, setTypeStats] = useState<{
-    type: string;
-    count: number;
-    successful: number;
-    failed: number;
-  }[]>([]);
-  const [connectionStats, setConnectionStats] = useState<{
-    connected: boolean;
-    count: number;
-    recentEvents: any[];
-    error?: string;
-  } | null>(null);
-  const [dailyStats, setDailyStats] = useState<{
-    date: string;
-    total: number;
-    successful: number;
-    failed: number;
-  }[]>([]);
+  const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null);
+  const [typeStats, setTypeStats] = useState<TypeStat[]>([]);
+  const [connectionStats, setConnectionStats] = useState<ConnectionStat | null>(null);
+  const [dailyStats, setDailyStats] = useState<DailyStat[]>([]);
   const [isTesting, setIsTesting] = useState(false);
 
   const checkSystemStatus = async () => {
@@ -54,8 +63,9 @@ export const DownloadTrackingStatus = () => {
       
       // Get download stats by document type
       const stats = await getDownloadTypeStats();
-      if (!stats.error) {
-        setTypeStats(stats.documentTypes);
+      if (!stats.error && stats.documentTypes) {
+        // Ensure we're mapping to the correct type structure
+        setTypeStats(stats.documentTypes as TypeStat[]);
       }
       
       // Get connection stats
@@ -68,6 +78,7 @@ export const DownloadTrackingStatus = () => {
           .rpc('get_daily_downloads', { days_back: 7 });
         
         if (dailyData) {
+          // Ensure we're mapping to the correct type structure
           setDailyStats(dailyData.map((item: any) => ({
             date: new Date(item.date).toLocaleDateString(),
             total: item.total_downloads,
