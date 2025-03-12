@@ -34,9 +34,6 @@ export const FoundersSection = () => {
       });
     } else {
       logger.info(`Founders loaded: ${founders.length} founders`);
-      
-      // Log display order for debugging
-      logger.debug('Display order:', founders.map(f => `${f.name}: ${f.displayOrder}`));
     }
   }, [loading, error, founders]);
 
@@ -49,7 +46,7 @@ export const FoundersSection = () => {
 
   if (loading) {
     return (
-      <section className="py-24 relative overflow-hidden" aria-label="Membres fondateurs">
+      <section className="py-12 sm:py-24 relative overflow-hidden" aria-label="Membres fondateurs">
         <FoundersLoading />
       </section>
     );
@@ -62,7 +59,7 @@ export const FoundersSection = () => {
       stack: error.stack
     });
     return (
-      <section className="py-24 relative overflow-hidden">
+      <section className="py-12 sm:py-24 relative overflow-hidden">
         <FoundersError error={error} />
       </section>
     );
@@ -70,20 +67,17 @@ export const FoundersSection = () => {
 
   if (founders.length === 0) {
     return (
-      <section className="py-24 relative overflow-hidden">
+      <section className="py-12 sm:py-24 relative overflow-hidden">
         <FoundersEmpty />
       </section>
     );
   }
-
-  // Combine all founders into a single array
-  const allFounders = [...founders];
   
-  logger.info(`Rendering founders section with ${allFounders.length} founders`);
+  logger.info(`Rendering founders section with ${founders.length} founders`);
 
   return (
     <section 
-      className="py-24 relative overflow-hidden"
+      className="py-12 sm:py-24 relative overflow-hidden"
       aria-label="Membres fondateurs"
     >
       <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] opacity-5" />
@@ -92,16 +86,10 @@ export const FoundersSection = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <FoundersSectionHeader />
 
-        <div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
-          role="list"
-          aria-label="Liste des membres fondateurs"
-        >
-          <FoundersGrid 
-            founders={allFounders} 
-            onSelectFounder={setSelectedFounder} 
-          />
-        </div>
+        <FoundersGrid 
+          founders={founders} 
+          onSelectFounder={setSelectedFounder}
+        />
       </div>
 
       {selectedFounder && (
