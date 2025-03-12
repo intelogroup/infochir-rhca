@@ -55,14 +55,20 @@ export const useCarouselData = () => {
             logger.error(`Failed to generate ADC image URL for carousel: ${article.cover_image_filename}`, imageError);
           }
         }
+
+        // Format authors as string
+        const authorString = article.authors 
+          ? (Array.isArray(article.authors) ? article.authors.join(', ') : article.authors) 
+          : undefined;
         
         return {
+          id: article.id,
           title: article.title,
           description: article.abstract,
           image: imageUrl,
           date: new Date(article.publication_date).toLocaleDateString('fr-FR'),
           category: article.source,
-          author: article.authors ? (Array.isArray(article.authors) ? article.authors.join(', ') : article.authors) : undefined,
+          author: authorString,
           link: `/articles/${article.id}`,
         };
       }) as CarouselItem[];

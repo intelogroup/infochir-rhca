@@ -3,12 +3,13 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
-import { ArticleActions } from "@/components/index-medicus/article/ArticleActions";
+import { ArrowLeft, Share, FileText, Quote } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { Article } from "@/components/index-medicus/types";
 import { toast } from "sonner";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { formatDate } from "@/lib/utils";
 
 const ArticleDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -23,39 +24,62 @@ const ArticleDetail = () => {
     const fetchArticle = async () => {
       setLoading(true);
       try {
-        // Mock API call - replace with actual API in production
-        // In a real app, you would fetch the article from an API
-        console.log(`Fetching article with ID: ${id}`);
-        
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // For now, create a mock article
-        const mockArticle: Article = {
-          id: id || "0",
-          title: "Article détaillé",
-          authors: ["Dr. Exemple Auteur", "Dr. Autre Auteur"],
-          abstract: "Résumé détaillé de l'article qui serait normalement chargé à partir d'une API.",
-          date: new Date().toISOString(),
-          publicationDate: new Date().toISOString(),
-          source: "RHCA",
-          tags: ["chirurgie", "innovation"],
-          category: "Recherche",
-          specialty: "Clinique",
-          pdfUrl: "#",
-          status: "published",
-          imageUrl: "",
-          coverImage: "",
-          views: 0,
-          citations: 0,
-          downloads: 0,
-          shares: 0
+        if (!id) {
+          throw new Error("Article ID is required");
+        }
+
+        const { data, error } = await supabase
+          .from("articles")
+          .select("*")
+          .eq("id", id)
+          .single();
+
+        if (error) {
+          throw error;
+        }
+
+        if (!data) {
+          throw new Error("Article not found");
+        }
+
+        // Map database article to our Article type
+        const mappedArticle: Article = {
+          id: data.id,
+          title: data.title,
+          authors: Array.isArray(data.authors) ? data.authors : [],
+          abstract: data.abstract,
+          date: data.publication_date,
+          publicationDate: data.publication_date,
+          source: data.source,
+          tags: Array.isArray(data.tags) ? data.tags : [],
+          category: data.category,
+          specialty: data.specialty,
+          pdfUrl: data.pdf_url,
+          status: data.status === "published" ? "published" : 
+                 data.status === "pending" ? "pending" : "draft",
+          imageUrl: data.image_url,
+          coverImage: data.cover_image || data.image_url,
+          views: data.views || 0,
+          citations: data.citations || 0,
+          downloads: data.downloads || 0,
+          shares: data.shares || 0,
+          institution: data.institution,
+          volume: data.volume,
+          issue: data.issue,
+          pageNumber: data.page_number,
+          pdfFileName: data.pdf_filename
         };
         
-        setArticle(mockArticle);
+        setArticle(mappedArticle);
+        
+        // Update view count
+        await supabase
+          .from("articles")
+          .update({ views: (data.views || 0) + 1 })
+          .eq("id", id);
       } catch (err) {
         console.error("Error fetching article:", err);
-        setError("Impossible de charger les détails de l'article");
+        setError(err instanceof Error ? err.message : "Failed to load article");
         toast.error("Impossible de charger les détails de l'article");
       } finally {
         setLoading(false);
@@ -72,6 +96,86 @@ const ArticleDetail = () => {
 
   const handleGoBack = () => {
     navigate(-1);
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!article || !article.pdfUrl) {
+      toast.error("PDF non disponible");
+      return;
+    }
+    
+    try {
+      window.open(article.pdfUrl, '_blank');
+      
+      // Log download action
+      await supabase
+        .from("articles")
+        .update({ downloads: (article.downloads || 0) + 1 })
+        .eq("id", article.id);
+      
+      toast.success("Téléchargement du PDF commencé");
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      toast.error("Erreur lors du téléchargement");
+    }
+  };
+
+  const handleShare = () => {
+    if (!article) return;
+    
+    const shareUrl = window.location.href;
+    const shareTitle = article.title;
+    
+    if (navigator.share) {
+      navigator.share({
+        title: shareTitle,
+        url: shareUrl,
+      }).then(async () => {
+        // Update share count in database
+        await supabase
+          .from("articles")
+          .update({ shares: (article.shares || 0) + 1 })
+          .eq("id", article.id);
+      }).catch(error => {
+        console.error("Error sharing:", error);
+      });
+    } else {
+      // Fallback for browsers that don't support navigator.share
+      navigator.clipboard.writeText(shareUrl).then(async () => {
+        toast.success("Lien copié dans le presse-papier");
+        
+        // Update share count in database
+        await supabase
+          .from("articles")
+          .update({ shares: (article.shares || 0) + 1 })
+          .eq("id", article.id);
+      }).catch(error => {
+        console.error("Error copying link:", error);
+        toast.error("Erreur lors de la copie du lien");
+      });
+    }
+  };
+
+  const handleCite = () => {
+    if (!article) return;
+    
+    // Create citation text in a common format
+    const authors = Array.isArray(article.authors) ? article.authors.join(", ") : "";
+    const year = article.publicationDate ? new Date(article.publicationDate).getFullYear() : "";
+    const citation = `${authors} (${year}). ${article.title}. ${article.source || ''}${article.volume ? `, ${article.volume}` : ''}${article.issue ? `(${article.issue})` : ''}${article.pageNumber ? `, ${article.pageNumber}` : ''}.`;
+    
+    navigator.clipboard.writeText(citation).then(async () => {
+      toast.success("Citation copiée dans le presse-papier");
+      
+      // Update citation count in database
+      await supabase
+        .from("articles")
+        .update({ citations: (article.citations || 0) + 1 })
+        .eq("id", article.id);
+    }).catch(error => {
+      console.error("Error copying citation:", error);
+      toast.error("Erreur lors de la copie de la citation");
+    });
   };
 
   return (
@@ -96,9 +200,9 @@ const ArticleDetail = () => {
             <Button 
               className="mt-4" 
               variant="outline" 
-              onClick={() => navigate("/index-medicus")}
+              onClick={() => navigate("/")}
             >
-              Retourner à l'index
+              Retourner à l'accueil
             </Button>
           </div>
         ) : article ? (
@@ -118,7 +222,7 @@ const ArticleDetail = () => {
             
             <div className="mb-6">
               <h2 className="text-lg font-semibold mb-2">Résumé</h2>
-              <p className="text-gray-700">{article.abstract}</p>
+              <p className="text-gray-700 whitespace-pre-line">{article.abstract}</p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -128,7 +232,7 @@ const ArticleDetail = () => {
               </div>
               <div>
                 <h3 className="font-medium text-gray-500">Date de publication</h3>
-                <p>{new Date(article.publicationDate).toLocaleDateString()}</p>
+                <p>{formatDate(article.publicationDate)}</p>
               </div>
               {article.volume && article.issue && (
                 <div>
@@ -151,7 +255,7 @@ const ArticleDetail = () => {
                 </span>
               )}
               
-              {article.tags.map((tag, index) => (
+              {article.tags && article.tags.map((tag, index) => (
                 <span 
                   key={index} 
                   className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm"
@@ -162,11 +266,45 @@ const ArticleDetail = () => {
             </div>
             
             <div className="mt-8 border-t pt-4">
-              <ArticleActions 
-                title={article.title}
-                pdfUrl={article.pdfUrl}
-                article={article}
-              />
+              <div className="flex flex-wrap gap-4 justify-between">
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleShare}
+                    className="flex items-center gap-2"
+                  >
+                    <Share className="h-4 w-4" />
+                    Partager
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleCite}
+                    className="flex items-center gap-2"
+                  >
+                    <Quote className="h-4 w-4" />
+                    Citer
+                  </Button>
+                </div>
+                
+                {article.pdfUrl && (
+                  <Button 
+                    onClick={handleDownloadPdf}
+                    className="flex items-center gap-2"
+                  >
+                    <FileText className="h-4 w-4" />
+                    Télécharger PDF
+                  </Button>
+                )}
+              </div>
+              
+              <div className="flex justify-between mt-6 text-sm text-gray-500">
+                <span>{article.views} vue{article.views !== 1 ? 's' : ''}</span>
+                <span>{article.downloads} téléchargement{article.downloads !== 1 ? 's' : ''}</span>
+                <span>{article.citations} citation{article.citations !== 1 ? 's' : ''}</span>
+                <span>{article.shares} partage{article.shares !== 1 ? 's' : ''}</span>
+              </div>
             </div>
           </div>
         ) : null}

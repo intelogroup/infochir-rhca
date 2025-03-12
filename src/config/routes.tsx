@@ -85,7 +85,7 @@ export const routes = [
       {
         path: "articles/:id",
         element: <ArticleDetail />,
-        name: "article",
+        name: "article-detail",
       },
       {
         path: "admin/uploads",
