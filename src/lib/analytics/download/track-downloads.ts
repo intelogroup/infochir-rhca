@@ -6,7 +6,7 @@ const logger = createLogger('DownloadTracking');
 
 export interface DownloadEvent {
   document_id: string;
-  document_type: 'igm' | 'rhca' | 'index-medicus' | 'adc' | 'other';
+  document_type: 'igm' | 'rhca' | 'index-medicus' | 'adc' | 'other' | 'test';
   file_name: string;
   status: 'success' | 'failed';
   error_details?: string;
@@ -53,7 +53,7 @@ export const trackDownload = async (event: DownloadEvent): Promise<boolean> => {
       screen_size: `${window.innerWidth}x${window.innerHeight}`,
     };
     
-    // Log download event for analytics purposes
+    // Log download event for analytics purposes - use a direct insert
     const { error } = await supabase
       .from('download_events')
       .insert(enhancedEvent);

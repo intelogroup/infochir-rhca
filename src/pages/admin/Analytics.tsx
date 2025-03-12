@@ -4,6 +4,7 @@ import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { DownloadTrackingStatus } from "@/components/admin/DownloadTrackingStatus";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/ui/page-header";
+import { supabase } from "@/integrations/supabase/client";
 
 const Analytics = () => {
   return (
