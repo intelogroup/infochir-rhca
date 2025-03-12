@@ -50,7 +50,6 @@ export const useFounders = () => {
         if (isMounted) {
           setLoading(false);
         }
-        logger.info('Founder data fetch completed');
       }
     };
 
@@ -59,24 +58,8 @@ export const useFounders = () => {
     // Cleanup function to prevent state updates after unmount
     return () => {
       isMounted = false;
-      logger.debug('useFounders hook cleanup');
     };
   }, []);
-
-  // Log component lifecycle
-  useEffect(() => {
-    logger.info('useFounders hook mounted');
-    return () => {
-      logger.info('useFounders hook unmounted');
-    };
-  }, []);
-
-  // Log state changes
-  useEffect(() => {
-    if (!loading) {
-      logger.info(`Founders loaded: ${founders.length} founders`);
-    }
-  }, [loading, founders]);
 
   return { founders, loading, error };
 };

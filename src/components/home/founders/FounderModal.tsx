@@ -34,14 +34,7 @@ export const FounderModal = ({ founder, isOpen, onClose }: FounderModalProps) =>
           <DialogTitle className="text-2xl font-bold">
             {founder.name}
           </DialogTitle>
-          <Button 
-            variant="ghost" 
-            className="h-8 w-8 p-0" 
-            onClick={onClose}
-          >
-            <X className="h-4 w-4" />
-            <span className="sr-only">Close</span>
-          </Button>
+          {/* Removed duplicate X button - Dialog already provides one */}
         </div>
       </DialogHeader>
       

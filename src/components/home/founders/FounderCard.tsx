@@ -28,18 +28,14 @@ export const FounderCard = ({ founder, onClick, memorialStyle = false }: Founder
       className={cn(
         "h-full cursor-pointer overflow-hidden transition-all hover:shadow-lg relative",
         memorialStyle ? "border-gray-300 opacity-80 hover:opacity-100" : "hover:border-blue-500",
-        isMobile ? "touch-manipulation" : ""
+        "touch-manipulation"
       )}
       onClick={onClick}
     >
-      {memorialStyle && (
-        <div className="absolute inset-0 bg-gray-900 opacity-10 pointer-events-none z-10"></div>
-      )}
-      
-      <div className="flex flex-col items-center p-4 sm:p-6 text-center gap-3 sm:gap-4">
+      <div className="flex flex-col items-center p-3 sm:p-6 text-center gap-2 sm:gap-4">
         <Avatar className={cn(
           "border-2 border-white shadow-md",
-          isMobile ? "h-24 w-24" : "h-32 w-32"
+          isMobile ? "h-20 w-20" : "h-28 w-28 sm:h-32 sm:w-32"
         )}>
           {founder.image ? (
             <AvatarImage 
@@ -67,31 +63,25 @@ export const FounderCard = ({ founder, onClick, memorialStyle = false }: Founder
           )}>
             {founder.name}
           </h3>
-          <p className="text-gray-600 font-medium">{founder.title}</p>
+          <p className="text-gray-600 font-medium text-sm sm:text-base">{founder.title}</p>
           <p className="text-xs sm:text-sm text-gray-500">{founder.role}</p>
           
           {founder.specialties && founder.specialties.length > 0 && (
             <div className="pt-2 flex flex-wrap justify-center gap-1">
-              {founder.specialties.slice(0, 2).map((specialty, index) => (
+              {founder.specialties.slice(0, isMobile ? 1 : 2).map((specialty, index) => (
                 <Badge key={index} variant="secondary" className="text-xs">
                   {specialty}
                 </Badge>
               ))}
-              {founder.specialties.length > 2 && (
+              {founder.specialties.length > (isMobile ? 1 : 2) && (
                 <Badge variant="outline" className="text-xs">
-                  +{founder.specialties.length - 2}
+                  +{founder.specialties.length - (isMobile ? 1 : 2)}
                 </Badge>
               )}
             </div>
           )}
         </CardContent>
       </div>
-      
-      {memorialStyle && (
-        <div className="absolute bottom-0 left-0 right-0 bg-gray-100 py-1 text-center text-xs text-gray-500">
-          In Memoriam
-        </div>
-      )}
     </Card>
   );
 };
