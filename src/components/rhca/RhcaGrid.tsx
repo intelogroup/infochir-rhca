@@ -64,7 +64,7 @@ export const RhcaGrid: React.FC<RhcaGridProps> = ({
               </AccordionTrigger>
               <AccordionContent>
                 <div className="px-2 sm:px-4 py-2 sm:py-3">
-                  <ScrollArea className={`w-full ${isMobile ? 'h-[300px]' : 'max-h-[70vh]'}`}>
+                  <ScrollArea className={`w-full ${isMobile ? 'h-[350px]' : 'max-h-[70vh]'}`}>
                     <div 
                       className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 py-2 sm:py-4 px-2 sm:px-4" 
                     >
