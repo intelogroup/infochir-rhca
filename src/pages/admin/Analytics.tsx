@@ -4,7 +4,6 @@ import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { DownloadTrackingStatus } from "@/components/admin/DownloadTrackingStatus";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/ui/page-header";
-import { supabase } from "@/integrations/supabase/client";
 
 const Analytics = () => {
   return (
@@ -12,7 +11,7 @@ const Analytics = () => {
       <div className="container space-y-6 py-8">
         <PageHeader 
           title="Statistiques et Suivi" 
-          subtitle="Surveillez les performances de l'application et le suivi des téléchargements" 
+          description="Surveillez les performances de l'application et le suivi des téléchargements" 
         />
 
         <Tabs defaultValue="downloads">

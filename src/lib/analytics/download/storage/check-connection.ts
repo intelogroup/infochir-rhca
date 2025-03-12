@@ -2,188 +2,150 @@
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger } from "@/lib/error-logger";
 
-const logger = createLogger('DownloadCheck');
+const logger = createLogger('DownloadConnection');
 
 /**
- * Checks if the download_events table exists and is accessible
- * Returns the count of records to verify data is being saved
+ * Check if the download_events table exists and is accessible
  */
-export const checkDownloadEventsConnection = async (): Promise<{ 
-  connected: boolean; 
-  count: number;
-  recentEvents: any[];
-  error?: string;
-}> => {
+export const checkDownloadEventsConnection = async () => {
   try {
     logger.log('Checking download_events table connection...');
     
-    // First verify we can connect to Supabase
-    const connectionTest = await supabase.from('download_events').select('count()', { count: 'exact', head: true });
-    
-    if (connectionTest.error) {
-      logger.error('Failed to connect to download_events table:', connectionTest.error);
-      return { 
-        connected: false, 
-        count: 0, 
-        recentEvents: [],
-        error: connectionTest.error.message 
-      };
-    }
-    
-    // Get the count of all records
-    const { count, error: countError } = await supabase
+    // Try to get a count of records from the download_events table
+    const { count, error } = await supabase
       .from('download_events')
       .select('*', { count: 'exact', head: true });
-    
-    if (countError) {
-      logger.error('Error getting download_events count:', countError);
-      return { 
-        connected: true, 
-        count: 0, 
+      
+    if (error) {
+      logger.error('Error connecting to download_events table:', error);
+      return {
+        connected: false,
+        count: 0,
         recentEvents: [],
-        error: countError.message 
+        error: error.message
       };
     }
     
-    // Get the 5 most recent records to verify data structure
-    const { data: recentEvents, error: recentError } = await supabase
+    // Get the most recent events for display
+    const { data: recentEvents, error: eventsError } = await supabase
       .from('download_events')
       .select('*')
       .order('created_at', { ascending: false })
-      .limit(5);
-    
-    if (recentError) {
-      logger.error('Error getting recent download_events:', recentError);
-      return { 
-        connected: true, 
-        count: count || 0, 
-        recentEvents: [],
-        error: recentError.message 
-      };
+      .limit(10);
+      
+    if (eventsError) {
+      logger.error('Error fetching recent download events:', eventsError);
     }
     
-    logger.log(`Successfully connected to download_events. Total records: ${count}`);
-    logger.log('Recent events:', recentEvents);
-    
-    return { 
-      connected: true, 
+    logger.log(`Download events connection successful. Found ${count} events.`);
+    return {
+      connected: true,
       count: count || 0,
       recentEvents: recentEvents || []
     };
   } catch (error) {
-    logger.error('Unexpected error checking download_events:', error);
-    return { 
-      connected: false, 
+    logger.error('Unexpected error checking download events connection:', error);
+    return {
+      connected: false,
       count: 0,
       recentEvents: [],
-      error: error instanceof Error ? error.message : String(error)
+      error: error instanceof Error ? error.message : 'Unknown error'
     };
   }
 };
 
 /**
- * Gets statistics for each document type
+ * Gets statistics about download events by document type
  */
-export const getDownloadTypeStats = async (): Promise<{ 
-  documentTypes: { type: string; count: number; successful: number; failed: number }[];
-  error?: string;
-}> => {
+export const getDownloadTypeStats = async () => {
   try {
+    // Get statistics by document type
     const { data, error } = await supabase
       .from('download_events')
       .select('document_type, status');
-    
+      
     if (error) {
-      logger.error('Error getting download type stats:', error);
-      return { 
-        documentTypes: [],
-        error: error.message 
-      };
+      logger.error('Error fetching download type statistics:', error);
+      return { error: error.message, documentTypes: [] };
     }
     
-    // Process the data to get counts by document type and status
-    const typeMap = new Map<string, { count: number; successful: number; failed: number }>();
-    
-    data.forEach(event => {
-      if (!typeMap.has(event.document_type)) {
-        typeMap.set(event.document_type, { count: 0, successful: 0, failed: 0 });
+    // Aggregate statistics by document type
+    const typeStats = data.reduce((acc, event) => {
+      const type = event.document_type;
+      
+      if (!acc[type]) {
+        acc[type] = { 
+          type,
+          count: 0,
+          successful: 0,
+          failed: 0
+        };
       }
       
-      const typeStats = typeMap.get(event.document_type)!;
-      typeStats.count++;
+      acc[type].count++;
       
       if (event.status === 'success') {
-        typeStats.successful++;
+        acc[type].successful++;
       } else if (event.status === 'failed') {
-        typeStats.failed++;
+        acc[type].failed++;
       }
-    });
+      
+      return acc;
+    }, {});
     
-    // Convert map to array for easy consumption
-    const documentTypes = Array.from(typeMap.entries()).map(([type, stats]) => ({
-      type,
-      count: stats.count,
-      successful: stats.successful,
-      failed: stats.failed
-    }));
-    
-    logger.log('Download type statistics:', documentTypes);
-    
-    return { documentTypes };
-  } catch (error) {
-    logger.error('Unexpected error getting download type stats:', error);
     return { 
-      documentTypes: [],
-      error: error instanceof Error ? error.message : String(error)
+      documentTypes: Object.values(typeStats),
+      error: null
+    };
+  } catch (error) {
+    logger.error('Unexpected error getting download type statistics:', error);
+    return { 
+      error: error instanceof Error ? error.message : 'Unknown error',
+      documentTypes: []
     };
   }
 };
 
 /**
- * Run a quick check to verify the tracking system is working
+ * Verifies the entire download tracking system
  */
-export const verifyTrackingSystem = async (): Promise<{
-  isWorking: boolean;
-  message: string;
-  details?: any;
-}> => {
+export const verifyTrackingSystem = async () => {
   try {
-    // Check connection to the table
-    const connectionCheck = await checkDownloadEventsConnection();
+    // Check if we can connect to the download_events table
+    const connection = await checkDownloadEventsConnection();
     
-    if (!connectionCheck.connected) {
+    if (!connection.connected) {
       return {
         isWorking: false,
-        message: `Cannot connect to download_events table: ${connectionCheck.error}`,
+        message: `Cannot connect to download_events table: ${connection.error}`
       };
     }
     
-    // If we have records, the system is likely working
-    if (connectionCheck.count > 0) {
+    // Verify that the trackDownload function is correctly exporting
+    const trackDownloadModule = await import('../track-downloads');
+    
+    if (!trackDownloadModule.trackDownload) {
       return {
-        isWorking: true,
-        message: `Download tracking system is working. Found ${connectionCheck.count} events.`,
-        details: {
-          recentEvents: connectionCheck.recentEvents,
-        }
+        isWorking: false,
+        message: 'trackDownload function not found in track-downloads module'
       };
     }
     
-    // If no records, we need to check if the tracking function is actually calling supabase
+    // Try to get stats by document type to further verify
+    const stats = await getDownloadTypeStats();
+    
     return {
-      isWorking: connectionCheck.connected,
-      message: connectionCheck.count > 0 
-        ? `System appears to be working but no download events have been recorded yet.`
-        : `System may not be working correctly. No download events found.`,
+      isWorking: true,
+      message: 'Download tracking system is operational',
       details: {
-        tableExists: connectionCheck.connected,
-        recordCount: connectionCheck.count,
+        eventCount: connection.count,
+        documentTypes: stats.documentTypes
       }
     };
   } catch (error) {
     return {
       isWorking: false,
-      message: `Error verifying tracking system: ${error instanceof Error ? error.message : String(error)}`,
+      message: `Error verifying tracking system: ${error instanceof Error ? error.message : 'Unknown error'}`
     };
   }
 };

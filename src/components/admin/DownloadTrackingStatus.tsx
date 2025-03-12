@@ -10,10 +10,11 @@ import {
   checkDownloadEventsConnection, 
   getDownloadTypeStats, 
   verifyTrackingSystem,
-  trackDownload
-} from '@/lib/analytics/download';
+} from '@/lib/analytics/download/storage/check-connection';
+import { trackDownload } from '@/lib/analytics/download';
 import { toast } from 'sonner';
 import { createLogger } from "@/lib/error-logger";
+import { supabase } from "@/integrations/supabase/client";
 
 const logger = createLogger('DownloadTrackingStatus');
 
