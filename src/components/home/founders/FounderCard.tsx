@@ -32,10 +32,10 @@ export const FounderCard = ({ founder, onClick, memorialStyle = false }: Founder
       )}
       onClick={onClick}
     >
-      <div className="flex flex-col items-center p-3 sm:p-6 text-center gap-2 sm:gap-4">
+      <div className="flex flex-col items-center p-2 sm:p-6 text-center gap-1 sm:gap-4">
         <Avatar className={cn(
           "border-2 border-white shadow-md",
-          isMobile ? "h-20 w-20" : "h-28 w-28 sm:h-32 sm:w-32"
+          isMobile ? "h-16 w-16" : "h-28 w-28 sm:h-32 sm:w-32"
         )}>
           {founder.image ? (
             <AvatarImage 
@@ -58,23 +58,23 @@ export const FounderCard = ({ founder, onClick, memorialStyle = false }: Founder
         
         <CardContent className="p-0 space-y-1 sm:space-y-2">
           <h3 className={cn(
-            "font-bold text-md sm:text-xl", 
+            "font-bold text-sm sm:text-xl", 
             memorialStyle ? "text-gray-700" : "text-blue-800"
           )}>
             {founder.name}
           </h3>
-          <p className="text-gray-600 font-medium text-sm sm:text-base">{founder.title}</p>
-          <p className="text-xs sm:text-sm text-gray-500">{founder.role}</p>
+          <p className="text-gray-600 font-medium text-xs sm:text-base">{founder.title}</p>
+          <p className="text-xs text-gray-500">{founder.role}</p>
           
           {founder.specialties && founder.specialties.length > 0 && (
-            <div className="pt-2 flex flex-wrap justify-center gap-1">
+            <div className="pt-1 sm:pt-2 flex flex-wrap justify-center gap-1">
               {founder.specialties.slice(0, isMobile ? 1 : 2).map((specialty, index) => (
-                <Badge key={index} variant="secondary" className="text-xs">
+                <Badge key={index} variant="secondary" className="text-xs px-1 py-0 sm:px-2 sm:py-0.5">
                   {specialty}
                 </Badge>
               ))}
               {founder.specialties.length > (isMobile ? 1 : 2) && (
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="outline" className="text-xs px-1 py-0 sm:px-2 sm:py-0.5">
                   +{founder.specialties.length - (isMobile ? 1 : 2)}
                 </Badge>
               )}

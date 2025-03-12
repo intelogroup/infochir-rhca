@@ -23,8 +23,8 @@ export const FoundersGrid = ({
       className={cn(
         "grid gap-4 sm:gap-6 md:gap-8", 
         isMobile 
-          ? "grid-cols-1 max-w-xs mx-auto" 
-          : "grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+          ? "grid-cols-2 max-w-md mx-auto" 
+          : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"
       )}
       role="list"
       aria-label="Liste des membres fondateurs"
