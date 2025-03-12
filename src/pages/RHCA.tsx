@@ -16,7 +16,7 @@ const RHCA: React.FC = () => {
       <div className="bg-gray-50/50 pt-[50px]">
         <RHCAHeader />
         
-        <div className="container mx-auto px-4 py-8 md:py-12">
+        <div className="container mx-auto px-4 py-8 md:py-12 mb-16 md:mb-0">
           {/* Admin panel section */}
           <RHCAAdminPanel isAdmin={isAdmin} isDebug={isDebug} />
           
