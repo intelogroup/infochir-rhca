@@ -1,4 +1,3 @@
-
 import Home from "@/pages/Home";
 import NotFound from "@/pages/NotFound";
 import TriggerUploads from "@/pages/TriggerUploads";
@@ -15,6 +14,7 @@ import Donate from "@/pages/Donate";
 import Opportunities from "@/pages/Opportunities";
 import EditorialCommittee from "@/pages/EditorialCommittee";
 import DonateSuccess from "@/pages/donate/DonateSuccess";
+import Analytics from "@/pages/admin/Analytics";
 
 export const routes = [
   {
@@ -91,6 +91,11 @@ export const routes = [
         path: "admin/uploads",
         element: <TriggerUploads />,
         name: "uploads",
+      },
+      {
+        path: "admin/analytics",
+        element: <Analytics />,
+        name: "analytics",
       },
       {
         path: "*",
