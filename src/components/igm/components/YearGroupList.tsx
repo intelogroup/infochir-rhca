@@ -16,7 +16,6 @@ export const YearGroupList = ({ issuesByYear, sortedYears }: YearGroupListProps)
   
   // Add 2023, 2022, and 2021 if they don't exist in the sorted years
   const enhancedYears = useMemo(() => {
-    const currentYear = new Date().getFullYear();
     const yearsToInclude = [2025, 2024, 2023, 2022, 2021];
     const allYears = new Set([...sortedYears, ...yearsToInclude]);
     
@@ -95,7 +94,7 @@ export const YearGroupList = ({ issuesByYear, sortedYears }: YearGroupListProps)
                 {hasIssues ? (
                   issuesByYear[year].map((issue) => (
                     <div key={issue.id}>
-                      <IssueCard key={issue.id} issue={issue} />
+                      <IssueCard issue={issue} />
                     </div>
                   ))
                 ) : (

@@ -31,11 +31,6 @@ export const useIssuesState = ({
   dateRange?: DateRange;
   selectedCategories: string[];
 }): IssuesStateResult => {
-  // Debug: Log years in issues
-  console.log("Issues in useIssuesState:", issues?.length, 
-    "Years:", issues?.map(i => new Date(i.date).getFullYear()).sort().filter((v, i, a) => a.indexOf(v) === i)
-  );
-
   // Extract all unique categories
   const availableCategories = useMemo(() => {
     const categories = new Set<string>();
@@ -74,16 +69,6 @@ export const useIssuesState = ({
     if (!dateRange?.from && !dateRange?.to) return true;
     
     const issueDate = new Date(issue.date);
-    
-    // Debug: Log date filtering
-    console.log("Date filtering:", {
-      issue: issue.title,
-      date: issue.date, 
-      dateObj: issueDate,
-      isValid: isValidDate(issueDate),
-      year: issueDate.getFullYear(),
-      range: dateRange
-    });
     
     if (!isValidDate(issueDate)) {
       console.warn("Invalid date in issue:", issue);
@@ -151,9 +136,6 @@ export const useIssuesState = ({
       }
       byYear[year].push(issue);
     }
-    
-    // Debug: Log years
-    console.log("Years in sorted issues:", Array.from(years).sort());
     
     return {
       issuesByYear: byYear,
