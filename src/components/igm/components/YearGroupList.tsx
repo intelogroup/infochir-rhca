@@ -14,12 +14,17 @@ interface YearGroupListProps {
 export const YearGroupList = ({ issuesByYear, sortedYears }: YearGroupListProps) => {
   const [collapsedYears, setCollapsedYears] = useState<Record<number, boolean>>({});
   
-  // Add years to display if they don't exist in the sorted years
-  const enhancedYears = useMemo(() => {
-    const yearsToInclude = [2025, 2024, 2023, 2022, 2021];
-    const allYears = new Set([...sortedYears, ...yearsToInclude]);
+  // Define all the years we want to display
+  const allDisplayYears = useMemo(() => {
+    // Start with current year and go back 5 years
+    const currentYear = new Date().getFullYear();
+    const defaultYears = [];
+    for (let i = 0; i <= 5; i++) {
+      defaultYears.push(currentYear - i);
+    }
     
-    // Convert to array, sort in descending order (newest first)
+    // Combine with sorted years that have data
+    const allYears = new Set([...sortedYears, ...defaultYears]);
     return Array.from(allYears).sort((a, b) => b - a);
   }, [sortedYears]);
 
@@ -43,7 +48,7 @@ export const YearGroupList = ({ issuesByYear, sortedYears }: YearGroupListProps)
         <h2 className="text-xl font-bold text-primary">Info Gazette Médicale</h2>
       </div>
       
-      {enhancedYears.map((year) => {
+      {allDisplayYears.map((year) => {
         // Check if the year actually has issues
         const hasIssues = issuesByYear[year]?.length > 0;
         console.log(`Year ${year} has issues: ${hasIssues}, count: ${issuesByYear[year]?.length || 0}`);

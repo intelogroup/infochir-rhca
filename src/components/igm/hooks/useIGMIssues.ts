@@ -74,10 +74,26 @@ export const useIGMIssues = () => {
                 if (yearMatch) {
                   pubDate = `${yearMatch[0]}-01-01`;
                   console.log(`Using fallback date for article ${article.id}: ${pubDate}`);
+                } else {
+                  // If all else fails, use the year from the category if it looks like a year
+                  const categoryYearMatch = article.category && article.category.match(/\b(20\d{2})\b/);
+                  if (categoryYearMatch) {
+                    pubDate = `${categoryYearMatch[1]}-01-01`;
+                    console.log(`Using category year fallback for article ${article.id}: ${pubDate}`);
+                  }
                 }
               }
             } catch (e) {
               console.error("Error validating date", e);
+            }
+            
+            // Extract categories including year if present
+            const categories = [article.category];
+            
+            // Try to extract year from the volume or issue as a category
+            const yearFromVolume = article.volume && article.volume.match(/\b(20\d{2})\b/);
+            if (yearFromVolume && yearFromVolume[1]) {
+              categories.push(yearFromVolume[1]);
             }
             
             issuesMap.set(key, {
@@ -93,7 +109,7 @@ export const useIGMIssues = () => {
               downloads: article.downloads || 0,
               shares: article.shares || 0,
               articles: [],
-              categories: article.category ? [article.category] : []
+              categories: categories.filter(Boolean)
             });
           }
           
@@ -127,9 +143,19 @@ export const useIGMIssues = () => {
             const year = new Date(issue.date).getFullYear();
             if (!isNaN(year)) {
               acc[year] = (acc[year] || 0) + 1;
+            } else {
+              // If we have a bad date, try to extract year from volume/issue
+              const yearFromId = issue.id.match(/\b(20\d{2})\b/);
+              if (yearFromId && yearFromId[1]) {
+                const extractedYear = parseInt(yearFromId[1], 10);
+                acc[extractedYear] = (acc[extractedYear] || 0) + 1;
+                // Fix the date using the extracted year
+                issue.date = `${extractedYear}-01-01`;
+                logger.log(`Fixed date using ID for issue ${issue.id}: ${issue.date}`);
+              }
             }
           } catch (e) {
-            console.error("Error extracting year from issue date:", issue.date);
+            logger.error("Error extracting year from issue date:", issue.date, e);
           }
           return acc;
         }, {});

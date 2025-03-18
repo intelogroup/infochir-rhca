@@ -48,9 +48,6 @@ export const filterByDateRange = (issues: Issue[], dateFrom?: Date, dateTo?: Dat
         return false;
       }
 
-      // Log the date for debugging
-      console.log(`Issue ${issue.id} date: ${issue.date} -> ${issueDate.toISOString()}`);
-
       const isAfterStart = !dateFrom || issueDate >= dateFrom;
       const isBeforeEnd = !dateTo || issueDate <= dateTo;
       
@@ -61,7 +58,6 @@ export const filterByDateRange = (issues: Issue[], dateFrom?: Date, dateTo?: Dat
     }
   });
   
-  console.log(`Date filter: ${issues.length} -> ${validIssues.length} issues, from: ${dateFrom}, to: ${dateTo}`);
   return validIssues;
 };
 
@@ -80,34 +76,22 @@ export const filterByCategories = (issues: Issue[], selectedCategories: string[]
 export const filterByYear = (issues: Issue[], year: number): Issue[] => {
   if (!year) return issues;
   
-  console.log(`Filtering by year ${year}, issues count: ${issues.length}`);
-  const filtered = issues.filter(issue => {
+  return issues.filter(issue => {
     if (!issue.date) {
-      console.warn("Issue without date:", issue.id);
       return false;
     }
     
     try {
       const issueDate = new Date(issue.date);
       if (!isValidDate(issueDate)) {
-        console.warn(`Invalid date for issue ${issue.id}: ${issue.date}`);
         return false;
       }
       
       const issueYear = issueDate.getFullYear();
-      const matches = issueYear === year;
-      
-      if (matches) {
-        console.log(`Issue ${issue.id} with date ${issue.date} matches year ${year}`);
-      }
-      
-      return matches;
+      return issueYear === year;
     } catch (error) {
       console.error(`Error filtering by year for issue ${issue.id}:`, error);
       return false;
     }
   });
-  
-  console.log(`Year ${year} filter: found ${filtered.length} issues`);
-  return filtered;
 };
