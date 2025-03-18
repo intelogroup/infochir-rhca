@@ -63,3 +63,13 @@ export const filterByCategories = (issues: Issue[], selectedCategories: string[]
     )
   );
 };
+
+// Filter issues by year
+export const filterByYear = (issues: Issue[], year: number): Issue[] => {
+  if (!year) return issues;
+  
+  return issues.filter(issue => {
+    const issueDate = new Date(issue.date);
+    return isValidDate(issueDate) && issueDate.getFullYear() === year;
+  });
+};
