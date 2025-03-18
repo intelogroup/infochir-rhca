@@ -11,6 +11,8 @@ export const useIGMIssues = () => {
     queryKey: ["igm-issues"],
     queryFn: async () => {
       try {
+        logger.log('Fetching IGM articles from the database');
+        
         // Fetch IGM articles from the articles table
         const { data, error } = await supabase
           .from("articles")
@@ -24,9 +26,21 @@ export const useIGMIssues = () => {
           throw error;
         }
 
+        // Log years distribution for debugging
+        const yearDistribution = data?.reduce((acc, article) => {
+          const year = new Date(article.publication_date).getFullYear();
+          acc[year] = (acc[year] || 0) + 1;
+          return acc;
+        }, {});
+        
+        logger.log("Years distribution in IGM data:", yearDistribution);
+        
         if (!data || data.length === 0) {
+          logger.log('No IGM articles found in the database');
           return [];
         }
+
+        logger.log(`Found ${data.length} IGM articles`);
 
         // Group articles by volume and issue
         const issuesMap = new Map();

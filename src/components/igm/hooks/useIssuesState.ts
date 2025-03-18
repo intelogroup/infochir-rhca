@@ -1,3 +1,4 @@
+
 import { useMemo, useCallback } from "react";
 import type { Issue, SortOption } from "../types";
 import { DateRange } from "react-day-picker";
@@ -30,6 +31,11 @@ export const useIssuesState = ({
   dateRange?: DateRange;
   selectedCategories: string[];
 }): IssuesStateResult => {
+  // Debug: Log years in issues
+  console.log("Issues in useIssuesState:", issues?.length, 
+    "Years:", issues?.map(i => new Date(i.date).getFullYear()).sort().filter((v, i, a) => a.indexOf(v) === i)
+  );
+
   // Extract all unique categories
   const availableCategories = useMemo(() => {
     const categories = new Set<string>();
@@ -68,7 +74,21 @@ export const useIssuesState = ({
     if (!dateRange?.from && !dateRange?.to) return true;
     
     const issueDate = new Date(issue.date);
-    if (!isValidDate(issueDate)) return false;
+    
+    // Debug: Log date filtering
+    console.log("Date filtering:", {
+      issue: issue.title,
+      date: issue.date, 
+      dateObj: issueDate,
+      isValid: isValidDate(issueDate),
+      year: issueDate.getFullYear(),
+      range: dateRange
+    });
+    
+    if (!isValidDate(issueDate)) {
+      console.warn("Invalid date in issue:", issue);
+      return false;
+    }
 
     const isAfterStart = !dateRange.from || issueDate >= dateRange.from;
     const isBeforeEnd = !dateRange.to || issueDate <= dateRange.to;
@@ -118,7 +138,10 @@ export const useIssuesState = ({
     
     for (const issue of sortedIssues) {
       const date = new Date(issue.date);
-      if (!isValidDate(date)) continue;
+      if (!isValidDate(date)) {
+        console.error(`Invalid date for issue ${issue.id}: ${issue.date}`);
+        continue;
+      }
       
       const year = date.getFullYear();
       years.add(year);
@@ -128,6 +151,9 @@ export const useIssuesState = ({
       }
       byYear[year].push(issue);
     }
+    
+    // Debug: Log years
+    console.log("Years in sorted issues:", Array.from(years).sort());
     
     return {
       issuesByYear: byYear,
