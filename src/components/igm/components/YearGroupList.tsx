@@ -14,7 +14,7 @@ interface YearGroupListProps {
 export const YearGroupList = ({ issuesByYear, sortedYears }: YearGroupListProps) => {
   const [collapsedYears, setCollapsedYears] = useState<Record<number, boolean>>({});
   
-  // Add 2023, 2022, and 2021 if they don't exist in the sorted years
+  // Add years to display if they don't exist in the sorted years
   const enhancedYears = useMemo(() => {
     const yearsToInclude = [2025, 2024, 2023, 2022, 2021];
     const allYears = new Set([...sortedYears, ...yearsToInclude]);
@@ -44,7 +44,9 @@ export const YearGroupList = ({ issuesByYear, sortedYears }: YearGroupListProps)
       </div>
       
       {enhancedYears.map((year) => {
+        // Check if the year actually has issues
         const hasIssues = issuesByYear[year]?.length > 0;
+        console.log(`Year ${year} has issues: ${hasIssues}, count: ${issuesByYear[year]?.length || 0}`);
         
         return (
           <div key={year} className="mb-10">

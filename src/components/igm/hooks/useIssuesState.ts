@@ -3,6 +3,11 @@ import { useMemo, useCallback } from "react";
 import type { Issue, SortOption } from "../types";
 import { DateRange } from "react-day-picker";
 import { isValidDate } from "../types";
+import { 
+  filterBySearchTerm, 
+  filterByDateRange, 
+  filterByCategories 
+} from "../utils/issueFiltering";
 
 interface IssuesStateOptions {
   searchTerm: string;
@@ -42,61 +47,30 @@ export const useIssuesState = ({
     return Array.from(categories).sort();
   }, [issues]);
 
-  // Memoize the search filter function
-  const filterBySearch = useCallback((issue: Issue): boolean => {
-    if (!searchTerm) return true;
-    
-    const searchLower = searchTerm.toLowerCase();
-    const searchTerms = searchLower.split(' ').filter(Boolean);
-    
-    const mainFieldsMatch = 
-      issue.title.toLowerCase().includes(searchLower) ||
-      issue.abstract.toLowerCase().includes(searchLower);
-    
-    if (mainFieldsMatch) return true;
-    
-    return issue.articles.some(article => 
-      searchTerms.every(term => 
-        article.title.toLowerCase().includes(term) ||
-        article.authors.some(author => author.toLowerCase().includes(term)) ||
-        article.abstract?.toLowerCase().includes(term)
-      )
-    );
-  }, [searchTerm]);
-
-  // Memoize date filtering
-  const filterByDate = useCallback((issue: Issue): boolean => {
-    if (!dateRange?.from && !dateRange?.to) return true;
-    
-    const issueDate = new Date(issue.date);
-    
-    if (!isValidDate(issueDate)) {
-      console.warn("Invalid date in issue:", issue);
-      return false;
-    }
-
-    const isAfterStart = !dateRange.from || issueDate >= dateRange.from;
-    const isBeforeEnd = !dateRange.to || issueDate <= dateRange.to;
-    
-    return isAfterStart && isBeforeEnd;
-  }, [dateRange]);
-
-  // Filter by categories
-  const filterByCategories = useCallback((issue: Issue): boolean => {
-    if (!selectedCategories?.length) return true;
-    return selectedCategories.every(category => 
-      issue.categories?.includes(category)
-    );
-  }, [selectedCategories]);
-
   // Apply filters in sequence
   const filteredIssues = useMemo(() => {
-    return issues.filter(issue => 
-      filterByDate(issue) && 
-      filterBySearch(issue) &&
-      filterByCategories(issue)
-    );
-  }, [issues, filterByDate, filterBySearch, filterByCategories]);
+    console.log("Filtering issues, count before:", issues.length);
+    
+    // Apply each filter in sequence
+    let result = filterBySearchTerm(issues, searchTerm);
+    console.log("After search filter:", result.length);
+    
+    result = filterByDateRange(result, dateRange?.from, dateRange?.to);
+    console.log("After date range filter:", result.length);
+    
+    result = filterByCategories(result, selectedCategories);
+    console.log("After category filter:", result.length);
+    
+    // Log years in filtered issues
+    const yearCounts: Record<number, number> = {};
+    result.forEach(issue => {
+      const year = new Date(issue.date).getFullYear();
+      yearCounts[year] = (yearCounts[year] || 0) + 1;
+    });
+    console.log("Year distribution in filtered issues:", yearCounts);
+    
+    return result;
+  }, [issues, searchTerm, dateRange, selectedCategories]);
 
   // Memoize sorting
   const sortedIssues = useMemo(() => {
@@ -121,21 +95,31 @@ export const useIssuesState = ({
     const byYear: Record<number, Issue[]> = {};
     const years = new Set<number>();
     
+    console.log("Grouping issues by year, count:", sortedIssues.length);
+    
     for (const issue of sortedIssues) {
-      const date = new Date(issue.date);
-      if (!isValidDate(date)) {
-        console.error(`Invalid date for issue ${issue.id}: ${issue.date}`);
-        continue;
+      try {
+        const date = new Date(issue.date);
+        if (!isValidDate(date)) {
+          console.error(`Invalid date for issue ${issue.id}: ${issue.date}`);
+          continue;
+        }
+        
+        const year = date.getFullYear();
+        console.log(`Issue ${issue.id} has date ${issue.date}, year: ${year}`);
+        years.add(year);
+        
+        if (!byYear[year]) {
+          byYear[year] = [];
+        }
+        byYear[year].push(issue);
+      } catch (error) {
+        console.error(`Error processing issue ${issue.id}:`, error);
       }
-      
-      const year = date.getFullYear();
-      years.add(year);
-      
-      if (!byYear[year]) {
-        byYear[year] = [];
-      }
-      byYear[year].push(issue);
     }
+    
+    console.log("Years found:", Array.from(years));
+    console.log("Issues by year:", byYear);
     
     return {
       issuesByYear: byYear,

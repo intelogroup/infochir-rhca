@@ -28,8 +28,16 @@ export const useIGMIssues = () => {
 
         // Log years distribution for debugging
         const yearDistribution = data?.reduce((acc, article) => {
-          const year = new Date(article.publication_date).getFullYear();
-          acc[year] = (acc[year] || 0) + 1;
+          if (!article.publication_date) return acc;
+          
+          try {
+            const year = new Date(article.publication_date).getFullYear();
+            if (isNaN(year)) return acc;
+            
+            acc[year] = (acc[year] || 0) + 1;
+          } catch (e) {
+            console.error("Error parsing date:", article.publication_date);
+          }
           return acc;
         }, {});
         
@@ -54,12 +62,30 @@ export const useIGMIssues = () => {
             // Use the exact title from the database if available
             const issueTitle = article.title || `INFO GAZETTE MÉDICALE Volume ${article.volume}, No. ${article.issue}`;
             
+            // Ensure date is valid
+            let pubDate = article.publication_date;
+            try {
+              // Validate the date
+              const testDate = new Date(pubDate);
+              if (isNaN(testDate.getTime())) {
+                console.warn(`Invalid publication date for article ${article.id}: ${pubDate}`);
+                // Try to extract year from volume as fallback
+                const yearMatch = article.volume.match(/\d{4}/);
+                if (yearMatch) {
+                  pubDate = `${yearMatch[0]}-01-01`;
+                  console.log(`Using fallback date for article ${article.id}: ${pubDate}`);
+                }
+              }
+            } catch (e) {
+              console.error("Error validating date", e);
+            }
+            
             issuesMap.set(key, {
               id: `igm-${article.volume}-${article.issue}`,
               title: issueTitle,
               volume: article.volume,
               issue: article.issue,
-              date: article.publication_date,
+              date: pubDate,
               abstract: article.abstract || `Information Gynéco-Médicale Volume ${article.volume}, Numéro ${article.issue}`,
               pdfUrl: article.pdf_url || "",
               coverImage: article.image_url || "",
@@ -92,8 +118,25 @@ export const useIGMIssues = () => {
           }
         });
 
-        // Convert map to array
-        return Array.from(issuesMap.values());
+        // Convert map to array and log for debugging
+        const issues = Array.from(issuesMap.values());
+        
+        // Debug log to check years
+        const issueYears = issues.reduce((acc, issue) => {
+          try {
+            const year = new Date(issue.date).getFullYear();
+            if (!isNaN(year)) {
+              acc[year] = (acc[year] || 0) + 1;
+            }
+          } catch (e) {
+            console.error("Error extracting year from issue date:", issue.date);
+          }
+          return acc;
+        }, {});
+        
+        logger.log("Issue years distribution:", issueYears);
+        
+        return issues;
       } catch (error) {
         logger.error(error);
         toast.error("Erreur lors du chargement des numéros");
