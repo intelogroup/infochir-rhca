@@ -8,6 +8,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "sonner";
+import { WelcomeModal } from "./components/welcome/WelcomeModal";
 
 // Set up in production mode or preview mode
 const isDebugMode = process.env.NODE_ENV === 'development' || 
@@ -20,6 +21,7 @@ const AppWithProviders = () => (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <App />
+        <WelcomeModal />
         <Toaster richColors position="top-center" closeButton />
       </BrowserRouter>
     </QueryClientProvider>
