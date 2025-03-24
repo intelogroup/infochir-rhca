@@ -88,7 +88,7 @@ export const useIGMIssues = () => {
             }
             
             // Extract categories including year if present
-            const categories = [article.category];
+            const categories = article.category ? [article.category] : [];
             
             // Try to extract year from the volume or issue as a category
             const yearFromVolume = article.volume && article.volume.match(/\b(20\d{2})\b/);
@@ -155,7 +155,7 @@ export const useIGMIssues = () => {
               }
             }
           } catch (e) {
-            logger.error("Error extracting year from issue date:", issue.date, e);
+            logger.error("Error extracting year from issue date:", e);
           }
           return acc;
         }, {});
