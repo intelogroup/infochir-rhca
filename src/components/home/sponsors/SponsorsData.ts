@@ -51,21 +51,25 @@ export const sponsors: Sponsor[] = [
   {
     name: "JSA Foundation",
     logo: "/lovable-uploads/c4ecbe61-7269-4a2c-9db6-e4f656279bde.png",
-    type: "sponsor"
+    type: "sponsor",
+    url: "https://www.charitynavigator.org/ein/823647332"
   },
   {
     name: "MSSP",
     logo: "/lovable-uploads/6ccd716d-4080-4b29-857f-fc454b0a0532.png",
-    type: "partner"
+    type: "partner",
+    url: "https://www.mspp.gouv.ht/"
   },
   {
     name: "SOHAD",
     logo: "/lovable-uploads/2fe4f20b-e98b-4fbd-8ade-0768e8a0a286.png",
-    type: "partner"
+    type: "partner",
+    url: "https://www.sohadhaiti.com/"
   },
   {
     name: "SurgiMed",
     logo: "/lovable-uploads/113fbe65-07c2-4e94-b069-5c7d6e063317.png",
-    type: "partner"
+    type: "partner",
+    url: "https://www.facebook.com/p/SurgiMed-61551703082395/"
   }
 ];
