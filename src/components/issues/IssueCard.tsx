@@ -1,3 +1,4 @@
+
 import { Calendar, Download, Eye, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -47,8 +48,26 @@ export const IssueCard = ({
     toast.success("Lien copié dans le presse-papier");
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Only open the PDF if clicking the card itself, not the buttons
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
+    
+    if (!pdfUrl) {
+      toast.error("PDF non disponible pour cette publication");
+      return;
+    }
+    
+    // Open the PDF in a new tab
+    window.open(pdfUrl, '_blank');
+  };
+
   return (
-    <Card className="group hover:shadow-md transition-shadow h-full">
+    <Card 
+      className="group hover:shadow-md transition-shadow h-full cursor-pointer"
+      onClick={handleCardClick}
+    >
       <div className="flex gap-4 p-4 h-full">
         <div className="w-32 flex-shrink-0">
           <AspectRatio ratio={3/4} className="overflow-hidden rounded-lg">

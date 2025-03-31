@@ -7,6 +7,7 @@ import { IssueCardCover } from "./components/card/IssueCardCover";
 import { IssueCardActions } from "./components/card/IssueCardActions";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { toast } from "sonner";
 
 interface IssueCardProps {
   issue: Issue;
@@ -14,6 +15,21 @@ interface IssueCardProps {
 
 export const IssueCard: React.FC<IssueCardProps> = ({ issue }) => {
   const isMobile = useIsMobile();
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Only open the PDF if clicking the card itself, not the buttons
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
+    
+    if (!issue.pdfUrl) {
+      toast.error("PDF non disponible pour cette publication");
+      return;
+    }
+    
+    // Open the PDF in a new tab
+    window.open(issue.pdfUrl, '_blank');
+  };
 
   return (
     <motion.div 
@@ -25,6 +41,7 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue }) => {
     >
       <Card 
         className="overflow-hidden group cursor-pointer h-full flex flex-row w-full border border-gray-200 hover:shadow-md transition-all"
+        onClick={handleCardClick}
       >
         <div className={`shrink-0 ${isMobile ? 'w-1/3' : 'w-1/3 md:w-1/4'} h-full`}>
           <div className="h-full">
