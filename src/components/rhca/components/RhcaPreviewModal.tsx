@@ -85,7 +85,7 @@ export const RhcaPreviewModal: React.FC<RhcaPreviewModalProps> = ({
       <DialogContent className="max-w-4xl w-[90vw] max-h-[90vh] flex flex-col p-0">
         <div className="flex justify-between items-center p-4 border-b">
           <h2 className="text-xl font-bold">{article.title}</h2>
-          <Button variant="ghost" size="icon" onClick={onClose}>
+          <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0">
             <X className="h-4 w-4" />
           </Button>
         </div>
