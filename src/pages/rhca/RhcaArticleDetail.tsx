@@ -59,10 +59,9 @@ const RhcaArticleDetail: React.FC = () => {
           publicationDate: data.publication_date,
           volume: data.volume,
           issue: data.issue,
-          pageNumber: data.page_number, // Fixed: was page_numbers, now pageNumber
-          keywords: Array.isArray(data.keywords) ? data.keywords : [],
+          pageNumber: data.page_number,
           category: data.category,
-          status: data.status === 'published' ? "published" : (data.status === 'pending' ? "pending" : "draft"), // Fixed: ensure status is one of the allowed types
+          status: data.status === 'published' ? "published" : (data.status === 'pending' ? "pending" : "draft"),
           views: data.views || 0,
           downloads: data.downloads || 0
         };

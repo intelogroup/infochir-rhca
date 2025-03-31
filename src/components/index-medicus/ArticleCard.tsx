@@ -55,6 +55,22 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick, s
     toast.success("Lien copié dans le presse-papier");
   }, [article.id]);
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Only open the PDF if clicking the card itself, not the buttons or tags
+    if ((e.target as HTMLElement).closest('button') || 
+        (e.target as HTMLElement).closest('[data-tag]')) {
+      return;
+    }
+    
+    if (!article.pdfUrl) {
+      toast.error("PDF non disponible pour cet article");
+      return;
+    }
+    
+    // Open the PDF in a new tab
+    window.open(article.pdfUrl, '_blank');
+  };
+
   return (
     <>
       <motion.div 
@@ -63,7 +79,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick, s
       >
         <Card 
           className="hover:shadow-lg transition-shadow overflow-hidden group rounded-xl cursor-pointer bg-white border-gray-100"
-          onClick={() => setIsModalOpen(true)}
+          onClick={handleCardClick}
         >
           <div className="flex flex-col md:flex-row">
             {article.imageUrl ? (

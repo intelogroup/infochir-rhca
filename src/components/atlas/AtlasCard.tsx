@@ -78,6 +78,21 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
     }
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Only open the PDF if clicking the card itself, not the buttons
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
+    
+    if (!chapter.pdfUrl) {
+      toast.error("Aucun PDF disponible pour ce chapitre");
+      return;
+    }
+    
+    // Open the PDF in a new tab
+    window.open(chapter.pdfUrl, '_blank');
+  };
+
   return (
     <>
       <motion.div
@@ -86,7 +101,10 @@ const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
         transition={{ duration: 0.2 }}
         className="h-full"
       >
-        <Card className="group h-full flex flex-col overflow-hidden border-transparent hover:border-secondary/30 transition-all duration-300">
+        <Card 
+          className="group h-full flex flex-col overflow-hidden border-transparent hover:border-secondary/30 transition-all duration-300 cursor-pointer"
+          onClick={handleCardClick}
+        >
           <div className="relative h-32 overflow-hidden">
             {imageLoading && (
               <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
