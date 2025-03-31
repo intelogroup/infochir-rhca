@@ -88,7 +88,12 @@ export const useIGMIssues = () => {
             }
             
             // Extract categories including year if present
-            const categories = article.category ? [article.category] : [];
+            const categories = [];
+            
+            // Add article category if it exists
+            if (article.category) {
+              categories.push(article.category);
+            }
             
             // Try to extract year from the volume or issue as a category
             const yearFromVolume = article.volume && article.volume.match(/\b(20\d{2})\b/);

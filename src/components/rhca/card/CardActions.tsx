@@ -19,7 +19,9 @@ interface CardActionsProps {
 export const CardActions: React.FC<CardActionsProps> = ({ article, pdfUrl }) => {
   const isMobile = useIsMobile();
   
-  const handleDownload = async () => {
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent the click from bubbling up to the card
+    
     if (!pdfUrl) {
       toast.error("Le PDF n'est pas disponible pour le moment");
       return;
@@ -46,7 +48,9 @@ export const CardActions: React.FC<CardActionsProps> = ({ article, pdfUrl }) => 
     }
   };
   
-  const handleShare = () => {
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent the click from bubbling up to the card
+    
     if (navigator.share) {
       navigator.share({
         title: article.title,

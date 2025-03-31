@@ -4,6 +4,7 @@ import { Card, CardContent as CardContentUI } from "@/components/ui/card";
 import { getStorageUrl } from "@/integrations/supabase/client";
 import { CoverImage } from "./card/CoverImage";
 import { CardContent } from "./card/CardContent";
+import { RhcaPreviewModal } from "./components/RhcaPreviewModal";
 import type { RhcaArticle } from "./types";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -20,6 +21,7 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
   const [coverUrl, setCoverUrl] = useState<string | null>(null);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [imageLoading, setImageLoading] = useState(true);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const isMobile = useIsMobile();
   
   useEffect(() => {
@@ -66,22 +68,42 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
     
     loadResources();
   }, [article]);
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Only open the preview if clicking the card itself, not the buttons
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
+    setIsPreviewOpen(true);
+  };
   
   return (
-    <Card className={`overflow-hidden transition-all hover:shadow-md flex ${isMobile ? 'flex-col' : 'flex-col md:flex-row'} min-h-[180px] ${isMobile ? 'max-h-none' : 'max-h-[240px] md:min-h-[220px] md:max-h-[240px]'} w-full md:max-w-[480px]`}>
-      <div className={`${isMobile ? 'w-full h-[140px]' : 'w-full md:w-[35%] min-h-[140px]'} md:h-auto flex-shrink-0 p-2 flex items-center justify-center`}>
-        <CoverImage 
-          article={article} 
-          coverUrl={coverUrl} 
-          pdfUrl={pdfUrl} 
-          imageLoading={imageLoading} 
-        />
-      </div>
-      
-      <CardContentUI className={`p-3 w-full ${isMobile ? '' : 'md:w-[65%]'} flex-grow flex flex-col overflow-hidden`}>
-        <CardContent article={article} pdfUrl={pdfUrl} />
-      </CardContentUI>
-    </Card>
+    <>
+      <Card 
+        className={`overflow-hidden transition-all hover:shadow-md flex ${isMobile ? 'flex-col' : 'flex-col md:flex-row'} min-h-[180px] ${isMobile ? 'max-h-none' : 'max-h-[240px] md:min-h-[220px] md:max-h-[240px]'} w-full md:max-w-[480px] cursor-pointer`}
+        onClick={handleCardClick}
+      >
+        <div className={`${isMobile ? 'w-full h-[140px]' : 'w-full md:w-[35%] min-h-[140px]'} md:h-auto flex-shrink-0 p-2 flex items-center justify-center`}>
+          <CoverImage 
+            article={article} 
+            coverUrl={coverUrl} 
+            pdfUrl={pdfUrl} 
+            imageLoading={imageLoading} 
+          />
+        </div>
+        
+        <CardContentUI className={`p-3 w-full ${isMobile ? '' : 'md:w-[65%]'} flex-grow flex flex-col overflow-hidden`}>
+          <CardContent article={article} pdfUrl={pdfUrl} />
+        </CardContentUI>
+      </Card>
+
+      <RhcaPreviewModal
+        article={article}
+        pdfUrl={pdfUrl}
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+      />
+    </>
   );
 };
 
