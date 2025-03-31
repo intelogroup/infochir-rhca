@@ -6,7 +6,7 @@ import { CoverImage } from "./card/CoverImage";
 import { CardContent } from "./card/CardContent";
 import type { RhcaArticle } from "./types";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useNavigate } from 'react-router-dom';
+import { toast } from "sonner";
 
 // Check if we're in debug mode
 const isDebugMode = process.env.NODE_ENV === 'development' || 
@@ -22,7 +22,6 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [imageLoading, setImageLoading] = useState(true);
   const isMobile = useIsMobile();
-  const navigate = useNavigate();
   
   useEffect(() => {
     const loadResources = async () => {
@@ -70,13 +69,30 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
   }, [article]);
 
   const handleCardClick = (e: React.MouseEvent) => {
-    // Only navigate if clicking the card itself, not the buttons
+    // Only open the PDF if clicking the card itself, not the buttons
     if ((e.target as HTMLElement).closest('button')) {
       return;
     }
     
-    // Navigate to the article page
-    navigate(`/rhca/article/${article.id}`);
+    if (!pdfUrl) {
+      toast.error("PDF non disponible pour cet article");
+      return;
+    }
+    
+    // Open the PDF in a new tab
+    window.open(pdfUrl, '_blank');
+    
+    // Track the view if possible
+    try {
+      const { id } = article;
+      if (id) {
+        // You could add analytics tracking here if needed
+      }
+    } catch (error) {
+      if (isDebugMode) {
+        console.error('[RhcaCard] Error tracking view:', error);
+      }
+    }
   };
   
   return (

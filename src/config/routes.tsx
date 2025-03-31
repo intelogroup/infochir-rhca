@@ -1,3 +1,4 @@
+
 import Home from "@/pages/Home";
 import NotFound from "@/pages/NotFound";
 import TriggerUploads from "@/pages/TriggerUploads";
@@ -5,6 +6,7 @@ import ArticleDetail from "@/pages/articles/ArticleDetail";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import About from "@/pages/About";
 import RHCA from "@/pages/RHCA";
+import RhcaArticleDetail from "@/pages/rhca/RhcaArticleDetail";
 import ADC from "@/pages/ADC";
 import IGM from "@/pages/IGM";
 import Submission from "@/pages/Submission";
@@ -36,6 +38,11 @@ export const routes = [
         path: "rhca",
         element: <RHCA />,
         name: "rhca",
+      },
+      {
+        path: "rhca/article/:id",
+        element: <RhcaArticleDetail />,
+        name: "rhca-article-detail",
       },
       {
         path: "adc",
