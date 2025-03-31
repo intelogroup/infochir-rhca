@@ -63,7 +63,15 @@ const RhcaArticleDetail: React.FC = () => {
           category: data.category,
           status: data.status === 'published' ? "published" : (data.status === 'pending' ? "pending" : "draft"),
           views: data.views || 0,
-          downloads: data.downloads || 0
+          downloads: data.downloads || 0,
+          // Add the missing required properties
+          date: data.publication_date || new Date().toISOString(),
+          source: data.source || "RHCA",
+          tags: Array.isArray(data.tags) ? data.tags : [],
+          // Include optional properties if they exist in data
+          imageUrl: data.image_url,
+          shares: data.shares || 0,
+          specialty: data.specialty
         };
         
         setArticle(article);
@@ -180,11 +188,11 @@ const RhcaArticleDetail: React.FC = () => {
                   <span>{article.downloads || 0} téléchargement{article.downloads !== 1 ? 's' : ''}</span>
                 </div>
                 
-                {pdfUrl && article.pdfFileName && article.publicationDate && (
+                {pdfUrl && article.pdfFileName && article.date && (
                   <ArticleActions
                     id={article.id}
                     pdfFileName={article.pdfFileName}
-                    date={article.publicationDate}
+                    date={article.date}
                   />
                 )}
               </div>
