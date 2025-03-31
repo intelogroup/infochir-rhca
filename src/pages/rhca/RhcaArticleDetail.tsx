@@ -59,10 +59,10 @@ const RhcaArticleDetail: React.FC = () => {
           publicationDate: data.publication_date,
           volume: data.volume,
           issue: data.issue,
-          pageNumbers: data.page_numbers,
+          pageNumber: data.page_number, // Fixed: was page_numbers, now pageNumber
           keywords: Array.isArray(data.keywords) ? data.keywords : [],
           category: data.category,
-          status: data.status || "published",
+          status: data.status === 'published' ? "published" : (data.status === 'pending' ? "pending" : "draft"), // Fixed: ensure status is one of the allowed types
           views: data.views || 0,
           downloads: data.downloads || 0
         };
@@ -166,10 +166,10 @@ const RhcaArticleDetail: React.FC = () => {
                   <p>{new Date(article.publicationDate).toLocaleDateString('fr-FR')}</p>
                 </div>
               )}
-              {article.pageNumbers && (
+              {article.pageNumber && (
                 <div>
                   <h3 className="font-medium text-gray-500">Pages</h3>
-                  <p>{article.pageNumbers}</p>
+                  <p>{article.pageNumber}</p>
                 </div>
               )}
             </div>
@@ -181,10 +181,11 @@ const RhcaArticleDetail: React.FC = () => {
                   <span>{article.downloads || 0} téléchargement{article.downloads !== 1 ? 's' : ''}</span>
                 </div>
                 
-                {pdfUrl && article.pdfFileName && (
+                {pdfUrl && article.pdfFileName && article.publicationDate && (
                   <ArticleActions
                     id={article.id}
                     pdfFileName={article.pdfFileName}
+                    date={article.publicationDate}
                   />
                 )}
               </div>
