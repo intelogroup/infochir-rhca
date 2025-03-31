@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/layouts/MainLayout";
@@ -11,6 +10,7 @@ import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { RhcaArticle } from "@/components/rhca/types";
 import { getStorageUrl } from "@/integrations/supabase/client";
 import { ArticleActions } from "@/components/rhca/article/ArticleActions";
+import { ArticleSource } from "@/components/index-medicus/types/article";
 
 const RhcaArticleDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -66,7 +66,7 @@ const RhcaArticleDetail: React.FC = () => {
           downloads: data.downloads || 0,
           // Add the missing required properties
           date: data.publication_date || new Date().toISOString(),
-          source: data.source || "RHCA",
+          source: (data.source as ArticleSource) || "RHCA" as ArticleSource,
           tags: Array.isArray(data.tags) ? data.tags : [],
           // Include optional properties if they exist in data
           imageUrl: data.image_url,
