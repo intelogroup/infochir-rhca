@@ -14,22 +14,22 @@ export const WelcomeModal = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    // Check if the user has already seen the welcome message
-    const hasSeenWelcome = localStorage.getItem("hasSeenWelcome");
+    // Use a unique key for the welcome modal
+    const hasSeenWelcome = localStorage.getItem("hasSeenSpecialNote");
 
     if (!hasSeenWelcome) {
       // If not, show the welcome dialog after a short delay
       const timer = setTimeout(() => {
         setIsOpen(true);
-      }, 1000);
+      }, 500); // Reduced delay for faster pop-up
 
       return () => clearTimeout(timer);
     }
   }, []);
 
   const handleClose = () => {
-    // Mark that the user has seen the welcome message
-    localStorage.setItem("hasSeenWelcome", "true");
+    // Mark that the user has seen the welcome message with the unique key
+    localStorage.setItem("hasSeenSpecialNote", "true");
     setIsOpen(false);
   };
 
