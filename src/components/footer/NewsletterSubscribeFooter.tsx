@@ -8,6 +8,10 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
+import { createLogger } from "@/lib/error-logger";
+
+// Create a logger for this component
+const logger = createLogger("NewsletterSubscribeFooter");
 
 // Define validation schema for the newsletter form
 const newsletterSchema = z.object({
@@ -50,44 +54,39 @@ export const NewsletterSubscribeFooter = () => {
     const toastId = toast.loading("Traitement de votre inscription...");
 
     try {
-      console.log("Submitting newsletter:", { name, email });
+      logger.log("Submitting newsletter subscription:", { name, email });
       
-      // First, check if the email already exists to prevent duplicates
-      const { data: existingSubscriptions, error: checkError } = await supabase
-        .from('newsletter_subscriptions')
-        .select('id')
-        .eq('email', email)
-        .maybeSingle();
+      // Direct call to the edge function with specific headers
+      const response = await fetch(`${supabase.supabaseUrl}/functions/v1/newsletter-subscribe`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabase.supabaseKey}`,
+        },
+        body: JSON.stringify({ name, email })
+      });
       
-      if (checkError) {
-        console.error("Error checking for existing subscription:", checkError);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        logger.error("Newsletter subscription error from response:", errorData);
+        throw new Error(errorData.error || `Error: ${response.status} ${response.statusText}`);
       }
       
-      if (existingSubscriptions) {
+      const data = await response.json();
+      
+      if (data.existingSubscription) {
         toast.info("Cette adresse email est déjà inscrite à notre newsletter", { id: toastId });
-        setIsSubmitting(false);
-        return;
+      } else {
+        toast.success("Merci pour votre inscription à notre newsletter!", {
+          id: toastId
+        });
       }
-
-      // Insert new subscription
-      const { data, error } = await supabase.functions.invoke('newsletter-subscribe', {
-        body: { name, email }
-      });
-
-      if (error) {
-        console.error("Newsletter subscription error:", error);
-        throw new Error(`Une erreur est survenue: ${error.message}`);
-      }
-
-      toast.success("Merci pour votre inscription à notre newsletter!", {
-        id: toastId
-      });
       
       // Reset form
       setEmail("");
       setName("");
     } catch (error: any) {
-      console.error("Newsletter subscription error:", error);
+      logger.error("Newsletter subscription error:", error);
       toast.error(`Une erreur est survenue: ${error.message || "Veuillez réessayer plus tard"}`, {
         id: toastId
       });
