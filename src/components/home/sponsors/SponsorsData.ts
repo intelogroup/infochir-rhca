@@ -55,8 +55,8 @@ export const sponsors: Sponsor[] = [
     url: "https://www.charitynavigator.org/ein/823647332"
   },
   {
-    name: "MSSP",
-    logo: "/lovable-uploads/6ccd716d-4080-4b29-857f-fc454b0a0532.png",
+    name: "MSPP",
+    logo: "/lovable-uploads/9c3b3a70-ba95-43a2-b61c-9d6c40364593.png",
     type: "partner",
     url: "https://www.mspp.gouv.ht/"
   },
