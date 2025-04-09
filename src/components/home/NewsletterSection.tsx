@@ -7,60 +7,86 @@ import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+// Define validation schema for the contact form
+const contactFormSchema = z.object({
+  name: z.string().min(2, { message: "Le nom doit contenir au moins 2 caractères" }),
+  email: z.string().email({ message: "Veuillez entrer une adresse email valide" }),
+  phone: z.string().optional(),
+  message: z.string().min(10, { message: "Votre message doit contenir au moins 10 caractères" })
+});
+
+type ContactFormValues = z.infer<typeof contactFormSchema>;
 
 export const NewsletterSection = () => {
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !name || !message) {
-      toast.error("Veuillez remplir tous les champs obligatoires");
-      return;
+  
+  // Initialize form with zod resolver
+  const form = useForm<ContactFormValues>({
+    resolver: zodResolver(contactFormSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      message: ""
     }
+  });
 
+  const handleSubmit = async (values: ContactFormValues) => {
     setIsSubmitting(true);
     const toastId = toast.loading("Envoi en cours...");
 
     try {
+      console.log("Submitting contact form:", values);
+      
       // First, save to database
-      const { error: dbError } = await supabase
+      const { data: dbData, error: dbError } = await supabase
         .from('contact_messages')
         .insert([
-          { name, email, phone, message }
+          { 
+            name: values.name,
+            email: values.email,
+            phone: values.phone || null,
+            message: values.message
+          }
         ]);
 
+      // Log database response for debugging
       if (dbError) {
         console.error("Contact form database error:", dbError);
-        // Continue with email sending even if DB insert fails
+        throw new Error(`Database error: ${dbError.message}`);
+      } else {
+        console.log("Database insert successful:", dbData);
       }
 
       // Send email notification
-      const { error } = await supabase.functions.invoke('send-contact-email', {
-        body: { name, email, phone, message }
+      const { data, error } = await supabase.functions.invoke('send-contact-email', {
+        body: { 
+          name: values.name,
+          email: values.email,
+          phone: values.phone || null,
+          message: values.message
+        }
       });
 
       if (error) {
         console.error("Contact form submission error:", error);
-        toast.error("Une erreur est survenue lors de l'envoi du message", {
-          id: toastId
-        });
-        return;
+        throw new Error(`Email sending error: ${error.message}`);
       }
 
       toast.success("Merci pour votre message! Nous vous contacterons bientôt.", {
         id: toastId
       });
-      setEmail("");
-      setName("");
-      setPhone("");
-      setMessage("");
-    } catch (error) {
+      
+      // Reset form values
+      form.reset();
+    } catch (error: any) {
       console.error("Contact form submission error:", error);
-      toast.error("Une erreur est survenue lors de l'envoi", {
+      toast.error(`Une erreur est survenue: ${error.message || "Veuillez réessayer plus tard"}`, {
         id: toastId
       });
     } finally {
@@ -100,96 +126,118 @@ export const NewsletterSection = () => {
             </h3>
           </div>
           
-          <form onSubmit={handleSubmit} className="space-y-4 backdrop-blur-sm bg-white/5 p-8 rounded-2xl border border-white/10 shadow-xl">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label htmlFor="contact-name" className="text-white/90 text-sm font-medium">
-                  Nom*
-                </label>
-                <Input
-                  id="contact-name"
-                  name="contact-name"
-                  type="text"
-                  placeholder="Votre nom"
-                  className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white/20"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  disabled={isSubmitting}
-                  autoComplete="name"
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 backdrop-blur-sm bg-white/5 p-8 rounded-2xl border border-white/10 shadow-xl">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-white/90 text-sm font-medium">
+                        Nom*
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="Votre nom"
+                          className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white/20"
+                          disabled={isSubmitting}
+                          autoComplete="name"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-200" />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-white/90 text-sm font-medium">
+                        Téléphone
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="Votre numéro"
+                          className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white/20"
+                          disabled={isSubmitting}
+                          autoComplete="tel"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-200" />
+                    </FormItem>
+                  )}
                 />
               </div>
-              <div className="space-y-2">
-                <label htmlFor="contact-phone" className="text-white/90 text-sm font-medium">
-                  Téléphone
-                </label>
-                <Input
-                  id="contact-phone"
-                  name="contact-phone"
-                  type="tel"
-                  placeholder="Votre numéro"
-                  className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white/20"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  disabled={isSubmitting}
-                  autoComplete="tel"
-                />
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <label htmlFor="contact-email" className="text-white/90 text-sm font-medium">
-                Email*
-              </label>
-              <Input
-                id="contact-email"
-                name="contact-email"
-                type="email"
-                placeholder="Votre adresse email"
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white/20"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={isSubmitting}
-                autoComplete="email"
+              
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem className="space-y-2">
+                    <FormLabel className="text-white/90 text-sm font-medium">
+                      Email*
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="email"
+                        placeholder="Votre adresse email"
+                        className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white/20"
+                        disabled={isSubmitting}
+                        autoComplete="email"
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-200" />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            <div className="space-y-2">
-              <label htmlFor="contact-message" className="text-white/90 text-sm font-medium">
-                Message*
-              </label>
-              <Textarea
-                id="contact-message"
-                name="contact-message"
-                placeholder="Votre message"
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white/20 min-h-[120px]"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                required
-                disabled={isSubmitting}
+              <FormField
+                control={form.control}
+                name="message"
+                render={({ field }) => (
+                  <FormItem className="space-y-2">
+                    <FormLabel className="text-white/90 text-sm font-medium">
+                      Message*
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        placeholder="Votre message"
+                        className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white/20 min-h-[120px]"
+                        disabled={isSubmitting}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-200" />
+                  </FormItem>
+                )}
               />
-            </div>
 
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="pt-4"
-            >
-              <Button 
-                variant="secondary" 
-                type="submit" 
-                className="w-full bg-white text-primary hover:bg-white/90 transition-all duration-300 py-6 text-lg font-medium shadow-lg"
-                disabled={isSubmitting}
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="pt-4"
               >
-                {isSubmitting ? "Envoi en cours..." : "Envoyer"}
-              </Button>
-            </motion.div>
-            
-            <p className="text-white/60 text-sm text-center mt-4">
-              * Champs obligatoires
-            </p>
-          </form>
+                <Button 
+                  variant="secondary" 
+                  type="submit" 
+                  className="w-full bg-white text-primary hover:bg-white/90 transition-all duration-300 py-6 text-lg font-medium shadow-lg"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Envoi en cours..." : "Envoyer"}
+                </Button>
+              </motion.div>
+              
+              <p className="text-white/60 text-sm text-center mt-4">
+                * Champs obligatoires
+              </p>
+            </form>
+          </Form>
         </div>
       </motion.div>
     </section>

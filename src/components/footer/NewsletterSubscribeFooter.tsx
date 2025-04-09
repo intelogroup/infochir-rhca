@@ -7,16 +7,42 @@ import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
+import { z } from "zod";
+
+// Define validation schema for the newsletter form
+const newsletterSchema = z.object({
+  name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
+  email: z.string().email("Veuillez entrer une adresse email valide")
+});
 
 export const NewsletterSubscribeFooter = () => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
+  const [errors, setErrors] = useState<{name?: string; email?: string}>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const validateForm = () => {
+    try {
+      newsletterSchema.parse({ name, email });
+      setErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const formattedErrors: {name?: string; email?: string} = {};
+        error.errors.forEach((err) => {
+          if (err.path[0] === "name") formattedErrors.name = err.message;
+          if (err.path[0] === "email") formattedErrors.email = err.message;
+        });
+        setErrors(formattedErrors);
+      }
+      return false;
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !name) {
-      toast.error("Veuillez fournir votre nom et email");
+    
+    if (!validateForm()) {
       return;
     }
 
@@ -24,26 +50,45 @@ export const NewsletterSubscribeFooter = () => {
     const toastId = toast.loading("Traitement de votre inscription...");
 
     try {
-      const { error } = await supabase.functions.invoke('newsletter-subscribe', {
+      console.log("Submitting newsletter:", { name, email });
+      
+      // First, check if the email already exists to prevent duplicates
+      const { data: existingSubscriptions, error: checkError } = await supabase
+        .from('newsletter_subscriptions')
+        .select('id')
+        .eq('email', email)
+        .maybeSingle();
+      
+      if (checkError) {
+        console.error("Error checking for existing subscription:", checkError);
+      }
+      
+      if (existingSubscriptions) {
+        toast.info("Cette adresse email est déjà inscrite à notre newsletter", { id: toastId });
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Insert new subscription
+      const { data, error } = await supabase.functions.invoke('newsletter-subscribe', {
         body: { name, email }
       });
 
       if (error) {
         console.error("Newsletter subscription error:", error);
-        toast.error("Une erreur est survenue lors de l'inscription", {
-          id: toastId
-        });
-        return;
+        throw new Error(`Une erreur est survenue: ${error.message}`);
       }
 
       toast.success("Merci pour votre inscription à notre newsletter!", {
         id: toastId
       });
+      
+      // Reset form
       setEmail("");
       setName("");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Newsletter subscription error:", error);
-      toast.error("Une erreur est survenue", {
+      toast.error(`Une erreur est survenue: ${error.message || "Veuillez réessayer plus tard"}`, {
         id: toastId
       });
     } finally {
@@ -72,13 +117,15 @@ export const NewsletterSubscribeFooter = () => {
             name="footer-name"
             type="text"
             placeholder="Votre nom"
-            className="bg-white/80 border-gray-200 focus:border-primary"
+            className={`bg-white/80 border-gray-200 focus:border-primary ${errors.name ? "border-red-500" : ""}`}
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
             disabled={isSubmitting}
             autoComplete="name"
+            onBlur={() => validateForm()}
           />
+          {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
         </div>
         
         <div className="space-y-2">
@@ -90,13 +137,15 @@ export const NewsletterSubscribeFooter = () => {
             name="footer-email"
             type="email"
             placeholder="Votre adresse email"
-            className="bg-white/80 border-gray-200 focus:border-primary"
+            className={`bg-white/80 border-gray-200 focus:border-primary ${errors.email ? "border-red-500" : ""}`}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             disabled={isSubmitting}
             autoComplete="email"
+            onBlur={() => validateForm()}
           />
+          {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
         </div>
 
         <motion.div
