@@ -1,3 +1,4 @@
+
 import Home from "@/pages/Home";
 import NotFound from "@/pages/NotFound";
 import TriggerUploads from "@/pages/TriggerUploads";
@@ -16,6 +17,10 @@ import Opportunities from "@/pages/Opportunities";
 import EditorialCommittee from "@/pages/EditorialCommittee";
 import DonateSuccess from "@/pages/donate/DonateSuccess";
 import Analytics from "@/pages/admin/Analytics";
+import Dashboard from "@/pages/admin/Dashboard";
+import { AdminLayout } from "@/components/layouts/AdminLayout";
+import AdminNotFound from "@/pages/admin/NotFound";
+import { AdminRouteWrapper } from "@/components/routing/AdminRouteWrapper";
 
 export const routes = [
   {
@@ -94,20 +99,32 @@ export const routes = [
         name: "article-detail",
       },
       {
-        path: "admin/uploads",
-        element: <TriggerUploads />,
-        name: "uploads",
-      },
-      {
-        path: "admin/analytics",
-        element: <Analytics />,
-        name: "analytics",
-      },
-      {
         path: "*",
         element: <NotFound />,
         name: "notFound",
       },
     ],
+  },
+  // New parent admin route with AdminLayout
+  {
+    path: "/admin",
+    element: <AdminRouteWrapper component={() => <AdminLayout><Dashboard /></AdminLayout>} />,
+    name: "admin",
+  },
+  // Admin sub-routes
+  {
+    path: "/admin/uploads",
+    element: <AdminRouteWrapper component={() => <AdminLayout><TriggerUploads /></AdminLayout>} />,
+    name: "admin-uploads",
+  },
+  {
+    path: "/admin/analytics",
+    element: <AdminRouteWrapper component={() => <AdminLayout><Analytics /></AdminLayout>} />,
+    name: "admin-analytics",
+  },
+  {
+    path: "/admin/*",
+    element: <AdminRouteWrapper component={() => <AdminLayout><AdminNotFound /></AdminLayout>} />,
+    name: "admin-not-found",
   },
 ];

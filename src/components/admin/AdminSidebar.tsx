@@ -16,9 +16,9 @@ import { toast } from "sonner";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/content", label: "Content", icon: FileText },
-  { href: "/admin/users", label: "Users", icon: Users },
+  { href: "/admin/uploads", label: "Uploads", icon: FileText },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart },
+  { href: "/admin/users", label: "Users", icon: Users },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
@@ -54,6 +54,7 @@ export const AdminSidebar = () => {
                   : "text-gray-600 hover:bg-gray-50"
               }`
             }
+            end={item.href === "/admin"}
           >
             <item.icon className="h-5 w-5 mr-3 shrink-0" />
             {item.label}
