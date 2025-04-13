@@ -1,6 +1,7 @@
 
 import { createLogger } from "@/lib/error-logger";
 import { trackDownload } from "@/lib/analytics/track";
+import { DocumentType } from "./statistics/types";
 
 const logger = createLogger('TestDownloadTracking');
 
@@ -14,10 +15,10 @@ export const testDownloadTracking = async (): Promise<boolean> => {
     // Generate a random id for the test document
     const testId = crypto.randomUUID();
     
-    // Track a test download
+    // Track a test download with proper type
     const success = await trackDownload(
       testId,
-      'test',
+      'test' as DocumentType,
       'test-file.pdf',
       true
     );

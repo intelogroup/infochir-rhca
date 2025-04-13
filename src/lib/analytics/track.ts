@@ -1,12 +1,11 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger } from "@/lib/error-logger";
+import { DocumentType } from "./download/statistics/types";
 
 const logger = createLogger("analytics");
 
 // Define types for the analytics system
 export type EventType = 'download' | 'share' | 'view' | 'search' | 'click' | 'login' | 'logout' | 'register' | 'other';
-export type DocumentType = 'igm' | 'rhca' | 'adc' | 'article' | 'other';
 
 export interface TrackEventOptions {
   documentId?: string;

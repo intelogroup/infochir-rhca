@@ -33,3 +33,6 @@ export interface DocumentStats {
   downloads: number;
   last_download: string;
 }
+
+// Update the document type to include 'test'
+export type DocumentType = 'igm' | 'rhca' | 'adc' | 'article' | 'other' | 'test';

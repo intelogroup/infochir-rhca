@@ -99,7 +99,7 @@ export const getOverallDownloadStats = async (): Promise<OverallDownloadStats | 
       return null;
     }
     
-    // Process document_types if needed
+    // Process document_types_stats to ensure it's the correct type
     if (data && data.document_types_stats) {
       // If document_types_stats is a string (JSON), parse it
       if (typeof data.document_types_stats === 'string') {
@@ -110,9 +110,27 @@ export const getOverallDownloadStats = async (): Promise<OverallDownloadStats | 
           data.document_types_stats = {};
         }
       }
+      
+      // Ensure the type is DocumentTypeStats (object with string keys and number values)
+      const processedDocTypeStats: DocumentTypeStats = {};
+      
+      // Handle both object and string cases
+      const docTypeStats = data.document_types_stats;
+      if (typeof docTypeStats === 'object' && docTypeStats !== null) {
+        // Convert the object to the expected format
+        Object.entries(docTypeStats).forEach(([key, value]) => {
+          processedDocTypeStats[key] = typeof value === 'number' ? value : Number(value);
+        });
+      }
+      
+      // Replace the original data with properly typed data
+      data.document_types_stats = processedDocTypeStats;
+    } else if (data) {
+      // If document_types_stats is missing, provide an empty object
+      data.document_types_stats = {};
     }
     
-    return data;
+    return data as OverallDownloadStats;
   } catch (error) {
     logger.error('Exception in getOverallDownloadStats:', error);
     return null;

@@ -3,6 +3,7 @@ import { createLogger } from "@/lib/error-logger";
 import { 
   trackDownload as trackDownloadEvent
 } from "@/lib/analytics/track";
+import { DocumentType } from "./statistics/types";
 
 // Export the track-downloads functionality
 export * from "./track-downloads";
@@ -14,8 +15,10 @@ export {
   getDailyDownloadStats,
   getOverallDownloadStats,
   // Rename the function to avoid conflict with storage/check-connection.ts
-  subscribeToDownloadStats as subscribeToDownloadStatsChanges
-} from "./statistics";
+  subscribeToDownloadStats as subscribeToDownloadStatsChanges,
+  // Export the DocumentType type
+  DocumentType
+} from "./statistics/types";
 
 const logger = createLogger("downloadService");
 
@@ -27,7 +30,7 @@ export interface DownloadPDFOptions {
   url: string;
   fileName: string;
   documentId: string;
-  documentType: 'igm' | 'rhca' | 'adc' | 'index-medicus' | 'other' | 'test';
+  documentType: DocumentType;
   trackingEnabled?: boolean;
 }
 
@@ -70,12 +73,11 @@ export const downloadPDF = async (options: DownloadPDFOptions): Promise<boolean>
     // Track the download if tracking is enabled
     if (trackingEnabled) {
       // Map to standard document type
-      const analyticDocType = documentType === 'index-medicus' ? 'article' : 
-                            (documentType === 'test' ? 'other' : documentType);
+      const analyticDocType = documentType === 'index-medicus' ? 'article' : documentType;
       
       await trackDownloadEvent(
         documentId,
-        analyticDocType as any,
+        analyticDocType,
         fileName,
         true
       );
