@@ -1,8 +1,9 @@
+
 import { createLogger } from "@/lib/error-logger";
 import { 
   trackDownload as trackDownloadEvent
 } from "@/lib/analytics/track";
-// Change the import to get DocumentType from the types file
+// Import DocumentType from the correct path
 import { DocumentType } from "./statistics/types";
 
 // Export the track-downloads functionality
@@ -16,8 +17,7 @@ export {
   getOverallDownloadStats,
   // Rename the function to avoid conflict with storage/check-connection.ts
   subscribeToDownloadStats as subscribeToDownloadStatsChanges,
-  // Export the DocumentType type
-  type DocumentType
+  // We don't need to export DocumentType here as we'll export it at the end of the file
 } from "./statistics";
 
 const logger = createLogger("downloadService");
@@ -109,6 +109,5 @@ export const checkFileExists = async (bucket: string, path: string): Promise<boo
   }
 };
 
-export { 
-  DocumentType 
-};
+// Export DocumentType once at the end of the file
+export { DocumentType };
