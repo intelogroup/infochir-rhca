@@ -18,7 +18,7 @@ export const testDownloadTracking = async (): Promise<boolean> => {
     // Track a test download with proper type
     const success = await trackDownload(
       testId,
-      'test' as DocumentType,
+      DocumentType.Test,
       'test-file.pdf',
       true
     );
@@ -35,3 +35,4 @@ export const testDownloadTracking = async (): Promise<boolean> => {
     return false;
   }
 };
+

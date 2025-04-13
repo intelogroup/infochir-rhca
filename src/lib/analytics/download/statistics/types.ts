@@ -34,5 +34,14 @@ export interface DocumentStats {
   last_download: string;
 }
 
-// Update the document type to include 'test'
-export type DocumentType = 'igm' | 'rhca' | 'adc' | 'article' | 'other' | 'test';
+// Use enum for DocumentType to improve type safety and avoid string literals
+export enum DocumentType {
+  IGM = 'igm',
+  RHCA = 'rhca',
+  ADC = 'adc',
+  Article = 'article',
+  Other = 'other',
+  Test = 'test',
+  IndexMedicus = 'index-medicus'
+}
+

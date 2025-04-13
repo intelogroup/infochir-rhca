@@ -92,7 +92,7 @@ export default defineConfig(({ mode }) => ({
       'Cache-Control': 'no-cache, no-store, must-revalidate',
       'Cross-Origin-Opener-Policy': 'same-origin',
       'Cross-Origin-Embedder-Policy': 'require-corp',
-      'Content-Security-Policy': "default-src 'self'; connect-src 'self' https://llxzstqejdrplmxdjxlu.supabase.co https://*.stripe.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.stripe.com https://m.stripe.network; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; frame-src 'self' https://*.stripe.com; media-src 'self' data:"
+      'Content-Security-Policy': "default-src 'self'; connect-src 'self' https://llxzstqejdrplmxdjxlu.supabase.co https://*.stripe.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.stripe.com https://m.stripe.network https://localhost:*; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; frame-src 'self' https://*.stripe.com; media-src 'self' data:"
     }
   },
   preview: {
@@ -102,7 +102,7 @@ export default defineConfig(({ mode }) => ({
     headers: {
       'Cache-Control': 'public, max-age=600',
       'Access-Control-Allow-Origin': '*',
-      'Content-Security-Policy': "default-src 'self'; connect-src 'self' https://llxzstqejdrplmxdjxlu.supabase.co https://*.stripe.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.stripe.com https://m.stripe.network; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; frame-src 'self' https://*.stripe.com; media-src 'self' data:"
+      'Content-Security-Policy': "default-src 'self'; connect-src 'self' https://llxzstqejdrplmxdjxlu.supabase.co https://*.stripe.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.stripe.com https://m.stripe.network https://localhost:*; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; frame-src 'self' https://*.stripe.com; media-src 'self' data:"
     }
   }
 }));

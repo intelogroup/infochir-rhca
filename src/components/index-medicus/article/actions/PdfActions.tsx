@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { checkFileExists, downloadPDF } from "@/lib/analytics/download";
 import { createLogger } from "@/lib/error-logger";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { DocumentType } from "@/lib/analytics/download/statistics/types";
 
 const logger = createLogger('PdfActions');
 
@@ -116,7 +117,7 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
         url: pdfUrl,
         fileName: fileName,
         documentId: articleId || 'unknown',
-        documentType: 'index-medicus',
+        documentType: DocumentType.IndexMedicus,
         trackingEnabled: !!articleId
       });
       
@@ -225,3 +226,4 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
     </DropdownMenu>
   );
 };
+

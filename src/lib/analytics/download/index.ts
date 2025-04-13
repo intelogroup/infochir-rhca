@@ -17,8 +17,8 @@ export {
   // Rename the function to avoid conflict with storage/check-connection.ts
   subscribeToDownloadStats as subscribeToDownloadStatsChanges,
   // Export the DocumentType type
-  DocumentType
-} from "./statistics/types";
+  type DocumentType
+} from "./statistics";
 
 const logger = createLogger("downloadService");
 
@@ -73,7 +73,7 @@ export const downloadPDF = async (options: DownloadPDFOptions): Promise<boolean>
     // Track the download if tracking is enabled
     if (trackingEnabled) {
       // Map to standard document type
-      const analyticDocType = documentType === 'index-medicus' ? 'article' : documentType;
+      const analyticDocType = documentType === DocumentType.IndexMedicus ? DocumentType.Article : documentType;
       
       await trackDownloadEvent(
         documentId,
@@ -108,3 +108,4 @@ export const checkFileExists = async (bucket: string, path: string): Promise<boo
     return false;
   }
 };
+
