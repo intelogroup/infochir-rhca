@@ -17,7 +17,7 @@ export interface DownloadEvent {
 }
 
 /**
- * Tracks document download events
+ * Tracks document download events with fallback mechanisms
  * Note: As per requirements, we only track successful downloads 
  */
 export const trackDownload = async (event: DownloadEvent): Promise<boolean> => {
@@ -58,7 +58,30 @@ export const trackDownload = async (event: DownloadEvent): Promise<boolean> => {
       screen_size: `${window.innerWidth}x${window.innerHeight}`,
     };
     
-    // Log download event for analytics purposes - use a direct insert
+    // Try using track_user_event first (which handles both tracking and RLS)
+    try {
+      const { error } = await supabase.rpc('track_user_event', {
+        p_event_type: 'download',
+        p_document_id: event.document_id,
+        p_document_type: event.document_type,
+        p_event_data: {
+          fileName: event.file_name,
+          status: event.status,
+          screenSize: enhancedEvent.screen_size
+        }
+      });
+      
+      if (!error) {
+        logger.log('Download event tracked successfully using track_user_event');
+        return true;
+      }
+      
+      logger.warn('Failed to use track_user_event, falling back to direct insert:', error);
+    } catch (rpcError) {
+      logger.warn('Error using track_user_event, falling back to direct insert:', rpcError);
+    }
+    
+    // Fallback: Log download event directly
     const { error } = await supabase
       .from('download_events')
       .insert(enhancedEvent);
@@ -73,9 +96,8 @@ export const trackDownload = async (event: DownloadEvent): Promise<boolean> => {
         const minimalEvent = {
           document_id: event.document_id,
           document_type: event.document_type,
-          file_name: event.file_name,
+          file_name: event.file_name.substring(0, 255), // Ensure filename is not too long
           status: event.status,
-          error_details: event.error_details?.substring(0, 255) || null,
         };
         
         const { error: retryError } = await supabase
@@ -84,6 +106,9 @@ export const trackDownload = async (event: DownloadEvent): Promise<boolean> => {
           
         if (retryError) {
           logger.error('Error on retry logging download event:', retryError);
+          
+          // Last resort: Only log to console if all else fails
+          logger.info('Unable to track download in database, logging to console only:', event);
           return false;
         }
         

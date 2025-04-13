@@ -1,6 +1,9 @@
 
 import { useState, useEffect } from 'react';
 import { getOptimizedImageUrl, getAlternativeRHCAUrl } from '@/utils/imageOptimization';
+import { createLogger } from "@/lib/error-logger";
+
+const logger = createLogger('useImageLoader');
 
 interface UseImageLoaderProps {
   src: string | undefined;
@@ -21,21 +24,23 @@ export const useImageLoader = ({
   const [hasError, setHasError] = useState(false);
   const [imageSrc, setImageSrc] = useState("");
   const [retryCount, setRetryCount] = useState(0);
+  const [usedFallback, setUsedFallback] = useState(false);
 
   useEffect(() => {
     // Reset states when src changes
     setIsLoading(true);
     setHasError(false);
     setRetryCount(0);
+    setUsedFallback(false);
     
     if (!src) {
-      console.warn(`[ImageOptimizer:WARN] No source URL provided for image: ${alt}`);
+      logger.warn(`[useImageLoader] No source URL provided for image: ${alt}`);
       setHasError(true);
       setIsLoading(false);
       return;
     }
 
-    console.log(`[ImageOptimizer:INFO] Loading image from: ${src}, alt: ${alt}`);
+    logger.log(`[useImageLoader] Loading image from: ${src}, alt: ${alt}`);
 
     const loadImage = () => {
       const img = new Image();
@@ -51,30 +56,62 @@ export const useImageLoader = ({
       setImageSrc(optimizedSrc);
 
       img.onload = () => {
-        console.log(`[ImageOptimizer:SUCCESS] Image loaded successfully: ${src}`);
+        logger.log(`[useImageLoader] Image loaded successfully: ${src}`);
         setIsLoading(false);
         setHasError(false);
       };
 
       img.onerror = (error) => {
-        console.error(`[ImageOptimizer:ERROR] Failed to load image from: ${src}`, error);
+        logger.error(`[useImageLoader] Failed to load image from: ${optimizedSrc}`, error);
         
-        // If we've already retried 3 times, give up
-        if (retryCount >= 2) {
-          setHasError(true);
-          setIsLoading(false);
+        // If we've already retried with the alternative URL, give up
+        if (usedFallback || retryCount >= 2) {
+          // Try with the original URL without optimization as a last resort
+          if (!usedFallback && optimizedSrc !== src) {
+            logger.log(`[useImageLoader] Trying original URL as fallback: ${src}`);
+            setUsedFallback(true);
+            setImageSrc(src);
+            const fallbackImg = new Image();
+            fallbackImg.src = src;
+            fallbackImg.onload = () => {
+              setIsLoading(false);
+              setHasError(false);
+            };
+            fallbackImg.onerror = () => {
+              setHasError(true);
+              setIsLoading(false);
+            };
+          } else {
+            setHasError(true);
+            setIsLoading(false);
+          }
           return;
         }
         
         // Try alternative URL for RHCA covers
         const alternativeUrl = getAlternativeRHCAUrl(src);
-        if (alternativeUrl) {
+        if (alternativeUrl && alternativeUrl !== src) {
+          logger.log(`[useImageLoader] Trying alternative URL: ${alternativeUrl}`);
           setRetryCount(prev => prev + 1);
           setTimeout(() => {
             const newImg = new Image();
             const optimizedAltSrc = getOptimizedImageUrl(alternativeUrl, width, height);
             newImg.src = optimizedAltSrc;
             setImageSrc(optimizedAltSrc);
+            
+            newImg.onload = () => {
+              logger.log(`[useImageLoader] Alternative image loaded successfully: ${alternativeUrl}`);
+              setIsLoading(false);
+              setHasError(false);
+            };
+            
+            newImg.onerror = () => {
+              logger.error(`[useImageLoader] Failed to load alternative image: ${alternativeUrl}`);
+              // If alternative also fails, try without filename modifications
+              setUsedFallback(true);
+              setHasError(true);
+              setIsLoading(false);
+            };
           }, 500);
         } else {
           setHasError(true);
@@ -88,7 +125,7 @@ export const useImageLoader = ({
     return () => {
       // Clean up
     };
-  }, [src, width, height, alt, retryCount, priority]);
+  }, [src, width, height, alt, retryCount, priority, usedFallback]);
 
   return {
     isLoading,
