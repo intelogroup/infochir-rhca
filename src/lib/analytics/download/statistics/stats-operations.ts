@@ -46,7 +46,7 @@ export const getDownloadStatsByType = async (docType: string): Promise<TypeStats
       throw error;
     }
     
-    // Fix: Access the data object directly since it's a single row result
+    // The data returned is a single object, not an array
     return {
       total: data?.total_downloads || 0,
       successful: data?.successful_downloads || 0,
@@ -71,7 +71,7 @@ export const getDocumentDownloadStats = async (documentId: string): Promise<Type
       throw error;
     }
     
-    // Fix: Access the data object directly since it's a single row result
+    // The data returned is a single object, not an array
     return {
       total: data?.total_downloads || 0,
       successful: data?.successful_downloads || 0,
@@ -124,6 +124,7 @@ export const getOverallDownloadStats = async (): Promise<{
     // Transform document types from jsonb to a typed object
     const docTypes: DocumentTypeStats = {};
     
+    // The data returned is a single object, not an array
     if (data?.document_types) {
       Object.entries(data.document_types).forEach(([key, value]) => {
         docTypes[key] = typeof value === 'number' ? value : 0;

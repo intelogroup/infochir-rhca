@@ -7,8 +7,15 @@ import {
 // Export the track-downloads functionality
 export * from "./track-downloads";
 
-// Export statistics functionality
-export * from "./statistics";
+// Export statistics functionality but rename the conflicting function
+export { 
+  getDownloadStatsByType,
+  getDocumentDownloadStats,
+  getDailyDownloadStats,
+  getOverallDownloadStats,
+  // Rename the function to avoid conflict with storage/check-connection.ts
+  subscribeToDownloadStats as subscribeToDownloadStatsChanges
+} from "./statistics";
 
 const logger = createLogger("downloadService");
 
