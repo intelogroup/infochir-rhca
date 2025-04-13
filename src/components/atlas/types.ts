@@ -1,44 +1,37 @@
 
-import { ArticleSource } from "@/components/index-medicus/types/article";
-
-export type ChapterStatus = "available" | "coming";
-
-export interface ChapterStats {
-  views: number;
-  shares: number;
-  downloads: number;
-}
-
 export interface AtlasChapter {
   id: string;
   title: string;
-  description?: string;
-  abstract?: string;
+  subtitle?: string;
+  description: string;
   content?: string;
-  lastUpdate?: string;
-  publicationDate: string;
-  author?: string;
-  authors?: string[];
-  status: ChapterStatus;
-  coverImage?: string;
-  stats?: ChapterStats;
-  tags?: string[];
-  volume?: string;
-  specialty?: string;
   category?: string;
-  source: ArticleSource;
-  pdfUrl?: string;
-  imageUrls?: string[];
-  institution?: string;
-  userId?: string;
+  articleCount?: number;
+  isNew?: boolean;
+  isUpdated?: boolean;
+  lastUpdated?: string;
+  sections?: ChapterSection[];
+}
+
+export interface ChapterSection {
+  id: string;
+  title: string;
+  content: string;
+  subsections?: ChapterSubsection[];
+}
+
+export interface ChapterSubsection {
+  id: string;
+  title: string;
+  content: string;
 }
 
 export interface AtlasCategory {
   id: string;
-  title: string;
+  name: string;
   description?: string;
-  chapters: string[];
-  coverImage?: string;
-  chapterCount?: number;
-  lastUpdate?: string;
+  color?: string;
+  chapters: AtlasChapter[];
 }
+
+export type ChapterView = 'grid' | 'list';
