@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { ErrorBoundary } from '@/components/error-boundary/ErrorBoundary';
@@ -7,17 +6,16 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { createLogger } from '@/lib/error-logger';
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { useMediaQuery } from 'react-responsive';
 import { trackView } from '@/lib/analytics/track';
 import { DocumentType } from '@/lib/analytics/download/statistics/types';
-import { useIsMobile } from '@/hooks/use-mobile';
-import ChaptersGrid from '@/components/atlas/ChaptersGrid';
 
 const logger = createLogger('ADCPage');
 
 const ADC = () => {
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
+  const isMobile = useMediaQuery({ maxWidth: 768 });
   const [pageLoaded, setPageLoaded] = useState(false);
 
   useEffect(() => {
@@ -48,19 +46,14 @@ const ADC = () => {
     <MainLayout>
       <div className="min-h-screen bg-[#F1F0FB] pt-[15px]">
         <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 lg:py-8">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/">Accueil</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Atlas des Décisions Cliniques</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+          <Breadcrumbs
+            segments={[
+              { label: 'Accueil', href: '/' },
+              { label: 'Atlas des Décisions Cliniques', href: '/adc' },
+            ]}
+          />
 
-          <section className="relative py-12 md:py-24 bg-white rounded-lg shadow-md overflow-hidden mt-4">
+          <section className="relative py-12 md:py-24 bg-white rounded-lg shadow-md overflow-hidden">
             <div className="absolute inset-0 bg-secondary/5 z-0" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 75%, 0% 100%)' }}></div>
             <div className="relative z-10 px-4 sm:px-6 lg:px-8">
               <div className="text-center">

@@ -5,7 +5,7 @@ export const introductionChapter: AtlasChapter = {
   id: "0",
   title: "Introduction à l'Atlas de Diagnostic Chirurgical",
   description: "Introduction complète à l'Atlas de Diagnostic Chirurgical, un guide essentiel pour les professionnels de santé.",
-  lastUpdated: "2024-07-23",
+  lastUpdate: "2024-07-23",
   publicationDate: "2024-07-23",
   author: "Dr. Martin",
   status: "available",

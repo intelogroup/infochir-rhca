@@ -7,7 +7,6 @@ export enum DocumentType {
   IGM = "igm",
   RHCA = "rhca",
   ADC = "adc",
-  IndexMedicus = "index-medicus",
   Test = "test"
 }
 

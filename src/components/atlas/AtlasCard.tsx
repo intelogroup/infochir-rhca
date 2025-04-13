@@ -1,95 +1,128 @@
 
-import React from 'react';
-import { AtlasChapter } from './types';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { InfoIcon, BookOpen, FileText } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Eye, Download } from "lucide-react";
+import { AtlasChapter } from "./types";
+import { toast } from "sonner";
+import { createLogger } from "@/lib/error-logger";
+import { downloadPDF } from "@/lib/analytics/download";
+import { DocumentType } from "@/lib/analytics/download/statistics/types";
+
+const logger = createLogger('AtlasCard');
 
 interface AtlasCardProps {
   chapter: AtlasChapter;
-  className?: string;
-  onClick?: () => void;
 }
 
-export const AtlasCard: React.FC<AtlasCardProps> = ({ 
-  chapter, 
-  className,
-  onClick 
-}) => {
-  // Determine if the chapter is new or updated
-  const isNew = chapter.isNew;
-  const isUpdated = chapter.isUpdated;
+export const AtlasCard = ({ chapter }: AtlasCardProps) => {
+  const navigate = useNavigate();
+  const [isDownloading, setIsDownloading] = useState(false);
   
-  // Format the update date if available
-  const formattedDate = chapter.lastUpdated 
-    ? new Date(chapter.lastUpdated).toLocaleDateString('fr-FR', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric'
-      }) 
-    : null;
-
+  const handleCardClick = () => {
+    navigate(`/adc/chapters/${chapter.id}`);
+  };
+  
+  const handleDownload = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    
+    if (!chapter.pdfUrl) {
+      toast.error("Aucun PDF disponible pour ce chapitre");
+      return;
+    }
+    
+    setIsDownloading(true);
+    
+    try {
+      // Use the improved downloadPDF function
+      const success = await downloadPDF({
+        url: chapter.pdfUrl,
+        fileName: `ADC-${chapter.title.substring(0, 30)}.pdf`,
+        documentId: chapter.id,
+        documentType: DocumentType.ADC
+      });
+      
+      if (!success) {
+        throw new Error("Échec du téléchargement");
+      }
+      
+      toast.success("Téléchargement lancé");
+    } catch (error) {
+      logger.error(error);
+      toast.error("Erreur lors du téléchargement");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+  
+  const handleView = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    
+    if (!chapter.pdfUrl) {
+      toast.error("Aucun PDF disponible pour ce chapitre");
+      return;
+    }
+    
+    // Track the view
+    try {
+      // Use our tracking function
+      // This simply opens the PDF in a new tab
+      window.open(chapter.pdfUrl, '_blank');
+    } catch (error) {
+      logger.error(error);
+      toast.error("Erreur lors de l'ouverture du PDF");
+    }
+  };
+  
   return (
     <Card 
-      className={cn(
-        "transition-all duration-300 hover:shadow-md overflow-hidden group", 
-        className
-      )}
-      onClick={onClick}
+      className="overflow-hidden cursor-pointer hover:shadow-md transition-all flex flex-col h-full"
+      onClick={handleCardClick}
     >
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-start">
-          <CardTitle className="flex items-center text-xl text-primary">
-            {chapter.id && <span className="text-base mr-2">{chapter.id}.</span>}
-            {chapter.title}
-          </CardTitle>
-          <div className="flex gap-1 mt-1">
-            {isNew && (
-              <Badge variant="default" className="bg-green-500 hover:bg-green-600">
-                Nouveau
-              </Badge>
-            )}
-            {isUpdated && (
-              <Badge variant="outline" className="border-amber-500 text-amber-700">
-                Mise à jour
-              </Badge>
-            )}
+      <CardContent className="flex-grow p-4">
+        <div className="space-y-2">
+          <div className="flex items-start justify-between">
+            <Badge variant="outline" className="bg-secondary/10 text-secondary font-medium mb-2">
+              {chapter.category}
+            </Badge>
+            <span className="text-xs text-muted-foreground">
+              {chapter.chapterNumber && `Chapitre ${chapter.chapterNumber}`}
+            </span>
           </div>
+          
+          <h3 className="font-medium line-clamp-2 text-lg">
+            {chapter.title}
+          </h3>
+          
+          <p className="text-sm text-muted-foreground line-clamp-3">
+            {chapter.description}
+          </p>
         </div>
-        {chapter.subtitle && (
-          <CardDescription className="text-sm">{chapter.subtitle}</CardDescription>
-        )}
-      </CardHeader>
-      
-      <CardContent>
-        <p className="text-gray-600 text-sm line-clamp-3">{chapter.description}</p>
       </CardContent>
       
-      <CardFooter className="flex justify-between border-t pt-4">
-        <div className="text-xs text-gray-500 flex items-center">
-          {chapter.articleCount ? (
-            <span className="flex items-center">
-              <FileText className="w-3 h-3 mr-1" />
-              {chapter.articleCount} article{chapter.articleCount > 1 ? 's' : ''}
-            </span>
-          ) : (
-            <span className="flex items-center">
-              <InfoIcon className="w-3 h-3 mr-1" />
-              Détails
-            </span>
-          )}
-        </div>
-        
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="text-primary hover:text-primary-dark hover:bg-primary-50 p-0 h-auto"
+      <CardFooter className="px-4 pt-0 pb-4 border-t mt-2 pt-3 flex gap-2">
+        <Button
+          size="sm"
+          variant="outline"
+          className="flex-1 h-8 gap-1 text-xs"
+          onClick={handleView}
+          disabled={!chapter.pdfUrl}
         >
-          <span className="flex items-center">
-            Lire <BookOpen className="w-3 h-3 ml-1" />
-          </span>
+          <Eye className="h-3.5 w-3.5" />
+          Consulter
+        </Button>
+        
+        <Button
+          size="sm"
+          variant="outline"
+          className="flex-1 h-8 gap-1 text-xs"
+          onClick={handleDownload}
+          disabled={!chapter.pdfUrl || isDownloading}
+        >
+          <Download className={`h-3.5 w-3.5 ${isDownloading ? 'animate-pulse' : ''}`} />
+          PDF
         </Button>
       </CardFooter>
     </Card>

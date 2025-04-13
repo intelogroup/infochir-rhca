@@ -91,10 +91,10 @@ export const ModalHeader = ({ chapter, category }: ModalHeaderProps) => {
         )}
         <h2 className="text-xl font-bold mb-2">{chapter.title}</h2>
         <div className="flex flex-wrap gap-3 text-xs">
-          {chapter.lastUpdated && (
+          {chapter.lastUpdate && (
             <div className="flex items-center gap-1">
               <Calendar className="w-3 h-3" />
-              <span>MàJ: {chapter.lastUpdated}</span>
+              <span>MàJ: {chapter.lastUpdate}</span>
             </div>
           )}
           {chapter.author && (

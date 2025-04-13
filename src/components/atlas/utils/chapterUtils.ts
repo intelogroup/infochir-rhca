@@ -1,4 +1,3 @@
-
 import { AtlasChapter } from "../types";
 
 export const getChapterById = (chapters: AtlasChapter[], id: string): AtlasChapter | undefined => {
@@ -15,7 +14,7 @@ export const filterComingChapters = (chapters: AtlasChapter[]): AtlasChapter[] =
 
 export const sortChaptersByDate = (chapters: AtlasChapter[]): AtlasChapter[] => {
   return [...chapters].sort((a, b) => {
-    if (!a.lastUpdated || !b.lastUpdated) return 0;
-    return new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime();
+    if (!a.lastUpdate || !b.lastUpdate) return 0;
+    return new Date(b.lastUpdate).getTime() - new Date(a.lastUpdate).getTime();
   });
 };
