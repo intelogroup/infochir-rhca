@@ -1,122 +1,110 @@
 
-import { useQuery } from "@tanstack/react-query";
-import { supabase, SUPABASE_URL, getADCCoverUrl } from "@/integrations/supabase/client";
-import type { AtlasChapter } from "../types";
-import { createLogger } from "@/lib/error-logger";
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { createLogger } from '@/lib/error-logger';
+import { AtlasChapter } from '../types';
 
 const logger = createLogger('useAtlasArticles');
 
-// Detect if we're in preview mode for improved error handling
-const isPreviewMode = 
-  typeof window !== 'undefined' && 
-  (window.location.hostname.includes('preview') || 
-   window.location.hostname.includes('lovable.app')) ||
-  import.meta.env.VITE_APP_PREVIEW === 'true';
+// Mock data for development
+const mockChapters: AtlasChapter[] = [
+  {
+    id: '1',
+    title: 'Introduction aux décisions cliniques',
+    description: 'Un aperçu des principes de base des décisions cliniques.',
+    category: 'Fondamentaux',
+    chapterNumber: 1,
+    authors: ['Dr. Jean Dupont', 'Dr. Marie Curie'],
+    pdfUrl: 'https://example.com/chapter1.pdf',
+    coverImageUrl: '/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png',
+    lastUpdate: '2023-10-15',
+    status: 'available',
+    tags: ['introduction', 'principes', 'fondamentaux']
+  },
+  {
+    id: '2',
+    title: 'Évaluation des risques en chirurgie',
+    description: 'Comment évaluer les risques lors des interventions chirurgicales.',
+    category: 'Chirurgie',
+    chapterNumber: 2,
+    authors: ['Dr. Pierre Martin', 'Dr. Sophie Laurent'],
+    pdfUrl: 'https://example.com/chapter2.pdf',
+    lastUpdate: '2023-11-05',
+    status: 'available',
+    tags: ['chirurgie', 'risques', 'évaluation']
+  },
+  {
+    id: '3',
+    title: 'Protocoles d\'urgence cardiaque',
+    description: 'Procédures et protocoles pour les urgences cardiaques.',
+    category: 'Cardiologie',
+    chapterNumber: 3,
+    authors: ['Dr. Thomas Petit', 'Dr. Claire Grand'],
+    pdfUrl: 'https://example.com/chapter3.pdf',
+    lastUpdate: '2023-09-20',
+    status: 'available',
+    tags: ['cardiologie', 'urgence', 'protocoles']
+  },
+  {
+    id: '4',
+    title: 'Gestion de la douleur post-opératoire',
+    description: 'Stratégies et méthodes pour la gestion de la douleur après une opération.',
+    category: 'Anesthésie',
+    chapterNumber: 4,
+    authors: ['Dr. Lucie Blanc', 'Dr. François Noir'],
+    pdfUrl: 'https://example.com/chapter4.pdf',
+    lastUpdate: '2023-12-01',
+    status: 'available',
+    tags: ['anesthésie', 'douleur', 'post-opératoire']
+  },
+  {
+    id: '5',
+    title: 'Diagnostic différentiel en neurologie',
+    description: 'Comment établir un diagnostic différentiel en neurologie.',
+    category: 'Neurologie',
+    chapterNumber: 5,
+    authors: ['Dr. Michel Leroy', 'Dr. Anne Dubois'],
+    pdfUrl: 'https://example.com/chapter5.pdf',
+    lastUpdate: '2024-01-10',
+    status: 'available',
+    tags: ['neurologie', 'diagnostic', 'différentiel']
+  },
+  {
+    id: '6',
+    title: 'Soins intensifs pédiatriques',
+    description: 'Procédures et considérations pour les soins intensifs en pédiatrie.',
+    category: 'Pédiatrie',
+    chapterNumber: 6,
+    authors: ['Dr. Isabelle Martin', 'Dr. Robert Durand'],
+    status: 'coming-soon',
+    tags: ['pédiatrie', 'soins intensifs', 'enfants']
+  }
+];
 
 export const useAtlasArticles = () => {
   return useQuery({
-    queryKey: ["atlas-chapters"],
+    queryKey: ['atlas-articles'],
     queryFn: async () => {
-      logger.log('Fetching Atlas chapters from articles table');
-      
       try {
-        const { data, error } = await supabase
-          .from("articles")  // Using the articles table for ADC content
-          .select("*")
-          .eq('source', 'ADC')
-          .order("publication_date", { ascending: false });
-
-        if (error) {
-          logger.error(error);
-          throw error;
-        }
-
-        if (!data || data.length === 0) {
-          logger.log('No ADC articles found in the articles table');
-          return [];
-        }
-
-        logger.log(`Found ${data.length} ADC articles in the articles table`);
-
-        const chapters: AtlasChapter[] = data?.map(item => {
-          // Process cover image with correct bucket and proper path handling
-          let coverImage = '';
-          
-          if (item.cover_image_filename) {
-            try {
-              // Use the utility function to get the correct URL
-              coverImage = getADCCoverUrl(item.cover_image_filename);
-              logger.log(`Generated cover URL for ${item.id}: ${coverImage}`);
-              
-              // Add a cache buster in preview mode
-              if (isPreviewMode) {
-                coverImage = `${coverImage}?t=${Date.now()}`;
-              }
-            } catch (imageError) {
-              logger.error(`Failed to generate image URL for ${item.cover_image_filename}`, imageError);
-            }
-          } else if (item.image_url) {
-            coverImage = item.image_url;
-            logger.log(`Using external image URL: ${item.image_url}`);
-          } else {
-            logger.log(`No cover image found for article: ${item.id} - ${item.title}`);
-          }
-          
-          return {
-            id: item.id,
-            title: item.title,
-            description: item.abstract || undefined,
-            abstract: item.abstract,
-            content: item.abstract,
-            lastUpdate: item.updated_at,
-            lastUpdated: item.updated_at,
-            publicationDate: item.publication_date,
-            author: Array.isArray(item.authors) ? item.authors[0] : undefined,
-            authors: Array.isArray(item.authors) ? item.authors : [],
-            status: item.status === 'draft' ? 'coming' : 'available',
-            coverImage: coverImage,
-            stats: {
-              views: item.views || 0,
-              shares: item.shares || 0,
-              downloads: item.downloads || 0
-            },
-            tags: item.tags || [],
-            volume: item.volume,
-            specialty: item.specialty,
-            category: item.category,
-            source: "ADC",
-            pdfUrl: item.pdf_url,
-            imageUrls: [],
-            institution: item.institution,
-            userId: item.user_id
-          };
-        }) || [];
-
-        return chapters;
+        // In a real implementation, fetch from supabase
+        // const { data, error } = await supabase
+        //   .from('atlas_chapters')
+        //   .select('*')
+        //   .order('chapterNumber', { ascending: true });
+        
+        // if (error) {
+        //   throw new Error(error.message);
+        // }
+        
+        // return data as AtlasChapter[];
+        
+        // For now, use mock data
+        return mockChapters;
       } catch (error) {
-        // Log the error with more details
-        logger.error(error);
-        
-        // For CORS errors or network failures, return empty array instead of throwing
-        if (error instanceof Error && 
-           (error.message.includes('NetworkError') || 
-            error.message.includes('CORS') || 
-            error.message.includes('CORB'))) {
-          
-          logger.warn('Returning empty array due to network/CORS/CORB error');
-          
-          if (isPreviewMode) {
-            logger.warn('CORS issues are more common in preview environments.');
-          }
-          
-          return [];
-        }
-        
+        logger.error('Error fetching Atlas articles:', error);
         throw error;
       }
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 30 * 60 * 1000, // 30 minutes
-    retry: isPreviewMode ? 1 : 2, // Fewer retries in preview mode
+    refetchOnWindowFocus: false,
   });
 };
