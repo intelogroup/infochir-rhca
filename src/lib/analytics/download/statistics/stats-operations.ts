@@ -46,11 +46,15 @@ export const getDownloadStatsByType = async (docType: string): Promise<TypeStats
       throw error;
     }
     
-    // The data returned is a single object, not an array
+    // Since we're calling a single-row RPC function, data should be a single object
+    if (!data) {
+      return { total: 0, successful: 0, failed: 0 };
+    }
+    
     return {
-      total: data?.total_downloads || 0,
-      successful: data?.successful_downloads || 0,
-      failed: data?.failed_downloads || 0
+      total: data.total_downloads || 0,
+      successful: data.successful_downloads || 0,
+      failed: data.failed_downloads || 0
     };
   } catch (error) {
     logger.error(`Error in getDownloadStatsByType for ${docType}:`, error);
@@ -71,11 +75,15 @@ export const getDocumentDownloadStats = async (documentId: string): Promise<Type
       throw error;
     }
     
-    // The data returned is a single object, not an array
+    // Since we're calling a single-row RPC function, data should be a single object
+    if (!data) {
+      return { total: 0, successful: 0, failed: 0 };
+    }
+    
     return {
-      total: data?.total_downloads || 0,
-      successful: data?.successful_downloads || 0,
-      failed: data?.failed_downloads || 0
+      total: data.total_downloads || 0,
+      successful: data.successful_downloads || 0,
+      failed: data.failed_downloads || 0
     };
   } catch (error) {
     logger.error(`Error in getDocumentDownloadStats for ${documentId}:`, error);
@@ -124,17 +132,21 @@ export const getOverallDownloadStats = async (): Promise<{
     // Transform document types from jsonb to a typed object
     const docTypes: DocumentTypeStats = {};
     
-    // The data returned is a single object, not an array
-    if (data?.document_types) {
+    // Since we're calling a single-row RPC function, data should be a single object
+    if (!data) {
+      return { total: 0, successful: 0, failed: 0, byType: {} };
+    }
+    
+    if (data.document_types) {
       Object.entries(data.document_types).forEach(([key, value]) => {
         docTypes[key] = typeof value === 'number' ? value : 0;
       });
     }
     
     return {
-      total: data?.total_downloads || 0,
-      successful: data?.successful_downloads || 0,
-      failed: data?.failed_downloads || 0,
+      total: data.total_downloads || 0,
+      successful: data.successful_downloads || 0,
+      failed: data.failed_downloads || 0,
       byType: docTypes
     };
   } catch (error) {
