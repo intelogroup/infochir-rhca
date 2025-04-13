@@ -11,6 +11,27 @@ export interface AtlasChapter {
   isUpdated?: boolean;
   lastUpdated?: string;
   sections?: ChapterSection[];
+  
+  // Additional properties used in the components
+  abstract?: string;
+  author?: string;
+  authors?: string[];
+  publicationDate?: string;
+  status?: 'available' | 'coming';
+  coverImage?: string;
+  pdfUrl?: string;
+  tags?: string[];
+  stats?: {
+    views: number;
+    shares: number;
+    downloads: number;
+  };
+  imageUrls?: string[];
+  institution?: string;
+  userId?: string;
+  source?: string;
+  volume?: string;
+  specialty?: string;
 }
 
 export interface ChapterSection {
