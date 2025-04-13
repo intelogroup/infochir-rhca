@@ -1,47 +1,43 @@
 
 /**
- * Type of document being downloaded
+ * Types of documents that can be downloaded
  */
 export enum DocumentType {
-  Article = "article",
-  IGM = "igm",
-  RHCA = "rhca",
-  ADC = "adc",
-  Test = "test"
+  Article = 'article',
+  RHCA = 'rhca',
+  IGM = 'igm',
+  ADC = 'adc',
+  IndexMedicus = 'index-medicus'
 }
 
 /**
- * Stats for a document type
+ * Document download stats
  */
-export interface TypeStats {
-  total: number;
-  successful: number;
-  failed: number;
+export interface DocumentDownloadStats {
+  documentId: string;
+  documentType: DocumentType;
+  totalDownloads: number;
+  successfulDownloads: number;
+  failedDownloads: number;
+  lastDownloadTime?: string;
 }
 
 /**
- * Stats by document type (key is document type, value is stats)
+ * Daily download statistics
  */
-export interface DocumentTypeStats {
-  [key: string]: number;
+export interface DailyDownloadStats {
+  date: string;
+  totalDownloads: number;
+  successfulDownloads: number;
+  failedDownloads: number;
 }
 
 /**
  * Overall download statistics
  */
 export interface OverallDownloadStats {
-  total_downloads: number;
-  successful_downloads: number;
-  failed_downloads: number;
-  document_types_stats: DocumentTypeStats;
-}
-
-/**
- * Daily download statistics
- */
-export interface DailyDownloadStat {
-  date: string;
-  total_downloads: number;
-  successful_downloads: number;
-  failed_downloads: number;
+  totalDownloads: number;
+  successfulDownloads: number;
+  failedDownloads: number;
+  documentTypesStats: Record<string, number>;
 }

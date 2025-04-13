@@ -5,7 +5,7 @@ import { ErrorBoundary } from '@/components/error-boundary/ErrorBoundary';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { createLogger } from '@/lib/error-logger';
-import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
 import { useMediaQuery } from 'react-responsive';
 import { trackView } from '@/lib/analytics/track';
 import { DocumentType } from '@/lib/analytics/download/statistics/types';
@@ -14,6 +14,7 @@ import { ADCMission } from '@/components/adc/ADCMission';
 import { ADCSubmission } from '@/components/adc/ADCSubmission';
 import { ChaptersGrid } from '@/components/atlas/ChaptersGrid';
 import { useNavigate } from 'react-router-dom';
+import { Home } from 'lucide-react';
 
 const logger = createLogger('ADCPage');
 
@@ -50,12 +51,19 @@ const ADC = () => {
     <MainLayout>
       <div className="min-h-screen bg-[#F1F0FB] pt-[15px]">
         <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 lg:py-8">
-          <Breadcrumbs
-            segments={[
-              { label: 'Accueil', href: '/' },
-              { label: 'Atlas des Décisions Cliniques', href: '/adc' },
-            ]}
-          />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/">
+                  <Home className="h-4 w-4" />
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Atlas des Décisions Cliniques</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
 
           <ADCHeader />
 

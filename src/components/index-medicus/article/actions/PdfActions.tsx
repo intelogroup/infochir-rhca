@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Download, ExternalLink, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -34,7 +33,6 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
   const [fileExists, setFileExists] = useState<boolean | null>(null);
   const isMobile = useIsMobile();
 
-  // Check if file exists when component mounts
   useEffect(() => {
     const validateFile = async () => {
       if (!pdfUrl) {
@@ -43,7 +41,6 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
       }
 
       try {
-        // For URLs in Supabase storage
         if (pdfUrl.includes('article-pdfs') || pdfUrl.includes('rhca-pdfs')) {
           const bucketName = pdfUrl.includes('article-pdfs') ? 'article-pdfs' : 'rhca-pdfs';
           const fileName = pdfUrl.split('/').pop();
@@ -55,7 +52,6 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
           const exists = await checkFileExists(bucketName, fileName);
           setFileExists(exists);
         } else {
-          // For external URLs, try a HEAD request
           const response = await fetch(pdfUrl, { method: 'HEAD' });
           setFileExists(response.ok);
         }
@@ -82,9 +78,7 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
     
     window.open(pdfUrl, '_blank');
     
-    // Track the view event if we have an article ID
     if (articleId) {
-      // We could add a separate tracking function for views if needed
       supabase.rpc('increment_count', {
         table_name: 'articles',
         column_name: 'views',
@@ -112,12 +106,11 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
     try {
       const fileName = title ? `${title.slice(0, 30)}.pdf` : 'article.pdf';
       
-      // Use our enhanced download function with tracking
       const success = await downloadPDF({
         url: pdfUrl,
         fileName: fileName,
         documentId: articleId || 'unknown',
-        documentType: DocumentType.IndexMedicus,
+        documentType: DocumentType.Article,
         trackingEnabled: !!articleId
       });
       
@@ -164,7 +157,6 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
     );
   }
   
-  // Mobile view with direct buttons
   if (isMobile) {
     return (
       <div className="flex gap-1 flex-wrap">
@@ -195,7 +187,6 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
     );
   }
   
-  // Desktop view with dropdown
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -226,4 +217,3 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
     </DropdownMenu>
   );
 };
-

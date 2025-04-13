@@ -73,7 +73,7 @@ export const downloadPDF = async (options: DownloadPDFOptions): Promise<boolean>
     // Track the download if tracking is enabled
     if (trackingEnabled) {
       // Map to standard document type
-      const analyticDocType = documentType === DocumentType.IndexMedicus ? DocumentType.Article : documentType;
+      const analyticDocType = documentType === DocumentType.Article ? DocumentType.Article : documentType;
       
       await trackDownloadEvent(
         documentId,
