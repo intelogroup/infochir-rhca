@@ -1,8 +1,8 @@
-
 import { createLogger } from "@/lib/error-logger";
 import { 
   trackDownload as trackDownloadEvent
 } from "@/lib/analytics/track";
+// Change the import to get DocumentType from the types file
 import { DocumentType } from "./statistics/types";
 
 // Export the track-downloads functionality
@@ -109,3 +109,6 @@ export const checkFileExists = async (bucket: string, path: string): Promise<boo
   }
 };
 
+export { 
+  DocumentType 
+};
