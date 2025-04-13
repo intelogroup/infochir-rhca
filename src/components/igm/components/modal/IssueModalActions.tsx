@@ -1,9 +1,15 @@
+
 import { Button } from "@/components/ui/button";
 import { Download, Share2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import type { Issue } from "../../types";
+import { DocumentType } from "@/lib/analytics/download/statistics/types";
+import { downloadPDF } from "@/lib/analytics/download";
+import { createLogger } from "@/lib/error-logger";
+
+const logger = createLogger('IssueModalActions');
 
 interface IssueModalActionsProps {
   issue: Issue;
@@ -31,7 +37,7 @@ export const IssueModalActions = ({ issue }: IssueModalActionsProps) => {
         className: "bg-secondary text-white",
       });
     } catch (error) {
-      console.error('Error sharing:', error);
+      logger.error('Error sharing:', error);
       toast.error("Erreur lors du partage");
     } finally {
       setTimeout(() => setIsSharing(false), 1000);
@@ -46,19 +52,23 @@ export const IssueModalActions = ({ issue }: IssueModalActionsProps) => {
 
     setIsDownloading(true);
     try {
-      const { error } = await supabase
-        .from('articles')
-        .update({ downloads: issue.downloads + 1 })
-        .eq('id', issue.id);
-
-      if (error) throw error;
-
-      window.open(issue.pdfUrl, '_blank');
+      // Use the enhanced download function with DocumentType
+      const success = await downloadPDF({
+        url: issue.pdfUrl,
+        fileName: `IGM_${issue.title.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`,
+        documentId: issue.id,
+        documentType: DocumentType.IGM
+      });
+      
+      if (!success) {
+        throw new Error('Download failed');
+      }
+      
       toast.success("Téléchargement du PDF en cours...", {
         className: "bg-secondary text-white",
       });
     } catch (error) {
-      console.error('Error downloading:', error);
+      logger.error('Error downloading:', error);
       toast.error("Erreur lors du téléchargement");
     } finally {
       setTimeout(() => setIsDownloading(false), 1000);

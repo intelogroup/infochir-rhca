@@ -1,6 +1,17 @@
 
 /**
- * Type statistics interface
+ * Type of document being downloaded
+ */
+export enum DocumentType {
+  Article = "article",
+  IGM = "igm",
+  RHCA = "rhca",
+  ADC = "adc",
+  Test = "test"
+}
+
+/**
+ * Stats for a document type
  */
 export interface TypeStats {
   total: number;
@@ -9,14 +20,14 @@ export interface TypeStats {
 }
 
 /**
- * Document type statistics interface
+ * Stats by document type (key is document type, value is stats)
  */
 export interface DocumentTypeStats {
   [key: string]: number;
 }
 
 /**
- * Overall download statistics interface
+ * Overall download statistics
  */
 export interface OverallDownloadStats {
   total_downloads: number;
@@ -26,24 +37,11 @@ export interface OverallDownloadStats {
 }
 
 /**
- * Daily download statistics interface
+ * Daily download statistics
  */
 export interface DailyDownloadStat {
   date: string;
   total_downloads: number;
   successful_downloads: number;
   failed_downloads: number;
-}
-
-/**
- * Document type enum for consistent type handling
- */
-export enum DocumentType {
-  IGM = 'igm',
-  RHCA = 'rhca',
-  Article = 'article',
-  IndexMedicus = 'index-medicus',
-  ADC = 'adc',
-  Other = 'other',
-  Test = 'test'
 }

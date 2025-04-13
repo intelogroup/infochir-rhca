@@ -13,10 +13,11 @@ export const trackView = async (documentId: string, documentType: DocumentType):
     // Use the RPC function to track the view
     const { error } = await supabase.rpc('track_user_event', {
       p_event_type: 'view',
-      p_document_id: documentId,
+      p_document_id: isValidUuid(documentId) ? documentId : null,
       p_document_type: documentType,
       p_event_data: {
-        page_url: window.location.href
+        page_url: window.location.href,
+        document_reference: !isValidUuid(documentId) ? documentId : null
       }
     });
     
@@ -25,11 +26,13 @@ export const trackView = async (documentId: string, documentType: DocumentType):
       
       // Fallback: try to increment the count directly
       try {
-        await supabase.rpc('increment_count', {
-          table_name: 'articles',
-          column_name: 'views',
-          row_id: documentId
-        });
+        if (isValidUuid(documentId)) {
+          await supabase.rpc('increment_count', {
+            table_name: 'articles',
+            column_name: 'views',
+            row_id: documentId
+          });
+        }
       } catch (incrementError) {
         logger.error('Error incrementing view count:', incrementError);
       }
@@ -56,11 +59,12 @@ export const trackShare = async (
     // Use the RPC function to track the share
     const { error } = await supabase.rpc('track_user_event', {
       p_event_type: 'share',
-      p_document_id: documentId,
+      p_document_id: isValidUuid(documentId) ? documentId : null,
       p_document_type: documentType,
       p_event_data: {
         share_method: shareMethod,
-        page_url: window.location.href
+        page_url: window.location.href,
+        document_reference: !isValidUuid(documentId) ? documentId : null
       }
     });
     
@@ -69,11 +73,13 @@ export const trackShare = async (
       
       // Fallback: try to increment the count directly
       try {
-        await supabase.rpc('increment_count', {
-          table_name: 'articles',
-          column_name: 'shares',
-          row_id: documentId
-        });
+        if (isValidUuid(documentId)) {
+          await supabase.rpc('increment_count', {
+            table_name: 'articles',
+            column_name: 'shares',
+            row_id: documentId
+          });
+        }
       } catch (incrementError) {
         logger.error('Error incrementing share count:', incrementError);
       }
@@ -98,15 +104,19 @@ export const trackDownload = async (
   success: boolean = true
 ): Promise<boolean> => {
   try {
+    // Check if document ID is a valid UUID
+    const isValidId = isValidUuid(documentId);
+    
     // Use the RPC function to track the download
     const { error } = await supabase.rpc('track_user_event', {
       p_event_type: 'download',
-      p_document_id: documentId,
+      p_document_id: isValidId ? documentId : null,
       p_document_type: documentType,
       p_event_data: {
         fileName,
         status: success ? 'success' : 'failed',
-        screenSize: `${window.innerWidth}x${window.innerHeight}`
+        screenSize: `${window.innerWidth}x${window.innerHeight}`,
+        document_reference: !isValidId ? documentId : null
       }
     });
     
@@ -116,7 +126,7 @@ export const trackDownload = async (
       // Try direct insert as fallback
       try {
         await supabase.from('download_events').insert({
-          document_id: documentId,
+          document_id: isValidId ? documentId : '00000000-0000-0000-0000-000000000000', // Use a fallback UUID for non-UUID IDs
           document_type: documentType,
           file_name: fileName,
           status: success ? 'success' : 'failed',
@@ -128,8 +138,8 @@ export const trackDownload = async (
         logger.error('Error inserting download event:', insertError);
       }
       
-      // Fallback: try to increment the count directly if successful
-      if (success) {
+      // Fallback: try to increment the count directly
+      if (success && isValidId) {
         try {
           await supabase.rpc('increment_count', {
             table_name: 'articles',
@@ -181,4 +191,15 @@ export const trackSearch = async (
     logger.error('Exception tracking search:', error);
     return false;
   }
+};
+
+/**
+ * Check if a string is a valid UUID
+ */
+export const isValidUuid = (str: string): boolean => {
+  if (!str) return false;
+  
+  // UUID v4 regex pattern
+  const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidPattern.test(str);
 };

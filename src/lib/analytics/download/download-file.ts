@@ -1,158 +1,50 @@
 
-import { toast } from "sonner";
 import { createLogger } from "@/lib/error-logger";
-import { trackDownload, type DownloadEvent } from "./track-downloads";
+import { DocumentType } from "./statistics/types";
 
-const logger = createLogger('DownloadFile');
+const logger = createLogger("downloadFile");
 
 /**
- * Enhanced PDF download function with proper error handling, analytics and user feedback
+ * Downloads a file from a URL to the user's device
  */
-export const downloadPDF = async ({
-  url,
-  fileName,
-  documentId,
-  documentType = 'other',
-  trackingEnabled = true
-}: {
-  url: string;
-  fileName: string;
-  documentId: string;
-  documentType?: DownloadEvent['document_type'];
-  trackingEnabled?: boolean;
-}): Promise<boolean> => {
-  logger.log(`Starting download for: ${fileName} from ${url}`);
-  
+export const downloadFile = async (
+  url: string,
+  fileName: string,
+  documentType: DocumentType = DocumentType.Article
+): Promise<boolean> => {
   try {
-    // Show loading toast
-    const toastId = toast.loading(`Préparation du téléchargement...`);
+    logger.log(`Downloading file: ${fileName} from ${url}`);
     
-    // Validate URL
-    if (!url) {
-      toast.error("Le fichier PDF n'est pas disponible", {
-        id: toastId,
-        description: "Impossible de télécharger ce document."
-      });
-      
-      // We no longer track failed downloads
-      return false;
+    // Fetch the file from the provided URL
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to download file: HTTP ${response.status}`);
     }
     
-    // Try to fetch the file with timeout and retry logic
-    let response;
-    let retryCount = 0;
-    const maxRetries = 2;
-    
-    while (retryCount <= maxRetries) {
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
-        
-        response = await fetch(url, { 
-          method: 'GET',
-          headers: {
-            'Cache-Control': 'no-cache',
-          },
-          signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
-        
-        if (response.ok) break;
-        
-        logger.warn(`Retry ${retryCount + 1}/${maxRetries} for download, status: ${response.status}`);
-        retryCount++;
-        
-        if (retryCount <= maxRetries) {
-          // Wait before retrying (exponential backoff)
-          await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retryCount)));
-        }
-      } catch (fetchError) {
-        logger.error('Fetch error:', fetchError);
-        
-        if (fetchError.name === 'AbortError') {
-          logger.warn('Download request timed out');
-        }
-        
-        retryCount++;
-        
-        if (retryCount > maxRetries) {
-          throw fetchError;
-        }
-        
-        // Wait before retrying
-        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retryCount)));
-      }
-    }
-    
-    if (!response || !response.ok) {
-      const errorMessage = response ? `HTTP error! status: ${response.status}` : 'Network error';
-      logger.error(new Error(errorMessage));
-      
-      toast.error("Échec du téléchargement", {
-        id: toastId,
-        description: `Impossible d'accéder au fichier ${response ? `(${response.status})` : ''}`
-      });
-      
-      // We no longer track failed downloads
-      return false;
-    }
-    
-    // Get the file content
+    // Get the file as a blob
     const blob = await response.blob();
     
-    // Check if the blob is valid
-    if (!blob || blob.size === 0) {
-      logger.error('Downloaded blob is empty or invalid');
-      
-      toast.error("Fichier invalide", {
-        id: toastId,
-        description: "Le fichier téléchargé est vide ou corrompu."
-      });
-      
-      // We no longer track failed downloads
-      return false;
-    }
+    // Create an object URL for the blob
+    const objectUrl = window.URL.createObjectURL(blob);
     
-    // Create download link
-    const downloadUrl = window.URL.createObjectURL(blob);
+    // Create a temporary link element
     const link = document.createElement('a');
-    link.href = downloadUrl;
+    link.href = objectUrl;
     link.download = fileName;
+    
+    // Append the link to the document, click it, and remove it
     document.body.appendChild(link);
-    
-    // Trigger download
     link.click();
-    
-    // Clean up
     document.body.removeChild(link);
-    window.URL.revokeObjectURL(downloadUrl);
     
-    // Show success toast
-    toast.success("Téléchargement réussi", {
-      id: toastId,
-      description: fileName
-    });
+    // Clean up the object URL
+    window.URL.revokeObjectURL(objectUrl);
     
-    // Track successful download
-    if (trackingEnabled) {
-      await trackDownload({
-        document_id: documentId,
-        document_type: documentType,
-        file_name: fileName,
-        status: 'success'
-      });
-    }
-    
+    logger.log(`Successfully downloaded file: ${fileName}`);
     return true;
   } catch (error) {
-    logger.error('Download error:', error);
-    
-    toast.error("Échec du téléchargement", {
-      description: "Une erreur inattendue est survenue"
-    });
-    
-    // We no longer track failed downloads
+    logger.error(`Error downloading file:`, error);
     return false;
   }
 };

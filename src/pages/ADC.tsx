@@ -1,238 +1,86 @@
-
+import React, { useState, useEffect } from 'react';
 import { MainLayout } from "@/components/layouts/MainLayout";
-import { ADCHeader } from "@/components/adc/ADCHeader";
-import { Suspense, lazy, useRef, useEffect, useState } from "react";
-import { useAtlasArticles } from "@/components/atlas/hooks/useAtlasArticles";
-import { AtlasCard } from "@/components/atlas/AtlasCard";
-import { AtlasTableOfContents } from "@/components/atlas/AtlasTableOfContents";
-import { motion } from "framer-motion";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useVirtualizer } from "@tanstack/react-virtual";
-import { toast } from "@/hooks/use-toast";
-import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
-import { SearchBar } from "@/components/shared/SearchBar";
-import { initAnalytics, trackPageView, trackSearch } from "@/lib/analytics/track";
+import { ErrorBoundary } from '@/components/error-boundary/ErrorBoundary';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { useNavigate } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
+import { createLogger } from '@/lib/error-logger';
+import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
+import { useMediaQuery } from 'react-responsive';
+import { trackView } from '@/lib/analytics/track';
+import { DocumentType } from '@/lib/analytics/download/statistics/types';
 
-// Lazy load components
-const ADCMission = lazy(() => import("@/components/adc/ADCMission").then(module => ({ default: module.ADCMission })));
-const ADCSubmission = lazy(() => import("@/components/adc/ADCSubmission").then(module => ({ default: module.ADCSubmission })));
-
-const LoadingSkeleton = () => (
-  <div className="space-y-8">
-    <Skeleton className="h-64 w-full" />
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {[1, 2, 3].map((i) => (
-        <Skeleton key={i} className="h-[300px]" />
-      ))}
-    </div>
-  </div>
-);
-
-const VirtualizedAtlasGrid = ({ chapters, searchTerm }: { chapters: any[], searchTerm: string }) => {
-  console.log("[VirtualizedAtlasGrid] Rendering with chapters:", chapters);
-  const parentRef = useRef<HTMLDivElement>(null);
-  const isMounted = useRef(false);
-
-  // Filter chapters based on search term
-  const filteredChapters = searchTerm.trim() === '' 
-    ? chapters 
-    : chapters.filter(chapter => 
-        chapter.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (chapter.description && chapter.description.toLowerCase().includes(searchTerm.toLowerCase()))
-      );
-
-  // Track search results
-  useEffect(() => {
-    if (searchTerm.trim() !== '') {
-      trackSearch(searchTerm, 'ADC', filteredChapters.length);
-    }
-  }, [searchTerm, filteredChapters.length]);
-
-  useEffect(() => {
-    isMounted.current = true;
-    console.log("[VirtualizedAtlasGrid] Component mounted");
-    return () => {
-      isMounted.current = false;
-      console.log("[VirtualizedAtlasGrid] Component unmounting");
-    };
-  }, []);
-
-  const columnCount = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1;
-  const rowCount = Math.ceil(filteredChapters.length / columnCount);
-
-  const rowVirtualizer = useVirtualizer({
-    count: rowCount,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 400,
-    overscan: 3,
-  });
-
-  if (filteredChapters.length === 0) {
-    return (
-      <div className="h-[300px] flex items-center justify-center">
-        <p className="text-gray-500">Aucun résultat ne correspond à votre recherche</p>
-      </div>
-    );
-  }
-
-  return (
-    <div
-      ref={parentRef}
-      className="h-[800px] overflow-auto"
-    >
-      <div
-        style={{
-          height: `${rowVirtualizer.getTotalSize()}px`,
-          width: '100%',
-          position: 'relative',
-        }}
-      >
-        {rowVirtualizer.getVirtualItems().map((virtualRow) => (
-          <div
-            key={virtualRow.index}
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: `${virtualRow.size}px`,
-              transform: `translateY(${virtualRow.start}px)`,
-            }}
-          >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
-              {Array.from({ length: columnCount }).map((_, columnIndex) => {
-                const chapterIndex = virtualRow.index * columnCount + columnIndex;
-                const chapter = filteredChapters[chapterIndex];
-                
-                if (!chapter) return null;
-                
-                return (
-                  <motion.div
-                    key={chapter.id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3, delay: columnIndex * 0.1 }}
-                  >
-                    <AtlasCard chapter={chapter} />
-                  </motion.div>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const ADCContent = () => {
-  console.log("[ADCContent] Component mounting");
-  const mountTime = useRef(Date.now());
-  const [searchTerm, setSearchTerm] = useState("");
-  const { data: chapters, isLoading, error } = useAtlasArticles();
-
-  useEffect(() => {
-    console.log("[ADCContent] Component mounted at:", mountTime.current);
-    console.log("[ADCContent] Initial state:", { isLoading, hasData: !!chapters, error });
-
-    return () => {
-      console.log("[ADCContent] Component unmounting, was mounted for:", Date.now() - mountTime.current, "ms");
-    };
-  }, []);
-
-  useEffect(() => {
-    if (error) {
-      console.error("[ADCContent] Error loading Atlas articles:", {
-        error,
-        message: error.message,
-        stack: error.stack
-      });
-    }
-  }, [error]);
-
-  useEffect(() => {
-    console.log("[ADCContent] Data loading state updated:", { 
-      isLoading, 
-      chaptersLength: chapters?.length,
-      timestamp: Date.now() - mountTime.current
-    });
-  }, [isLoading, chapters]);
-
-  if (error) {
-    console.error("[ADCContent] Rendering error state:", error);
-    toast.error("Une erreur est survenue lors du chargement des articles");
-    return (
-      <div className="text-center py-12 text-red-500">
-        Une erreur est survenue lors du chargement des articles
-      </div>
-    );
-  }
-
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">
-          Atlas de Diagnostic Chirurgical
-        </h2>
-        
-        <div className="flex flex-col sm:flex-row items-center gap-4">
-          <div className="w-full sm:w-64">
-            <SearchBar 
-              value={searchTerm} 
-              onChange={setSearchTerm} 
-              placeholder="Rechercher un chapitre..."
-              category="ADC"
-            />
-          </div>
-          <AtlasTableOfContents />
-        </div>
-      </div>
-      
-      {isLoading ? (
-        <LoadingSkeleton />
-      ) : chapters && chapters.length > 0 ? (
-        <VirtualizedAtlasGrid chapters={chapters} searchTerm={searchTerm} />
-      ) : (
-        <div className="text-center py-12 text-gray-500">
-          Aucun chapitre disponible pour le moment
-        </div>
-      )}
-    </div>
-  );
-};
+const logger = createLogger('ADCPage');
 
 const ADC = () => {
-  console.log("[ADC] Component mounting");
-  const mountTime = useRef(Date.now());
-  
+  const navigate = useNavigate();
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const [pageLoaded, setPageLoaded] = useState(false);
+
   useEffect(() => {
-    console.log("[ADC] Component mounted at:", mountTime.current);
-    
-    // Initialize analytics and track page view
-    initAnalytics();
-    trackPageView();
-    
-    return () => {
-      console.log("[ADC] Component unmounting, was mounted for:", Date.now() - mountTime.current, "ms");
+    // Track page view
+    const trackPageView = async () => {
+      try {
+        await trackView('adc-page', DocumentType.ADC);
+        logger.log('Tracked ADC page view');
+      } catch (error) {
+        logger.error('Failed to track ADC page view:', error);
+      }
     };
+
+    trackPageView();
+    setPageLoaded(true);
   }, []);
+
+  const handleExploreClick = () => {
+    const contentSection = document.getElementById('adc-content');
+    if (contentSection) {
+      const yOffset = -80; // Adjust based on navbar height
+      const y = contentSection.getBoundingClientRect().top + window.scrollY + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  };
 
   return (
     <MainLayout>
-      <ErrorBoundary>
-        <div className="min-h-screen bg-gradient-to-br from-white to-gray-50 pt-[70px]">
-          <ADCHeader />
-          <ADCContent />
-          
-          <Suspense fallback={<LoadingSkeleton />}>
-            <ADCMission />
-          </Suspense>
-          
-          <Suspense fallback={<LoadingSkeleton />}>
-            <ADCSubmission />
-          </Suspense>
+      <div className="min-h-screen bg-[#F1F0FB] pt-[15px]">
+        <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 lg:py-8">
+          <Breadcrumbs
+            segments={[
+              { label: 'Accueil', href: '/' },
+              { label: 'Atlas des Décisions Cliniques', href: '/adc' },
+            ]}
+          />
+
+          <section className="relative py-12 md:py-24 bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="absolute inset-0 bg-secondary/5 z-0" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 75%, 0% 100%)' }}></div>
+            <div className="relative z-10 px-4 sm:px-6 lg:px-8">
+              <div className="text-center">
+                <h1 className="text-3xl font-extrabold text-gray-900 sm:text-4xl lg:text-5xl leading-tight">
+                  Atlas des Décisions Cliniques
+                </h1>
+                <p className="mt-4 text-lg text-gray-600">
+                  Explorez des recommandations cliniques fondées sur des preuves pour améliorer la prise de décision médicale.
+                </p>
+                <Button
+                  size="lg"
+                  className="mt-8 bg-secondary hover:bg-secondary-light text-white"
+                  onClick={handleExploreClick}
+                >
+                  Explorer le contenu <ArrowRight className="ml-2" />
+                </Button>
+              </div>
+            </div>
+          </section>
+
+          <section id="adc-content" className="mt-12">
+            <ErrorBoundary name="AtlasChaptersGrid">
+              <ChaptersGrid />
+            </ErrorBoundary>
+          </section>
         </div>
-      </ErrorBoundary>
+      </div>
     </MainLayout>
   );
 };

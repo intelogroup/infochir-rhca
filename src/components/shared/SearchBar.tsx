@@ -1,69 +1,92 @@
 
-import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
-import { trackSearch } from "@/lib/analytics/track";
-import { debounce } from "lodash";
+import React, { useState } from 'react';
+import { Input } from '@/components/ui/input';
+import { Search, X } from 'lucide-react';
+import { createLogger } from '@/lib/error-logger';
+
+const logger = createLogger('SearchBar');
 
 interface SearchBarProps {
+  placeholder?: string;
   value: string;
   onChange: (value: string) => void;
-  placeholder?: string;
+  onSearch?: (value: string) => void;
   className?: string;
-  disabled?: boolean;
-  category?: string;
+  autoFocus?: boolean;
+  debounceTime?: number;
 }
 
-export const SearchBar = ({ 
-  value, 
-  onChange, 
-  placeholder = "Rechercher...", 
-  className = "",
-  disabled = false,
-  category
+export const SearchBar = ({
+  placeholder = 'Rechercher...',
+  value,
+  onChange,
+  onSearch,
+  className = '',
+  autoFocus = false,
+  debounceTime = 300
 }: SearchBarProps) => {
-  const [inputValue, setInputValue] = useState(value);
-  
-  // Track search with debounce
-  const debouncedTrackSearch = debounce((query: string) => {
-    if (query.trim().length > 2) {
-      trackSearch(query, category);
-    }
-  }, 1000);
-  
-  // When input changes
+  const [searchTimeout, setSearchTimeout] = useState<number | null>(null);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-    setInputValue(newValue);
     onChange(newValue);
     
-    // Track search if query is meaningful
-    debouncedTrackSearch(newValue);
+    // Clear any existing timeout
+    if (searchTimeout) {
+      window.clearTimeout(searchTimeout);
+    }
+    
+    // Set a new timeout
+    if (onSearch) {
+      const timeoutId = window.setTimeout(() => {
+        onSearch(newValue);
+      }, debounceTime);
+      
+      setSearchTimeout(timeoutId);
+    }
   };
-  
-  // Sync with external value changes
-  useEffect(() => {
-    setInputValue(value);
-  }, [value]);
-  
-  // Cleanup debounce on unmount
-  useEffect(() => {
-    return () => {
-      debouncedTrackSearch.cancel();
-    };
-  }, [debouncedTrackSearch]);
+
+  const handleClear = () => {
+    onChange('');
+    if (onSearch) {
+      onSearch('');
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && onSearch) {
+      if (searchTimeout) {
+        window.clearTimeout(searchTimeout);
+        setSearchTimeout(null);
+      }
+      onSearch(value);
+    }
+  };
 
   return (
-    <div className={`relative flex-1 ${className}`}>
-      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+    <div className={`relative ${className}`}>
+      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+        <Search className="h-4 w-4 text-muted-foreground" />
+      </div>
       <Input
         type="text"
+        className="pl-10 pr-10 bg-background border-input"
         placeholder={placeholder}
-        value={inputValue}
+        value={value}
         onChange={handleChange}
-        className="pl-10 bg-white/50"
-        disabled={disabled}
+        onKeyDown={handleKeyDown}
+        autoFocus={autoFocus}
+        aria-label="Recherche"
       />
+      {value && (
+        <button
+          onClick={handleClear}
+          className="absolute inset-y-0 right-0 flex items-center pr-3"
+          aria-label="Effacer la recherche"
+        >
+          <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+        </button>
+      )}
     </div>
   );
 };

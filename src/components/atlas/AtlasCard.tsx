@@ -1,221 +1,130 @@
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, User, Eye, Share2, Download, BookOpen, ImageOff } from "lucide-react";
+import { Eye, Download } from "lucide-react";
 import { AtlasChapter } from "./types";
 import { toast } from "sonner";
-import { useState, memo, useEffect } from "react";
-import { AtlasModal } from "./AtlasModal";
-import { motion } from "framer-motion";
-import { AtlasCategory } from "./data/atlasCategories";
-import { Badge } from "@/components/ui/badge";
-import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
-import { trackDownload } from "@/lib/analytics/download";
 import { createLogger } from "@/lib/error-logger";
+import { downloadPDF } from "@/lib/analytics/download";
+import { DocumentType } from "@/lib/analytics/download/statistics/types";
 
 const logger = createLogger('AtlasCard');
 
 interface AtlasCardProps {
   chapter: AtlasChapter;
-  category?: AtlasCategory;
 }
 
-const AtlasCard = memo(({ chapter, category }: AtlasCardProps) => {
-  const [showModal, setShowModal] = useState(false);
-  const [imageLoading, setImageLoading] = useState(true);
-  const [imageError, setImageError] = useState(false);
-  const [imageSrc, setImageSrc] = useState<string>(chapter.coverImage || '');
-
-  // Effect to handle image validation
-  useEffect(() => {
-    // Reset state when chapter changes
-    setImageSrc(chapter.coverImage || '');
-    setImageLoading(true);
-    setImageError(false);
-    
-    if (!chapter.coverImage) {
-      setImageError(true);
-      setImageLoading(false);
-    }
-  }, [chapter.coverImage]);
-
-  const handleShare = () => {
-    const shareUrl = `${window.location.origin}/adc/chapters/${chapter.id}`;
-    navigator.clipboard.writeText(shareUrl);
-    toast.success("Lien copié dans le presse-papier");
+export const AtlasCard = ({ chapter }: AtlasCardProps) => {
+  const navigate = useNavigate();
+  const [isDownloading, setIsDownloading] = useState(false);
+  
+  const handleCardClick = () => {
+    navigate(`/adc/chapters/${chapter.id}`);
   };
-
-  const handleDownload = async () => {
+  
+  const handleDownload = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    
     if (!chapter.pdfUrl) {
       toast.error("Aucun PDF disponible pour ce chapitre");
       return;
     }
+    
+    setIsDownloading(true);
     
     try {
-      // Track the download event with correct document type
-      await trackDownload({
-        document_id: chapter.id,
-        document_type: "adc", 
-        file_name: chapter.pdfUrl.split('/').pop() || 'document.pdf',
-        status: 'success'
+      // Use the improved downloadPDF function
+      const success = await downloadPDF({
+        url: chapter.pdfUrl,
+        fileName: `ADC-${chapter.title.substring(0, 30)}.pdf`,
+        documentId: chapter.id,
+        documentType: DocumentType.ADC
       });
       
-      // Open the PDF in a new tab
-      window.open(chapter.pdfUrl, '_blank');
-      toast.success("Téléchargement du PDF...");
-    } catch (error) {
-      logger.error("Download error:", error);
-      toast.error("Erreur lors du téléchargement");
+      if (!success) {
+        throw new Error("Échec du téléchargement");
+      }
       
-      // Track the failed download
-      trackDownload({
-        document_id: chapter.id,
-        document_type: "adc",
-        file_name: chapter.pdfUrl.split('/').pop() || 'document.pdf',
-        status: 'failed',
-        error_details: error instanceof Error ? error.message : 'Unknown error'
-      }).catch(e => logger.error("Failed to track download error:", e));
+      toast.success("Téléchargement lancé");
+    } catch (error) {
+      logger.error(error);
+      toast.error("Erreur lors du téléchargement");
+    } finally {
+      setIsDownloading(false);
     }
   };
-
-  const handleCardClick = (e: React.MouseEvent) => {
-    // Only open the PDF if clicking the card itself, not the buttons
-    if ((e.target as HTMLElement).closest('button')) {
-      return;
-    }
+  
+  const handleView = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     
     if (!chapter.pdfUrl) {
       toast.error("Aucun PDF disponible pour ce chapitre");
       return;
     }
     
-    // Open the PDF in a new tab
-    window.open(chapter.pdfUrl, '_blank');
+    // Track the view
+    try {
+      // Use our tracking function
+      // This simply opens the PDF in a new tab
+      window.open(chapter.pdfUrl, '_blank');
+    } catch (error) {
+      logger.error(error);
+      toast.error("Erreur lors de l'ouverture du PDF");
+    }
   };
-
+  
   return (
-    <>
-      <motion.div
-        initial={false}
-        whileHover={{ y: -4 }}
-        transition={{ duration: 0.2 }}
-        className="h-full"
-      >
-        <Card 
-          className="group h-full flex flex-col overflow-hidden border-transparent hover:border-secondary/30 transition-all duration-300 cursor-pointer"
-          onClick={handleCardClick}
-        >
-          <div className="relative h-32 overflow-hidden">
-            {imageLoading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-                <div className="animate-pulse h-full w-full bg-gray-200"></div>
-              </div>
-            )}
-            
-            {imageError ? (
-              <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100">
-                <ImageOff className="h-8 w-8 text-gray-400 mb-2" />
-                <span className="text-sm text-gray-500">Image unavailable</span>
-              </div>
-            ) : (
-              <ImageOptimizer
-                src={imageSrc}
-                alt={chapter.title}
-                width={320}
-                height={240}
-                className="w-full h-full object-cover object-top transition-all duration-300 group-hover:scale-105"
-                fallbackText={chapter.title}
-                onLoad={() => setImageLoading(false)}
-                onError={() => {
-                  logger.error(`[AtlasCard] Image load error for ${chapter.id}: ${imageSrc}`);
-                  setImageError(true);
-                  setImageLoading(false);
-                }}
-              />
-            )}
-            <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-background/20" />
+    <Card 
+      className="overflow-hidden cursor-pointer hover:shadow-md transition-all flex flex-col h-full"
+      onClick={handleCardClick}
+    >
+      <CardContent className="flex-grow p-4">
+        <div className="space-y-2">
+          <div className="flex items-start justify-between">
+            <Badge variant="outline" className="bg-secondary/10 text-secondary font-medium mb-2">
+              {chapter.category}
+            </Badge>
+            <span className="text-xs text-muted-foreground">
+              {chapter.chapterNumber && `Chapitre ${chapter.chapterNumber}`}
+            </span>
           </div>
           
-          <CardHeader className="space-y-2 p-4 flex-grow">
-            {category && (
-              <Badge variant="secondary" className="w-fit">
-                <BookOpen className="h-3 w-3 mr-1" />
-                {category.title}
-              </Badge>
-            )}
-            <CardTitle className="text-sm font-bold group-hover:text-primary transition-colors line-clamp-2">
-              {chapter.title}
-            </CardTitle>
-            <div className="flex flex-wrap gap-2 text-xs text-gray-500">
-              {chapter.lastUpdate && (
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-3 w-3" />
-                  <span>MàJ: {chapter.lastUpdate}</span>
-                </div>
-              )}
-              {chapter.author && (
-                <div className="flex items-center gap-1">
-                  <User className="h-3 w-3" />
-                  <span>{chapter.author}</span>
-                </div>
-              )}
-            </div>
-          </CardHeader>
+          <h3 className="font-medium line-clamp-2 text-lg">
+            {chapter.title}
+          </h3>
           
-          <CardContent className="p-4 pt-0">
-            {chapter.description && (
-              <p className="text-xs text-gray-600 line-clamp-2 mb-3">
-                {chapter.description}
-              </p>
-            )}
-            <div className="flex justify-between items-center">
-              <div className="flex gap-1.5">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="h-7 px-2 text-xs hover:bg-secondary/10 hover:text-secondary transition-colors"
-                  onClick={() => setShowModal(true)}
-                >
-                  <Eye className="h-3 w-3 mr-1" />
-                  <span className="hidden sm:inline">Consulter</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleShare}
-                  className="h-7 px-2 text-xs hover:bg-primary/10 hover:text-primary transition-colors"
-                >
-                  <Share2 className="h-3 w-3 mr-1" />
-                  <span className="hidden sm:inline">Partager</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleDownload}
-                  className="h-7 px-2 text-xs hover:bg-primary/10 hover:text-primary transition-colors"
-                  disabled={!chapter.pdfUrl}
-                >
-                  <Download className="h-3 w-3 mr-1" />
-                  <span className="hidden sm:inline">PDF</span>
-                </Button>
-              </div>
-              {chapter.status === "coming" && (
-                <span className="text-xs text-gray-500 italic">À venir</span>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
-      <AtlasModal 
-        chapter={chapter}
-        category={category}
-        open={showModal}
-        onOpenChange={setShowModal}
-      />
-    </>
+          <p className="text-sm text-muted-foreground line-clamp-3">
+            {chapter.description}
+          </p>
+        </div>
+      </CardContent>
+      
+      <CardFooter className="px-4 pt-0 pb-4 border-t mt-2 pt-3 flex gap-2">
+        <Button
+          size="sm"
+          variant="outline"
+          className="flex-1 h-8 gap-1 text-xs"
+          onClick={handleView}
+          disabled={!chapter.pdfUrl}
+        >
+          <Eye className="h-3.5 w-3.5" />
+          Consulter
+        </Button>
+        
+        <Button
+          size="sm"
+          variant="outline"
+          className="flex-1 h-8 gap-1 text-xs"
+          onClick={handleDownload}
+          disabled={!chapter.pdfUrl || isDownloading}
+        >
+          <Download className={`h-3.5 w-3.5 ${isDownloading ? 'animate-pulse' : ''}`} />
+          PDF
+        </Button>
+      </CardFooter>
+    </Card>
   );
-});
-
-AtlasCard.displayName = 'AtlasCard';
-
-export { AtlasCard };
+};
