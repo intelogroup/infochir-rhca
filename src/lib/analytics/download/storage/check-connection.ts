@@ -88,9 +88,9 @@ export const checkDownloadEventsConnection = async () => {
 
 export const getDownloadTypeStats = async () => {
   try {
-    // Get download stats by document type
+    // Get download stats from download_stats_view
     const { data, error } = await supabase
-      .from('document_type_download_stats')
+      .from('download_stats_view')
       .select('*');
     
     if (error) {
@@ -100,9 +100,9 @@ export const getDownloadTypeStats = async () => {
     // Convert to more usable format
     const documentTypes = data.map(item => ({
       type: item.document_type || 'unknown',
-      count: item.total_downloads || 0,
-      successful: item.successful_downloads || 0,
-      failed: item.failed_downloads || 0
+      count: Number(item.total_downloads) || 0,
+      successful: Number(item.successful_downloads) || 0,
+      failed: Number(item.failed_downloads) || 0
     }));
     
     return {
@@ -120,9 +120,13 @@ export const getDownloadTypeStats = async () => {
 
 export const verifyTrackingSystem = async () => {
   try {
-    // Basic checks to verify the tracking system
-    const { data: tableExists } = await supabase
-      .rpc('check_table_exists', { table_name: 'download_events' });
+    // We'll check if the download_events table exists by trying to query it
+    const { error: tableQueryError } = await supabase
+      .from('download_events')
+      .select('id')
+      .limit(1);
+    
+    const tableExists = !tableQueryError;
     
     const connectionStatus = await checkDownloadEventsConnection();
     

@@ -1,148 +1,141 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger } from "@/lib/error-logger";
-import { TypeStats, DocumentTypeStats } from './types';
+import type { TypeStats, DocumentTypeStats } from './types';
 
-const logger = createLogger('DownloadStatistics');
+const logger = createLogger('downloadStats');
 
 /**
- * Get download statistics grouped by document type
+ * Subscribe to download stats changes
  */
-export const getDownloadStatsByType = async (): Promise<Record<string, TypeStats> | null> => {
+export const subscribeToDownloadStats = (callback: () => void) => {
+  logger.log('Setting up download stats subscription');
+  
+  const channel = supabase
+    .channel('download-events-changes')
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'download_events'
+      },
+      () => {
+        logger.log('Download event detected, triggering callback');
+        callback();
+      }
+    )
+    .subscribe();
+  
+  return () => {
+    logger.log('Unsubscribing from download stats');
+    supabase.removeChannel(channel);
+  };
+};
+
+/**
+ * Get download statistics by document type
+ */
+export const getDownloadStatsByType = async (docType: string): Promise<TypeStats> => {
   try {
     const { data, error } = await supabase
-      .from('download_stats_view')
-      .select('*');
-      
+      .rpc('get_download_stats_by_type', { doc_type: docType });
+    
     if (error) {
-      logger.error('Error fetching download stats by type:', error);
-      return null;
+      logger.error(`Error fetching download stats for type ${docType}:`, error);
+      throw error;
     }
     
-    // Process data to group by document type
-    const statsByType: Record<string, TypeStats> = {};
-    
-    data.forEach(stat => {
-      const { document_type, successful_downloads, failed_downloads, total_downloads } = stat;
-      
-      statsByType[document_type] = { 
-        total: Number(total_downloads), 
-        successful: Number(successful_downloads), 
-        failed: Number(failed_downloads) 
-      };
-    });
-    
-    return statsByType;
+    return {
+      total: data?.total_downloads || 0,
+      successful: data?.successful_downloads || 0,
+      failed: data?.failed_downloads || 0
+    };
   } catch (error) {
-    logger.error('Exception in getDownloadStatsByType:', error);
-    return null;
+    logger.error(`Error in getDownloadStatsByType for ${docType}:`, error);
+    return { total: 0, successful: 0, failed: 0 };
   }
 };
 
 /**
  * Get download statistics for a specific document
  */
-export const getDocumentDownloadStats = async (documentId: string) => {
+export const getDocumentDownloadStats = async (documentId: string): Promise<TypeStats> => {
   try {
     const { data, error } = await supabase
       .rpc('get_document_download_stats', { doc_id: documentId });
-      
+    
     if (error) {
-      logger.error('Error fetching document download stats:', error);
-      return null;
+      logger.error(`Error fetching download stats for document ${documentId}:`, error);
+      throw error;
     }
     
-    return data;
+    return {
+      total: data?.total_downloads || 0,
+      successful: data?.successful_downloads || 0,
+      failed: data?.failed_downloads || 0
+    };
   } catch (error) {
-    logger.error('Exception in getDocumentDownloadStats:', error);
-    return null;
+    logger.error(`Error in getDocumentDownloadStats for ${documentId}:`, error);
+    return { total: 0, successful: 0, failed: 0 };
   }
 };
 
 /**
- * Get daily download statistics for the specified number of days
+ * Get daily download statistics
  */
-export const getDailyDownloadStats = async (daysBack = 7) => {
+export const getDailyDownloadStats = async (daysBack: number = 7) => {
   try {
     const { data, error } = await supabase
       .rpc('get_daily_downloads', { days_back: daysBack });
-      
+    
     if (error) {
       logger.error('Error fetching daily download stats:', error);
-      return null;
+      throw error;
     }
     
-    return data;
+    return data || [];
   } catch (error) {
-    logger.error('Exception in getDailyDownloadStats:', error);
-    return null;
+    logger.error('Error in getDailyDownloadStats:', error);
+    return [];
   }
 };
 
 /**
- * Get all download statistics aggregated with document type breakdown
- * Now using the overall_download_stats_view for more efficient queries
+ * Get overall download statistics
  */
-export const getOverallDownloadStats = async () => {
+export const getOverallDownloadStats = async (): Promise<{
+  total: number;
+  successful: number;
+  failed: number;
+  byType: DocumentTypeStats;
+}> => {
   try {
     const { data, error } = await supabase
-      .from('overall_download_stats_view')
-      .select('*')
-      .single();
-      
+      .rpc('get_download_statistics');
+    
     if (error) {
-      logger.error('Error fetching overall download stats:', error);
-      return null;
+      logger.error('Error fetching overall download statistics:', error);
+      throw error;
     }
     
-    // Process document_types if needed
-    if (data && data.document_types_stats) {
-      // If document_types_stats is a string (JSON), parse it
-      if (typeof data.document_types_stats === 'string') {
-        try {
-          data.document_types_stats = JSON.parse(data.document_types_stats);
-        } catch (e) {
-          logger.error('Error parsing document_types_stats:', e);
-          data.document_types_stats = {};
-        }
-      }
+    // Transform document types from jsonb to a typed object
+    const docTypes: DocumentTypeStats = {};
+    
+    if (data?.document_types) {
+      Object.entries(data.document_types).forEach(([key, value]) => {
+        docTypes[key] = typeof value === 'number' ? value : 0;
+      });
     }
     
-    return data;
+    return {
+      total: data?.total_downloads || 0,
+      successful: data?.successful_downloads || 0,
+      failed: data?.failed_downloads || 0,
+      byType: docTypes
+    };
   } catch (error) {
-    logger.error('Exception in getOverallDownloadStats:', error);
-    return null;
+    logger.error('Error in getOverallDownloadStats:', error);
+    return { total: 0, successful: 0, failed: 0, byType: {} };
   }
-};
-
-/**
- * Subscribe to changes in download statistics
- * @param callback Function to call when download statistics change
- * @returns Unsubscribe function
- */
-export const subscribeToDownloadStats = (
-  callback: () => void
-): (() => void) => {
-  // Subscribe to the download_events table for real-time updates
-  const subscription = supabase
-    .channel('download-stats-changes')
-    .on(
-      'postgres_changes',
-      {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'download_events',
-      },
-      (payload) => {
-        logger.log('Download event inserted:', payload.new);
-        callback();
-      }
-    )
-    .subscribe();
-    
-  // Return unsubscribe function
-  return () => {
-    logger.log('Unsubscribing from download stats changes');
-    subscription.unsubscribe();
-  };
 };
