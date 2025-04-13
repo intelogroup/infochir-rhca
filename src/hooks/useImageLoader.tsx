@@ -25,6 +25,7 @@ export const useImageLoader = ({
   const [imageSrc, setImageSrc] = useState("");
   const [retryCount, setRetryCount] = useState(0);
   const [usedFallback, setUsedFallback] = useState(false);
+  const MAX_RETRIES = 3;
 
   useEffect(() => {
     // Reset states when src changes
@@ -64,8 +65,8 @@ export const useImageLoader = ({
       img.onerror = (error) => {
         logger.error(`[useImageLoader] Failed to load image from: ${optimizedSrc}`, error);
         
-        // If we've already retried with the alternative URL, give up
-        if (usedFallback || retryCount >= 2) {
+        // If we've already retried too many times, give up
+        if (retryCount >= MAX_RETRIES) {
           // Try with the original URL without optimization as a last resort
           if (!usedFallback && optimizedSrc !== src) {
             logger.log(`[useImageLoader] Trying original URL as fallback: ${src}`);
@@ -88,31 +89,61 @@ export const useImageLoader = ({
           return;
         }
         
+        // Check if this is an RHCA cover by the URL pattern
+        const isRhcaCover = src.includes('RHCA_vol_') || 
+                           src.includes('rhca_covers') || 
+                           src.includes('rhca-covers');
+        
         // Try alternative URL for RHCA covers
-        const alternativeUrl = getAlternativeRHCAUrl(src);
-        if (alternativeUrl && alternativeUrl !== src) {
-          logger.log(`[useImageLoader] Trying alternative URL: ${alternativeUrl}`);
-          setRetryCount(prev => prev + 1);
-          setTimeout(() => {
-            const newImg = new Image();
-            const optimizedAltSrc = getOptimizedImageUrl(alternativeUrl, width, height);
-            newImg.src = optimizedAltSrc;
-            setImageSrc(optimizedAltSrc);
-            
-            newImg.onload = () => {
-              logger.log(`[useImageLoader] Alternative image loaded successfully: ${alternativeUrl}`);
-              setIsLoading(false);
-              setHasError(false);
-            };
-            
-            newImg.onerror = () => {
-              logger.error(`[useImageLoader] Failed to load alternative image: ${alternativeUrl}`);
-              // If alternative also fails, try without filename modifications
+        if (isRhcaCover) {
+          const alternativeUrl = getAlternativeRHCAUrl(src);
+          if (alternativeUrl && alternativeUrl !== src) {
+            logger.log(`[useImageLoader] Trying alternative URL: ${alternativeUrl}`);
+            setRetryCount(prev => prev + 1);
+            setTimeout(() => {
+              const newImg = new Image();
+              const optimizedAltSrc = getOptimizedImageUrl(alternativeUrl, width, height);
+              newImg.src = optimizedAltSrc;
+              setImageSrc(optimizedAltSrc);
+              
+              newImg.onload = () => {
+                logger.log(`[useImageLoader] Alternative image loaded successfully: ${alternativeUrl}`);
+                setIsLoading(false);
+                setHasError(false);
+              };
+              
+              newImg.onerror = () => {
+                logger.error(`[useImageLoader] Failed to load alternative image: ${alternativeUrl}`);
+                // Try again with a different alternative, if available
+                setRetryCount(prev => prev + 1);
+                setIsLoading(false);
+                setHasError(true);
+              };
+            }, 500);
+          } else {
+            // Try direct filename in both bucket variations as last resort
+            const filename = src.split('/').pop()?.split('?')[0];
+            if (filename && !usedFallback) {
+              logger.log(`[useImageLoader] Trying direct filename: ${filename}`);
+              const directUrl = `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/rhca_covers/${filename}`;
               setUsedFallback(true);
+              setImageSrc(directUrl);
+              
+              const directImg = new Image();
+              directImg.src = directUrl;
+              directImg.onload = () => {
+                setIsLoading(false);
+                setHasError(false);
+              };
+              directImg.onerror = () => {
+                setHasError(true);
+                setIsLoading(false);
+              };
+            } else {
               setHasError(true);
               setIsLoading(false);
-            };
-          }, 500);
+            }
+          }
         } else {
           setHasError(true);
           setIsLoading(false);

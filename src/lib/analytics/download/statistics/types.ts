@@ -1,18 +1,23 @@
 
 /**
- * Types for download statistics
+ * Type statistics interface
  */
-
 export interface TypeStats {
   total: number;
   successful: number;
   failed: number;
 }
 
+/**
+ * Document type statistics interface
+ */
 export interface DocumentTypeStats {
   [key: string]: number;
 }
 
+/**
+ * Overall download statistics interface
+ */
 export interface OverallDownloadStats {
   total_downloads: number;
   successful_downloads: number;
@@ -20,6 +25,9 @@ export interface OverallDownloadStats {
   document_types_stats: DocumentTypeStats;
 }
 
+/**
+ * Daily download statistics interface
+ */
 export interface DailyDownloadStat {
   date: string;
   total_downloads: number;
@@ -27,21 +35,15 @@ export interface DailyDownloadStat {
   failed_downloads: number;
 }
 
-export interface DocumentStats {
-  document_id: string;
-  document_type: string;
-  downloads: number;
-  last_download: string;
-}
-
-// Use enum for DocumentType to improve type safety and avoid string literals
+/**
+ * Document type enum for consistent type handling
+ */
 export enum DocumentType {
   IGM = 'igm',
   RHCA = 'rhca',
-  ADC = 'adc',
   Article = 'article',
+  IndexMedicus = 'index-medicus',
+  ADC = 'adc',
   Other = 'other',
-  Test = 'test',
-  IndexMedicus = 'index-medicus'
+  Test = 'test'
 }
-

@@ -35,7 +35,7 @@ export const ImageOptimizer = ({
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentSrc, setCurrentSrc] = useState(src);
   const [retryCount, setRetryCount] = useState(0);
-  const MAX_RETRIES = 2;
+  const MAX_RETRIES = 3;  // Increase max retries for RHCA images
 
   // Reset error state when src changes
   useEffect(() => {
@@ -61,17 +61,41 @@ export const ImageOptimizer = ({
   // Try to load an alternative URL if the current one fails
   const tryAlternativeUrl = () => {
     if (retryCount >= MAX_RETRIES) {
+      logger.error(`[ImageOptimizer] Max retries (${MAX_RETRIES}) reached for: ${currentSrc}`);
       setError(true);
       if (onError) onError();
       return;
     }
 
+    // Check if this is an RHCA cover by the URL pattern
+    const isRhcaCover = currentSrc.includes('RHCA_vol_') || 
+                         currentSrc.includes('rhca_covers') || 
+                         currentSrc.includes('rhca-covers');
+                         
     // Get alternative URL based on patterns
-    const alternativeUrl = getAlternativeRHCAUrl(currentSrc);
+    const alternativeUrl = isRhcaCover ? 
+      getAlternativeRHCAUrl(currentSrc) : 
+      null;
+      
     if (alternativeUrl && alternativeUrl !== currentSrc) {
-      logger.log(`[ImageOptimizer] Trying alternative URL: ${alternativeUrl}`);
+      logger.log(`[ImageOptimizer] Trying alternative URL (${retryCount + 1}/${MAX_RETRIES}): ${alternativeUrl}`);
       setRetryCount(prev => prev + 1);
       setCurrentSrc(alternativeUrl);
+    } else if (isRhcaCover && retryCount < 1) {
+      // For RHCA covers, also try direct bucket access with filename only
+      const filename = extractFilename(currentSrc);
+      if (filename) {
+        const directUrl = `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/rhca_covers/${filename}`;
+        if (directUrl !== currentSrc) {
+          logger.log(`[ImageOptimizer] Trying direct bucket URL: ${directUrl}`);
+          setRetryCount(prev => prev + 1);
+          setCurrentSrc(directUrl);
+          return;
+        }
+      }
+      // If we get here, no alternative was found
+      setError(true);
+      if (onError) onError();
     } else {
       // If no alternative URL or we've reached max retries, show fallback
       logger.error(`[ImageOptimizer] No alternative URL available for: ${currentSrc}`);

@@ -18,15 +18,8 @@ export interface DownloadEvent {
 
 /**
  * Tracks document download events with fallback mechanisms
- * Note: As per requirements, we only track successful downloads 
  */
 export const trackDownload = async (event: DownloadEvent): Promise<boolean> => {
-  // Skip tracking failed downloads
-  if (event.status === 'failed') {
-    logger.log('Skipping tracking for failed download as per requirements');
-    return true;
-  }
-  
   logger.log(`Tracking download event:`, event);
   
   try {
@@ -106,9 +99,6 @@ export const trackDownload = async (event: DownloadEvent): Promise<boolean> => {
           
         if (retryError) {
           logger.error('Error on retry logging download event:', retryError);
-          
-          // Last resort: Only log to console if all else fails
-          logger.info('Unable to track download in database, logging to console only:', event);
           return false;
         }
         

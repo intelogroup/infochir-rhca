@@ -20,12 +20,33 @@ export const getOptimizedImageUrl = (src: string | undefined, width: number, hei
  */
 export const getAlternativeRHCAUrl = (src: string): string | null => {
   // If URL doesn't contain RHCA pattern, return null
-  if (!src.includes('RHCA_vol_')) return null;
+  if (!src.includes('RHCA_vol_') && !src.includes('rhca_covers') && !src.includes('rhca-covers')) return null;
   
   const variations = [];
   
   // Original format without date portion
+  if (src.includes('_vol_')) {
+    // Extract the vol and issue numbers
+    const volMatch = src.match(/vol_(\d+)/i);
+    const issueMatch = src.match(/no_(\d+)/i);
+    
+    if (volMatch && issueMatch) {
+      const vol = volMatch[1].padStart(2, '0');
+      const issue = issueMatch[1].padStart(2, '0');
+      
+      // Try different date formats and separators
+      variations.push(`RHCA_vol_${vol}_no_${issue}.png`);
+      variations.push(`RHCA_vol_${vol}_no_${issue}.jpg`);
+      
+      // Try with different casing
+      variations.push(`rhca_vol_${vol}_no_${issue}.png`);
+      variations.push(`rhca_vol_${vol}_no_${issue}.jpg`);
+    }
+  }
+  
+  // Try removing any date portions (common pattern in filenames)
   variations.push(src.replace(/(_\d+_\d+_\d+)\.png.*/, '.png'));
+  variations.push(src.replace(/(_\d+_\d+_\d+)\.jpg.*/, '.jpg'));
   
   // Try changing the extension from png to jpg and vice versa
   if (src.endsWith('.png') || src.includes('.png?')) {
@@ -39,6 +60,17 @@ export const getAlternativeRHCAUrl = (src: string): string | null => {
     variations.push(src.replace('rhca_covers', 'rhca-covers'));
   } else if (src.includes('rhca-covers')) {
     variations.push(src.replace('rhca-covers', 'rhca_covers'));
+  }
+  
+  // Try raw filename in different buckets
+  const filename = src.split('/').pop()?.split('?')[0];
+  if (filename) {
+    if (!variations.includes(`https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/rhca_covers/${filename}`)) {
+      variations.push(`https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/rhca_covers/${filename}`);
+    }
+    if (!variations.includes(`https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/rhca-covers/${filename}`)) {
+      variations.push(`https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/rhca-covers/${filename}`);
+    }
   }
   
   // Return the first alternative or null if no variations were generated
