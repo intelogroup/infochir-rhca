@@ -86,20 +86,7 @@ export const downloadPDF = async (options: DownloadPDFOptions): Promise<boolean>
   } catch (error) {
     logger.error(`Error downloading ${fileName}:`, error);
     
-    // Track the failed download if tracking is enabled
-    if (trackingEnabled) {
-      // Map to standard document type
-      const analyticDocType = documentType === 'index-medicus' ? 'article' : 
-                            (documentType === 'test' ? 'other' : documentType);
-      
-      await trackDownloadEvent(
-        documentId,
-        analyticDocType as any,
-        fileName,
-        false,
-        error instanceof Error ? error.message : String(error)
-      );
-    }
+    // We no longer track failed downloads
     
     return false;
   }

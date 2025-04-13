@@ -1,7 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger } from "@/lib/error-logger";
-import { v4 as uuidv4 } from "uuid";
 
 const logger = createLogger("analytics");
 
@@ -21,6 +20,15 @@ export interface TrackEventOptions {
 let sessionId = '';
 
 /**
+ * Generate a simple unique ID without UUID dependency
+ */
+const generateId = () => {
+  const timestamp = Date.now().toString(36);
+  const randomStr = Math.random().toString(36).substring(2, 10);
+  return `${timestamp}-${randomStr}`;
+};
+
+/**
  * Initialize the analytics system
  */
 export const initAnalytics = () => {
@@ -33,7 +41,7 @@ export const initAnalytics = () => {
       sessionId = storedSessionId;
     } else {
       // Create a new session ID
-      sessionId = uuidv4();
+      sessionId = generateId();
       window.localStorage.setItem('infochir_session_id', sessionId);
     }
   }

@@ -103,7 +103,7 @@ export const DownloadTrackingStatus = () => {
     setIsTesting(true);
     try {
       const result = await trackDownload({
-        document_id: '00000000-0000-0000-0000-000000000000',
+        document_id: '0000test-download-id-test0000',
         document_type: 'test',
         file_name: 'test-file.pdf',
         status: 'success'
