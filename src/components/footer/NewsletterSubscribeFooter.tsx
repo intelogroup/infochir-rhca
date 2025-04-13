@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { supabase, SUPABASE_URL } from "@/integrations/supabase/client";
 import { z } from "zod";
 import { createLogger } from "@/lib/error-logger";
 
@@ -56,22 +55,28 @@ export const NewsletterSubscribeFooter = () => {
     try {
       logger.log("Submitting newsletter subscription:", { name, email });
       
-      // Use the imported SUPABASE_URL constant instead of accessing protected properties
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/newsletter-subscribe`, {
+      // Use direct fetch for better control over the request
+      const response = await fetch("https://llxzstqejdrplmxdjxlu.supabase.co/functions/v1/newsletter-subscribe", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''}`,
-          'Access-Control-Allow-Origin': '*',
-          'x-client-info': 'newsletter-subscription'
         },
         body: JSON.stringify({ name, email })
       });
       
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        logger.error("Newsletter subscription error from response:", errorData);
-        throw new Error(errorData.error || `Error: ${response.status} ${response.statusText}`);
+        let errorMessage = "Erreur lors de l'inscription";
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || `Erreur: ${response.status} ${response.statusText}`;
+        } catch (e) {
+          // If we can't parse JSON, use the status text
+          errorMessage = `Erreur: ${response.status} ${response.statusText}`;
+        }
+        
+        logger.error("Newsletter subscription error from response:", { status: response.status, message: errorMessage });
+        throw new Error(errorMessage);
       }
       
       const data = await response.json();

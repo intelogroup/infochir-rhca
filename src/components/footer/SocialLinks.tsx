@@ -34,20 +34,13 @@ export const SocialLinks = () => {
           ))}
         </div>
         <div className="bg-gray-50/80 p-4 rounded-lg border border-gray-100 shadow-sm">
-          <h4 className="text-sm font-medium text-gray-700 mb-2">Newsletter</h4>
+          <h4 className="text-sm font-medium text-gray-700 mb-2">Rejoignez-nous</h4>
           <p className="text-xs text-gray-500 mb-3">
-            Restez informé des dernières publications et actualités
+            Suivez-nous sur les réseaux sociaux pour toutes les actualités
           </p>
-          <div className="flex">
-            <input 
-              type="email"
-              placeholder="Votre email"
-              className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-l-md focus:outline-none focus:ring-1 focus:ring-ocean"
-            />
-            <button className="bg-gradient-to-r from-primary to-ocean text-white px-3 py-2 text-sm rounded-r-md hover:opacity-90 transition-opacity">
-              S'abonner
-            </button>
-          </div>
+          <Link to="/contact" className="inline-block w-full text-center bg-gradient-to-r from-primary to-ocean text-white px-3 py-2 text-sm rounded-md hover:opacity-90 transition-opacity">
+            Nous contacter
+          </Link>
         </div>
       </div>
     </div>
