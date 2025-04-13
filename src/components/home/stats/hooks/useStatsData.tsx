@@ -6,9 +6,9 @@ import { createLogger } from "@/lib/error-logger";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { 
-  subscribeToDownloadStatsChanges, 
+  subscribeToDownloadStats, 
   getOverallDownloadStats 
-} from "@/lib/analytics/download";
+} from "@/lib/analytics/download/statistics";
 
 const logger = createLogger('useStatsData');
 
@@ -20,7 +20,7 @@ export const useStatsData = () => {
     logger.log('Setting up real-time subscription to download stats');
     
     // Subscribe to download stats updates and invalidate query on changes
-    const unsubscribe = subscribeToDownloadStatsChanges(() => {
+    const unsubscribe = subscribeToDownloadStats(() => {
       logger.log('Download stats updated, invalidating query');
       queryClient.invalidateQueries({ queryKey: ['home-stats'] });
     });
@@ -60,8 +60,7 @@ export const useStatsData = () => {
           throw membersError;
         }
         
-        // Get download statistics using the correct function name
-        // This now uses the overall_download_stats_view
+        // Get download statistics using the new real-time enabled function
         const downloadStats = await getOverallDownloadStats();
         logger.log('Download stats fetched:', downloadStats);
         
@@ -81,7 +80,7 @@ export const useStatsData = () => {
         const totalViews = articles?.reduce((sum, article) => sum + (article.views || 0), 0) || 0;
         stats[2].value = totalViews.toString() || "0";
         
-        // Update Downloads count from our new view
+        // Update Downloads count from our real-time enabled function
         stats[3].value = String(totalDownloads);
 
         logger.log('Processed stats:', stats);
