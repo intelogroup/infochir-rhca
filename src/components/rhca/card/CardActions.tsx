@@ -8,6 +8,7 @@ import type { RhcaArticle } from "../types";
 import { downloadPDF } from "@/lib/analytics/download";
 import { createLogger } from "@/lib/error-logger";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { DocumentType } from "@/lib/analytics/download/statistics/types";
 
 const logger = createLogger('RhcaCardActions');
 
@@ -35,7 +36,7 @@ export const CardActions: React.FC<CardActionsProps> = ({ article, pdfUrl }) => 
         url: pdfUrl,
         fileName,
         documentId: article.id,
-        documentType: 'rhca',
+        documentType: DocumentType.RHCA,
         trackingEnabled: true
       });
       

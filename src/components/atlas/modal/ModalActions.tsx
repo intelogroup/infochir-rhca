@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { createLogger } from "@/lib/error-logger";
 import { useState } from "react";
 import { trackShare } from "@/lib/analytics/track";
+import { DocumentType } from "@/lib/analytics/download/statistics/types";
 
 const logger = createLogger('ModalActions');
 
@@ -24,7 +25,7 @@ export const ModalActions = ({ chapter }: ModalActionsProps) => {
     
     // Track the share event
     try {
-      await trackShare(chapter.id, 'adc', 'clipboard');
+      await trackShare(chapter.id, DocumentType.ADC, 'clipboard');
     } catch (error) {
       logger.error('Error tracking share event:', error);
     }
@@ -48,7 +49,7 @@ export const ModalActions = ({ chapter }: ModalActionsProps) => {
         url: chapter.pdfUrl,
         fileName,
         documentId: chapter.id,
-        documentType: 'adc',
+        documentType: DocumentType.ADC,
         trackingEnabled: true
       });
       

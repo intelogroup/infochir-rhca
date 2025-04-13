@@ -1,9 +1,13 @@
-
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { downloadPDF } from "@/lib/analytics/download";
+import { DocumentType } from "@/lib/analytics/download/statistics/types";
+import { createLogger } from "@/lib/error-logger";
+
+const logger = createLogger('AtlasActions');
 
 interface AtlasActionsProps {
   id: string;
@@ -28,48 +32,21 @@ export const AtlasActions: React.FC<AtlasActionsProps> = ({
     setIsDownloading(true);
 
     try {
-      // Simple direct download using the pdfUrl
-      const { data, error } = await supabase
-        .storage
-        .from('atlas-pdfs')
-        .download(pdfUrl);
-
-      if (error) {
-        console.error('Download error:', error);
-        toast.error("Erreur lors du téléchargement du fichier");
-        return;
-      }
-
-      if (!data) {
-        toast.error("Le fichier PDF n'existe pas");
-        return;
-      }
-
-      // Create URL and trigger download
-      const url = window.URL.createObjectURL(data);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = pdfUrl;
-      document.body.appendChild(link);
-      link.click();
+      // Use our enhanced download function
+      const fileName = `ADC-Chapter.pdf`;
       
-      // Cleanup
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(link);
-
-      // Update download count
-      const { error: updateError } = await supabase
-        .from('articles')
-        .update({ 
-          downloads: 1,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', id);
-
-      if (updateError) {
-        console.error('Error updating download count:', updateError);
+      const success = await downloadPDF({
+        url: pdfUrl,
+        fileName,
+        documentId: id,
+        documentType: DocumentType.ADC,
+        trackingEnabled: true
+      });
+      
+      if (!success) {
+        throw new Error('Download failed');
       }
-
+      
       toast.success("Téléchargement réussi");
     } catch (error) {
       console.error('Download error:', error);

@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { downloadPDF } from "@/lib/analytics/download";
 import { createLogger } from "@/lib/error-logger";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { DocumentType } from "@/lib/analytics/download/statistics/types";
 
 const logger = createLogger('IssueCardActions');
 
@@ -40,7 +41,7 @@ export const IssueCardActions: React.FC<IssueCardActionsProps> = ({
         url: pdfUrl,
         fileName: `IGM_${title.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`,
         documentId: id,
-        documentType: 'igm'
+        documentType: DocumentType.IGM
       });
       
       if (!success) {
