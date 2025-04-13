@@ -4,8 +4,12 @@ import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
+import { SearchBar } from "@/components/shared/SearchBar";
+import { useState } from "react";
 
 export const ADCHeader = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  
   return (
     <div className="relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-secondary/10 via-transparent to-transparent" />

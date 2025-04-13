@@ -1,7 +1,7 @@
 
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { ADCHeader } from "@/components/adc/ADCHeader";
-import { Suspense, lazy, useRef, useEffect } from "react";
+import { Suspense, lazy, useRef, useEffect, useState } from "react";
 import { useAtlasArticles } from "@/components/atlas/hooks/useAtlasArticles";
 import { AtlasCard } from "@/components/atlas/AtlasCard";
 import { AtlasTableOfContents } from "@/components/atlas/AtlasTableOfContents";
@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { toast } from "@/hooks/use-toast";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
+import { SearchBar } from "@/components/shared/SearchBar";
 
 // Lazy load components
 const ADCMission = lazy(() => import("@/components/adc/ADCMission").then(module => ({ default: module.ADCMission })));
@@ -26,10 +27,18 @@ const LoadingSkeleton = () => (
   </div>
 );
 
-const VirtualizedAtlasGrid = ({ chapters }: { chapters: any[] }) => {
+const VirtualizedAtlasGrid = ({ chapters, searchTerm }: { chapters: any[], searchTerm: string }) => {
   console.log("[VirtualizedAtlasGrid] Rendering with chapters:", chapters);
   const parentRef = useRef<HTMLDivElement>(null);
   const isMounted = useRef(false);
+
+  // Filter chapters based on search term
+  const filteredChapters = searchTerm.trim() === '' 
+    ? chapters 
+    : chapters.filter(chapter => 
+        chapter.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (chapter.description && chapter.description.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
 
   useEffect(() => {
     isMounted.current = true;
@@ -41,7 +50,7 @@ const VirtualizedAtlasGrid = ({ chapters }: { chapters: any[] }) => {
   }, []);
 
   const columnCount = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1;
-  const rowCount = Math.ceil(chapters.length / columnCount);
+  const rowCount = Math.ceil(filteredChapters.length / columnCount);
 
   const rowVirtualizer = useVirtualizer({
     count: rowCount,
@@ -49,6 +58,14 @@ const VirtualizedAtlasGrid = ({ chapters }: { chapters: any[] }) => {
     estimateSize: () => 400,
     overscan: 3,
   });
+
+  if (filteredChapters.length === 0) {
+    return (
+      <div className="h-[300px] flex items-center justify-center">
+        <p className="text-gray-500">Aucun résultat ne correspond à votre recherche</p>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -77,7 +94,7 @@ const VirtualizedAtlasGrid = ({ chapters }: { chapters: any[] }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
               {Array.from({ length: columnCount }).map((_, columnIndex) => {
                 const chapterIndex = virtualRow.index * columnCount + columnIndex;
-                const chapter = chapters[chapterIndex];
+                const chapter = filteredChapters[chapterIndex];
                 
                 if (!chapter) return null;
                 
@@ -103,6 +120,7 @@ const VirtualizedAtlasGrid = ({ chapters }: { chapters: any[] }) => {
 const ADCContent = () => {
   console.log("[ADCContent] Component mounting");
   const mountTime = useRef(Date.now());
+  const [searchTerm, setSearchTerm] = useState("");
   const { data: chapters, isLoading, error } = useAtlasArticles();
 
   useEffect(() => {
@@ -144,17 +162,27 @@ const ADCContent = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
         <h2 className="text-2xl font-bold text-gray-900">
           Atlas de Diagnostic Chirurgical
         </h2>
-        <AtlasTableOfContents />
+        
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <div className="w-full sm:w-64">
+            <SearchBar 
+              value={searchTerm} 
+              onChange={setSearchTerm} 
+              placeholder="Rechercher un chapitre..."
+            />
+          </div>
+          <AtlasTableOfContents />
+        </div>
       </div>
       
       {isLoading ? (
         <LoadingSkeleton />
       ) : chapters && chapters.length > 0 ? (
-        <VirtualizedAtlasGrid chapters={chapters} />
+        <VirtualizedAtlasGrid chapters={chapters} searchTerm={searchTerm} />
       ) : (
         <div className="text-center py-12 text-gray-500">
           Aucun chapitre disponible pour le moment
