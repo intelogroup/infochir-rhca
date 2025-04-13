@@ -1,15 +1,19 @@
+
 import React, { useState, useEffect } from 'react';
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { ErrorBoundary } from '@/components/error-boundary/ErrorBoundary';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { createLogger } from '@/lib/error-logger';
 import { Breadcrumbs } from '@/components/navigation/Breadcrumbs';
 import { useMediaQuery } from 'react-responsive';
 import { trackView } from '@/lib/analytics/track';
 import { DocumentType } from '@/lib/analytics/download/statistics/types';
+import { ADCHeader } from '@/components/adc/ADCHeader';
+import { ADCMission } from '@/components/adc/ADCMission';
+import { ADCSubmission } from '@/components/adc/ADCSubmission';
+import { ChaptersGrid } from '@/components/atlas/ChaptersGrid';
+import { useNavigate } from 'react-router-dom';
 
 const logger = createLogger('ADCPage');
 
@@ -53,7 +57,9 @@ const ADC = () => {
             ]}
           />
 
-          <section className="relative py-12 md:py-24 bg-white rounded-lg shadow-md overflow-hidden">
+          <ADCHeader />
+
+          <section className="relative py-12 md:py-24 bg-white rounded-lg shadow-md overflow-hidden mt-8">
             <div className="absolute inset-0 bg-secondary/5 z-0" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 75%, 0% 100%)' }}></div>
             <div className="relative z-10 px-4 sm:px-6 lg:px-8">
               <div className="text-center">
@@ -79,6 +85,9 @@ const ADC = () => {
               <ChaptersGrid />
             </ErrorBoundary>
           </section>
+
+          <ADCMission />
+          <ADCSubmission />
         </div>
       </div>
     </MainLayout>

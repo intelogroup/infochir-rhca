@@ -38,9 +38,9 @@ export const AtlasTableOfContents = () => {
                   <span className="text-primary">{index + 1}.</span>
                   {chapter.title}
                 </h3>
-                {chapter.lastUpdate && (
+                {(chapter.lastUpdate || chapter.lastUpdated) && (
                   <p className="text-sm text-gray-500">
-                    Dernière mise à jour: {chapter.lastUpdate}
+                    Dernière mise à jour: {chapter.lastUpdated || chapter.lastUpdate}
                   </p>
                 )}
               </div>

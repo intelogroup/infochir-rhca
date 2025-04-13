@@ -69,6 +69,7 @@ export const useAtlasArticles = () => {
             abstract: item.abstract,
             content: item.abstract,
             lastUpdate: item.updated_at,
+            lastUpdated: item.updated_at,
             publicationDate: item.publication_date,
             author: Array.isArray(item.authors) ? item.authors[0] : undefined,
             authors: Array.isArray(item.authors) ? item.authors : [],

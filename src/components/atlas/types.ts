@@ -16,6 +16,7 @@ export interface AtlasChapter {
   abstract?: string;
   content?: string;
   lastUpdate?: string;
+  lastUpdated?: string;
   publicationDate: string;
   author?: string;
   authors?: string[];
@@ -31,6 +32,7 @@ export interface AtlasChapter {
   imageUrls?: string[];
   institution?: string;
   userId?: string;
+  chapterNumber?: string;
 }
 
 export interface AtlasCategory {
