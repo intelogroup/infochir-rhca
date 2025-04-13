@@ -34,16 +34,7 @@ export const downloadPDF = async ({
         description: "Impossible de télécharger ce document."
       });
       
-      if (trackingEnabled) {
-        await trackDownload({
-          document_id: documentId,
-          document_type: documentType,
-          file_name: fileName,
-          status: 'failed',
-          error_details: 'Missing URL'
-        });
-      }
-      
+      // We no longer track failed downloads
       return false;
     }
     
@@ -103,16 +94,7 @@ export const downloadPDF = async ({
         description: `Impossible d'accéder au fichier ${response ? `(${response.status})` : ''}`
       });
       
-      if (trackingEnabled) {
-        await trackDownload({
-          document_id: documentId,
-          document_type: documentType,
-          file_name: fileName,
-          status: 'failed',
-          error_details: errorMessage
-        });
-      }
-      
+      // We no longer track failed downloads
       return false;
     }
     
@@ -128,16 +110,7 @@ export const downloadPDF = async ({
         description: "Le fichier téléchargé est vide ou corrompu."
       });
       
-      if (trackingEnabled) {
-        await trackDownload({
-          document_id: documentId,
-          document_type: documentType,
-          file_name: fileName,
-          status: 'failed',
-          error_details: 'Empty or invalid blob'
-        });
-      }
-      
+      // We no longer track failed downloads
       return false;
     }
     
@@ -179,16 +152,7 @@ export const downloadPDF = async ({
       description: "Une erreur inattendue est survenue"
     });
     
-    if (trackingEnabled) {
-      await trackDownload({
-        document_id: documentId,
-        document_type: documentType,
-        file_name: fileName,
-        status: 'failed',
-        error_details: error instanceof Error ? error.message : String(error)
-      });
-    }
-    
+    // We no longer track failed downloads
     return false;
   }
 };

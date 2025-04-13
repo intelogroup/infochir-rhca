@@ -18,8 +18,15 @@ export interface DownloadEvent {
 
 /**
  * Tracks document download events
+ * Note: As per requirements, we only track successful downloads 
  */
 export const trackDownload = async (event: DownloadEvent): Promise<boolean> => {
+  // Skip tracking failed downloads
+  if (event.status === 'failed') {
+    logger.log('Skipping tracking for failed download as per requirements');
+    return true;
+  }
+  
   logger.log(`Tracking download event:`, event);
   
   try {
@@ -29,20 +36,18 @@ export const trackDownload = async (event: DownloadEvent): Promise<boolean> => {
       return false;
     }
     
-    // First increment the download count in the original table if success
-    if (event.status === 'success') {
-      try {
-        await supabase.rpc('increment_count', {
-          table_name: 'articles',
-          column_name: 'downloads',
-          row_id: event.document_id
-        });
-        
-        logger.log(`Incremented download count for ${event.document_id}`);
-      } catch (incrementError) {
-        logger.error('Error incrementing download count:', incrementError);
-        // Continue with event logging even if increment fails
-      }
+    // First increment the download count in the original table
+    try {
+      await supabase.rpc('increment_count', {
+        table_name: 'articles',
+        column_name: 'downloads',
+        row_id: event.document_id
+      });
+      
+      logger.log(`Incremented download count for ${event.document_id}`);
+    } catch (incrementError) {
+      logger.error('Error incrementing download count:', incrementError);
+      // Continue with event logging even if increment fails
     }
     
     // Add client-side information to the event
