@@ -7,8 +7,9 @@ export const digestiveChapters: AtlasChapter[] = [
     title: "DE L'ŒSOPHAGE, DIAPHRAGME À ILÉON",
     description: "Exploration approfondie des pathologies du tractus digestif supérieur et moyen.",
     abstract: "Ce chapitre couvre l'ensemble des affections de l'œsophage au petit intestin.",
-    status: "coming",
+    lastUpdated: "2024-08-01",
     publicationDate: "2024-08-01",
+    status: "coming",
     coverImage: "https://images.unsplash.com/photo-1584017911780-6e64c7b25c58?q=80&w=1470&fit=crop",
     stats: {
       views: 0,
@@ -24,8 +25,9 @@ export const digestiveChapters: AtlasChapter[] = [
     title: "DE APPENDICE À ANUS",
     description: "Guide complet des pathologies du tractus digestif inférieur.",
     abstract: "Ce chapitre explore en détail les affections de l'appendice à l'anus.",
-    status: "coming",
+    lastUpdated: "2024-08-15",
     publicationDate: "2024-08-15",
+    status: "coming",
     coverImage: "https://images.unsplash.com/photo-1584017911780-6e64c7b25c58?q=80&w=1470&fit=crop",
     stats: {
       views: 0,
