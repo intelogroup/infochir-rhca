@@ -1,6 +1,6 @@
 
 /**
- * Interface for download statistics by document type
+ * Type for download statistics
  */
 export interface TypeStats {
   total: number;
@@ -9,7 +9,7 @@ export interface TypeStats {
 }
 
 /**
- * Interface for document types statistics returned by our function
+ * Document type statistics
  */
 export interface DocumentTypeStats {
   [key: string]: number;

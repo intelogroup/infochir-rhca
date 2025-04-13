@@ -7,6 +7,9 @@ import {
 // Export the track-downloads functionality
 export * from "./track-downloads";
 
+// Export statistics functionality
+export * from "./statistics";
+
 const logger = createLogger("downloadService");
 
 // Re-export storage functions

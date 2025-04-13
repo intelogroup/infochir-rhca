@@ -46,6 +46,7 @@ export const getDownloadStatsByType = async (docType: string): Promise<TypeStats
       throw error;
     }
     
+    // Fix: Access the data object directly since it's a single row result
     return {
       total: data?.total_downloads || 0,
       successful: data?.successful_downloads || 0,
@@ -70,6 +71,7 @@ export const getDocumentDownloadStats = async (documentId: string): Promise<Type
       throw error;
     }
     
+    // Fix: Access the data object directly since it's a single row result
     return {
       total: data?.total_downloads || 0,
       successful: data?.successful_downloads || 0,
