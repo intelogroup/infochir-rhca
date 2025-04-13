@@ -1,194 +1,198 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Resend } from "npm:resend@2.0.0";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.23.0";
+import { corsHeaders, handleCors } from "../_shared/cors.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.48.1";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
-const RECIPIENT_EMAILS = ["jayveedz19@gmail.com", "tlmq15@gmail.com"];
-
-// Supabase client
-const supabaseUrl = Deno.env.get("SUPABASE_URL") as string;
-const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") as string;
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-// Updated CORS configuration to include all required headers
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-client-mode, x-client-info",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Max-Age": "86400"
-};
-
-interface NewsletterData {
+// Types for request and response data
+interface SubscriptionRequest {
   name: string;
   email: string;
   phone?: string;
 }
 
+interface SubscriptionResponse {
+  success: boolean;
+  message: string;
+  existingSubscription?: boolean;
+  error?: string;
+}
+
+// Get environment variables
+const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
+const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+
+// Main handler function
 const handler = async (req: Request): Promise<Response> => {
-  // Handle CORS preflight requests
-  if (req.method === "OPTIONS") {
-    return new Response(null, { 
-      status: 204,
-      headers: corsHeaders 
-    });
-  }
+  console.log("Newsletter subscription function called");
+
+  // Handle CORS preflight request
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
-    console.log("Newsletter subscribe function called");
-    
-    let requestData: NewsletterData;
-    try {
-      requestData = await req.json();
-      console.log("Request data:", requestData);
-    } catch (parseError) {
-      console.error("Error parsing request JSON:", parseError);
+    // Validate method
+    if (req.method !== "POST") {
       return new Response(
-        JSON.stringify({ error: "Invalid JSON in request body" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
-    }
-    
-    const { name, email, phone } = requestData;
-    
-    if (!name || !email) {
-      console.error("Missing required fields:", { name, email });
-      return new Response(
-        JSON.stringify({ error: "Name and email are required" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
+        JSON.stringify({ 
+          success: false, 
+          error: "Method not allowed" 
+        }),
+        { 
+          status: 405,
+          headers: { 
+            "Content-Type": "application/json",
+            ...corsHeaders
+          }
         }
       );
     }
 
+    // Parse request body
+    let data: SubscriptionRequest;
+    try {
+      data = await req.json();
+      console.log("Request data:", data);
+    } catch (e) {
+      console.error("Error parsing request:", e);
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: "Invalid JSON in request body" 
+        }),
+        { 
+          status: 400,
+          headers: { 
+            "Content-Type": "application/json",
+            ...corsHeaders
+          }
+        }
+      );
+    }
+
+    // Validate required fields
+    const { name, email, phone } = data;
+    if (!name || !email) {
+      console.error("Missing required fields");
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: "Name and email are required" 
+        }),
+        { 
+          status: 400,
+          headers: { 
+            "Content-Type": "application/json",
+            ...corsHeaders
+          }
+        }
+      );
+    }
+
+    // Validate email format with a simple regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      console.error("Invalid email format:", email);
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: "Invalid email format" 
+        }),
+        { 
+          status: 400,
+          headers: { 
+            "Content-Type": "application/json",
+            ...corsHeaders
+          }
+        }
+      );
+    }
+
+    // Create Supabase client with service role key
+    const supabase = createClient(supabaseUrl, serviceRoleKey);
+
     // Check if email already exists
-    const { data: existingSubscription, error: checkError } = await supabase
+    const { data: existingData, error: searchError } = await supabase
       .from("newsletter_subscriptions")
-      .select("id")
+      .select("id, email")
       .eq("email", email)
       .maybeSingle();
-      
-    if (checkError) {
-      console.error("Error checking for existing subscription:", checkError);
-      // Continue with the process, we'll attempt to insert anyway
+
+    if (searchError) {
+      console.error("Error checking existing subscription:", searchError);
+      throw new Error(`Database error: ${searchError.message}`);
     }
-    
-    if (existingSubscription) {
-      console.log("Email already subscribed:", email);
+
+    // If email already exists, return success but indicate it's a duplicate
+    if (existingData) {
+      console.log("Existing subscription found for email:", email);
       return new Response(
         JSON.stringify({ 
           success: true, 
-          message: "Email already subscribed",
-          existingSubscription: true
+          message: "Already subscribed", 
+          existingSubscription: true 
         }),
-        {
+        { 
           status: 200,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
+          headers: { 
+            "Content-Type": "application/json",
+            ...corsHeaders
+          }
         }
       );
     }
 
-    // Store in database
-    const { data, error } = await supabase
+    // Insert new subscription
+    const { data: insertData, error: insertError } = await supabase
       .from("newsletter_subscriptions")
       .insert([
-        { name, email, phone }
+        { 
+          name, 
+          email, 
+          phone: phone || null,
+          is_active: true
+        }
       ])
       .select();
 
-    if (error) {
-      console.error("Error saving to database:", error);
-      
-      // Special handling for foreign key violations and unique constraints
-      if (error.code === "23505") { // Unique violation
-        return new Response(
-          JSON.stringify({ 
-            success: true, 
-            message: "Email already subscribed",
-            existingSubscription: true
-          }),
-          {
-            status: 200,
-            headers: { "Content-Type": "application/json", ...corsHeaders },
-          }
-        );
-      }
-      
-      throw new Error(`Database error: ${error.message}`);
+    if (insertError) {
+      console.error("Error inserting subscription:", insertError);
+      throw new Error(`Database error: ${insertError.message}`);
     }
 
-    console.log("Successfully saved to database:", data);
-
-    // Notify admin
-    try {
-      const adminEmailResponse = await resend.emails.send({
-        from: "InfoChir Newsletter <onboarding@resend.dev>",
-        to: RECIPIENT_EMAILS,
-        subject: "Nouvelle inscription à la newsletter",
-        html: `
-          <h1>Nouvelle inscription à la newsletter</h1>
-          <p><strong>Nom:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          ${phone ? `<p><strong>Téléphone:</strong> ${phone}</p>` : ''}
-        `,
-      });
-      
-      console.log("Admin notification email sent:", adminEmailResponse);
-    } catch (emailError) {
-      console.error("Error sending admin notification:", emailError);
-      // Continue with the rest of the process even if admin email fails
-    }
-
-    // Send confirmation to subscriber
-    try {
-      const subscriberEmailResponse = await resend.emails.send({
-        from: "InfoChir <onboarding@resend.dev>",
-        to: [email],
-        subject: "Bienvenue à la newsletter InfoChir",
-        html: `
-          <h1>Merci de votre inscription, ${name}!</h1>
-          <p>Vous êtes maintenant inscrit(e) à notre newsletter et recevrez nos prochaines actualités.</p>
-          <p>Cordialement,<br>L'équipe InfoChir</p>
-        `,
-      });
-      
-      console.log("Subscriber confirmation email sent:", subscriberEmailResponse);
-    } catch (emailError) {
-      console.error("Error sending subscriber confirmation:", emailError);
-      // Continue with success response even if confirmation email fails
-    }
-
+    console.log("Subscription successful:", insertData);
+    
+    // Return success response
     return new Response(
       JSON.stringify({ 
-        success: true,
-        message: "Subscription successful"
+        success: true, 
+        message: "Successfully subscribed to newsletter" 
       }),
-      {
+      { 
         status: 200,
-        headers: {
+        headers: { 
           "Content-Type": "application/json",
-          ...corsHeaders,
-        },
+          ...corsHeaders
+        }
       }
     );
-  } catch (error: any) {
-    console.error("Error in newsletter-subscribe function:", error);
+  } catch (error) {
+    // Log and return error response
+    console.error("Unhandled error in newsletter subscription:", error);
     return new Response(
       JSON.stringify({ 
-        error: error.message || "An unknown error occurred",
-        success: false
+        success: false, 
+        error: error instanceof Error ? error.message : "Unknown error occurred" 
       }),
-      {
+      { 
         status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { 
+          "Content-Type": "application/json",
+          ...corsHeaders
+        }
       }
     );
   }
 };
 
+// Serve the handler
 serve(handler);

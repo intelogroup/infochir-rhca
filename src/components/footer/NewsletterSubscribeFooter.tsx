@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, SUPABASE_URL } from "@/integrations/supabase/client";
 import { z } from "zod";
 import { createLogger } from "@/lib/error-logger";
 
@@ -56,12 +56,14 @@ export const NewsletterSubscribeFooter = () => {
     try {
       logger.log("Submitting newsletter subscription:", { name, email });
       
-      // Direct call to the edge function with specific headers
-      const response = await fetch(`${supabase.supabaseUrl}/functions/v1/newsletter-subscribe`, {
+      // Use the imported SUPABASE_URL constant instead of accessing protected properties
+      const response = await fetch(`${SUPABASE_URL}/functions/v1/newsletter-subscribe`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${supabase.supabaseKey}`,
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''}`,
+          'Access-Control-Allow-Origin': '*',
+          'x-client-info': 'newsletter-subscription'
         },
         body: JSON.stringify({ name, email })
       });
