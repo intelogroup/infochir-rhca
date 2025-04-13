@@ -11,6 +11,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import { toast } from "@/hooks/use-toast";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 import { SearchBar } from "@/components/shared/SearchBar";
+import { initAnalytics, trackPageView, trackSearch } from "@/lib/analytics/track";
 
 // Lazy load components
 const ADCMission = lazy(() => import("@/components/adc/ADCMission").then(module => ({ default: module.ADCMission })));
@@ -39,6 +40,13 @@ const VirtualizedAtlasGrid = ({ chapters, searchTerm }: { chapters: any[], searc
         chapter.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (chapter.description && chapter.description.toLowerCase().includes(searchTerm.toLowerCase()))
       );
+
+  // Track search results
+  useEffect(() => {
+    if (searchTerm.trim() !== '') {
+      trackSearch(searchTerm, 'ADC', filteredChapters.length);
+    }
+  }, [searchTerm, filteredChapters.length]);
 
   useEffect(() => {
     isMounted.current = true;
@@ -173,6 +181,7 @@ const ADCContent = () => {
               value={searchTerm} 
               onChange={setSearchTerm} 
               placeholder="Rechercher un chapitre..."
+              category="ADC"
             />
           </div>
           <AtlasTableOfContents />
@@ -198,6 +207,11 @@ const ADC = () => {
   
   useEffect(() => {
     console.log("[ADC] Component mounted at:", mountTime.current);
+    
+    // Initialize analytics and track page view
+    initAnalytics();
+    trackPageView();
+    
     return () => {
       console.log("[ADC] Component unmounting, was mounted for:", Date.now() - mountTime.current, "ms");
     };

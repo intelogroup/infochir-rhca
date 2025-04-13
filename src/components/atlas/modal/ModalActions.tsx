@@ -7,6 +7,7 @@ import { AtlasChapter } from "../types";
 import { motion } from "framer-motion";
 import { createLogger } from "@/lib/error-logger";
 import { useState } from "react";
+import { trackShare } from "@/lib/analytics/track";
 
 const logger = createLogger('ModalActions');
 
@@ -17,9 +18,17 @@ interface ModalActionsProps {
 export const ModalActions = ({ chapter }: ModalActionsProps) => {
   const [isDownloading, setIsDownloading] = useState(false);
 
-  const handleShare = () => {
+  const handleShare = async () => {
     const shareUrl = `${window.location.origin}/adc/chapters/${chapter.id}`;
-    navigator.clipboard.writeText(shareUrl);
+    await navigator.clipboard.writeText(shareUrl);
+    
+    // Track the share event
+    try {
+      await trackShare(chapter.id, 'adc', 'clipboard');
+    } catch (error) {
+      logger.error('Error tracking share event:', error);
+    }
+    
     toast.success("Lien copié dans le presse-papier");
   };
 

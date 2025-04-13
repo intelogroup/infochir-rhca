@@ -737,6 +737,51 @@ export type Database = {
         }
         Relationships: []
       }
+      user_events: {
+        Row: {
+          created_at: string | null
+          document_id: string | null
+          document_type: string | null
+          event_data: Json | null
+          event_type: string
+          id: string
+          ip_address: string | null
+          page_url: string | null
+          referrer: string | null
+          session_id: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          document_id?: string | null
+          document_type?: string | null
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          ip_address?: string | null
+          page_url?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          document_id?: string | null
+          document_type?: string | null
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          page_url?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -871,6 +916,15 @@ export type Database = {
           user_id?: string | null
           views?: number | null
           volume?: string | null
+        }
+        Relationships: []
+      }
+      analytics_dashboard: {
+        Row: {
+          day: string | null
+          document_type: string | null
+          event_count: number | null
+          event_type: string | null
         }
         Relationships: []
       }
@@ -1263,6 +1317,14 @@ export type Database = {
           last_download_time: string
         }[]
       }
+      get_document_events: {
+        Args: { doc_id: string; event_types?: string[] }
+        Returns: {
+          event_type: string
+          event_count: number
+          last_event_time: string
+        }[]
+      }
       get_download_statistics: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -1296,6 +1358,21 @@ export type Database = {
       increment_count: {
         Args: { table_name: string; column_name: string; row_id: string }
         Returns: undefined
+      }
+      track_user_event: {
+        Args: {
+          p_event_type: string
+          p_document_id?: string
+          p_document_type?: string
+          p_user_id?: string
+          p_event_data?: Json
+          p_session_id?: string
+          p_user_agent?: string
+          p_referrer?: string
+          p_page_url?: string
+          p_ip_address?: string
+        }
+        Returns: string
       }
     }
     Enums: {
