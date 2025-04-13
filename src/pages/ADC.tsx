@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { createLogger } from '@/lib/error-logger';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
-import { useMediaQuery } from 'react-responsive';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { trackView } from '@/lib/analytics/track';
 import { DocumentType } from '@/lib/analytics/download/statistics/types';
 import { ADCHeader } from '@/components/adc/ADCHeader';
@@ -20,7 +20,7 @@ const logger = createLogger('ADCPage');
 
 const ADC = () => {
   const navigate = useNavigate();
-  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const isMobile = useIsMobile();
   const [pageLoaded, setPageLoaded] = useState(false);
 
   useEffect(() => {
