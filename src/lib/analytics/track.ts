@@ -1,243 +1,184 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger } from "@/lib/error-logger";
 import { DocumentType } from "./download/statistics/types";
 
-const logger = createLogger("analytics");
-
-// Define types for the analytics system
-export type EventType = 'download' | 'share' | 'view' | 'search' | 'click' | 'login' | 'logout' | 'register' | 'other';
-
-export interface TrackEventOptions {
-  documentId?: string;
-  documentType?: DocumentType;
-  data?: Record<string, any>;
-  sessionId?: string;
-  pageUrl?: string;
-}
-
-// Session ID for anonymous tracking
-let sessionId = '';
+const logger = createLogger('AnalyticsTracking');
 
 /**
- * Generate a simple unique ID without UUID dependency
+ * Track a view event
  */
-const generateId = () => {
-  const timestamp = Date.now().toString(36);
-  const randomStr = Math.random().toString(36).substring(2, 10);
-  return `${timestamp}-${randomStr}`;
-};
-
-/**
- * Initialize the analytics system
- */
-export const initAnalytics = () => {
-  // Create a session ID if not exists
-  if (!sessionId) {
-    // Try to get from localStorage
-    const storedSessionId = window.localStorage.getItem('infochir_session_id');
-    
-    if (storedSessionId) {
-      sessionId = storedSessionId;
-    } else {
-      // Create a new session ID
-      sessionId = generateId();
-      window.localStorage.setItem('infochir_session_id', sessionId);
-    }
-  }
-  
-  logger.log("Analytics initialized with session ID:", sessionId);
-  
-  // Record page view on initialization
-  trackPageView();
-  
-  // Listen for page changes
-  window.addEventListener('popstate', () => {
-    trackPageView();
-  });
-};
-
-/**
- * Get the current page URL
- */
-const getCurrentPageUrl = (): string => {
-  return window.location.href;
-};
-
-/**
- * Get the referrer URL
- */
-const getReferrer = (): string => {
-  return document.referrer || '';
-};
-
-/**
- * Get the user agent string
- */
-const getUserAgent = (): string => {
-  return navigator.userAgent || '';
-};
-
-/**
- * Get the screen size as a string
- */
-const getScreenSize = (): string => {
-  return `${window.innerWidth}x${window.innerHeight}`;
-};
-
-/**
- * Common method to track any user event
- */
-export const trackEvent = async (
-  eventType: EventType, 
-  options: TrackEventOptions = {}
-): Promise<boolean> => {
+export const trackView = async (documentId: string, documentType: DocumentType): Promise<boolean> => {
   try {
-    logger.log(`Tracking ${eventType} event:`, options);
-    
-    const eventData = {
-      ...options.data,
-      screenSize: getScreenSize(),
-      timestamp: new Date().toISOString()
-    };
-    
-    const pageUrl = options.pageUrl || getCurrentPageUrl();
-    
-    const { data, error } = await supabase.rpc('track_user_event', {
-      p_event_type: eventType,
-      p_document_id: options.documentId,
-      p_document_type: options.documentType,
-      p_user_id: null, // We don't have authentication in this app yet
-      p_event_data: eventData,
-      p_session_id: options.sessionId || sessionId,
-      p_user_agent: getUserAgent(),
-      p_referrer: getReferrer(),
-      p_page_url: pageUrl,
-      p_ip_address: null // IP will be collected by Supabase
+    // Use the RPC function to track the view
+    const { error } = await supabase.rpc('track_user_event', {
+      p_event_type: 'view',
+      p_document_id: documentId,
+      p_document_type: documentType,
+      p_event_data: {
+        page_url: window.location.href
+      }
     });
     
     if (error) {
-      logger.error(`Error tracking ${eventType} event:`, error);
+      logger.error('Error tracking view:', error);
+      
+      // Fallback: try to increment the count directly
+      try {
+        await supabase.rpc('increment_count', {
+          table_name: 'articles',
+          column_name: 'views',
+          row_id: documentId
+        });
+      } catch (incrementError) {
+        logger.error('Error incrementing view count:', incrementError);
+      }
+      
       return false;
     }
     
-    logger.log(`Successfully tracked ${eventType} event with ID:`, data);
     return true;
   } catch (error) {
-    logger.error(`Exception tracking ${eventType} event:`, error);
+    logger.error('Exception tracking view:', error);
     return false;
   }
 };
 
 /**
- * Track page views
+ * Track a share event
  */
-export const trackPageView = async (): Promise<boolean> => {
-  const url = getCurrentPageUrl();
-  const pathname = window.location.pathname;
-  
-  // Extract page/route information from pathname
-  const segments = pathname.split('/').filter(s => s);
-  const route = segments.length > 0 ? segments[0] : 'home';
-  
-  return trackEvent('view', {
-    data: {
-      route,
-      path: pathname
-    },
-    pageUrl: url
-  });
-};
-
-/**
- * Track document views
- */
-export const trackDocumentView = async (
+export const trackShare = async (
   documentId: string, 
   documentType: DocumentType,
-  title?: string
+  shareMethod: 'social' | 'email' | 'clipboard' | 'other' = 'other'
 ): Promise<boolean> => {
-  return trackEvent('view', {
-    documentId,
-    documentType,
-    data: {
-      title,
-      action: 'view_document'
+  try {
+    // Use the RPC function to track the share
+    const { error } = await supabase.rpc('track_user_event', {
+      p_event_type: 'share',
+      p_document_id: documentId,
+      p_document_type: documentType,
+      p_event_data: {
+        share_method: shareMethod,
+        page_url: window.location.href
+      }
+    });
+    
+    if (error) {
+      logger.error('Error tracking share:', error);
+      
+      // Fallback: try to increment the count directly
+      try {
+        await supabase.rpc('increment_count', {
+          table_name: 'articles',
+          column_name: 'shares',
+          row_id: documentId
+        });
+      } catch (incrementError) {
+        logger.error('Error incrementing share count:', incrementError);
+      }
+      
+      return false;
     }
-  });
+    
+    return true;
+  } catch (error) {
+    logger.error('Exception tracking share:', error);
+    return false;
+  }
 };
 
 /**
- * Track document downloads
+ * Track a download event
  */
 export const trackDownload = async (
   documentId: string,
   documentType: DocumentType,
   fileName: string,
-  success: boolean = true,
-  error?: string
+  success: boolean = true
 ): Promise<boolean> => {
-  return trackEvent('download', {
-    documentId,
-    documentType,
-    data: {
-      fileName,
-      status: success ? 'success' : 'failed',
-      error: error || null
+  try {
+    // Use the RPC function to track the download
+    const { error } = await supabase.rpc('track_user_event', {
+      p_event_type: 'download',
+      p_document_id: documentId,
+      p_document_type: documentType,
+      p_event_data: {
+        fileName,
+        status: success ? 'success' : 'failed',
+        screenSize: `${window.innerWidth}x${window.innerHeight}`
+      }
+    });
+    
+    if (error) {
+      logger.error('Error tracking download:', error);
+      
+      // Try direct insert as fallback
+      try {
+        await supabase.from('download_events').insert({
+          document_id: documentId,
+          document_type: documentType,
+          file_name: fileName,
+          status: success ? 'success' : 'failed',
+          user_agent: navigator.userAgent,
+          screen_size: `${window.innerWidth}x${window.innerHeight}`,
+          referrer: document.referrer
+        });
+      } catch (insertError) {
+        logger.error('Error inserting download event:', insertError);
+      }
+      
+      // Fallback: try to increment the count directly if successful
+      if (success) {
+        try {
+          await supabase.rpc('increment_count', {
+            table_name: 'articles',
+            column_name: 'downloads',
+            row_id: documentId
+          });
+        } catch (incrementError) {
+          logger.error('Error incrementing download count:', incrementError);
+        }
+      }
+      
+      return false;
     }
-  });
+    
+    return true;
+  } catch (error) {
+    logger.error('Exception tracking download:', error);
+    return false;
+  }
 };
 
 /**
- * Track document shares
- */
-export const trackShare = async (
-  documentId: string,
-  documentType: DocumentType,
-  method: 'clipboard' | 'native' | 'direct' = 'clipboard',
-): Promise<boolean> => {
-  return trackEvent('share', {
-    documentId,
-    documentType,
-    data: {
-      method,
-      action: 'share_document'
-    }
-  });
-};
-
-/**
- * Track search queries
+ * Track a search event
  */
 export const trackSearch = async (
   query: string,
-  category?: string,
-  resultCount?: number
+  resultsCount: number,
+  filters?: Record<string, any>
 ): Promise<boolean> => {
-  return trackEvent('search', {
-    data: {
-      query,
-      category,
-      resultCount,
-      action: 'search'
+  try {
+    // Use the RPC function to track the search
+    const { error } = await supabase.rpc('track_user_event', {
+      p_event_type: 'search',
+      p_event_data: {
+        query,
+        results_count: resultsCount,
+        filters: filters ? JSON.stringify(filters) : null,
+        page_url: window.location.href
+      }
+    });
+    
+    if (error) {
+      logger.error('Error tracking search:', error);
+      return false;
     }
-  });
-};
-
-/**
- * Track button clicks and other interactions
- */
-export const trackClick = async (
-  element: string,
-  action?: string,
-  documentId?: string,
-  documentType?: DocumentType
-): Promise<boolean> => {
-  return trackEvent('click', {
-    documentId,
-    documentType,
-    data: {
-      element,
-      action: action || 'click'
-    }
-  });
+    
+    return true;
+  } catch (error) {
+    logger.error('Exception tracking search:', error);
+    return false;
+  }
 };

@@ -60,7 +60,7 @@ export const useStatsData = () => {
           throw membersError;
         }
         
-        // Get download statistics using the new real-time enabled function
+        // Get download statistics using the real-time enabled function
         const downloadStats = await getOverallDownloadStats();
         logger.log('Download stats fetched:', downloadStats);
         

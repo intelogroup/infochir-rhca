@@ -1,165 +1,98 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger } from "@/lib/error-logger";
-import type { TypeStats, DocumentTypeStats } from './types';
+import { DocumentType } from "./types";
 
-const logger = createLogger('downloadStats');
-
-/**
- * Subscribe to download stats changes
- */
-export const subscribeToDownloadStats = (callback: () => void) => {
-  logger.log('Setting up download stats subscription');
-  
-  const channel = supabase
-    .channel('download-events-changes')
-    .on(
-      'postgres_changes',
-      {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'download_events'
-      },
-      () => {
-        logger.log('Download event detected, triggering callback');
-        callback();
-      }
-    )
-    .subscribe();
-  
-  return () => {
-    logger.log('Unsubscribing from download stats');
-    supabase.removeChannel(channel);
-  };
-};
+const logger = createLogger('DownloadStatsOperations');
 
 /**
- * Get download statistics by document type
+ * Manually increment download count for a document
+ * This is a fallback when the automatic tracking fails
  */
-export const getDownloadStatsByType = async (docType: string): Promise<TypeStats> => {
+export const incrementDownloadCount = async (
+  documentId: string, 
+  documentType: DocumentType
+): Promise<boolean> => {
   try {
-    const { data, error } = await supabase
-      .rpc('get_download_stats_by_type', { doc_type: docType });
-    
-    if (error) {
-      logger.error(`Error fetching download stats for type ${docType}:`, error);
-      throw error;
-    }
-    
-    // Handle empty result
-    if (!data || (Array.isArray(data) && data.length === 0)) {
-      return { total: 0, successful: 0, failed: 0 };
-    }
-    
-    // Handle result format (could be array or object)
-    const result = Array.isArray(data) ? data[0] : data;
-    
-    return {
-      total: result?.total_downloads || 0,
-      successful: result?.successful_downloads || 0,
-      failed: result?.failed_downloads || 0
-    };
-  } catch (error) {
-    logger.error(`Error in getDownloadStatsByType for ${docType}:`, error);
-    return { total: 0, successful: 0, failed: 0 };
-  }
-};
-
-/**
- * Get download statistics for a specific document
- */
-export const getDocumentDownloadStats = async (documentId: string): Promise<TypeStats> => {
-  try {
-    const { data, error } = await supabase
-      .rpc('get_document_download_stats', { doc_id: documentId });
-    
-    if (error) {
-      logger.error(`Error fetching download stats for document ${documentId}:`, error);
-      throw error;
-    }
-    
-    // Handle empty result
-    if (!data || (Array.isArray(data) && data.length === 0)) {
-      return { total: 0, successful: 0, failed: 0 };
-    }
-    
-    // Handle result format (could be array or object)
-    const result = Array.isArray(data) ? data[0] : data;
-    
-    return {
-      total: result?.total_downloads || 0,
-      successful: result?.successful_downloads || 0,
-      failed: result?.failed_downloads || 0
-    };
-  } catch (error) {
-    logger.error(`Error in getDocumentDownloadStats for ${documentId}:`, error);
-    return { total: 0, successful: 0, failed: 0 };
-  }
-};
-
-/**
- * Get daily download statistics
- */
-export const getDailyDownloadStats = async (daysBack: number = 7) => {
-  try {
-    const { data, error } = await supabase
-      .rpc('get_daily_downloads', { days_back: daysBack });
-    
-    if (error) {
-      logger.error('Error fetching daily download stats:', error);
-      throw error;
-    }
-    
-    return data || [];
-  } catch (error) {
-    logger.error('Error in getDailyDownloadStats:', error);
-    return [];
-  }
-};
-
-/**
- * Get overall download statistics
- */
-export const getOverallDownloadStats = async (): Promise<{
-  total: number;
-  successful: number;
-  failed: number;
-  byType: DocumentTypeStats;
-}> => {
-  try {
-    const { data, error } = await supabase
-      .rpc('get_download_statistics');
-    
-    if (error) {
-      logger.error('Error fetching overall download statistics:', error);
-      throw error;
-    }
-    
-    // Handle empty result
-    if (!data || (Array.isArray(data) && data.length === 0)) {
-      return { total: 0, successful: 0, failed: 0, byType: {} };
-    }
-    
-    // Handle result format (could be array or object)
-    const result = Array.isArray(data) ? data[0] : data;
-    
-    // Transform document types from jsonb to a typed object
-    const docTypes: DocumentTypeStats = {};
-    
-    if (result?.document_types) {
-      Object.entries(result.document_types).forEach(([key, value]) => {
-        docTypes[key] = typeof value === 'number' ? value : 0;
+    // First increment the primary article downloads count
+    const { error: articleError } = await supabase
+      .rpc('increment_count', {
+        table_name: 'articles',
+        column_name: 'downloads',
+        row_id: documentId
       });
+
+    if (articleError) {
+      logger.error('Error incrementing article download count:', articleError);
+      // Continue with stats tracking even if article increment fails
+    }
+
+    // Then log the download event
+    const { error: eventError } = await supabase
+      .from('download_events')
+      .insert({
+        document_id: documentId,
+        document_type: documentType,
+        file_name: `manual-increment-${documentId}.pdf`,
+        status: 'success'
+      });
+
+    if (eventError) {
+      logger.error('Error logging download event:', eventError);
+      return false;
+    }
+
+    logger.log(`Successfully incremented download count for ${documentId}`);
+    return true;
+  } catch (error) {
+    logger.error('Exception incrementing download count:', error);
+    return false;
+  }
+};
+
+/**
+ * Test download tracking system
+ * Creates a test download event and verifies it was recorded
+ */
+export const testDownloadTracking = async (): Promise<boolean> => {
+  try {
+    const testDocId = '00000000-0000-0000-0000-000000000001';
+    const testFileName = `test-download-${Date.now()}.pdf`;
+    
+    // Insert a test event
+    const { error } = await supabase
+      .from('download_events')
+      .insert({
+        document_id: testDocId,
+        document_type: DocumentType.Test,
+        file_name: testFileName,
+        status: 'success',
+        user_agent: navigator.userAgent,
+        screen_size: `${window.innerWidth}x${window.innerHeight}`
+      });
+    
+    if (error) {
+      logger.error('Error inserting test download event:', error);
+      return false;
     }
     
-    return {
-      total: result?.total_downloads || 0,
-      successful: result?.successful_downloads || 0,
-      failed: result?.failed_downloads || 0,
-      byType: docTypes
-    };
+    // Verify the event was recorded
+    const { data, error: verifyError } = await supabase
+      .from('download_events')
+      .select('*')
+      .eq('document_id', testDocId)
+      .eq('file_name', testFileName)
+      .single();
+    
+    if (verifyError || !data) {
+      logger.error('Error verifying test download event:', verifyError);
+      return false;
+    }
+    
+    logger.log('Download tracking test successful');
+    return true;
   } catch (error) {
-    logger.error('Error in getOverallDownloadStats:', error);
-    return { total: 0, successful: 0, failed: 0, byType: {} };
+    logger.error('Exception testing download tracking:', error);
+    return false;
   }
 };

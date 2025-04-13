@@ -1,12 +1,13 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger } from "@/lib/error-logger";
+import { DocumentType } from "./statistics/types";
 
 const logger = createLogger('DownloadTracking');
 
 export interface DownloadEvent {
   document_id: string;
-  document_type: 'igm' | 'rhca' | 'index-medicus' | 'adc' | 'other' | 'test';
+  document_type: DocumentType;
   file_name: string;
   status: 'success' | 'failed';
   error_details?: string;
