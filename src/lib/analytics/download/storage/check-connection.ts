@@ -2,58 +2,21 @@
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger } from "@/lib/error-logger";
 
-const logger = createLogger('downloadStats');
+const logger = createLogger('DownloadEventsConnection');
 
-export const subscribeToDownloadStats = (callback: () => void) => {
-  logger.log('Setting up download stats subscription');
-  
-  // Subscribe to changes in the download_events table
-  const channel = supabase
-    .channel('download-events')
-    .on(
-      'postgres_changes',
-      {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'download_events',
-      },
-      () => {
-        logger.log('Download event detected, triggering callback');
-        callback();
-      }
-    )
-    .subscribe();
-  
-  // Return an unsubscribe function
-  return () => {
-    logger.log('Unsubscribing from download stats');
-    supabase.removeChannel(channel);
-  };
-};
+export interface ConnectionCheckResult {
+  connected: boolean;
+  count: number;
+  recentEvents: any[];
+  error?: string;
+}
 
-export const getDownloadStatistics = async () => {
+/**
+ * Checks connection to the download_events table and returns current count
+ */
+export const checkDownloadEventsConnection = async (): Promise<ConnectionCheckResult> => {
   try {
-    // Query our view to get download statistics
-    const { data, error } = await supabase
-      .from('overall_download_stats_view')
-      .select('*')
-      .single();
-    
-    if (error) {
-      logger.error('Error fetching download statistics:', error);
-      throw error;
-    }
-    
-    return data;
-  } catch (error) {
-    logger.error('Exception in getDownloadStatistics:', error);
-    return { total_downloads: 0 };
-  }
-};
-
-export const checkDownloadEventsConnection = async () => {
-  try {
-    // Check connection to download_events table
+    // Check if we can access the download_events table
     const { data, error, count } = await supabase
       .from('download_events')
       .select('*', { count: 'exact' })
@@ -61,7 +24,7 @@ export const checkDownloadEventsConnection = async () => {
       .limit(10);
     
     if (error) {
-      logger.error('Error checking download events connection:', error);
+      logger.error('Error checking download_events connection:', error);
       return {
         connected: false,
         count: 0,
@@ -76,7 +39,7 @@ export const checkDownloadEventsConnection = async () => {
       recentEvents: data || []
     };
   } catch (error) {
-    logger.error('Exception checking download events connection:', error);
+    logger.error('Exception checking download_events connection:', error);
     return {
       connected: false,
       count: 0,
@@ -86,81 +49,71 @@ export const checkDownloadEventsConnection = async () => {
   }
 };
 
-export const getDownloadTypeStats = async () => {
+/**
+ * Verifies if tracking system is working properly
+ */
+export const verifyTrackingSystem = async (): Promise<{isWorking: boolean, message: string, details?: any}> => {
   try {
-    // Get download stats from download_stats_view
-    const { data, error } = await supabase
-      .from('download_stats_view')
-      .select('*');
+    // 1. Check if download_events table exists and is accessible
+    const connectionCheck = await checkDownloadEventsConnection();
     
-    if (error) {
-      throw error;
-    }
-    
-    // Convert to more usable format
-    const documentTypes = data.map(item => ({
-      type: item.document_type || 'unknown',
-      count: Number(item.total_downloads) || 0,
-      successful: Number(item.successful_downloads) || 0,
-      failed: Number(item.failed_downloads) || 0
-    }));
-    
-    return {
-      documentTypes,
-      error: null
-    };
-  } catch (error) {
-    logger.error('Error fetching download type stats:', error);
-    return {
-      documentTypes: [],
-      error: error instanceof Error ? error.message : String(error)
-    };
-  }
-};
-
-export const verifyTrackingSystem = async () => {
-  try {
-    // We'll check if the download_events table exists by trying to query it
-    const { error: tableQueryError } = await supabase
-      .from('download_events')
-      .select('id')
-      .limit(1);
-    
-    const tableExists = !tableQueryError;
-    
-    const connectionStatus = await checkDownloadEventsConnection();
-    
-    if (!tableExists) {
+    if (!connectionCheck.connected) {
       return {
         isWorking: false,
-        message: "La table de suivi des téléchargements n'existe pas",
-        details: { tableExists }
+        message: `Cannot connect to download_events table: ${connectionCheck.error}`,
+        details: connectionCheck
       };
     }
     
-    if (!connectionStatus.connected) {
+    // 2. Check if we have any events recorded
+    if (connectionCheck.count === 0) {
       return {
-        isWorking: false,
-        message: "Connexion à la table de suivi impossible",
-        details: connectionStatus
+        isWorking: true,
+        message: "Connection to download_events is working, but no events have been recorded yet",
+        details: connectionCheck
       };
     }
     
-    // All checks passed
     return {
       isWorking: true,
-      message: "Le système de suivi fonctionne correctement",
-      details: {
-        tableExists,
-        connectionStatus
-      }
+      message: `Download tracking system is working properly. ${connectionCheck.count} events recorded.`,
+      details: connectionCheck
     };
   } catch (error) {
     logger.error('Error verifying tracking system:', error);
     return {
       isWorking: false,
-      message: `Erreur lors de la vérification: ${error instanceof Error ? error.message : String(error)}`,
-      details: { error }
+      message: `Error verifying tracking system: ${error instanceof Error ? error.message : String(error)}`,
+      details: error
     };
+  }
+};
+
+/**
+ * Get statistics about downloads by document type
+ */
+export const getDownloadTypeStats = async (): Promise<{documentTypes?: any[], error?: string}> => {
+  try {
+    const { data, error } = await supabase
+      .from('download_stats_view')
+      .select('*')
+      .order('total_downloads', { ascending: false });
+    
+    if (error) {
+      logger.error('Error fetching download type stats:', error);
+      return { error: error.message };
+    }
+    
+    const documentTypes = data.map(stat => ({
+      type: stat.document_type,
+      count: stat.total_downloads,
+      successful: stat.successful_downloads,
+      failed: stat.failed_downloads
+    }));
+    
+    return { documentTypes };
+  } catch (error) {
+    logger.error('Exception fetching download type stats:', error);
+    return { error: error instanceof Error ? error.message : String(error) };
   }
 };

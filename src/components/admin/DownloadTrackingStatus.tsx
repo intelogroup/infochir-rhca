@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,7 +17,6 @@ import { supabase } from "@/integrations/supabase/client";
 
 const logger = createLogger('DownloadTrackingStatus');
 
-// Define TypeScript interfaces for our state
 interface TypeStat {
   type: string;
   count: number;
@@ -57,28 +55,22 @@ export const DownloadTrackingStatus = () => {
   const checkSystemStatus = async () => {
     setIsLoading(true);
     try {
-      // Verify the overall tracking system
       const status = await verifyTrackingSystem();
       setSystemStatus(status);
       
-      // Get download stats by document type
       const stats = await getDownloadTypeStats();
       if (!stats.error && stats.documentTypes) {
-        // Ensure we're mapping to the correct type structure
         setTypeStats(stats.documentTypes as TypeStat[]);
       }
       
-      // Get connection stats
       const connection = await checkDownloadEventsConnection();
       setConnectionStats(connection);
       
-      // Get daily stats
       try {
         const { data: dailyData } = await supabase
           .rpc('get_daily_downloads', { days_back: 7 });
         
         if (dailyData) {
-          // Ensure we're mapping to the correct type structure
           setDailyStats(dailyData.map((item: any) => ({
             date: new Date(item.date).toLocaleDateString(),
             total: item.total_downloads,
@@ -102,20 +94,16 @@ export const DownloadTrackingStatus = () => {
   const runTestDownload = async () => {
     setIsTesting(true);
     try {
-      const result = await trackDownload({
-        document_id: '0000test-download-id-test0000',
-        document_type: 'test',
-        file_name: 'test-file.pdf',
-        status: 'success'
-      });
+      const { testDownloadTracking } = await import('@/lib/analytics/download/test-tracking');
       
-      if (result) {
+      const success = await testDownloadTracking();
+      
+      if (success) {
         toast.success("Test download event recorded successfully");
       } else {
         toast.error("Failed to record test download event");
       }
       
-      // Refresh the status to see the new test event
       await checkSystemStatus();
     } catch (error) {
       logger.error('Error running test download:', error);
@@ -128,7 +116,6 @@ export const DownloadTrackingStatus = () => {
   useEffect(() => {
     checkSystemStatus();
     
-    // Set up real-time subscription to download_events table
     const channel = supabase
       .channel('download-events-changes')
       .on(
@@ -205,7 +192,6 @@ export const DownloadTrackingStatus = () => {
             </TabsList>
             
             <TabsContent value="status" className="space-y-4 pt-4">
-              {/* System Status */}
               <Alert variant={systemStatus?.isWorking ? "default" : "destructive"}>
                 {systemStatus?.isWorking ? (
                   <CheckCircle className="h-4 w-4 text-green-500" />
@@ -222,7 +208,6 @@ export const DownloadTrackingStatus = () => {
                 </AlertDescription>
               </Alert>
               
-              {/* Connection Stats */}
               {connectionStats && (
                 <div className="rounded-lg border p-4">
                   <h3 className="text-sm font-medium mb-2">Connexion à la base de données</h3>
@@ -342,7 +327,6 @@ export const DownloadTrackingStatus = () => {
             </TabsContent>
             
             <TabsContent value="statistics" className="space-y-4 pt-4">
-              {/* Type Stats */}
               <div className="rounded-lg border p-4">
                 <h3 className="text-sm font-medium mb-2">Statistiques par type de document</h3>
                 {typeStats.length > 0 ? (
@@ -367,7 +351,6 @@ export const DownloadTrackingStatus = () => {
                 )}
               </div>
               
-              {/* Daily Stats */}
               <div className="rounded-lg border p-4">
                 <h3 className="text-sm font-medium mb-2">Téléchargements par jour (7 derniers jours)</h3>
                 {dailyStats.length > 0 ? (

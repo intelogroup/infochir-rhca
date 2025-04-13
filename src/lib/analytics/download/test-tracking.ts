@@ -1,5 +1,5 @@
 
-import { downloadPDF } from './download-file';
+import { downloadPDF } from './index';
 import { checkDownloadEventsConnection } from './storage/check-connection';
 import { createLogger } from '@/lib/error-logger';
 
