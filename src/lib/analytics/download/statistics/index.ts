@@ -5,7 +5,8 @@ import {
   TypeStats, 
   DocumentTypeStats, 
   OverallDownloadStats,
-  DailyDownloadStat
+  DailyDownloadStat,
+  DailyDownloadStats
 } from "./types";
 
 const logger = createLogger('downloadStatistics');
@@ -67,7 +68,7 @@ export const getDocumentDownloadStats = async (documentId: string) => {
 /**
  * Get daily download statistics for the specified number of days
  */
-export const getDailyDownloadStats = async (daysBack = 7): Promise<DailyDownloadStat[] | null> => {
+export const getDailyDownloadStats = async (daysBack = 7): Promise<DailyDownloadStats[] | null> => {
   try {
     const { data, error } = await supabase
       .rpc('get_daily_downloads', { days_back: daysBack });
@@ -77,7 +78,15 @@ export const getDailyDownloadStats = async (daysBack = 7): Promise<DailyDownload
       return null;
     }
     
-    return data;
+    // Convert from API format to our internal format
+    const formattedData: DailyDownloadStats[] = data.map((item: DailyDownloadStat) => ({
+      date: item.date,
+      totalDownloads: item.total_downloads,
+      successfulDownloads: item.successful_downloads,
+      failedDownloads: item.failed_downloads
+    }));
+    
+    return formattedData;
   } catch (error) {
     logger.error('Exception in getDailyDownloadStats:', error);
     return null;
@@ -99,38 +108,40 @@ export const getOverallDownloadStats = async (): Promise<OverallDownloadStats | 
       return null;
     }
     
-    // Process document_types_stats to ensure it's the correct type
-    if (data && data.document_types_stats) {
-      // If document_types_stats is a string (JSON), parse it
-      if (typeof data.document_types_stats === 'string') {
-        try {
-          data.document_types_stats = JSON.parse(data.document_types_stats);
-        } catch (e) {
-          logger.error('Error parsing document_types_stats:', e);
-          data.document_types_stats = {};
+    // Convert from API format to our internal format
+    if (data) {
+      // Process document_types_stats to ensure it's the correct type
+      let documentTypesStats: DocumentTypeStats = {};
+      
+      if (data.document_types_stats) {
+        // If document_types_stats is a string (JSON), parse it
+        if (typeof data.document_types_stats === 'string') {
+          try {
+            documentTypesStats = JSON.parse(data.document_types_stats);
+          } catch (e) {
+            logger.error('Error parsing document_types_stats:', e);
+            documentTypesStats = {};
+          }
+        } else if (typeof data.document_types_stats === 'object' && data.document_types_stats !== null) {
+          // Convert the object to our expected format
+          Object.entries(data.document_types_stats).forEach(([key, value]) => {
+            documentTypesStats[key] = typeof value === 'number' ? value : Number(value);
+          });
         }
       }
       
-      // Ensure the type is DocumentTypeStats (object with string keys and number values)
-      const processedDocTypeStats: DocumentTypeStats = {};
+      // Convert to our client-side type format
+      const result: OverallDownloadStats = {
+        totalDownloads: Number(data.total_downloads),
+        successfulDownloads: Number(data.successful_downloads),
+        failedDownloads: Number(data.failed_downloads),
+        documentTypesStats
+      };
       
-      // Handle both object and string cases
-      const docTypeStats = data.document_types_stats;
-      if (typeof docTypeStats === 'object' && docTypeStats !== null) {
-        // Convert the object to the expected format
-        Object.entries(docTypeStats).forEach(([key, value]) => {
-          processedDocTypeStats[key] = typeof value === 'number' ? value : Number(value);
-        });
-      }
-      
-      // Replace the original data with properly typed data
-      data.document_types_stats = processedDocTypeStats;
-    } else if (data) {
-      // If document_types_stats is missing, provide an empty object
-      data.document_types_stats = {};
+      return result;
     }
     
-    return data as OverallDownloadStats;
+    return null;
   } catch (error) {
     logger.error('Exception in getOverallDownloadStats:', error);
     return null;

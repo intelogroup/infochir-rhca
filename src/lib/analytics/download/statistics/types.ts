@@ -7,7 +7,24 @@ export enum DocumentType {
   RHCA = 'rhca',
   IGM = 'igm',
   ADC = 'adc',
-  IndexMedicus = 'index-medicus'
+  IndexMedicus = 'index-medicus',
+  Test = 'test' // Adding Test type for testing purposes
+}
+
+/**
+ * Interface for download statistics by document type
+ */
+export interface TypeStats {
+  total: number;
+  successful: number;
+  failed: number;
+}
+
+/**
+ * Interface for document types statistics
+ */
+export interface DocumentTypeStats {
+  [key: string]: number;
 }
 
 /**
@@ -30,6 +47,16 @@ export interface DailyDownloadStats {
   totalDownloads: number;
   successfulDownloads: number;
   failedDownloads: number;
+}
+
+/**
+ * Single day download stat (for API responses)
+ */
+export interface DailyDownloadStat {
+  date: string;
+  total_downloads: number;
+  successful_downloads: number;
+  failed_downloads: number;
 }
 
 /**
