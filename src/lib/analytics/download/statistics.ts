@@ -1,15 +1,20 @@
-
 // Deprecated file - functionality has been moved to statistics/index.ts
 // This file is kept for backward compatibility
 
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger } from "@/lib/error-logger";
-import { TypeStats, DocumentTypeStats } from "./statistics/types";
+import { 
+  TypeStats, 
+  DocumentTypeStats,
+  OverallDownloadStats,
+  DailyDownloadStat,
+  DailyDownloadStats
+} from "./statistics/types";
 
 const logger = createLogger('DownloadStatistics');
 
 // Export the types for backward compatibility
-export { TypeStats, DocumentTypeStats };
+export type { TypeStats, DocumentTypeStats, OverallDownloadStats, DailyDownloadStat, DailyDownloadStats };
 
 /**
  * Get download statistics grouped by document type
