@@ -6,12 +6,22 @@ export interface AtlasChapter {
   category?: string;
   chapterNumber?: number;
   authors?: string[];
+  author?: string; // Adding for backwards compatibility
   pdfUrl?: string;
   coverImageUrl?: string;
+  coverImage?: string; // Adding for backwards compatibility
   lastUpdate?: string;
   lastUpdated?: string;
-  status?: 'available' | 'coming-soon' | 'unavailable';
+  publicationDate?: string; // Added missing property
+  abstract?: string; // Added missing property
+  status?: 'available' | 'coming-soon' | 'unavailable' | 'coming'; // Added 'coming' as a valid status
   tags?: string[];
+  stats?: {
+    views?: number;
+    shares?: number;
+    downloads?: number;
+  };
+  source?: string;
 }
 
 export interface AtlasTableOfContentsProps {

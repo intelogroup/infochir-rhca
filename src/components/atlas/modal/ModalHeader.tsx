@@ -19,22 +19,22 @@ interface ModalHeaderProps {
 export const ModalHeader = ({ chapter, category }: ModalHeaderProps) => {
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
-  const [imageSrc, setImageSrc] = useState<string>(chapter.coverImage || '');
+  const [imageSrc, setImageSrc] = useState<string>(chapter.coverImageUrl || chapter.coverImage || '');
   
   // Effect to handle image validation
   useEffect(() => {
     // Reset state when chapter changes
-    setImageSrc(chapter.coverImage || '');
+    setImageSrc(chapter.coverImageUrl || chapter.coverImage || '');
     setIsImageLoading(true);
     setImageError(false);
     
-    if (!chapter.coverImage) {
+    if (!chapter.coverImageUrl && !chapter.coverImage) {
       setImageError(true);
       setIsImageLoading(false);
     }
     
-    logger.log(`[ModalHeader] Image URL for chapter ${chapter.id}: ${chapter.coverImage}`);
-  }, [chapter.coverImage, chapter.id]);
+    logger.log(`[ModalHeader] Image URL for chapter ${chapter.id}: ${chapter.coverImageUrl || chapter.coverImage}`);
+  }, [chapter.coverImageUrl, chapter.coverImage, chapter.id]);
 
   // Handle image loading events
   const handleImageLoad = () => {
@@ -97,10 +97,10 @@ export const ModalHeader = ({ chapter, category }: ModalHeaderProps) => {
               <span>MàJ: {chapter.lastUpdated || chapter.lastUpdate}</span>
             </div>
           )}
-          {chapter.author && (
+          {(chapter.author || (chapter.authors && chapter.authors.length > 0)) && (
             <div className="flex items-center gap-1">
               <User className="w-3 h-3" />
-              <span>{chapter.author}</span>
+              <span>{chapter.author || (chapter.authors && chapter.authors.length > 0 ? chapter.authors[0] : '')}</span>
             </div>
           )}
         </div>
