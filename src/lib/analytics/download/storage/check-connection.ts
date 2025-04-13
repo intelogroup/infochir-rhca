@@ -2,22 +2,66 @@
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger } from "@/lib/error-logger";
 
-const logger = createLogger('DownloadConnection');
+const logger = createLogger('downloadStats');
 
-/**
- * Check if the download_events table exists and is accessible
- */
+export const subscribeToDownloadStats = (callback: () => void) => {
+  logger.log('Setting up download stats subscription');
+  
+  // Subscribe to changes in the download_events table
+  const channel = supabase
+    .channel('download-events')
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'download_events',
+      },
+      () => {
+        logger.log('Download event detected, triggering callback');
+        callback();
+      }
+    )
+    .subscribe();
+  
+  // Return an unsubscribe function
+  return () => {
+    logger.log('Unsubscribing from download stats');
+    supabase.removeChannel(channel);
+  };
+};
+
+export const getDownloadStatistics = async () => {
+  try {
+    // Query our view to get download statistics
+    const { data, error } = await supabase
+      .from('overall_download_stats_view')
+      .select('*')
+      .single();
+    
+    if (error) {
+      logger.error('Error fetching download statistics:', error);
+      throw error;
+    }
+    
+    return data;
+  } catch (error) {
+    logger.error('Exception in getDownloadStatistics:', error);
+    return { total_downloads: 0 };
+  }
+};
+
 export const checkDownloadEventsConnection = async () => {
   try {
-    logger.log('Checking download_events table connection...');
-    
-    // Try to get a count of records from the download_events table
-    const { count, error } = await supabase
+    // Check connection to download_events table
+    const { data, error, count } = await supabase
       .from('download_events')
-      .select('*', { count: 'exact', head: true });
-      
+      .select('*', { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .limit(10);
+    
     if (error) {
-      logger.error('Error connecting to download_events table:', error);
+      logger.error('Error checking download events connection:', error);
       return {
         connected: false,
         count: 0,
@@ -26,126 +70,93 @@ export const checkDownloadEventsConnection = async () => {
       };
     }
     
-    // Get the most recent events for display
-    const { data: recentEvents, error: eventsError } = await supabase
-      .from('download_events')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(10);
-      
-    if (eventsError) {
-      logger.error('Error fetching recent download events:', eventsError);
-    }
-    
-    logger.log(`Download events connection successful. Found ${count} events.`);
     return {
       connected: true,
       count: count || 0,
-      recentEvents: recentEvents || []
+      recentEvents: data || []
     };
   } catch (error) {
-    logger.error('Unexpected error checking download events connection:', error);
+    logger.error('Exception checking download events connection:', error);
     return {
       connected: false,
       count: 0,
       recentEvents: [],
-      error: error instanceof Error ? error.message : 'Unknown error'
+      error: error instanceof Error ? error.message : String(error)
     };
   }
 };
 
-/**
- * Gets statistics about download events by document type
- */
 export const getDownloadTypeStats = async () => {
   try {
-    // Get statistics by document type
+    // Get download stats by document type
     const { data, error } = await supabase
-      .from('download_events')
-      .select('document_type, status');
-      
+      .from('document_type_download_stats')
+      .select('*');
+    
     if (error) {
-      logger.error('Error fetching download type statistics:', error);
-      return { error: error.message, documentTypes: [] };
+      throw error;
     }
     
-    // Aggregate statistics by document type
-    const typeStats = data.reduce((acc, event) => {
-      const type = event.document_type;
-      
-      if (!acc[type]) {
-        acc[type] = { 
-          type,
-          count: 0,
-          successful: 0,
-          failed: 0
-        };
-      }
-      
-      acc[type].count++;
-      
-      if (event.status === 'success') {
-        acc[type].successful++;
-      } else if (event.status === 'failed') {
-        acc[type].failed++;
-      }
-      
-      return acc;
-    }, {});
+    // Convert to more usable format
+    const documentTypes = data.map(item => ({
+      type: item.document_type || 'unknown',
+      count: item.total_downloads || 0,
+      successful: item.successful_downloads || 0,
+      failed: item.failed_downloads || 0
+    }));
     
-    return { 
-      documentTypes: Object.values(typeStats),
+    return {
+      documentTypes,
       error: null
     };
   } catch (error) {
-    logger.error('Unexpected error getting download type statistics:', error);
-    return { 
-      error: error instanceof Error ? error.message : 'Unknown error',
-      documentTypes: []
+    logger.error('Error fetching download type stats:', error);
+    return {
+      documentTypes: [],
+      error: error instanceof Error ? error.message : String(error)
     };
   }
 };
 
-/**
- * Verifies the entire download tracking system
- */
 export const verifyTrackingSystem = async () => {
   try {
-    // Check if we can connect to the download_events table
-    const connection = await checkDownloadEventsConnection();
+    // Basic checks to verify the tracking system
+    const { data: tableExists } = await supabase
+      .rpc('check_table_exists', { table_name: 'download_events' });
     
-    if (!connection.connected) {
+    const connectionStatus = await checkDownloadEventsConnection();
+    
+    if (!tableExists) {
       return {
         isWorking: false,
-        message: `Cannot connect to download_events table: ${connection.error}`
+        message: "La table de suivi des téléchargements n'existe pas",
+        details: { tableExists }
       };
     }
     
-    // Verify that the trackDownload function is correctly exporting
-    const trackDownloadModule = await import('../track-downloads');
-    
-    if (!trackDownloadModule.trackDownload) {
+    if (!connectionStatus.connected) {
       return {
         isWorking: false,
-        message: 'trackDownload function not found in track-downloads module'
+        message: "Connexion à la table de suivi impossible",
+        details: connectionStatus
       };
     }
     
-    // Try to get stats by document type to further verify
-    const stats = await getDownloadTypeStats();
-    
+    // All checks passed
     return {
       isWorking: true,
-      message: 'Download tracking system is operational',
+      message: "Le système de suivi fonctionne correctement",
       details: {
-        eventCount: connection.count,
-        documentTypes: stats.documentTypes
+        tableExists,
+        connectionStatus
       }
     };
   } catch (error) {
+    logger.error('Error verifying tracking system:', error);
     return {
       isWorking: false,
-      message: `Error verifying tracking system: ${error instanceof Error ? error.message : 'Unknown error'}`
+      message: `Erreur lors de la vérification: ${error instanceof Error ? error.message : String(error)}`,
+      details: { error }
     };
   }
 };

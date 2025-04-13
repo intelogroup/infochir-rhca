@@ -1,10 +1,9 @@
-
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, BarChart3, FilePieChart2, Calendar, RefreshCw } from "lucide-react";
+import { Loader2, BarChart3, FilePieChart, Calendar, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { createLogger } from "@/lib/error-logger";
 
@@ -134,7 +133,7 @@ export const AnalyticsDashboard = () => {
                 Résumé
               </TabsTrigger>
               <TabsTrigger value="details">
-                <FilePieChart2 className="h-4 w-4 mr-2" />
+                <FilePieChart className="h-4 w-4 mr-2" />
                 Détails par jour
               </TabsTrigger>
             </TabsList>

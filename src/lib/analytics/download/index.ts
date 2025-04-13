@@ -4,6 +4,9 @@ import {
   trackDownload as trackDownloadEvent
 } from "@/lib/analytics/track";
 
+// Export the track-downloads functionality
+export * from "./track-downloads";
+
 const logger = createLogger("downloadService");
 
 // Re-export storage functions

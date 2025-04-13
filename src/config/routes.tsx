@@ -1,4 +1,3 @@
-
 import Home from "@/pages/Home";
 import NotFound from "@/pages/NotFound";
 import TriggerUploads from "@/pages/TriggerUploads";
@@ -21,7 +20,7 @@ import Analytics from "@/pages/admin/Analytics";
 export const routes = [
   {
     path: "/",
-    element: <MainLayout />,
+    element: <MainLayout>{null}</MainLayout>,
     name: "main",
     children: [
       {
