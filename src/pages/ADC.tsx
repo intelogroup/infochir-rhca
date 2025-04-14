@@ -60,7 +60,7 @@ const ADC = () => {
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbPage>Atlas des Décisions Cliniques</BreadcrumbPage>
+                <BreadcrumbPage>Atlas</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -72,17 +72,14 @@ const ADC = () => {
             <div className="relative z-10 px-4 sm:px-6 lg:px-8">
               <div className="text-center">
                 <h1 className="text-3xl font-extrabold text-gray-900 sm:text-4xl lg:text-5xl leading-tight">
-                  Atlas des Décisions Cliniques
+                  Atlas
                 </h1>
-                <p className="mt-4 text-lg text-gray-600">
-                  Explorez des recommandations cliniques fondées sur des preuves pour améliorer la prise de décision médicale.
-                </p>
                 <Button
                   size="lg"
                   className="mt-8 bg-secondary hover:bg-secondary-light text-white"
                   onClick={handleExploreClick}
                 >
-                  Explorer le contenu <ArrowRight className="ml-2" />
+                  Explore <ArrowRight className="ml-2" />
                 </Button>
               </div>
             </div>
