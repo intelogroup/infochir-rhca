@@ -5,9 +5,9 @@ import { useAtlasArticles } from './hooks/useAtlasArticles';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { AlertTriangle, Grid2X2, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { SearchBar } from '@/components/shared/SearchBar';
 import { AtlasTableOfContents } from './AtlasTableOfContents';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export const ChaptersGrid = () => {
   const { data: chapters, isLoading, error } = useAtlasArticles();
@@ -21,7 +21,8 @@ export const ChaptersGrid = () => {
     return chapters.filter(chapter => 
       chapter.title.toLowerCase().includes(query) ||
       (chapter.description && chapter.description.toLowerCase().includes(query)) ||
-      (chapter.category && chapter.category.toLowerCase().includes(query))
+      (chapter.category && chapter.category.toLowerCase().includes(query)) ||
+      (chapter.tags && chapter.tags.some(tag => tag.toLowerCase().includes(query)))
     );
   }, [chapters, searchTerm]);
 
@@ -31,8 +32,21 @@ export const ChaptersGrid = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center py-16">
-        <LoadingSpinner size="lg" className="text-secondary" />
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-8">
+        <div className="lg:col-span-3 order-1">
+          <div className="flex justify-between items-center mb-6">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-9 w-72" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-80 w-full rounded-lg" />
+            ))}
+          </div>
+        </div>
+        <div className="lg:col-span-1 order-2">
+          <Skeleton className="h-80 w-full rounded-lg" />
+        </div>
       </div>
     );
   }

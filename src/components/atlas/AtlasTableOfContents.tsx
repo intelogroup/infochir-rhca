@@ -1,13 +1,22 @@
 
 import { useState } from "react";
 import { useAtlasArticles } from "./hooks/useAtlasArticles";
-import { Button } from "@/components/ui/button";
-import { TableProperties, ChevronRight, ChevronDown } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Link } from "react-router-dom";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const AtlasTableOfContents = () => {
-  const { data: chapters } = useAtlasArticles();
+  const { data: chapters, isLoading } = useAtlasArticles();
+  
+  if (isLoading) {
+    return (
+      <div className="w-full space-y-3">
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-full" />
+      </div>
+    );
+  }
   
   if (!chapters || chapters.length === 0) {
     return (

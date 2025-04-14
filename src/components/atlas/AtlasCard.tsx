@@ -4,12 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Download, Calendar, BookOpen } from "lucide-react";
+import { Eye, Download, Calendar, BookOpen, AlertCircle } from "lucide-react";
 import { AtlasChapter } from "./types";
 import { toast } from "sonner";
 import { createLogger } from "@/lib/error-logger";
 import { downloadPDF } from "@/lib/analytics/download";
 import { DocumentType } from "@/lib/analytics/download/statistics/types";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const logger = createLogger('AtlasCard');
 
@@ -20,6 +21,8 @@ interface AtlasCardProps {
 export const AtlasCard = ({ chapter }: AtlasCardProps) => {
   const navigate = useNavigate();
   const [isDownloading, setIsDownloading] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
   
   const handleCardClick = () => {
     navigate(`/adc/chapters/${chapter.id}`);
@@ -67,7 +70,6 @@ export const AtlasCard = ({ chapter }: AtlasCardProps) => {
     
     // Track the view
     try {
-      // Use our tracking function
       // This simply opens the PDF in a new tab
       window.open(chapter.pdfUrl, '_blank');
     } catch (error) {
@@ -75,33 +77,55 @@ export const AtlasCard = ({ chapter }: AtlasCardProps) => {
       toast.error("Erreur lors de l'ouverture du PDF");
     }
   };
+
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+  };
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
   
   return (
     <Card 
       className="overflow-hidden cursor-pointer hover:shadow-md transition-all flex flex-col h-full bg-white"
       onClick={handleCardClick}
     >
-      {chapter.coverImageUrl && (
-        <div className="relative h-40 overflow-hidden">
+      <div className="relative h-40 overflow-hidden">
+        {!imageLoaded && !imageError && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+            <Skeleton className="h-full w-full" />
+          </div>
+        )}
+        
+        {imageError || !chapter.coverImageUrl ? (
+          <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100">
+            <AlertCircle className="h-8 w-8 text-gray-400 mb-2" />
+            <span className="text-sm text-gray-500">Image non disponible</span>
+          </div>
+        ) : (
           <img 
             src={chapter.coverImageUrl} 
             alt={chapter.title} 
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className={`w-full h-full object-cover transition-transform duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+            onLoad={handleImageLoad}
+            onError={handleImageError}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
-          </div>
-          {chapter.category && (
-            <Badge 
-              variant="secondary" 
-              className="absolute top-2 right-2 bg-secondary text-white"
-            >
-              {chapter.category}
-            </Badge>
-          )}
-        </div>
-      )}
+        )}
+        
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        
+        {chapter.category && (
+          <Badge 
+            variant="secondary" 
+            className="absolute top-2 right-2 bg-secondary text-white"
+          >
+            {chapter.category}
+          </Badge>
+        )}
+      </div>
       
-      <CardContent className={`flex-grow p-4 ${!chapter.coverImageUrl ? 'pt-4' : 'pt-4'}`}>
+      <CardContent className="flex-grow p-4 pt-4">
         <div className="space-y-2">
           {!chapter.coverImageUrl && chapter.category && (
             <Badge variant="outline" className="bg-secondary/10 text-secondary font-medium mb-2">
@@ -113,10 +137,10 @@ export const AtlasCard = ({ chapter }: AtlasCardProps) => {
             {chapter.title}
           </h3>
           
-          {chapter.lastUpdate && (
+          {(chapter.lastUpdate || chapter.lastUpdated) && (
             <div className="flex items-center text-xs text-gray-500 mt-1">
               <Calendar className="h-3 w-3 mr-1" />
-              Mis à jour le {new Date(chapter.lastUpdate).toLocaleDateString('fr-FR')}
+              Mis à jour le {chapter.lastUpdated || chapter.lastUpdate}
             </div>
           )}
           

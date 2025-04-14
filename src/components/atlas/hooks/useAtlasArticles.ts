@@ -3,103 +3,55 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { createLogger } from '@/lib/error-logger';
 import { AtlasChapter } from '../types';
+import { getADCCoverUrl } from '@/integrations/supabase/client';
 
 const logger = createLogger('useAtlasArticles');
-
-// Mock data for development
-const mockChapters: AtlasChapter[] = [
-  {
-    id: '1',
-    title: 'Introduction aux décisions cliniques',
-    description: 'Un aperçu des principes de base des décisions cliniques.',
-    category: 'Fondamentaux',
-    chapterNumber: 1,
-    authors: ['Dr. Jean Dupont', 'Dr. Marie Curie'],
-    pdfUrl: 'https://example.com/chapter1.pdf',
-    coverImageUrl: '/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png',
-    lastUpdate: '2023-10-15',
-    status: 'available',
-    tags: ['introduction', 'principes', 'fondamentaux']
-  },
-  {
-    id: '2',
-    title: 'Évaluation des risques en chirurgie',
-    description: 'Comment évaluer les risques lors des interventions chirurgicales.',
-    category: 'Chirurgie',
-    chapterNumber: 2,
-    authors: ['Dr. Pierre Martin', 'Dr. Sophie Laurent'],
-    pdfUrl: 'https://example.com/chapter2.pdf',
-    lastUpdate: '2023-11-05',
-    status: 'available',
-    tags: ['chirurgie', 'risques', 'évaluation']
-  },
-  {
-    id: '3',
-    title: 'Protocoles d\'urgence cardiaque',
-    description: 'Procédures et protocoles pour les urgences cardiaques.',
-    category: 'Cardiologie',
-    chapterNumber: 3,
-    authors: ['Dr. Thomas Petit', 'Dr. Claire Grand'],
-    pdfUrl: 'https://example.com/chapter3.pdf',
-    lastUpdate: '2023-09-20',
-    status: 'available',
-    tags: ['cardiologie', 'urgence', 'protocoles']
-  },
-  {
-    id: '4',
-    title: 'Gestion de la douleur post-opératoire',
-    description: 'Stratégies et méthodes pour la gestion de la douleur après une opération.',
-    category: 'Anesthésie',
-    chapterNumber: 4,
-    authors: ['Dr. Lucie Blanc', 'Dr. François Noir'],
-    pdfUrl: 'https://example.com/chapter4.pdf',
-    lastUpdate: '2023-12-01',
-    status: 'available',
-    tags: ['anesthésie', 'douleur', 'post-opératoire']
-  },
-  {
-    id: '5',
-    title: 'Diagnostic différentiel en neurologie',
-    description: 'Comment établir un diagnostic différentiel en neurologie.',
-    category: 'Neurologie',
-    chapterNumber: 5,
-    authors: ['Dr. Michel Leroy', 'Dr. Anne Dubois'],
-    pdfUrl: 'https://example.com/chapter5.pdf',
-    lastUpdate: '2024-01-10',
-    status: 'available',
-    tags: ['neurologie', 'diagnostic', 'différentiel']
-  },
-  {
-    id: '6',
-    title: 'Soins intensifs pédiatriques',
-    description: 'Procédures et considérations pour les soins intensifs en pédiatrie.',
-    category: 'Pédiatrie',
-    chapterNumber: 6,
-    authors: ['Dr. Isabelle Martin', 'Dr. Robert Durand'],
-    status: 'coming-soon',
-    tags: ['pédiatrie', 'soins intensifs', 'enfants']
-  }
-];
 
 export const useAtlasArticles = () => {
   return useQuery({
     queryKey: ['atlas-articles'],
     queryFn: async () => {
       try {
-        // In a real implementation, fetch from supabase
-        // const { data, error } = await supabase
-        //   .from('atlas_chapters')
-        //   .select('*')
-        //   .order('chapterNumber', { ascending: true });
+        // Fetch atlas chapters from the articles table
+        const { data, error } = await supabase
+          .from('articles')
+          .select('*')
+          .eq('source', 'ADC')
+          .order('created_at', { ascending: false });
         
-        // if (error) {
-        //   throw new Error(error.message);
-        // }
+        if (error) {
+          throw new Error(error.message);
+        }
         
-        // return data as AtlasChapter[];
+        // Transform the data to match AtlasChapter type
+        const chapters: AtlasChapter[] = data.map(item => ({
+          id: item.id,
+          title: item.title,
+          description: item.abstract,
+          category: item.category || undefined,
+          chapterNumber: parseInt(item.page_number || '0', 10) || undefined,
+          authors: item.authors || [],
+          author: item.primary_author || undefined,
+          pdfUrl: item.pdf_url || undefined,
+          coverImageUrl: item.image_url ? getADCCoverUrl(item.image_url) : undefined,
+          coverImage: item.cover_image_filename ? getADCCoverUrl(item.cover_image_filename) : undefined,
+          lastUpdate: item.updated_at ? new Date(item.updated_at).toISOString().split('T')[0] : undefined,
+          lastUpdated: item.updated_at ? new Date(item.updated_at).toISOString().split('T')[0] : undefined,
+          publicationDate: item.publication_date ? new Date(item.publication_date).toISOString().split('T')[0] : undefined,
+          abstract: item.abstract,
+          status: (item.status === 'published' || item.status === 'available') ? 'available' : 
+                 (item.status === 'coming-soon' || item.status === 'coming') ? 'coming-soon' : 'unavailable',
+          tags: item.tags || [],
+          stats: {
+            views: item.views || 0,
+            shares: item.shares || 0,
+            downloads: item.downloads || 0
+          },
+          source: item.source
+        }));
         
-        // For now, use mock data
-        return mockChapters;
+        logger.log(`Fetched ${chapters.length} atlas chapters from Supabase`);
+        return chapters;
       } catch (error) {
         logger.error('Error fetching Atlas articles:', error);
         throw error;
