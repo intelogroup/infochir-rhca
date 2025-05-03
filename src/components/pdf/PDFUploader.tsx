@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Upload, Loader2 } from "lucide-react";
@@ -17,9 +18,9 @@ export const PDFUploader = () => {
       return;
     }
 
-    // Validate file size (10MB max)
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("Le fichier ne doit pas dépasser 10MB");
+    // Validate file size (30MB max)
+    if (file.size > 30 * 1024 * 1024) {
+      toast.error("Le fichier ne doit pas dépasser 30MB");
       return;
     }
 
@@ -61,6 +62,7 @@ export const PDFUploader = () => {
         onChange={handleFileUpload}
         className="hidden"
         id="pdf-upload"
+        name="pdf-upload"
       />
       <label htmlFor="pdf-upload">
         <Button 

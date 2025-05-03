@@ -29,7 +29,7 @@ export const PublicationTypeSelector = ({ form }: PublicationTypeSelectorProps) 
       name="publicationType"
       render={({ field }) => (
         <FormItem>
-          <FormLabel className="flex items-center gap-1.5">
+          <FormLabel className="flex items-center gap-1.5" htmlFor="publication-type">
             Type de publication
             {form.formState.errors.publicationType && (
               <AlertCircle className="h-4 w-4 text-destructive" />
@@ -58,6 +58,7 @@ export const PublicationTypeSelector = ({ form }: PublicationTypeSelectorProps) 
               }}
             >
               <SelectTrigger 
+                id="publication-type"
                 className={form.formState.errors.publicationType 
                   ? "border-red-300 focus:ring-red-500" 
                   : field.value 

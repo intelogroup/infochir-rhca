@@ -1,3 +1,4 @@
+
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
@@ -17,12 +18,12 @@ export const CorrespondingAuthorFields = ({ form }: { form: any }) => {
           name="correspondingAuthor.name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="flex items-center gap-2">
+              <FormLabel className="flex items-center gap-2" htmlFor="author-name">
                 <User className="h-4 w-4" />
                 Nom complet
               </FormLabel>
               <FormControl>
-                <Input {...field} className="bg-white/50 backdrop-blur-sm" />
+                <Input id="author-name" {...field} className="bg-white/50 backdrop-blur-sm" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -34,12 +35,12 @@ export const CorrespondingAuthorFields = ({ form }: { form: any }) => {
           name="correspondingAuthor.email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="flex items-center gap-2">
+              <FormLabel className="flex items-center gap-2" htmlFor="author-email">
                 <Mail className="h-4 w-4" />
                 Email
               </FormLabel>
               <FormControl>
-                <Input type="email" {...field} className="bg-white/50 backdrop-blur-sm" />
+                <Input id="author-email" type="email" {...field} className="bg-white/50 backdrop-blur-sm" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -51,12 +52,12 @@ export const CorrespondingAuthorFields = ({ form }: { form: any }) => {
           name="correspondingAuthor.phone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="flex items-center gap-2">
+              <FormLabel className="flex items-center gap-2" htmlFor="author-phone">
                 <Phone className="h-4 w-4" />
                 Téléphone
               </FormLabel>
               <FormControl>
-                <Input {...field} className="bg-white/50 backdrop-blur-sm" />
+                <Input id="author-phone" {...field} className="bg-white/50 backdrop-blur-sm" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -68,12 +69,12 @@ export const CorrespondingAuthorFields = ({ form }: { form: any }) => {
           name="correspondingAuthor.address"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="flex items-center gap-2">
+              <FormLabel className="flex items-center gap-2" htmlFor="author-address">
                 <MapPin className="h-4 w-4" />
                 Adresse
               </FormLabel>
               <FormControl>
-                <Input {...field} className="bg-white/50 backdrop-blur-sm" />
+                <Input id="author-address" {...field} className="bg-white/50 backdrop-blur-sm" />
               </FormControl>
               <FormMessage />
             </FormItem>

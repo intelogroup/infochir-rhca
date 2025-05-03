@@ -25,9 +25,10 @@ export const ArticleDetails = ({ form }: ArticleDetailsProps) => {
         name="title"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Titre</FormLabel>
+            <FormLabel htmlFor="title">Titre</FormLabel>
             <FormControl>
               <Input 
+                id="title"
                 {...field} 
                 placeholder="Titre de l'article" 
                 className={form.formState.errors.title ? "border-red-300 focus-visible:ring-red-500" : ""}
@@ -55,7 +56,7 @@ export const ArticleDetails = ({ form }: ArticleDetailsProps) => {
         name="abstract"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Résumé</FormLabel>
+            <FormLabel htmlFor="abstract">Résumé</FormLabel>
             <div className="flex items-center gap-1 -mt-1 mb-1">
               {isAbstractValid ? (
                 <motion.div 
@@ -82,6 +83,7 @@ export const ArticleDetails = ({ form }: ArticleDetailsProps) => {
             </div>
             <FormControl>
               <Textarea 
+                id="abstract"
                 {...field} 
                 placeholder="Résumé de l'article"
                 className={`min-h-[150px] ${form.formState.errors.abstract ? "border-red-300 focus-visible:ring-red-500" : ""}`}

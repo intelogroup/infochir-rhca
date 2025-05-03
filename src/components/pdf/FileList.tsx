@@ -64,7 +64,7 @@ export const FileList = ({ files, onRemove, isUploading, type = 'document' }: Fi
           
           <Button
             variant="ghost"
-            size="icon"
+            size="sm" // Changed from "icon" to "sm" to fix the TypeScript error
             onClick={() => onRemove(file)}
             disabled={isUploading}
             className="h-7 w-7 opacity-50 hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"

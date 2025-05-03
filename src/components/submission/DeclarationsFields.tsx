@@ -1,3 +1,4 @@
+
 import { FormControl, FormField, FormItem, FormLabel, FormDescription } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { motion } from "framer-motion";
@@ -22,12 +23,13 @@ export const DeclarationsFields = ({ form }: { form: any }) => {
           <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
             <FormControl>
               <Checkbox
+                id="ethicsApproval"
                 checked={field.value}
                 onCheckedChange={field.onChange}
               />
             </FormControl>
             <div className="space-y-1 leading-none">
-              <FormLabel>
+              <FormLabel htmlFor="ethicsApproval">
                 Approbation éthique
               </FormLabel>
               <FormDescription>
@@ -45,12 +47,13 @@ export const DeclarationsFields = ({ form }: { form: any }) => {
           <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
             <FormControl>
               <Checkbox
+                id="noConflict"
                 checked={field.value}
                 onCheckedChange={field.onChange}
               />
             </FormControl>
             <div className="space-y-1 leading-none">
-              <FormLabel className="flex items-center gap-2">
+              <FormLabel className="flex items-center gap-2" htmlFor="noConflict">
                 <UserCheck className="h-4 w-4" />
                 Absence de conflit d'intérêt
               </FormLabel>
@@ -69,12 +72,13 @@ export const DeclarationsFields = ({ form }: { form: any }) => {
           <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
             <FormControl>
               <Checkbox
+                id="originalWork"
                 checked={field.value}
                 onCheckedChange={field.onChange}
               />
             </FormControl>
             <div className="space-y-1 leading-none">
-              <FormLabel className="flex items-center gap-2">
+              <FormLabel className="flex items-center gap-2" htmlFor="originalWork">
                 <FileCheck className="h-4 w-4" />
                 Travail original
               </FormLabel>

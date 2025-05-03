@@ -12,12 +12,13 @@ export const PublicationTypeField = ({ form }: { form: any }) => {
       name="publicationType"
       render={({ field }) => (
         <FormItem>
-          <FormLabel className="text-lg font-semibold">Type de publication</FormLabel>
+          <FormLabel className="text-lg font-semibold" htmlFor="publicationType">Type de publication</FormLabel>
           <FormControl>
             <RadioGroup
               onValueChange={field.onChange}
               defaultValue={field.value}
               className="grid grid-cols-1 md:grid-cols-2 gap-4"
+              id="publicationType"
             >
               <motion.div 
                 whileHover={{ scale: 1.02 }}
@@ -27,6 +28,7 @@ export const PublicationTypeField = ({ form }: { form: any }) => {
                   value="RHCA"
                   id="rhca"
                   className="peer sr-only"
+                  name="publicationType"
                 />
                 <Label
                   htmlFor="rhca"
@@ -56,6 +58,7 @@ export const PublicationTypeField = ({ form }: { form: any }) => {
                   value="IGM"
                   id="igm"
                   className="peer sr-only"
+                  name="publicationType"
                 />
                 <Label
                   htmlFor="igm"
