@@ -1,3 +1,4 @@
+
 import { FileText, Image as ImageIcon } from "lucide-react";
 
 interface UploadIconProps {
