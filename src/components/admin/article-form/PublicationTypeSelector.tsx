@@ -1,5 +1,5 @@
 
-import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UseFormReturn } from "react-hook-form";
 import { ArticleFormData } from "@/types/article";
@@ -18,7 +18,7 @@ export const PublicationTypeSelector = ({ form }: PublicationTypeSelectorProps) 
           <FormLabel>Type de publication</FormLabel>
           <FormControl>
             <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <SelectTrigger>
+              <SelectTrigger className={form.formState.errors.publicationType ? "border-red-300 focus:ring-red-500" : ""}>
                 <SelectValue placeholder="Sélectionnez un type" />
               </SelectTrigger>
               <SelectContent>
@@ -28,6 +28,7 @@ export const PublicationTypeSelector = ({ form }: PublicationTypeSelectorProps) 
               </SelectContent>
             </Select>
           </FormControl>
+          <FormMessage />
         </FormItem>
       )}
     />
