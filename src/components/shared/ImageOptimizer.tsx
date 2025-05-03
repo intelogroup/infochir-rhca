@@ -35,7 +35,7 @@ export const ImageOptimizer = ({
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentSrc, setCurrentSrc] = useState(src);
   const [retryCount, setRetryCount] = useState(0);
-  const MAX_RETRIES = 3;  // Increase max retries for RHCA images
+  const MAX_RETRIES = 3;
 
   // Reset error state when src changes
   useEffect(() => {
@@ -72,6 +72,27 @@ export const ImageOptimizer = ({
                          currentSrc.includes('rhca_covers') || 
                          currentSrc.includes('rhca-covers');
                          
+    // Try alternate bucket first
+    if (isRhcaCover && currentSrc.includes('rhca_covers')) {
+      const filename = extractFilename(currentSrc);
+      if (filename) {
+        const alternateUrl = `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/rhca-covers/${filename}`;
+        logger.log(`[ImageOptimizer] Trying alternate bucket 'rhca-covers': ${alternateUrl}`);
+        setRetryCount(prev => prev + 1);
+        setCurrentSrc(alternateUrl);
+        return;
+      }
+    } else if (isRhcaCover && currentSrc.includes('rhca-covers')) {
+      const filename = extractFilename(currentSrc);
+      if (filename) {
+        const alternateUrl = `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/rhca_covers/${filename}`;
+        logger.log(`[ImageOptimizer] Trying alternate bucket 'rhca_covers': ${alternateUrl}`);
+        setRetryCount(prev => prev + 1);
+        setCurrentSrc(alternateUrl);
+        return;
+      }
+    }
+      
     // Get alternative URL based on patterns
     const alternativeUrl = isRhcaCover ? 
       getAlternativeRHCAUrl(currentSrc) : 
@@ -82,9 +103,24 @@ export const ImageOptimizer = ({
       setRetryCount(prev => prev + 1);
       setCurrentSrc(alternativeUrl);
     } else if (isRhcaCover && retryCount < 1) {
-      // For RHCA covers, also try direct bucket access with filename only
+      // For RHCA covers, try a simplified filename approach
       const filename = extractFilename(currentSrc);
       if (filename) {
+        // Try to extract volume and issue from filename
+        const match = filename.match(/RHCA_vol_(\d+)_no_(\d+)/i);
+        if (match) {
+          const vol = match[1].padStart(2, '0');
+          const issue = match[2].padStart(2, '0');
+          
+          // Try simplified filename formats
+          const simplifiedUrl = `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/rhca_covers/RHCA_vol_${vol}_no_${issue}.png`;
+          logger.log(`[ImageOptimizer] Trying simplified filename: ${simplifiedUrl}`);
+          setRetryCount(prev => prev + 1);
+          setCurrentSrc(simplifiedUrl);
+          return;
+        }
+        
+        // As a last resort, try direct bucket access with filename only
         const directUrl = `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/rhca_covers/${filename}`;
         if (directUrl !== currentSrc) {
           logger.log(`[ImageOptimizer] Trying direct bucket URL: ${directUrl}`);

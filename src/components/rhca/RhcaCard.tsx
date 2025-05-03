@@ -7,11 +7,9 @@ import { CardContent } from "./card/CardContent";
 import type { RhcaArticle } from "./types";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "sonner";
+import { createLogger } from "@/lib/error-logger";
 
-// Check if we're in debug mode
-const isDebugMode = process.env.NODE_ENV === 'development' || 
-                   process.env.VITE_APP_PREVIEW === 'true' || 
-                   process.env.DEBUG === 'true';
+const logger = createLogger('RhcaCard');
 
 interface RhcaCardProps {
   article: RhcaArticle;
@@ -28,36 +26,48 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
       try {
         setImageLoading(true);
         
-        // Debug logs only in debug mode
-        if (isDebugMode) {
-          console.log(`[RhcaCard] Article ${article.id} cover filename:`, article.coverImageFileName);
-        }
+        logger.log(`[RhcaCard] Loading resources for article ${article.id}`);
+        logger.log(`[RhcaCard] Cover image filename: ${article.coverImageFileName}`);
         
-        // Load cover image
+        // Load cover image with better fallbacks
         if (article.coverImageFileName) {
+          // Try primary bucket
           const publicUrl = getStorageUrl('rhca_covers', article.coverImageFileName);
           setCoverUrl(publicUrl);
+          logger.log(`[RhcaCard] Cover URL from rhca_covers: ${publicUrl}`);
         } 
         // Fallback to image_url if available
         else if (article.image_url) {
           setCoverUrl(article.image_url);
+          logger.log(`[RhcaCard] Using image_url fallback: ${article.image_url}`);
+        } 
+        // If no image is available, try to generate a filename from volume and issue
+        else if (article.volume && article.issue) {
+          const paddedVolume = String(article.volume).padStart(2, '0');
+          const paddedIssue = String(article.issue).padStart(2, '0');
+          const generatedFilename = `RHCA_vol_${paddedVolume}_no_${paddedIssue}.png`;
+          const publicUrl = getStorageUrl('rhca_covers', generatedFilename);
+          
+          setCoverUrl(publicUrl);
+          logger.log(`[RhcaCard] Using generated filename: ${generatedFilename}`);
         } 
         // If no image is available, use null
         else {
           setCoverUrl(null);
+          logger.warn(`[RhcaCard] No cover image available for article ${article.id}`);
         }
         
         // Load PDF URL
         if (article.pdfFileName) {
           const publicUrl = getStorageUrl('rhca-pdfs', article.pdfFileName);
           setPdfUrl(publicUrl);
+          logger.log(`[RhcaCard] PDF URL: ${publicUrl}`);
         } else {
           setPdfUrl(null);
+          logger.warn(`[RhcaCard] No PDF available for article ${article.id}`);
         }
       } catch (error) {
-        if (isDebugMode) {
-          console.error('[RhcaCard] Error loading resources:', error);
-        }
+        logger.error('[RhcaCard] Error loading resources:', error);
         setCoverUrl(null);
         setPdfUrl(null);
       } finally {
@@ -89,9 +99,7 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
         // You could add analytics tracking here if needed
       }
     } catch (error) {
-      if (isDebugMode) {
-        console.error('[RhcaCard] Error tracking view:', error);
-      }
+      logger.error('[RhcaCard] Error tracking view:', error);
     }
   };
   
@@ -116,5 +124,4 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
   );
 };
 
-// Also export as default for direct imports
 export default RhcaCard;

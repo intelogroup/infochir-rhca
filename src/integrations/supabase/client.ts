@@ -1,5 +1,9 @@
+
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
+import { createLogger } from "@/lib/error-logger";
+
+const logger = createLogger('SupabaseClient');
 
 export const SUPABASE_URL = "https://llxzstqejdrplmxdjxlu.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxseHpzdHFlamRycGxteGRqeGx1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzUwNzM3NDgsImV4cCI6MjA1MDY0OTc0OH0.dza-_2f6kCnY11CmnyHRf3kE-JxQTTnZm20GaZwiA9g";
@@ -28,9 +32,17 @@ const getEnvironment = () => {
 
 // Log status for debugging
 if (typeof window !== 'undefined' && isDebugMode) {
-  console.log(`Supabase client initializing in ${getEnvironment()} mode`);
-  console.log(`Debug mode: ${isDebugMode ? 'enabled' : 'disabled'}`);
+  logger.log(`Supabase client initializing in ${getEnvironment()} mode`);
+  logger.log(`Debug mode: ${isDebugMode ? 'enabled' : 'disabled'}`);
 }
+
+// Get current hostname for CORS
+const getCurrentHostname = () => {
+  if (typeof window !== 'undefined') {
+    return window.location.origin;
+  }
+  return null;
+};
 
 /**
  * Configures and creates a Supabase client with settings optimized for the current environment
@@ -45,7 +57,8 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, 
   global: {
     headers: {
       'X-Client-Info': `infochir-app/${getEnvironment()}`,
-      'X-Client-Mode': isDebugMode ? 'development' : 'production'
+      'X-Client-Mode': isDebugMode ? 'development' : 'production',
+      ...(getCurrentHostname() ? { 'Origin': getCurrentHostname() } : {})
     }
   },
   db: {
@@ -63,9 +76,7 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, 
  */
 export const checkSupabaseConnection = async (): Promise<boolean> => {
   try {
-    if (isDebugMode) {
-      console.log('Checking Supabase connection...');
-    }
+    logger.log('Checking Supabase connection...');
     
     const { data, error } = await supabase
       .from('articles')
@@ -73,19 +84,15 @@ export const checkSupabaseConnection = async (): Promise<boolean> => {
       .limit(1)
       .maybeSingle();
       
-    if (isDebugMode) {
-      if (error) {
-        console.error('Supabase connection check failed', error);
-      } else {
-        console.log('Supabase connection successful');
-      }
+    if (error) {
+      logger.error('Supabase connection check failed', error);
+    } else {
+      logger.log('Supabase connection successful');
     }
     
     return !error;
   } catch (error) {
-    if (isDebugMode) {
-      console.error('Supabase connection check failed with exception', error);
-    }
+    logger.error('Supabase connection check failed with exception', error);
     return false;
   }
 };
@@ -100,16 +107,31 @@ export const getStorageUrl = (bucket: string, path: string): string => {
   if (!path) return '';
   
   try {
-    // Simply construct a direct URL to the file
-    const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`;
-    
-    if (isDebugMode) {
-      console.log(`Generated direct storage URL: ${publicUrl}`);
+    // Check if path already contains bucket name and remove it
+    let cleanPath = path;
+    if (cleanPath.startsWith(`/${bucket}/`)) {
+      cleanPath = cleanPath.substring(bucket.length + 2);
+    } else if (cleanPath.startsWith(`${bucket}/`)) {
+      cleanPath = cleanPath.substring(bucket.length + 1);
     }
-      
+    
+    // Try to get public URL using Supabase storage SDK
+    try {
+      const { data } = supabase.storage.from(bucket).getPublicUrl(cleanPath);
+      if (data && data.publicUrl) {
+        return data.publicUrl;
+      }
+    } catch (err) {
+      logger.error(`Failed to get URL from Storage SDK for ${bucket}/${cleanPath}:`, err);
+    }
+    
+    // Fallback to direct URL construction
+    const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${cleanPath}`;
+    
+    logger.log(`Generated storage URL: ${publicUrl}`);
     return publicUrl;
   } catch (error) {
-    console.error(`Failed to generate storage URL for ${bucket}/${path}:`, error);
+    logger.error(`Failed to generate storage URL for ${bucket}/${path}:`, error);
     return '';
   }
 };
@@ -138,7 +160,7 @@ export const getFounderAvatarUrl = (imagePath: string): string => {
  */
 export const getADCCoverUrl = (imagePath: string): string => {
   if (!imagePath) {
-    console.log('[getADCCoverUrl] Empty image path provided');
+    logger.log('[getADCCoverUrl] Empty image path provided');
     return '';
   }
   
@@ -171,15 +193,10 @@ export const getADCCoverUrl = (imagePath: string): string => {
     filename = filename.split('?')[0];
   }
   
-  // Keep the file extension as is - no forced extension change
-  // This allows for both jpg, png and other formats
-  
   // Create direct URL to atlas_covers bucket (primary location)
   const directUrl = `${SUPABASE_URL}/storage/v1/object/public/atlas_covers/${filename}`;
   
-  if (isDebugMode) {
-    console.log(`[getADCCoverUrl] Using direct URL: ${directUrl}`);
-  }
+  logger.log(`[getADCCoverUrl] Using direct URL: ${directUrl}`);
   
   return directUrl;
 };
@@ -208,15 +225,11 @@ export const getAtlasImageUrl = (filename: string | null | undefined): string =>
         
       const url = getStorageUrl(bucket, cleanFilename);
       
-      if (isDebugMode) {
-        console.log(`[getAtlasImageUrl] Trying ${bucket} bucket: ${url}`);
-      }
+      logger.log(`[getAtlasImageUrl] Trying ${bucket} bucket: ${url}`);
       
       return url;
     } catch (error) {
-      if (isDebugMode) {
-        console.error(`[getAtlasImageUrl] Error with ${bucket} bucket:`, error);
-      }
+      logger.error(`[getAtlasImageUrl] Error with ${bucket} bucket:`, error);
     }
   }
   

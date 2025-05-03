@@ -41,6 +41,12 @@ export const getAlternativeRHCAUrl = (src: string): string | null => {
       // Try with different casing
       variations.push(`rhca_vol_${vol}_no_${issue}.png`);
       variations.push(`rhca_vol_${vol}_no_${issue}.jpg`);
+      
+      // Try without leading zeros
+      if (vol !== volMatch[1] || issue !== issueMatch[1]) {
+        variations.push(`RHCA_vol_${parseInt(vol)}_no_${parseInt(issue)}.png`);
+        variations.push(`RHCA_vol_${parseInt(vol)}_no_${parseInt(issue)}.jpg`);
+      }
     }
   }
   
