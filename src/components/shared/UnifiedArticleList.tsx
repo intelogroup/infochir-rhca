@@ -13,6 +13,7 @@ import { AlertCircle } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Article } from "@/components/index-medicus/types";
 
 interface UnifiedArticleListProps {
   rhcaArticles?: RhcaArticle[];
@@ -98,10 +99,19 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
                 title: issue.title,
                 authors: [],
                 date: issue.date,
+                publicationDate: issue.date, // Adding missing required property
+                abstract: issue.abstract || "", // Adding missing required property
                 source: 'IGM',
                 tags: issue.categories || [],
-                category: `Volume ${issue.volume}, Issue ${issue.issue}`
-              }))}
+                category: `Volume ${issue.volume}, Issue ${issue.issue}`,
+                // Add other required properties with default values
+                content: "",
+                imageUrl: issue.coverImage,
+                views: 0,
+                citations: 0,
+                downloads: issue.downloads || 0,
+                shares: issue.shares || 0,
+              } as Article))}
               onTagClick={onTagClick}
               selectedTags={selectedTags}
             />
