@@ -16,7 +16,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TableActions } from "./table/TableActions";
-import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
 
 interface ArticleTableProps {
   articles: Article[];
@@ -45,45 +44,34 @@ export const ArticleTable: React.FC<ArticleTableProps> = ({
       <div className="space-y-3">
         {articles.map((article) => (
           <Card key={article.id} className="p-3 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex gap-3">
-              {article.imageUrl && !isMobile && (
-                <div className="flex-shrink-0 w-16 h-16 rounded overflow-hidden">
-                  <ImageOptimizer
-                    src={article.imageUrl}
-                    alt={article.title}
-                    className="w-full h-full object-cover"
-                    width={64}
-                    height={64}
-                  />
-                </div>
-              )}
-              <div className="flex-1 min-w-0">
+            <div className="flex flex-col gap-2">
+              <div>
                 <h3 className="font-medium text-primary mb-1 line-clamp-2">{article.title}</h3>
                 {article.authors?.length > 0 && (
                   <p className="text-xs text-gray-500 mb-2">
                     {article.authors?.join(", ")}
                   </p>
                 )}
-                <div className="flex justify-between items-center">
-                  <div className="flex flex-wrap gap-1 max-w-[180px]">
-                    {article.tags?.slice(0, 2).map((tag) => (
-                      <Badge 
-                        key={tag} 
-                        variant="outline" 
-                        className="text-xs bg-muted truncate max-w-[80px]"
-                        onClick={() => onTagClick && onTagClick(tag)}
-                      >
-                        {tag}
-                      </Badge>
-                    ))}
-                    {(article.tags?.length || 0) > 2 && (
-                      <Badge variant="outline" className="text-xs bg-muted">
-                        +{(article.tags?.length || 0) - 2}
-                      </Badge>
-                    )}
-                  </div>
-                  <TableActions row={{ original: { id: article.id, title: article.title } }} />
+              </div>
+              <div className="flex justify-between items-center">
+                <div className="flex flex-wrap gap-1 max-w-[180px]">
+                  {article.tags?.slice(0, 2).map((tag) => (
+                    <Badge 
+                      key={tag} 
+                      variant="outline" 
+                      className="text-xs bg-muted truncate max-w-[80px]"
+                      onClick={() => onTagClick && onTagClick(tag)}
+                    >
+                      {tag}
+                    </Badge>
+                  ))}
+                  {(article.tags?.length || 0) > 2 && (
+                    <Badge variant="outline" className="text-xs bg-muted">
+                      +{(article.tags?.length || 0) - 2}
+                    </Badge>
+                  )}
                 </div>
+                <TableActions row={{ original: { id: article.id, title: article.title } }} />
               </div>
             </div>
           </Card>

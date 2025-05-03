@@ -63,7 +63,7 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
                   article={article}
                   onTagClick={onTagClick}
                   isSelected={selectedTags?.some(tag => article.tags?.includes(tag))}
-                  hideImage={isMobile}
+                  hideImage={true} // Always hide images as requested
                 />
               ))}
             </div>
@@ -108,7 +108,7 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
                 tags: issue.categories || [],
                 category: `Volume ${issue.volume}, Issue ${issue.issue}`,
                 content: "",
-                imageUrl: issue.coverImage,
+                imageUrl: "", // Don't include cover images
                 views: 0,
                 citations: 0,
                 downloads: issue.downloads || 0,

@@ -17,8 +17,8 @@ interface ArticleGridProps {
 
 const ArticleGrid: FC<ArticleGridProps> = ({ viewMode: initialViewMode = "table" }) => {
   const isMobile = useIsMobile();
-  // On mobile, we'll use a compact list view by default, otherwise table view
-  const [viewMode, setViewMode] = useState<"grid" | "table" | "list">(isMobile ? "list" : "table");
+  // Always default to table view for better article title visibility
+  const [viewMode, setViewMode] = useState<"grid" | "table" | "list">("table");
   const [currentPage, setCurrentPage] = useState(0);
   const { data, isLoading, error, refetch } = useArticlesQuery(currentPage);
   
@@ -91,25 +91,16 @@ const ArticleGrid: FC<ArticleGridProps> = ({ viewMode: initialViewMode = "table"
   
   const toggleViewMode = useCallback(() => {
     setViewMode(prev => {
-      if (isMobile) {
-        // On mobile, toggle between list and table
-        return prev === "list" ? "table" : "list";
-      }
-      // On desktop, cycle through grid, table, and list views
       if (prev === "grid") return "table";
       if (prev === "table") return "list";
       return "grid";
     });
-  }, [isMobile]);
+  }, []);
 
-  // Update viewMode when device type changes
+  // We'll maintain table view regardless of device for better title visibility
   useEffect(() => {
-    if (isMobile) {
-      setViewMode("list"); // Default to list view on mobile
-    } else {
-      setViewMode("table"); // Default to table view on desktop
-    }
-  }, [isMobile]);
+    setViewMode("table");
+  }, []);
 
   if (error) {
     return <ErrorDisplay error={error as Error} onRetry={handleRetry} />;

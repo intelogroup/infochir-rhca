@@ -47,25 +47,6 @@ export const IndexMedicusCard: React.FC<IndexMedicusCardProps> = ({
       <Card
         className="h-full flex flex-col border-gray-200 hover:border-primary/30 cursor-pointer transition-all duration-200 overflow-hidden group"
       >
-        {article.imageUrl && !hideImage && (
-          <div className="h-40 sm:h-48 overflow-hidden relative">
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10" />
-            <img
-              src={article.imageUrl}
-              alt={article.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
-            <div className="absolute top-2 right-2 z-20">
-              <Badge
-                variant="outline"
-                className="bg-white/80 backdrop-blur-sm text-xs font-normal"
-              >
-                {article.category || "Article"}
-              </Badge>
-            </div>
-          </div>
-        )}
-
         <CardContent className="flex-grow flex flex-col p-3 sm:p-4">
           <div className="flex-grow space-y-2">
             <h3 className="font-medium text-base sm:text-lg leading-tight line-clamp-2 group-hover:text-primary transition-colors">
