@@ -20,7 +20,7 @@ interface UnifiedArticleListProps {
   igmIssues?: Issue[];
   articles?: any[]; // Generic articles for IndexMedicus
   variant?: string;
-  viewMode: "grid" | "table";
+  viewMode: "grid" | "table" | "list";
   onIssueClick?: (issue: Issue) => void;
   onTagClick?: (tag: string) => void;
   selectedTags?: string[];
@@ -40,6 +40,9 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
 }) => {
   const isMobile = useIsMobile();
 
+  // When in table mode but on mobile, fallback to list view
+  const effectiveViewMode = isMobile && viewMode === "table" ? "list" : viewMode;
+
   if (isLoading) {
     return (
       <div className="py-8 mt-[50px]">
@@ -52,7 +55,7 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
     <div>
       {variant === 'index-medicus' && articles.length > 0 && (
         <div>
-          {viewMode === "grid" ? (
+          {effectiveViewMode === "grid" ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {articles.map((article) => (
                 <IndexMedicusCard 
@@ -86,7 +89,7 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
       {igmIssues.length > 0 && (
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-4">IGM Issues</h2>
-          {viewMode === "grid" ? (
+          {effectiveViewMode === "grid" ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {igmIssues.map((issue) => (
                 <IssueCard key={issue.id} issue={issue} />
@@ -99,12 +102,11 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
                 title: issue.title,
                 authors: [],
                 date: issue.date,
-                publicationDate: issue.date, // Adding missing required property
-                abstract: issue.abstract || "", // Adding missing required property
+                publicationDate: issue.date,
+                abstract: issue.abstract || "",
                 source: 'IGM',
                 tags: issue.categories || [],
                 category: `Volume ${issue.volume}, Issue ${issue.issue}`,
-                // Add other required properties with default values
                 content: "",
                 imageUrl: issue.coverImage,
                 views: 0,
@@ -122,7 +124,7 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
       {rhcaArticles.length > 0 && (
         <div>
           <h2 className="text-xl font-semibold mb-4">RHCA Articles</h2>
-          {viewMode === "grid" ? (
+          {effectiveViewMode === "grid" ? (
             <ScrollArea className={isMobile ? "h-[500px] pr-4" : "h-[600px] pr-4"}>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 pb-4">
                 {rhcaArticles.map((article) => (
