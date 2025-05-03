@@ -19,14 +19,19 @@ import { CorrespondingAuthorFields } from "@/components/submission/Corresponding
 import { AbstractField } from "@/components/submission/AbstractField";
 import { DeclarationsFields } from "@/components/submission/DeclarationsFields";
 import { MultiFileUploader } from "@/components/pdf/MultiFileUploader";
+import { FormErrors } from "@/components/admin/article-form/FormErrors";
 
 const formSchema = z.object({
   publicationType: z.enum(["RHCA", "IGM"], {
     required_error: "Veuillez sélectionner un type de publication",
   }),
-  title: z.string().min(1, "Le titre est requis").max(200, "Le titre ne doit pas dépasser 200 caractères"),
-  authors: z.string().min(1, "Les auteurs sont requis"),
-  institution: z.string().min(1, "L'institution est requise"),
+  title: z.string()
+    .min(1, "Le titre est requis")
+    .max(200, "Le titre ne doit pas dépasser 200 caractères"),
+  authors: z.string()
+    .min(1, "Les auteurs sont requis"),
+  institution: z.string()
+    .min(1, "L'institution est requise"),
   keywords: z.string()
     .min(1, "Les mots clés sont requis")
     .refine(
@@ -51,6 +56,7 @@ const Submission = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [articleFiles, setArticleFiles] = useState<string[]>([]);
   const [imageAnnexes, setImageAnnexes] = useState<string[]>([]);
+  const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
   const navigate = useNavigate();
   
   const form = useForm<z.infer<typeof formSchema>>({
@@ -60,16 +66,55 @@ const Submission = () => {
       noConflict: false,
       originalWork: false,
     },
+    mode: "onChange", // Real-time validation
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  // Watch for form changes
+  const formValues = form.watch();
+  const formErrors2 = form.formState.errors;
+
+  // Effect to validate declarations when the form changes
+  React.useEffect(() => {
+    const newErrors = {...formErrors};
+    
+    // Validate article files
     if (articleFiles.length === 0) {
-      toast.error("Veuillez uploader au moins un fichier d'article");
+      newErrors.articleFiles = "Veuillez uploader au moins un fichier d'article";
+    } else {
+      delete newErrors.articleFiles;
+    }
+
+    // Validate declarations
+    if (!formValues.ethicsApproval || !formValues.noConflict || !formValues.originalWork) {
+      newErrors.declarations = "Toutes les déclarations doivent être acceptées";
+    } else {
+      delete newErrors.declarations;
+    }
+
+    setFormErrors(newErrors);
+  }, [formValues, articleFiles, formErrors]);
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    // Final validation check
+    const finalErrors: {[key: string]: string} = {};
+    
+    if (articleFiles.length === 0) {
+      finalErrors.articleFiles = "Veuillez uploader au moins un fichier d'article";
+    }
+
+    if (!values.ethicsApproval || !values.noConflict || !values.originalWork) {
+      finalErrors.declarations = "Toutes les déclarations doivent être acceptées";
+    }
+
+    if (Object.keys(finalErrors).length > 0) {
+      setFormErrors(finalErrors);
+      toast.error("Veuillez corriger les erreurs avant de soumettre");
       return;
     }
 
     try {
       setIsSubmitting(true);
+      toast.loading("Envoi de votre soumission en cours...");
 
       const { data: userSession } = await supabase.auth.getSession();
       
@@ -99,6 +144,7 @@ const Submission = () => {
 
       if (error) throw error;
 
+      toast.dismiss();
       toast.success("Votre soumission a été envoyée avec succès!");
       
       // Redirect based on publication type
@@ -109,10 +155,15 @@ const Submission = () => {
       }
     } catch (error) {
       console.error('Submission error:', error);
+      toast.dismiss();
       toast.error("Une erreur est survenue lors de l'envoi de votre soumission");
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleSaveDraft = () => {
+    toast("Sauvegarde en brouillon non implémentée");
   };
 
   return (
@@ -132,6 +183,22 @@ const Submission = () => {
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <div className="space-y-8 bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-gray-100">
+                  {/* Display form errors */}
+                  <FormErrors errors={{
+                    ...formErrors,
+                    ...Object.entries(form.formState.errors).reduce((acc, [key, error]) => {
+                      if (error && error.message) {
+                        if (key.includes('correspondingAuthor.')) {
+                          const fieldName = key.replace('correspondingAuthor.', '');
+                          acc[`author_${fieldName}`] = error.message as string;
+                        } else {
+                          acc[key] = error.message as string;
+                        }
+                      }
+                      return acc;
+                    }, {} as Record<string, string>)
+                  }} />
+
                   <PublicationTypeField form={form} />
                   <ArticleDetailsFields form={form} />
                   <CorrespondingAuthorFields form={form} />
@@ -146,11 +213,17 @@ const Submission = () => {
                         'application/msword': ['.doc'],
                         'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
                       }}
-                      maxFileSize={10}
-                      maxFiles={20} // Updated to 20
+                      maxFileSize={30}
+                      maxFiles={20} 
                       onUploadComplete={setArticleFiles}
-                      helperText="Formats acceptés: DOC, DOCX, PDF. Taille max: 10MB. Maximum 20 fichiers"
+                      helperText="Formats acceptés: DOC, DOCX, PDF. Taille max: 30MB. Maximum 20 fichiers"
                     />
+                    {formErrors.articleFiles && (
+                      <p className="text-sm text-destructive">{formErrors.articleFiles}</p>
+                    )}
+                    {articleFiles.length > 0 && (
+                      <p className="text-sm text-green-600">{articleFiles.length} fichier(s) uploadé(s)</p>
+                    )}
                   </div>
 
                   <div className="space-y-4">
@@ -160,15 +233,21 @@ const Submission = () => {
                       acceptedFileTypes={{
                         'image/*': ['.png', '.jpg', '.jpeg', '.gif']
                       }}
-                      maxFileSize={5}
-                      maxFiles={20} // Updated to 20
+                      maxFileSize={30}
+                      maxFiles={20}
                       onUploadComplete={setImageAnnexes}
-                      helperText="Formats acceptés: PNG, JPEG, GIF. Taille max: 5MB. Maximum 20 fichiers"
+                      helperText="Formats acceptés: PNG, JPEG, GIF. Taille max: 30MB. Maximum 20 fichiers"
                       type="image"
                     />
+                    {imageAnnexes.length > 0 && (
+                      <p className="text-sm text-green-600">{imageAnnexes.length} image(s) uploadée(s)</p>
+                    )}
                   </div>
 
                   <DeclarationsFields form={form} />
+                  {formErrors.declarations && (
+                    <p className="text-sm text-destructive">{formErrors.declarations}</p>
+                  )}
                 </div>
 
                 <div className="flex justify-end space-x-4">
@@ -177,6 +256,7 @@ const Submission = () => {
                     variant="outline"
                     className="gap-2"
                     disabled={isSubmitting}
+                    onClick={handleSaveDraft}
                   >
                     <Save className="h-4 w-4" />
                     Sauvegarder comme brouillon
@@ -184,7 +264,7 @@ const Submission = () => {
                   <Button 
                     type="submit"
                     className="gap-2"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || !form.formState.isValid || Object.keys(formErrors).length > 0}
                   >
                     <Send className="h-4 w-4" />
                     {isSubmitting ? "Envoi en cours..." : "Soumettre l'article"}

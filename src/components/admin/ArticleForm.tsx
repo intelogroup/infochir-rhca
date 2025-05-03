@@ -13,6 +13,7 @@ import { CoverImageUploader } from "./article-form/CoverImageUploader";
 import { supabase } from "@/integrations/supabase/client";
 import { Article, ArticleFormData } from "@/types/article";
 import { FormErrors } from "./article-form/FormErrors";
+import { SubmitButton } from "./article-form/SubmitButton";
 
 const formSchema = z.object({
   title: z.string().min(3, "Le titre doit contenir au moins 3 caractères").max(200, "Le titre ne doit pas dépasser 200 caractères"),
@@ -44,14 +45,31 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
     },
     mode: "onChange" // This enables validation as the user types
   });
-
+  
+  // Watch for form changes to update validation state
+  const formValues = form.watch();
+  
   // Watch for form errors
   useEffect(() => {
     const subscription = form.watch(() => {
-      setFormErrors({});
+      // Clear custom form errors when user makes changes
+      if (Object.keys(formErrors).length > 0) {
+        setFormErrors({});
+      }
     });
     return () => subscription.unsubscribe();
-  }, [form]);
+  }, [form, formErrors]);
+
+  // Check file uploads when they change
+  useEffect(() => {
+    if (articleFilesUrls.length > 0 && formErrors.files) {
+      setFormErrors(prev => {
+        const newErrors = {...prev};
+        delete newErrors.files;
+        return newErrors;
+      });
+    }
+  }, [articleFilesUrls, formErrors]);
 
   const handleSubmit = async (values: ArticleFormData) => {
     // Reset form errors
@@ -60,20 +78,34 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
     // Validate file uploads
     if (articleFilesUrls.length === 0) {
       setFormErrors((prev) => ({...prev, files: "Veuillez uploader au moins un fichier d'article"}));
+      toast.error("Veuillez uploader au moins un fichier d'article");
+      return;
+    }
+
+    if (!coverImageUrl) {
+      setFormErrors((prev) => ({...prev, coverImage: "Veuillez ajouter une image de couverture"}));
+      toast.error("Veuillez ajouter une image de couverture");
       return;
     }
 
     if (customSubmit) {
       try {
+        setIsSubmitting(true);
+        toast.loading("Soumission en cours...");
         await customSubmit(values);
+        toast.dismiss();
       } catch (error) {
         console.error('Custom submission error:', error);
         toast.error("Une erreur est survenue lors de la soumission de l'article");
+      } finally {
+        setIsSubmitting(false);
       }
       return;
     }
 
     setIsSubmitting(true);
+    toast.loading("Création de l'article en cours...");
+    
     try {
       const { data, error } = await supabase
         .from('unified_content')
@@ -90,6 +122,7 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
 
       if (error) throw error;
 
+      toast.dismiss();
       toast.success("Article créé avec succès!");
       form.reset();
       setCoverImageUrl("");
@@ -97,10 +130,12 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
       setImageAnnexesUrls([]);
     } catch (error: any) {
       console.error('Submission error:', error);
+      toast.dismiss();
       
       // Handle specific database errors
       if (error.code === '23505') { // Unique violation
         toast.error("Un article avec ce titre existe déjà");
+        setFormErrors((prev) => ({...prev, title: "Un article avec ce titre existe déjà"}));
       } else {
         toast.error("Une erreur est survenue lors de la création de l'article");
       }
@@ -108,6 +143,12 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
       setIsSubmitting(false);
     }
   };
+
+  // Calculate if form is valid for submit button
+  const isFormValid = form.formState.isValid && 
+                     articleFilesUrls.length > 0 && 
+                     !!coverImageUrl && 
+                     Object.keys(formErrors).length === 0;
 
   return (
     <Form {...form}>
@@ -127,11 +168,17 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
           <PublicationTypeSelector form={form} />
           <ArticleDetails form={form} />
           
-          <CoverImageUploader
-            onImageUpload={setCoverImageUrl}
-            currentImage={coverImageUrl}
-            className="mb-6"
-          />
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold">Image de couverture</h3>
+            <CoverImageUploader
+              onImageUpload={setCoverImageUrl}
+              currentImage={coverImageUrl}
+              className="mb-2"
+            />
+            {formErrors.coverImage && (
+              <p className="text-sm text-destructive mt-1">{formErrors.coverImage}</p>
+            )}
+          </div>
 
           <FileUploaders
             setArticleFilesUrls={setArticleFilesUrls}
@@ -141,12 +188,10 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
         </div>
 
         <div className="flex justify-end">
-          <Button
-            type="submit"
-            disabled={isSubmitting || isLoading || !form.formState.isValid}
-          >
-            {isSubmitting || isLoading ? "En cours..." : initialData ? "Mettre à jour" : "Créer l'article"}
-          </Button>
+          <SubmitButton 
+            isLoading={isSubmitting || isLoading} 
+            isEditing={!!initialData}
+          />
         </div>
       </form>
     </Form>

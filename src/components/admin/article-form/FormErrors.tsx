@@ -7,7 +7,9 @@ interface FormErrorsProps {
 }
 
 export const FormErrors = ({ errors }: FormErrorsProps) => {
-  if (Object.keys(errors).length === 0) return null;
+  const errorCount = Object.keys(errors).length;
+  
+  if (errorCount === 0) return null;
 
   return (
     <AnimatePresence>
@@ -15,15 +17,21 @@ export const FormErrors = ({ errors }: FormErrorsProps) => {
         initial={{ opacity: 0, height: 0 }}
         animate={{ opacity: 1, height: "auto" }}
         exit={{ opacity: 0, height: 0 }}
-        className="bg-destructive/10 p-4 rounded-lg mb-6"
+        className="bg-destructive/15 p-4 rounded-lg mb-6 border border-destructive/30"
       >
         <div className="flex items-center gap-2 text-destructive mb-2">
           <AlertCircle className="h-5 w-5" />
-          <h3 className="font-semibold">Veuillez corriger les erreurs suivantes:</h3>
+          <h3 className="font-semibold">
+            {errorCount === 1 
+              ? "Veuillez corriger l'erreur suivante:" 
+              : `Veuillez corriger les ${errorCount} erreurs suivantes:`}
+          </h3>
         </div>
-        <ul className="list-disc list-inside text-sm text-destructive">
+        <ul className="list-disc list-inside text-sm text-destructive space-y-1">
           {Object.values(errors).map((error, index) => (
-            <li key={index}>{error}</li>
+            <li key={index} className="animate-pulse-once">
+              {error}
+            </li>
           ))}
         </ul>
       </motion.div>

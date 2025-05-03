@@ -23,7 +23,7 @@ interface MultiFileUploaderProps {
 export const MultiFileUploader = ({
   bucket,
   acceptedFileTypes,
-  maxFileSize = 10,
+  maxFileSize = 30,
   maxFiles = 5,
   onUploadComplete,
   helperText,
@@ -32,6 +32,7 @@ export const MultiFileUploader = ({
 }: MultiFileUploaderProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
+  const [uploadProgress, setUploadProgress] = useState<{[key: string]: number}>({});
 
   const generateRHCAFilename = (originalName: string) => {
     if (!volumeInfo || (bucket !== 'rhca-pdfs' && bucket !== 'rhca_covers')) {
@@ -74,6 +75,11 @@ export const MultiFileUploader = ({
           continue;
         }
 
+        // Show upload starting
+        toast.loading(`Upload de ${file.name} en cours...`, {
+          id: `upload-${file.name}`,
+        });
+
         // Sanitize filename and create a unique name based on criteria
         const sanitizedName = file.name.replace(/[^\x00-\x7F]/g, '_');
         
@@ -95,7 +101,10 @@ export const MultiFileUploader = ({
 
         if (uploadError) {
           console.error('Upload error:', uploadError);
-          toast.error(`Erreur lors de l'upload de ${file.name}`);
+          toast.error(`Erreur lors de l'upload de ${file.name}: ${uploadError.message}`, {
+            id: `upload-${file.name}`,
+            duration: 5000
+          });
           failedUploads.push(file.name);
           continue;
         }
@@ -105,7 +114,10 @@ export const MultiFileUploader = ({
           .getPublicUrl(fileName);
 
         uploadedUrls.push(publicUrl);
-        toast.success(`${file.name} uploadé avec succès comme ${fileName}`);
+        toast.success(`${file.name} uploadé avec succès (${(file.size / (1024 * 1024)).toFixed(2)} MB)`, {
+          id: `upload-${file.name}`,
+          duration: 3000
+        });
         
         // If this is a cover image, update the corresponding article record
         if (bucket === 'rhca_covers' && volumeInfo) {
@@ -142,7 +154,9 @@ export const MultiFileUploader = ({
       }
 
       if (failedUploads.length > 0) {
-        toast.error(`Échec de l'upload pour: ${failedUploads.join(', ')}`);
+        toast.error(`Échec de l'upload pour: ${failedUploads.join(', ')}`, {
+          duration: 5000
+        });
       }
 
       if (uploadedUrls.length > 0) {
@@ -151,9 +165,12 @@ export const MultiFileUploader = ({
       }
     } catch (error) {
       console.error('Upload error:', error);
-      toast.error("Erreur lors de l'upload des fichiers");
+      toast.error("Erreur lors de l'upload des fichiers. Veuillez réessayer.", {
+        duration: 5000
+      });
     } finally {
       setIsUploading(false);
+      setUploadProgress({});
     }
   };
 
@@ -162,15 +179,26 @@ export const MultiFileUploader = ({
       const fileName = urlToRemove.split('/').pop();
       if (!fileName) return;
 
+      toast.loading("Suppression du fichier...", {
+        id: `delete-${fileName}`
+      });
+
       const { error } = await supabase.storage
         .from(bucket)
         .remove([fileName]);
 
-      if (error) throw error;
+      if (error) {
+        toast.error(`Erreur lors de la suppression: ${error.message}`, {
+          id: `delete-${fileName}`
+        });
+        throw error;
+      }
 
       setUploadedFiles(prev => prev.filter(url => url !== urlToRemove));
       onUploadComplete(uploadedFiles.filter(url => url !== urlToRemove));
-      toast.success("Fichier supprimé avec succès");
+      toast.success("Fichier supprimé avec succès", {
+        id: `delete-${fileName}`
+      });
     } catch (error) {
       console.error('Delete error:', error);
       toast.error("Erreur lors de la suppression du fichier");
@@ -194,6 +222,16 @@ export const MultiFileUploader = ({
         isUploading={isUploading}
         type={type}
       />
+      {uploadedFiles.length > 0 && uploadedFiles.length < maxFiles && (
+        <p className="text-xs text-muted-foreground text-center mt-2">
+          {uploadedFiles.length} fichier(s) sur {maxFiles} uploadé(s) ({maxFiles - uploadedFiles.length} restant)
+        </p>
+      )}
+      {uploadedFiles.length >= maxFiles && (
+        <p className="text-xs text-amber-500 text-center mt-2">
+          Limite de fichiers atteinte ({maxFiles}/{maxFiles})
+        </p>
+      )}
     </div>
   );
 };

@@ -24,10 +24,10 @@ export const FileUploaders = ({
             'application/msword': ['.doc'],
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
           }}
-          maxFileSize={10}
+          maxFileSize={30}
           maxFiles={3}
           onUploadComplete={setArticleFilesUrls}
-          helperText="Formats acceptés: DOC, DOCX, PDF. Taille max: 10MB"
+          helperText="Formats acceptés: DOC, DOCX, PDF. Taille max: 30MB"
         />
         {errors?.files && (
           <p className="mt-1 text-sm text-red-500">{errors.files}</p>
@@ -41,10 +41,10 @@ export const FileUploaders = ({
           acceptedFileTypes={{
             'image/*': ['.png', '.jpg', '.jpeg', '.gif']
           }}
-          maxFileSize={5}
+          maxFileSize={30}
           maxFiles={5}
           onUploadComplete={setImageAnnexesUrls}
-          helperText="Formats acceptés: PNG, JPEG, GIF. Taille max: 5MB"
+          helperText="Formats acceptés: PNG, JPEG, GIF. Taille max: 30MB"
           type="image"
         />
       </div>

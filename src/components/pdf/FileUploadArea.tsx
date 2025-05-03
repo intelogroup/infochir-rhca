@@ -1,3 +1,4 @@
+
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
@@ -51,8 +52,27 @@ export const FileUploadArea = ({
     }
   }, [onFileSelect, maxFiles, currentFileCount]);
 
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop: onFileSelect,
+  const { getRootProps, getInputProps, fileRejections } = useDropzone({
+    onDrop: (acceptedFiles, rejectedFiles) => {
+      if (rejectedFiles.length > 0) {
+        // Create a detailed error message for each rejected file
+        rejectedFiles.forEach(rejection => {
+          const fileSizeMB = (rejection.file.size / (1024 * 1024)).toFixed(2);
+          
+          if (rejection.errors.some(e => e.code === 'file-too-large')) {
+            toast.error(`${rejection.file.name} (${fileSizeMB} MB) dépasse la limite de 30MB`);
+          } else if (rejection.errors.some(e => e.code === 'file-invalid-type')) {
+            toast.error(`${rejection.file.name} n'est pas un format accepté`);
+          } else {
+            toast.error(`Impossible d'uploader ${rejection.file.name}: ${rejection.errors[0].message}`);
+          }
+        });
+      }
+      
+      if (acceptedFiles.length > 0) {
+        onFileSelect(acceptedFiles);
+      }
+    },
     accept: acceptedFileTypes,
     disabled: isUploading || currentFileCount >= maxFiles,
     maxFiles: maxFiles - currentFileCount,
@@ -64,8 +84,8 @@ export const FileUploadArea = ({
     },
     onDropRejected: () => {
       setIsDragActive(false);
-      toast.error("Type de fichier non accepté");
-    }
+    },
+    maxSize: 30 * 1024 * 1024 // 30MB in bytes
   });
 
   // Add paste event listener
