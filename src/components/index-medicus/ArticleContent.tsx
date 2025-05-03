@@ -3,10 +3,11 @@ import React from "react";
 import { Article } from "./types";
 import { ArticleTable } from "./ArticleTable";
 import { UnifiedArticleList } from "@/components/shared/UnifiedArticleList";
+import { ArticleCompactList } from "./ArticleCompactList";
 
 interface ArticleContentProps {
   articles: Article[];
-  viewMode: "grid" | "table";
+  viewMode: "grid" | "table" | "list";
   isLoading?: boolean;
   onTagClick?: (tag: string) => void;
   selectedTags?: string[];
@@ -21,13 +22,15 @@ export const ArticleContent: React.FC<ArticleContentProps> = ({
 }) => {
   return (
     <div className="w-full">
-      {viewMode === "table" ? (
+      {viewMode === "table" && (
         <ArticleTable 
           articles={articles}
           onTagClick={onTagClick}
           selectedTags={selectedTags}
         />
-      ) : (
+      )}
+      
+      {viewMode === "grid" && (
         <UnifiedArticleList
           articles={articles}
           variant="index-medicus"
@@ -35,6 +38,14 @@ export const ArticleContent: React.FC<ArticleContentProps> = ({
           onTagClick={onTagClick}
           selectedTags={selectedTags}
           isLoading={isLoading}
+        />
+      )}
+
+      {viewMode === "list" && (
+        <ArticleCompactList
+          articles={articles}
+          onTagClick={onTagClick}
+          selectedTags={selectedTags}
         />
       )}
     </div>

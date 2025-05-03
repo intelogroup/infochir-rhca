@@ -17,7 +17,8 @@ interface ArticleGridProps {
 
 const ArticleGrid: FC<ArticleGridProps> = ({ viewMode: initialViewMode = "table" }) => {
   const isMobile = useIsMobile();
-  const [viewMode, setViewMode] = useState(isMobile ? "grid" : initialViewMode);
+  // On mobile, we'll use a compact list view by default
+  const [viewMode, setViewMode] = useState(isMobile ? "list" : initialViewMode);
   const [currentPage, setCurrentPage] = useState(0);
   const { data, isLoading, error, refetch } = useArticlesQuery(currentPage);
   
@@ -89,13 +90,20 @@ const ArticleGrid: FC<ArticleGridProps> = ({ viewMode: initialViewMode = "table"
   };
   
   const toggleViewMode = useCallback(() => {
-    setViewMode(prev => prev === "grid" ? "table" : "grid");
-  }, []);
+    setViewMode(prev => {
+      if (isMobile) {
+        // On mobile, toggle between list and grid only
+        return prev === "list" ? "grid" : "list";
+      }
+      // On desktop, toggle between grid and table
+      return prev === "grid" ? "table" : "grid";
+    });
+  }, [isMobile]);
 
-  // Use grid view on mobile by default
+  // Update viewMode when device type changes
   useEffect(() => {
     if (isMobile) {
-      setViewMode("grid");
+      setViewMode("list"); // Default to list view on mobile
     }
   }, [isMobile]);
 
@@ -137,7 +145,11 @@ const ArticleGrid: FC<ArticleGridProps> = ({ viewMode: initialViewMode = "table"
       />
       
       <div className="flex justify-end">
-        <ViewToggle viewMode={viewMode} toggleViewMode={toggleViewMode} />
+        <ViewToggle 
+          viewMode={viewMode} 
+          toggleViewMode={toggleViewMode} 
+          isMobile={isMobile} 
+        />
       </div>
       
       {viewMode === "grid" ? (
@@ -146,9 +158,17 @@ const ArticleGrid: FC<ArticleGridProps> = ({ viewMode: initialViewMode = "table"
           onTagClick={handleTagClick}
           selectedTags={selectedTags}
         />
+      ) : viewMode === "list" ? (
+        <ArticleContent
+          viewMode="list"
+          articles={filteredArticles}
+          isLoading={isLoading}
+          onTagClick={handleTagClick}
+          selectedTags={selectedTags}
+        />
       ) : (
         <ArticleContent
-          viewMode={viewMode}
+          viewMode="table"
           articles={filteredArticles}
           isLoading={isLoading}
           onTagClick={handleTagClick}

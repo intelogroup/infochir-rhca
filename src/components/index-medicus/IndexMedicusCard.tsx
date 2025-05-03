@@ -12,12 +12,14 @@ interface IndexMedicusCardProps {
   article: Article;
   onTagClick?: (tag: string) => void;
   isSelected?: boolean;
+  hideImage?: boolean;
 }
 
 export const IndexMedicusCard: React.FC<IndexMedicusCardProps> = ({
   article,
   onTagClick,
   isSelected = false,
+  hideImage = false,
 }) => {
   const isMobile = useIsMobile();
   const formattedDate = article.date
@@ -45,7 +47,7 @@ export const IndexMedicusCard: React.FC<IndexMedicusCardProps> = ({
       <Card
         className="h-full flex flex-col border-gray-200 hover:border-primary/30 cursor-pointer transition-all duration-200 overflow-hidden group"
       >
-        {article.imageUrl && (
+        {article.imageUrl && !hideImage && (
           <div className="h-40 sm:h-48 overflow-hidden relative">
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10" />
             <img

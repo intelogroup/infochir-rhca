@@ -59,6 +59,7 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
                   article={article}
                   onTagClick={onTagClick}
                   isSelected={selectedTags?.some(tag => article.tags?.includes(tag))}
+                  hideImage={isMobile}
                 />
               ))}
             </div>
