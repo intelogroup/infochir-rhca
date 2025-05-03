@@ -28,7 +28,6 @@ export const PublicationTypeField = ({ form }: { form: any }) => {
                   value="RHCA"
                   id="rhca"
                   className="peer sr-only"
-                  name="publicationType"
                 />
                 <Label
                   htmlFor="rhca"
@@ -58,7 +57,6 @@ export const PublicationTypeField = ({ form }: { form: any }) => {
                   value="IGM"
                   id="igm"
                   className="peer sr-only"
-                  name="publicationType"
                 />
                 <Label
                   htmlFor="igm"

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { Button } from "@/components/ui/button";
@@ -46,7 +45,13 @@ const formSchema = z.object({
   }),
   abstract: z.string()
     .min(50, "Le résumé doit contenir au moins 50 mots")
-    .max(250, "Le résumé ne doit pas dépasser 250 mots"),
+    .refine(
+      (val) => {
+        const wordCount = val.trim().split(/\s+/).filter(Boolean).length;
+        return wordCount <= 3000;
+      },
+      "Le résumé ne doit pas dépasser 3000 mots"
+    ),
   ethicsApproval: z.boolean(),
   noConflict: z.boolean(),
   originalWork: z.boolean(),
@@ -116,8 +121,10 @@ const Submission = () => {
       setIsSubmitting(true);
       toast.loading("Envoi de votre soumission en cours...");
 
+      // Get user session if available, but don't require it
       const { data: userSession } = await supabase.auth.getSession();
-      
+      const userId = userSession?.session?.user?.id;
+
       const { data, error } = await supabase
         .from('article_submissions')
         .insert({
@@ -136,13 +143,16 @@ const Submission = () => {
           original_work: values.originalWork,
           article_files_urls: articleFiles,
           image_annexes_urls: imageAnnexes,
-          user_id: userSession?.session?.user?.id,
+          user_id: userId, // This is now optional
           status: 'pending'
         })
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Submission error:', error);
+        throw error;
+      }
 
       toast.dismiss();
       toast.success("Votre soumission a été envoyée avec succès!");

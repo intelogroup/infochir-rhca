@@ -5,6 +5,11 @@ import { motion } from "framer-motion";
 import { FileText } from "lucide-react";
 
 export const AbstractField = ({ form }: { form: any }) => {
+  // Helper function to count words in text
+  const countWords = (text: string) => {
+    return text.trim().split(/\s+/).filter(Boolean).length;
+  };
+  
   return (
     <FormField
       control={form.control}
@@ -17,14 +22,18 @@ export const AbstractField = ({ form }: { form: any }) => {
           </FormLabel>
           <FormControl>
             <Textarea 
-              id="abstract" // Added id attribute
-              placeholder="Entrez le résumé de votre article (max 250 mots)" 
-              className="min-h-[150px] bg-white/50 backdrop-blur-sm"
+              id="abstract" 
+              name="abstract"
+              placeholder="Entrez le résumé de votre article (max 3000 mots)" 
+              className="min-h-[250px] bg-white/50 backdrop-blur-sm"
               {...field}
             />
           </FormControl>
-          <FormDescription>
-            Le résumé doit inclure le problème, la méthode, les résultats et la conclusion
+          <FormDescription className="flex justify-between">
+            <span>Le résumé doit inclure le problème, la méthode, les résultats et la conclusion</span>
+            <span className={countWords(field.value || '') > 3000 ? "text-destructive font-medium" : ""}>
+              {countWords(field.value || '')} / 3000 mots
+            </span>
           </FormDescription>
           <FormMessage />
         </FormItem>
