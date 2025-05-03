@@ -12,13 +12,13 @@ import { ViewToggle } from "./ViewToggle";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ArticleGridProps {
-  viewMode?: "grid" | "table";
+  viewMode?: "grid" | "table" | "list";
 }
 
 const ArticleGrid: FC<ArticleGridProps> = ({ viewMode: initialViewMode = "table" }) => {
   const isMobile = useIsMobile();
   // On mobile, we'll use a compact list view by default
-  const [viewMode, setViewMode] = useState(isMobile ? "list" : initialViewMode);
+  const [viewMode, setViewMode] = useState<"grid" | "table" | "list">(isMobile ? "list" : initialViewMode);
   const [currentPage, setCurrentPage] = useState(0);
   const { data, isLoading, error, refetch } = useArticlesQuery(currentPage);
   
@@ -95,17 +95,19 @@ const ArticleGrid: FC<ArticleGridProps> = ({ viewMode: initialViewMode = "table"
         // On mobile, toggle between list and grid only
         return prev === "list" ? "grid" : "list";
       }
-      // On desktop, toggle between grid and table
-      return prev === "grid" ? "table" : "grid";
+      // On desktop, cycle through grid, table, and list views
+      if (prev === "grid") return "table";
+      if (prev === "table") return "list";
+      return "grid";
     });
   }, [isMobile]);
 
   // Update viewMode when device type changes
   useEffect(() => {
-    if (isMobile) {
+    if (isMobile && viewMode === "table") {
       setViewMode("list"); // Default to list view on mobile
     }
-  }, [isMobile]);
+  }, [isMobile, viewMode]);
 
   if (error) {
     return <ErrorDisplay error={error as Error} onRetry={handleRetry} />;

@@ -85,11 +85,27 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
       {igmIssues.length > 0 && (
         <div className="mb-6">
           <h2 className="text-xl font-semibold mb-4">IGM Issues</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {igmIssues.map((issue) => (
-              <IssueCard key={issue.id} issue={issue} />
-            ))}
-          </div>
+          {viewMode === "grid" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+              {igmIssues.map((issue) => (
+                <IssueCard key={issue.id} issue={issue} />
+              ))}
+            </div>
+          ) : (
+            <ArticleTable 
+              articles={igmIssues.map(issue => ({
+                id: issue.id,
+                title: issue.title,
+                authors: [],
+                date: issue.date,
+                source: 'IGM',
+                tags: issue.categories || [],
+                category: `Volume ${issue.volume}, Issue ${issue.issue}`
+              }))}
+              onTagClick={onTagClick}
+              selectedTags={selectedTags}
+            />
+          )}
         </div>
       )}
 
