@@ -4,7 +4,7 @@ import { ArticleContent } from "./ArticleContent";
 import { useArticlesState } from "./hooks/useArticlesState";
 import { useArticlesQuery } from "./hooks/useArticlesQuery";
 import { VirtualizedArticleList } from "./VirtualizedArticleList";
-import { FC, useState, useCallback } from "react";
+import React, { FC, useState, useCallback, useEffect } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ErrorDisplay } from "./components/ErrorDisplay";
 import { Pagination } from "./components/Pagination";
@@ -93,7 +93,7 @@ const ArticleGrid: FC<ArticleGridProps> = ({ viewMode: initialViewMode = "table"
   }, []);
 
   // Use grid view on mobile by default
-  React.useEffect(() => {
+  useEffect(() => {
     if (isMobile) {
       setViewMode("grid");
     }
