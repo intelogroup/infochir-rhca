@@ -223,4 +223,3 @@ export const getAtlasImageUrl = (filename: string | null | undefined): string =>
   // Last resort, return the filename as is (might be a full URL)
   return filename;
 };
-
