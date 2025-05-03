@@ -15,6 +15,7 @@ interface FileUploadAreaProps {
   maxFiles: number;
   currentFileCount: number;
   type?: 'document' | 'image';
+  currentUploadName?: string;
 }
 
 export const FileUploadArea = ({
@@ -24,7 +25,8 @@ export const FileUploadArea = ({
   helperText,
   maxFiles,
   currentFileCount,
-  type = 'document'
+  type = 'document',
+  currentUploadName
 }: FileUploadAreaProps) => {
   const isMobile = useIsMobile();
   const [isDragActive, setIsDragActive] = useState(false);
@@ -100,13 +102,13 @@ export const FileUploadArea = ({
       className={`
         border-2 border-dashed rounded-lg p-6 text-center cursor-pointer
         transition-all duration-200 
-        ${isDragActive ? 'border-secondary bg-secondary/5' : 'border-gray-300 hover:bg-gray-50'} 
+        ${isDragActive ? 'border-secondary bg-secondary/10 shadow-lg' : 'border-gray-300 hover:bg-gray-50'} 
         ${isUploading ? 'bg-gray-50 cursor-not-allowed' : ''}
       `}
     >
       <input {...getInputProps()} capture={isMobile && type === 'image' ? "environment" : undefined} />
       {isUploading ? (
-        <UploadingState />
+        <UploadingState currentFile={currentUploadName} />
       ) : (
         <div className="space-y-2">
           <UploadIcon type={type} />

@@ -1,18 +1,22 @@
 
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Loader2 } from "lucide-react";
 
 interface UploadingStateProps {
-  message?: string;
+  currentFile?: string;
 }
 
-export const UploadingState = ({ message = "Upload en cours..." }: UploadingStateProps) => {
+export const UploadingState = ({ currentFile }: UploadingStateProps) => {
   return (
-    <div className="flex flex-col items-center justify-center py-8">
-      <LoadingSpinner 
-        size="md" 
-        variant="default" 
-        text={message}
-      />
+    <div className="flex flex-col items-center justify-center py-4 space-y-3">
+      <Loader2 className="h-8 w-8 text-primary animate-spin" />
+      <div>
+        <p className="text-sm font-medium">Upload en cours...</p>
+        {currentFile && (
+          <p className="text-xs text-muted-foreground mt-1 max-w-xs truncate">
+            {currentFile}
+          </p>
+        )}
+      </div>
     </div>
   );
 };

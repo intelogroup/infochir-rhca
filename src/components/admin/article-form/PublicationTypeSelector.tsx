@@ -3,7 +3,7 @@ import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/comp
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UseFormReturn } from "react-hook-form";
 import { ArticleFormData } from "@/types/article";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { useEffect } from "react";
 
 export interface PublicationTypeSelectorProps {
@@ -29,11 +29,17 @@ export const PublicationTypeSelector = ({ form }: PublicationTypeSelectorProps) 
       name="publicationType"
       render={({ field }) => (
         <FormItem>
-          <FormLabel className="flex items-center gap-1">
+          <FormLabel className="flex items-center gap-1.5">
             Type de publication
             {form.formState.errors.publicationType && (
               <AlertCircle className="h-4 w-4 text-destructive" />
             )}
+            {field.value && !form.formState.errors.publicationType && (
+              <CheckCircle2 className="h-4 w-4 text-green-500" />
+            )}
+            <span className="text-sm font-normal text-muted-foreground ml-1">
+              (Requis)
+            </span>
           </FormLabel>
           <FormControl>
             <Select 
@@ -54,7 +60,9 @@ export const PublicationTypeSelector = ({ form }: PublicationTypeSelectorProps) 
               <SelectTrigger 
                 className={form.formState.errors.publicationType 
                   ? "border-red-300 focus:ring-red-500" 
-                  : ""
+                  : field.value 
+                    ? "border-green-300 focus:ring-green-500"
+                    : ""
                 }
               >
                 <SelectValue placeholder="Sélectionnez un type" />

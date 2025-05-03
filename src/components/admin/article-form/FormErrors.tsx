@@ -17,6 +17,7 @@ export const FormErrors = ({ errors }: FormErrorsProps) => {
         initial={{ opacity: 0, height: 0 }}
         animate={{ opacity: 1, height: "auto" }}
         exit={{ opacity: 0, height: 0 }}
+        transition={{ duration: 0.3 }}
         className="bg-destructive/15 p-4 rounded-lg mb-6 border border-destructive/30"
       >
         <div className="flex items-center gap-2 text-destructive mb-2">
@@ -27,7 +28,7 @@ export const FormErrors = ({ errors }: FormErrorsProps) => {
               : `Veuillez corriger les ${errorCount} erreurs suivantes:`}
           </h3>
         </div>
-        <ul className="list-disc list-inside text-sm text-destructive space-y-1">
+        <ul className="list-disc list-inside text-sm text-destructive space-y-1.5">
           {Object.values(errors).map((error, index) => (
             <li key={index} className="animate-pulse-once">
               {error}
