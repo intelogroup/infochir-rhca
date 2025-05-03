@@ -6,25 +6,25 @@ import { TableActions } from "./TableActions";
 import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
 import type { Article } from "../types";
 import { User, BookOpen, FileText } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ArticleTableRowProps {
   article: Article;
 }
 
 export const ArticleTableRow: React.FC<ArticleTableRowProps> = ({ article }) => {
-  console.log('Rendering ArticleTableRow with article:', article);
-
   // Add safeguards for potentially missing data
   const safeAuthors = Array.isArray(article.authors) ? article.authors : [];
   const safeDate = article.date ? new Date(article.date) : new Date();
   const safeTags = Array.isArray(article.tags) ? article.tags : [];
+  const isMobile = useIsMobile();
 
   return (
     <TableRowBase className="hover:bg-muted/50">
       <TableCell className="font-medium">
         <div className="flex items-start space-x-2">
           {article.imageUrl && (
-            <div className="flex-shrink-0 w-12 h-12 rounded overflow-hidden">
+            <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded overflow-hidden">
               <ImageOptimizer
                 src={article.imageUrl}
                 alt={article.title}
@@ -34,29 +34,31 @@ export const ArticleTableRow: React.FC<ArticleTableRowProps> = ({ article }) => 
               />
             </div>
           )}
-          <div className="flex-1">
-            <div className="font-semibold text-lg text-primary hover:text-primary/80 cursor-pointer">
+          <div className="flex-1 min-w-0">
+            <div className="font-semibold text-base sm:text-lg text-primary hover:text-primary/80 cursor-pointer truncate max-w-[200px] sm:max-w-full">
               {article.title || 'Untitled'}
             </div>
-            <div className="flex flex-wrap items-center gap-2 mt-2 text-sm">
-              <div className="flex items-center gap-1.5 italic text-[#41b06e]">
-                <User className="h-3.5 w-3.5" />
-                {safeAuthors.length > 0 ? safeAuthors.join(", ") : 'No authors listed'}
+            <div className="flex flex-wrap items-center gap-2 mt-1 sm:mt-2 text-xs sm:text-sm">
+              <div className="flex items-center gap-1 italic text-[#41b06e] truncate max-w-[150px] sm:max-w-full">
+                <User className="h-3 w-3 sm:h-3.5 sm:w-3.5 flex-shrink-0" />
+                <span className="truncate">
+                  {safeAuthors.length > 0 ? safeAuthors.join(", ") : 'No authors listed'}
+                </span>
               </div>
-              {article.volume && article.issue && (
+              {article.volume && article.issue && !isMobile && (
                 <>
-                  <span className="text-gray-300">•</span>
-                  <div className="flex items-center gap-1.5 text-gray-500">
-                    <BookOpen className="h-3.5 w-3.5" />
+                  <span className="text-gray-300 hidden sm:inline">•</span>
+                  <div className="hidden sm:flex items-center gap-1.5 text-gray-500">
+                    <BookOpen className="h-3.5 w-3.5 flex-shrink-0" />
                     Vol. {article.volume}, No. {article.issue}
                   </div>
                 </>
               )}
-              {article.pageNumber && (
+              {article.pageNumber && !isMobile && (
                 <>
-                  <span className="text-gray-300">•</span>
-                  <div className="flex items-center gap-1.5 text-gray-500">
-                    <FileText className="h-3.5 w-3.5" />
+                  <span className="text-gray-300 hidden sm:inline">•</span>
+                  <div className="hidden sm:flex items-center gap-1.5 text-gray-500">
+                    <FileText className="h-3.5 w-3.5 flex-shrink-0" />
                     Page {article.pageNumber}
                   </div>
                 </>
@@ -68,23 +70,28 @@ export const ArticleTableRow: React.FC<ArticleTableRowProps> = ({ article }) => 
       <TableCell>
         {safeDate.getFullYear()}
       </TableCell>
-      <TableCell>
+      <TableCell className="hidden sm:table-cell">
         <Badge variant="outline" className="font-normal">
           {article.source}
         </Badge>
       </TableCell>
-      <TableCell>
+      <TableCell className="hidden md:table-cell">
         <Badge variant="secondary" className="font-normal">
           {article.category || 'Uncategorized'}
         </Badge>
       </TableCell>
-      <TableCell>
+      <TableCell className="hidden md:table-cell">
         <div className="flex flex-wrap gap-1 max-w-[200px]">
-          {safeTags.map((tag) => (
+          {safeTags.slice(0, 2).map((tag) => (
             <Badge key={tag} variant="outline" className="text-xs bg-muted">
               {tag}
             </Badge>
           ))}
+          {safeTags.length > 2 && (
+            <Badge variant="outline" className="text-xs bg-muted">
+              +{safeTags.length - 2}
+            </Badge>
+          )}
         </div>
       </TableCell>
       <TableCell className="text-right">

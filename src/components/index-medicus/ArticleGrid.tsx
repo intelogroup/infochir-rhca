@@ -8,18 +8,20 @@ import { FC, useState, useCallback } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ErrorDisplay } from "./components/ErrorDisplay";
 import { Pagination } from "./components/Pagination";
+import { ViewToggle } from "./ViewToggle";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ArticleGridProps {
   viewMode?: "grid" | "table";
 }
 
-const ArticleGrid: FC<ArticleGridProps> = ({ viewMode = "table" }) => {
-  console.log('ArticleGrid rendering with viewMode:', viewMode);
-  
+const ArticleGrid: FC<ArticleGridProps> = ({ viewMode: initialViewMode = "table" }) => {
+  const isMobile = useIsMobile();
+  const [viewMode, setViewMode] = useState(isMobile ? "grid" : initialViewMode);
   const [currentPage, setCurrentPage] = useState(0);
   const { data, isLoading, error, refetch } = useArticlesQuery(currentPage);
   
-  console.log('ArticleGrid query state:', { isLoading, error, hasData: !!data });
+  console.log('ArticleGrid rendering with viewMode:', viewMode, 'isMobile:', isMobile);
   
   const articles = data?.articles || [];
   const totalPages = data?.totalPages || 0;
@@ -85,6 +87,17 @@ const ArticleGrid: FC<ArticleGridProps> = ({ viewMode = "table" }) => {
   const handleRetry = () => {
     refetch();
   };
+  
+  const toggleViewMode = useCallback(() => {
+    setViewMode(prev => prev === "grid" ? "table" : "grid");
+  }, []);
+
+  // Use grid view on mobile by default
+  React.useEffect(() => {
+    if (isMobile) {
+      setViewMode("grid");
+    }
+  }, [isMobile]);
 
   if (error) {
     return <ErrorDisplay error={error as Error} onRetry={handleRetry} />;
@@ -92,14 +105,14 @@ const ArticleGrid: FC<ArticleGridProps> = ({ viewMode = "table" }) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-[50vh] flex flex-col items-center justify-center py-10">
+      <div className="min-h-[50vh] flex flex-col items-center justify-center py-8">
         <LoadingSpinner size="lg" variant="default" text="Chargement des articles..." />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       <SearchBar
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -122,6 +135,10 @@ const ArticleGrid: FC<ArticleGridProps> = ({ viewMode = "table" }) => {
         availableAuthors={availableAuthors}
         articleStats={articleStats}
       />
+      
+      <div className="flex justify-end">
+        <ViewToggle viewMode={viewMode} toggleViewMode={toggleViewMode} />
+      </div>
       
       {viewMode === "grid" ? (
         <VirtualizedArticleList

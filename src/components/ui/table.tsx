@@ -105,6 +105,14 @@ const TableCaption = React.forwardRef<
 ))
 TableCaption.displayName = "TableCaption"
 
+export const TableContainer = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <div className="w-full overflow-auto">
+      {children}
+    </div>
+  );
+};
+
 export {
   Table,
   TableHeader,

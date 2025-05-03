@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/accordion";
 import { SearchInput } from "./search/SearchInput";
 import { FilterAccordion } from "./search/FilterAccordion";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface SearchBarProps {
   searchTerm: string;
@@ -61,6 +62,7 @@ export const SearchBar = ({
   availableAuthors,
   articleStats
 }: SearchBarProps) => {
+  const isMobile = useIsMobile();
   const hasActiveFilters = Boolean(
     searchTerm || 
     selectedCategory || 
@@ -82,16 +84,18 @@ export const SearchBar = ({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+    <div className="bg-white rounded-xl shadow-sm p-3 sm:p-4 md:p-6 border border-gray-100">
       <Accordion type="single" collapsible className="w-full">
-        <AccordionItem value="search-filters">
-          <div className="flex items-center justify-between gap-4">
-            <SearchInput value={searchTerm} onChange={setSearchTerm} />
-            <div className="flex-none">
-              <AccordionTrigger>
-                <span className="flex items-center gap-2 px-3 py-2 text-sm font-medium border rounded-md hover:bg-accent hover:text-accent-foreground">
-                  <Filter className="h-4 w-4" />
-                  Filtres avancés
+        <AccordionItem value="search-filters" className="border-none">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+            <div className="flex-grow">
+              <SearchInput value={searchTerm} onChange={setSearchTerm} />
+            </div>
+            <div className="flex-none mt-2 sm:mt-0">
+              <AccordionTrigger className="p-0">
+                <span className="flex items-center gap-2 px-3 py-2 text-xs sm:text-sm font-medium border rounded-md hover:bg-accent hover:text-accent-foreground">
+                  <Filter className="h-3 w-3 sm:h-4 sm:w-4" />
+                  {isMobile ? 'Filtres' : 'Filtres avancés'}
                 </span>
               </AccordionTrigger>
             </div>
