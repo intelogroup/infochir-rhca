@@ -1,6 +1,13 @@
 
 import { z } from "zod";
 
+export const correspondingAuthorSchema = z.object({
+  name: z.string().min(1, "Le nom est requis"),
+  email: z.string().email("Email invalide"),
+  phone: z.string().min(1, "Le téléphone est requis"),
+  address: z.string().min(1, "L'adresse est requise"),
+});
+
 export const submissionFormSchema = z.object({
   publicationType: z.enum(["RHCA", "IGM"], {
     required_error: "Veuillez sélectionner un type de publication",
@@ -18,12 +25,7 @@ export const submissionFormSchema = z.object({
       (val) => val.split(",").length >= 3 && val.split(",").length <= 5,
       "Veuillez fournir entre 3 et 5 mots clés"
     ),
-  correspondingAuthor: z.object({
-    name: z.string().min(1, "Le nom est requis"),
-    email: z.string().email("Email invalide"),
-    phone: z.string().min(1, "Le téléphone est requis"),
-    address: z.string().min(1, "L'adresse est requise"),
-  }),
+  correspondingAuthor: correspondingAuthorSchema,
   abstract: z.string()
     .min(50, "Le résumé doit contenir au moins 50 mots")
     .refine(
@@ -39,3 +41,4 @@ export const submissionFormSchema = z.object({
 });
 
 export type SubmissionFormValues = z.infer<typeof submissionFormSchema>;
+export type CorrespondingAuthorValues = z.infer<typeof correspondingAuthorSchema>;

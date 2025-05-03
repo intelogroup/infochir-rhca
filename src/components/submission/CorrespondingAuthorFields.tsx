@@ -1,8 +1,7 @@
 
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import { User, Mail, Phone, MapPin } from "lucide-react";
+import { AuthorField } from "./author/AuthorField";
 
 export const CorrespondingAuthorFields = ({ form }: { form: any }) => {
   return (
@@ -13,72 +12,37 @@ export const CorrespondingAuthorFields = ({ form }: { form: any }) => {
     >
       <h3 className="text-lg font-semibold">Auteur correspondant</h3>
       <div className="grid gap-4">
-        <FormField
-          control={form.control}
+        <AuthorField
+          form={form}
           name="correspondingAuthor.name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="flex items-center gap-2" htmlFor="author-name">
-                <User className="h-4 w-4" />
-                Nom complet
-              </FormLabel>
-              <FormControl>
-                <Input id="author-name" {...field} className="bg-white/50 backdrop-blur-sm" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Nom complet"
+          icon={User}
+          placeholder="Nom et prénom"
         />
 
-        <FormField
-          control={form.control}
+        <AuthorField
+          form={form}
           name="correspondingAuthor.email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="flex items-center gap-2" htmlFor="author-email">
-                <Mail className="h-4 w-4" />
-                Email
-              </FormLabel>
-              <FormControl>
-                <Input id="author-email" type="email" {...field} className="bg-white/50 backdrop-blur-sm" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Email"
+          icon={Mail}
+          type="email"
+          placeholder="exemple@domain.com"
         />
 
-        <FormField
-          control={form.control}
+        <AuthorField
+          form={form}
           name="correspondingAuthor.phone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="flex items-center gap-2" htmlFor="author-phone">
-                <Phone className="h-4 w-4" />
-                Téléphone
-              </FormLabel>
-              <FormControl>
-                <Input id="author-phone" {...field} className="bg-white/50 backdrop-blur-sm" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Téléphone"
+          icon={Phone}
+          placeholder="+1234567890"
         />
 
-        <FormField
-          control={form.control}
+        <AuthorField
+          form={form}
           name="correspondingAuthor.address"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="flex items-center gap-2" htmlFor="author-address">
-                <MapPin className="h-4 w-4" />
-                Adresse
-              </FormLabel>
-              <FormControl>
-                <Input id="author-address" {...field} className="bg-white/50 backdrop-blur-sm" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Adresse"
+          icon={MapPin}
+          placeholder="Adresse professionnelle"
         />
       </div>
     </motion.div>
