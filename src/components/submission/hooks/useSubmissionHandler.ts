@@ -107,10 +107,14 @@ export const useSubmissionHandler = () => {
             
             logger.info("Edge function submission successful", funcData);
             
+            // Check notification status from the response
             if (funcData.notification_sent === false) {
-              logger.warn("Email notification was not sent but submission was saved");
+              const errorMessage = funcData.notification_message || "L'email de notification n'a pas pu être envoyé.";
+              logger.warn("Email notification failed:", errorMessage);
+              
               toast.dismiss();
-              toast.success("Votre soumission a été envoyée avec succès, mais l'email de notification n'a pas pu être envoyé.");
+              toast.success("Votre soumission a été enregistrée avec succès!");
+              toast.error("Notification d'email: " + errorMessage, { duration: 5000 });
             } else {
               logger.info("Submission and notification successful");
               toast.dismiss();
@@ -132,6 +136,34 @@ export const useSubmissionHandler = () => {
         toast.dismiss();
         toast.error("Une erreur est survenue lors de l'envoi de votre soumission");
         return { success: false, error: submissionError };
+      }
+      
+      // Test email configuration in development mode
+      if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
+        try {
+          logger.info("Development mode: Testing email configuration");
+          
+          const { data: configData, error: configError } = await supabase.functions.invoke(
+            'check-email-config'
+          );
+          
+          if (configError) {
+            logger.error('Email config check error:', configError);
+          } else if (configData) {
+            logger.info('Email configuration status:', configData);
+            
+            // Log specific issues with the email configuration
+            if (!configData.api_key_status?.valid) {
+              logger.error('API key issue:', configData.api_key_status?.message);
+            }
+            
+            if (!configData.primary_domain_status?.verified) {
+              logger.warn('Domain verification issue:', configData.primary_domain_status?.message);
+            }
+          }
+        } catch (configCheckError) {
+          logger.error('Error checking email configuration:', configCheckError);
+        }
       }
       
       // Determine where to redirect based on publication type

@@ -7,7 +7,8 @@ import {
 } from "../_shared/email-templates.ts";
 import { 
   sendEmail,
-  sendBackupEmail
+  sendBackupEmail,
+  checkResendApiKey
 } from "../_shared/email-sender.ts";
 import { 
   logError,
@@ -26,6 +27,17 @@ serve(async (req) => {
   }
   
   try {
+    // Verify API key is valid before attempting to send
+    const apiKeyCheck = await checkResendApiKey();
+    if (!apiKeyCheck.valid) {
+      logError("[notify-submission] Invalid or missing Resend API key", new Error(apiKeyCheck.message));
+      return createErrorResponse(
+        "Email configuration error: " + apiKeyCheck.message, 
+        500, 
+        corsHeaders
+      );
+    }
+    
     // Get the submission data
     const submissionData = await req.json();
     
@@ -57,6 +69,7 @@ serve(async (req) => {
       );
       
       if (emailResult.success) {
+        console.log("[notify-submission] Email sent successfully");
         return createSuccessResponse({ 
           success: true,
           message: "Email notification sent successfully",
@@ -65,6 +78,7 @@ serve(async (req) => {
       }
       
       // Try backup method if primary method fails
+      console.log("[notify-submission] Primary email method failed, trying backup method");
       const backupResult = await sendBackupEmail(
         NOTIFICATION_EMAIL,
         `Nouvelle soumission - ${submissionData.title}`,
@@ -72,6 +86,7 @@ serve(async (req) => {
       );
       
       if (backupResult.success) {
+        console.log("[notify-submission] Backup email sent successfully");
         return createSuccessResponse({ 
           success: true,
           message: "Email notification sent via backup method",

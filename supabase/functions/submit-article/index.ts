@@ -2,6 +2,8 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.48.1";
 import { corsHeaders, handleCors } from "../_shared/cors.ts";
+import { checkResendApiKey } from "../_shared/email-sender.ts";
+import { logError, createErrorResponse, createSuccessResponse } from "../_shared/error-logger.ts";
 
 // Create a Supabase client with the Admin key to bypass RLS
 const supabaseAdmin = createClient(
@@ -16,6 +18,14 @@ const supabaseAdmin = createClient(
 async function sendNotificationEmail(submissionData) {
   try {
     console.log("[submit-article] Preparing to send notification email");
+    
+    // Check if Resend API key is valid
+    const apiKeyCheck = await checkResendApiKey();
+    if (!apiKeyCheck.valid) {
+      console.error("[submit-article] Resend API key issue:", apiKeyCheck.message);
+      return false;
+    }
+    
     console.log("[submit-article] SUPABASE_URL:", Deno.env.get('SUPABASE_URL'));
     console.log("[submit-article] SUPABASE_ANON_KEY present:", !!Deno.env.get('SUPABASE_ANON_KEY'));
     
@@ -51,15 +61,24 @@ async function sendNotificationEmail(submissionData) {
     
     if (!notifyResponse.ok) {
       console.error("[submit-article] Failed to send notification:", responseData);
-      return false;
+      return {
+        success: false,
+        message: responseData.error || `Error: ${notifyResponse.status} ${notifyResponse.statusText}`
+      };
     }
     
     console.log("[submit-article] Notification sent successfully");
-    return true;
+    return {
+      success: true,
+      message: "Notification sent successfully"
+    };
   } catch (error) {
     console.error("[submit-article] Error sending notification:", error);
     console.error("[submit-article] Error stack:", error.stack);
-    return false;
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : String(error)
+    };
   }
 }
 
@@ -86,12 +105,10 @@ serve(async (req) => {
     for (const field of requiredFields) {
       if (!submissionData[field]) {
         console.error(`[submit-article] Missing required field: ${field}`);
-        return new Response(
-          JSON.stringify({ error: `Missing required field: ${field}` }),
-          { 
-            status: 400, 
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-          }
+        return createErrorResponse(
+          `Missing required field: ${field}`,
+          400, 
+          corsHeaders
         );
       }
     }
@@ -111,45 +128,34 @@ serve(async (req) => {
       console.error("[submit-article] Error inserting submission:", error);
       console.error("[submit-article] Error details:", JSON.stringify(error));
       
-      return new Response(
-        JSON.stringify({ error: error.message }),
-        { 
-          status: 500, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
+      return createErrorResponse(
+        error.message,
+        500, 
+        corsHeaders, 
+        error
       );
     }
     
     console.log("[submit-article] Submission successful:", data?.id);
     
     // Send notification email about the submission
-    const notificationSent = await sendNotificationEmail(submissionData);
-    console.log("[submit-article] Notification email sent status:", notificationSent);
+    const notificationResult = await sendNotificationEmail(submissionData);
+    console.log("[submit-article] Notification email result:", notificationResult);
     
-    return new Response(
-      JSON.stringify({
-        ...data,
-        notification_sent: notificationSent
-      }),
-      { 
-        status: 200, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
-    );
+    return createSuccessResponse({
+      ...data,
+      notification_sent: notificationResult.success,
+      notification_message: notificationResult.message
+    }, 200, corsHeaders);
+    
   } catch (err) {
-    console.error("[submit-article] Unexpected error:", err);
-    console.error("[submit-article] Error stack:", err.stack);
+    logError("[submit-article] Unexpected error", err);
     
-    return new Response(
-      JSON.stringify({ 
-        error: 'Internal server error', 
-        errorDetails: err.message,
-        errorStack: err.stack
-      }),
-      { 
-        status: 500, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
+    return createErrorResponse(
+      'Internal server error', 
+      500, 
+      corsHeaders, 
+      err
     );
   }
 });
