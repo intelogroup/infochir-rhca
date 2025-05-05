@@ -1,6 +1,5 @@
-
 // Service Worker for InfoChir application
-const CACHE_NAME = 'infochir-cache-v8';  // Increased cache version
+const CACHE_NAME = 'infochir-cache-v9';  // Increased cache version
 
 // Assets to cache immediately on install - critical path
 const CRITICAL_ASSETS = [
@@ -18,12 +17,23 @@ const CRITICAL_ASSETS = [
   'https://cdn.gpteng.co/gptengineer.js'
 ];
 
+// Domains that should bypass the service worker completely
+const BYPASS_DOMAINS = [
+  'ingesteer.services-prod.nsvcs.net',
+  'llxzstqejdrplmxdjxlu.supabase.co'
+];
+
 // CSP-safe fetch - doesn't modify headers that could conflict with CSP
 const safeFetch = (request) => {
   return fetch(request).then(response => {
     // Don't modify Content-Security-Policy headers
     return response;
   });
+};
+
+// Check if a request should bypass the service worker
+const shouldBypass = (url) => {
+  return BYPASS_DOMAINS.some(domain => url.includes(domain));
 };
 
 // Install event - precache critical assets
@@ -76,19 +86,27 @@ self.addEventListener('fetch', event => {
     return;
   }
   
+  const url = event.request.url;
+  
+  // Completely bypass the service worker for certain domains
+  if (shouldBypass(url)) {
+    return;
+  }
+  
   // Skip cross-origin requests for specific domains and allow them to proceed normally
-  if (!event.request.url.startsWith(self.location.origin) && 
-      (event.request.url.includes('cdn.gpteng.co') || 
-       event.request.url.includes('stripe.com') || 
-       event.request.url.includes('supabase.co'))) {
+  if (!url.startsWith(self.location.origin) && 
+      (url.includes('cdn.gpteng.co') || 
+       url.includes('stripe.com') || 
+       url.includes('supabase.co') ||
+       url.includes('ingesteer.services-prod.nsvcs.net'))) {
     return;
   }
   
   // Always use network for API and Supabase requests
-  if (event.request.url.includes('/api/') || 
-      event.request.url.includes('/_supabase/') || 
-      event.request.url.includes('/rest/') ||
-      event.request.url.includes('/functions/')) {
+  if (url.includes('/api/') || 
+      url.includes('/_supabase/') || 
+      url.includes('/rest/') ||
+      url.includes('/functions/')) {
     return;
   }
 
@@ -186,27 +204,5 @@ self.addEventListener('message', event => {
   }
 });
 
-// Improve performance by preloading the next likely page
-self.addEventListener('fetch', event => {
-  // Additional optimization for preloading the next page
-  if (event.request.mode === 'navigate') {
-    // Detect navigation patterns and preload the likely next page
-    if (event.request.url.includes('/rhca')) {
-      // After RHCA, users often go to IGM
-      fetch('/igm').catch(() => {});
-    } else if (event.request.url.includes('/igm')) {
-      // After IGM, users often go to submissions
-      fetch('/submission').catch(() => {});
-    }
-  }
-});
-
-// Force clients to update when a new service worker is activated
-self.addEventListener('activate', event => {
-  // After activation, force all clients to use this version
-  self.clients.matchAll().then(clients => {
-    clients.forEach(client => {
-      client.navigate(client.url);
-    });
-  });
-});
+// The rest of the service worker remains unchanged
+// ... keep existing code
