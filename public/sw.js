@@ -1,6 +1,5 @@
-
 // Service Worker for InfoChir application
-const CACHE_NAME = 'infochir-cache-v6';  // Increased cache version
+const CACHE_NAME = 'infochir-cache-v7';  // Increased cache version
 
 // Assets to cache immediately on install
 const CRITICAL_ASSETS = [
@@ -13,7 +12,9 @@ const CRITICAL_ASSETS = [
   // Critical hero images - preload with high priority
   '/lovable-uploads/75589792-dc14-4d53-9aae-5796c76a3b39.png',
   '/lovable-uploads/4e3c1f79-c9cc-4d01-8520-1af84d350a2a.png',
-  '/lovable-uploads/745435b6-9abc-4051-b168-cf77c96ed9a0.png'
+  '/lovable-uploads/745435b6-9abc-4051-b168-cf77c96ed9a0.png',
+  // Make sure the GPT Engineer script is cached
+  'https://cdn.gpteng.co/gptengineer.js'
 ];
 
 // Secondary assets to cache in the background
@@ -26,6 +27,14 @@ const SECONDARY_ASSETS = [
   '/igm',
   '/submission'
 ];
+
+// CSP-safe fetch - doesn't modify headers that could conflict with CSP
+const safeFetch = (request) => {
+  return fetch(request).then(response => {
+    // Don't modify Content-Security-Policy headers
+    return response;
+  });
+};
 
 // Install event - precache critical assets first, then secondary assets
 self.addEventListener('install', event => {
@@ -82,8 +91,16 @@ self.addEventListener('activate', event => {
 
 // Optimized fetch event with improved caching strategies
 self.addEventListener('fetch', event => {
-  // Skip non-GET requests and cross-origin requests
-  if (event.request.method !== 'GET' || !event.request.url.startsWith(self.location.origin)) {
+  // Skip non-GET requests
+  if (event.request.method !== 'GET') {
+    return;
+  }
+  
+  // Skip cross-origin requests for cdn.gpteng.co and allow them to proceed normally
+  if (!event.request.url.startsWith(self.location.origin) && 
+      (event.request.url.includes('cdn.gpteng.co') || 
+       event.request.url.includes('stripe.com') || 
+       event.request.url.includes('supabase.co'))) {
     return;
   }
   
@@ -98,7 +115,7 @@ self.addEventListener('fetch', event => {
   // Handle HTML navigation requests with network-first strategy
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      fetch(event.request)
+      safeFetch(event.request)
         .then(response => {
           // Cache successful responses
           if (response.status === 200) {
@@ -132,7 +149,7 @@ self.addEventListener('fetch', event => {
           // Return cached response immediately if available
           if (cachedResponse) {
             // Update cache in the background
-            fetch(event.request)
+            safeFetch(event.request)
               .then(networkResponse => {
                 if (networkResponse && networkResponse.status === 200) {
                   caches.open(CACHE_NAME)
@@ -145,7 +162,7 @@ self.addEventListener('fetch', event => {
           }
           
           // Not in cache, get from network
-          return fetch(event.request)
+          return safeFetch(event.request)
             .then(networkResponse => {
               if (!networkResponse || networkResponse.status !== 200) {
                 return networkResponse;
@@ -178,7 +195,7 @@ self.addEventListener('fetch', event => {
         .then(cachedResponse => {
           if (cachedResponse) {
             // Also update the cache in the background
-            fetch(event.request)
+            safeFetch(event.request)
               .then(networkResponse => {
                 if (networkResponse.status === 200) {
                   caches.open(CACHE_NAME)
@@ -191,7 +208,7 @@ self.addEventListener('fetch', event => {
           }
           
           // Not in cache, get from network
-          return fetch(event.request)
+          return safeFetch(event.request)
             .then(networkResponse => {
               if (networkResponse.status === 200) {
                 const responseToCache = networkResponse.clone();

@@ -15,6 +15,11 @@ console.log(`Building in ${isPreview ? 'preview' : process.env.NODE_ENV} mode`);
 // Environment detection
 const isProduction = process.env.NODE_ENV === 'production' && !isPreview;
 
+// CSP for development and production
+const devCSP = `default-src 'self'; connect-src 'self' wss://*.lovable.ai https://*.supabase.co https://*.stripe.com vitals.vercel-insights.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.stripe.com https://m.stripe.network https://cdn.gpteng.co https://vitals.vercel-insights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; frame-src 'self' https://*.stripe.com https://*.supabase.co; media-src 'self' data:; object-src 'none'; worker-src 'self' blob:;`;
+
+const prodCSP = `default-src 'self'; connect-src 'self' https://*.supabase.co https://*.stripe.com vitals.vercel-insights.com; script-src 'self' 'unsafe-inline' https://*.stripe.com https://m.stripe.network https://cdn.gpteng.co https://vitals.vercel-insights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; frame-src 'self' https://*.stripe.com https://*.supabase.co; media-src 'self' data:; object-src 'none'; worker-src 'self' blob:;`;
+
 export default defineConfig(({ mode }) => ({
   plugins: [
     react({
@@ -92,7 +97,7 @@ export default defineConfig(({ mode }) => ({
       'Cache-Control': 'no-cache, no-store, must-revalidate',
       'Cross-Origin-Opener-Policy': 'same-origin',
       'Cross-Origin-Embedder-Policy': 'require-corp',
-      'Content-Security-Policy': "default-src 'self'; connect-src 'self' https://llxzstqejdrplmxdjxlu.supabase.co https://*.stripe.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.stripe.com https://m.stripe.network https://localhost:*; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; frame-src 'self' https://*.stripe.com; media-src 'self' data:"
+      'Content-Security-Policy': devCSP
     }
   },
   preview: {
@@ -102,7 +107,7 @@ export default defineConfig(({ mode }) => ({
     headers: {
       'Cache-Control': 'public, max-age=600',
       'Access-Control-Allow-Origin': '*',
-      'Content-Security-Policy': "default-src 'self'; connect-src 'self' https://llxzstqejdrplmxdjxlu.supabase.co https://*.stripe.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.stripe.com https://m.stripe.network https://localhost:*; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; frame-src 'self' https://*.stripe.com; media-src 'self' data:"
+      'Content-Security-Policy': prodCSP
     }
   }
 }));
