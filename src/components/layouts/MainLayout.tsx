@@ -16,62 +16,65 @@ export interface MainLayoutProps {
 export const MainLayout = ({ children }: MainLayoutProps) => {
   const location = useLocation();
   const showFooter = location.pathname === "/" || location.pathname === "/index";
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [prevPathname, setPrevPathname] = useState(location.pathname);
+  const [isLoading, setIsLoading] = useState(false);
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
   // Initialize analytics
   useAnalytics();
 
-  // Add a loading effect when navigating between pages
+  // Handle initial load and navigation
   useEffect(() => {
-    if (prevPathname !== location.pathname) {
-      setIsLoading(true);
-      setPrevPathname(location.pathname);
-      
-      // Simulate page loading for better UX
-      const timer = setTimeout(() => {
-        setIsLoading(false);
-      }, 500);
-      
-      return () => clearTimeout(timer);
-    } else {
-      // Initial load
-      const timer = setTimeout(() => {
-        setIsLoading(false);
-      }, 300);
-      
-      return () => clearTimeout(timer);
+    // Skip loading state for initial render after component is mounted
+    if (!initialLoadComplete) {
+      setInitialLoadComplete(true);
+      return;
     }
-  }, [location.pathname, prevPathname]);
+    
+    // Only show loading state for navigation (not initial page load)
+    setIsLoading(true);
+    
+    // Short timeout to simulate minimum loading time and prevent flickering
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 300);
+    
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f8fafc] to-white">
       <Navbar />
       
-      <AnimatePresence mode="wait">
-        <motion.main 
-          key={location.pathname}
-          className="relative min-h-[calc(100vh-4rem)] w-full overflow-x-hidden"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.3 }}
-        >
+      <main className="relative min-h-[calc(100vh-4rem)] w-full overflow-x-hidden">
+        <AnimatePresence mode="wait">
           {isLoading ? (
-            <div className="flex items-center justify-center min-h-[50vh]">
+            <motion.div
+              key="loading"
+              className="flex items-center justify-center min-h-[50vh]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
               <LoadingSpinner 
                 variant="primary"
                 size="lg"
                 text="Chargement..."
               />
-            </div>
+            </motion.div>
           ) : (
-            <>
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
               {children || <Outlet />}
-            </>
+            </motion.div>
           )}
-        </motion.main>
-      </AnimatePresence>
+        </AnimatePresence>
+      </main>
       
       {showFooter && <Footer />}
       <BackToTop />

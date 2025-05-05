@@ -4,7 +4,7 @@ import { ArticleContent } from "./ArticleContent";
 import { useArticlesState } from "./hooks/useArticlesState";
 import { useArticlesQuery } from "./hooks/useArticlesQuery";
 import { VirtualizedArticleList } from "./VirtualizedArticleList";
-import React, { FC, useState, useCallback, useEffect } from "react";
+import React, { FC, useState, useCallback, useEffect, useRef } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ErrorDisplay } from "./components/ErrorDisplay";
 import { Pagination } from "./components/Pagination";
@@ -20,7 +20,28 @@ const ArticleGrid: FC<ArticleGridProps> = ({ viewMode: initialViewMode = "table"
   // Always default to table view for better article title visibility
   const [viewMode, setViewMode] = useState<"grid" | "table" | "list">("table");
   const [currentPage, setCurrentPage] = useState(0);
+  const mountedRef = useRef(false);
   const { data, isLoading, error, refetch } = useArticlesQuery(currentPage);
+  
+  // Mark component as mounted
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
+  
+  // Add retry mechanism for failed initial load
+  useEffect(() => {
+    if (error && mountedRef.current) {
+      // Retry loading data after a short delay
+      const timer = setTimeout(() => {
+        if (mountedRef.current) {
+          refetch();
+        }
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [error, refetch]);
   
   console.log('ArticleGrid rendering with viewMode:', viewMode, 'isMobile:', isMobile);
   
@@ -106,7 +127,8 @@ const ArticleGrid: FC<ArticleGridProps> = ({ viewMode: initialViewMode = "table"
     return <ErrorDisplay error={error as Error} onRetry={handleRetry} />;
   }
 
-  if (isLoading) {
+  // Using a simplified loading state to prevent flashing
+  if (isLoading && articles.length === 0) {
     return (
       <div className="min-h-[50vh] flex flex-col items-center justify-center py-8">
         <LoadingSpinner size="lg" variant="primary" text="Chargement des articles..." />
