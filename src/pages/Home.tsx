@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { HeroSection } from "@/components/home/HeroSection";
 import { ProductsSection } from "@/components/home/ProductsSection"; 
@@ -20,6 +19,7 @@ const MIN_CHECK_INTERVAL = 12 * 60 * 60 * 1000;
 
 const Home = () => {
   const [isLoaded, setIsLoaded] = React.useState(false);
+  const [contentVisible, setContentVisible] = React.useState(false);
 
   // Signal that the app has loaded completely to clear timeout in main.tsx
   React.useEffect(() => {
@@ -29,6 +29,11 @@ const Home = () => {
         setIsLoaded(true);
         window.dispatchEvent(new Event('app-loaded'));
         logger.info("Home page mounted and app-loaded event dispatched");
+        
+        // Show content with a small delay to ensure smooth transitions
+        setTimeout(() => {
+          setContentVisible(true);
+        }, 100);
       }
       
       // Test Supabase connection to identify any issues early
@@ -138,6 +143,20 @@ const Home = () => {
       logger.error('Error checking email configuration:', error);
     }
   };
+
+  // Fallback content to ensure the page is never blank
+  if (!contentVisible) {
+    return (
+      <div className="min-h-[calc(100vh-64px)] flex items-center justify-center">
+        <div className="text-center p-8">
+          <div className="animate-pulse mb-4">
+            <div className="h-6 w-32 bg-gray-200 rounded mx-auto"></div>
+          </div>
+          <p className="text-gray-500">Chargement de la page d'accueil...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

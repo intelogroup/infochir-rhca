@@ -1,4 +1,3 @@
-
 import { Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -150,13 +149,12 @@ export const NewsletterSubscribeFooter = () => {
       } catch (error) {
         logger.warn("Supabase functions.invoke failed:", error);
         
-        // Log detailed information about the error
+        // Log detailed information about the error without using the 'cause' property
         if (error instanceof Error) {
           logger.error("Error details:", {
             name: error.name,
             message: error.message,
-            stack: error.stack,
-            cause: error.cause
+            stack: error.stack
           });
         } else {
           logger.error("Non-Error object thrown:", error);

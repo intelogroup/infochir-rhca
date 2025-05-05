@@ -1,5 +1,6 @@
 
 import * as React from "react";
+import { useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -19,11 +20,12 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const prevPathRef = React.useRef(location.pathname);
   const navbarRef = React.useRef<HTMLDivElement>(null);
+  const contentRef = React.useRef<HTMLDivElement>(null);
 
   // Initialize analytics
   useAnalytics();
 
-  // Immediately mark initial load as complete to prevent loading spinner on first render
+  // Mark initial load as complete and notify that the app has loaded
   React.useEffect(() => {
     setInitialLoadComplete(true);
     
@@ -37,7 +39,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
       }
     }
     
-    // Preload common routes
+    // Preload common routes for better performance
     const preloadRoutes = ['/', '/about', '/rhca', '/igm', '/submission'];
     preloadRoutes.forEach(route => {
       if (!document.head.querySelector(`link[rel="prefetch"][href="${route}"]`)) {
@@ -54,16 +56,18 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   React.useEffect(() => {
     // Only show loading when changing paths (not on initial load)
     if (initialLoadComplete && location.pathname !== prevPathRef.current) {
+      console.log(`Navigation: ${prevPathRef.current} -> ${location.pathname}`);
       setIsLoading(true);
       
-      // Shorter timeout for faster perceived loading
+      // Increased timeout for smoother transitions
       const timer = setTimeout(() => {
         setIsLoading(false);
         prevPathRef.current = location.pathname;
         
         // Dispatch route change event
         window.dispatchEvent(new Event('route-changed'));
-      }, 150); // Reduced from 300ms to 150ms
+        console.log(`Navigation complete: ${location.pathname}`);
+      }, 300); // Increased from 150ms to 300ms for more reliable loading
       
       return () => clearTimeout(timer);
     }
@@ -85,13 +89,30 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
     }
   }, []);
 
+  // Ensure content is visible even if animations fail
+  React.useEffect(() => {
+    // Safety timeout to ensure content is shown even if animations fail
+    const safetyTimer = setTimeout(() => {
+      if (isLoading) {
+        console.log('Safety timeout triggered - forcing content to display');
+        setIsLoading(false);
+      }
+    }, 2000);
+    
+    return () => clearTimeout(safetyTimer);
+  }, [isLoading]);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f8fafc] to-white">
       <div ref={navbarRef}>
         <Navbar />
       </div>
       
-      <main className="relative min-h-[calc(100vh-4rem)] w-full overflow-x-hidden" style={{ minHeight: `calc(100vh - ${navbarHeight})` }}>
+      <main 
+        className="relative min-h-[calc(100vh-4rem)] w-full overflow-x-hidden" 
+        style={{ minHeight: `calc(100vh - ${navbarHeight})` }}
+        ref={contentRef}
+      >
         <AnimatePresence mode="wait" initial={false}>
           {isLoading ? (
             <motion.div
@@ -100,7 +121,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
+              transition={{ duration: 0.3 }}
             >
               <LoadingSpinner 
                 variant="primary"
@@ -111,12 +132,18 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
           ) : (
             <motion.div
               key={location.pathname}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="w-full"
             >
               {children || <Outlet />}
+              
+              {/* Fallback content in case children or Outlet fail to render */}
+              <div id="content-fallback" style={{ display: 'none' }}>
+                {location.pathname === '/' && <div className="text-center p-8">Page d'accueil</div>}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -127,6 +154,3 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
     </div>
   );
 };
-
-// Add missing import
-import { useState } from "react";

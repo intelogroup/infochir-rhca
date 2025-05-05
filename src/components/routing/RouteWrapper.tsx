@@ -6,6 +6,10 @@ import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 import { useNavigate, useLocation } from "react-router-dom";
 import { AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { createLogger } from "@/lib/error-logger";
+
+// Create a logger for this component
+const logger = createLogger('RouteWrapper');
 
 interface RouteWrapperProps {
   component: React.ComponentType;
@@ -14,11 +18,28 @@ interface RouteWrapperProps {
 export const RouteWrapper = ({ component: Component }: RouteWrapperProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isLoaded, setIsLoaded] = React.useState(false);
   
   // Effect to scroll to top on route change
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [location.pathname]);
+    
+    // Log route change for debugging
+    logger.info(`RouteWrapper: Rendering route ${location.pathname}`);
+    
+    // Mark component as loaded
+    const timer = setTimeout(() => {
+      if (!isLoaded) {
+        setIsLoaded(true);
+        logger.info(`RouteWrapper: Component for ${location.pathname} loaded`);
+      }
+    }, 100);
+    
+    return () => {
+      clearTimeout(timer);
+      logger.info(`RouteWrapper: Unmounting route ${location.pathname}`);
+    };
+  }, [location.pathname, isLoaded]);
 
   return (
     <ErrorBoundary 
