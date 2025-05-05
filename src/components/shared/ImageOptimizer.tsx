@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { ImageFallback } from './ImageFallback';
 import { createLogger } from "@/lib/error-logger";
 import { getOptimizedImageUrl, getAlternativeRHCAUrl, extractBucketName, extractFilename } from '@/utils/imageOptimization';
+import { Skeleton } from "@/components/ui/skeleton";
+import { motion } from "framer-motion";
 
 const logger = createLogger('ImageOptimizer');
 
@@ -188,18 +190,30 @@ export const ImageOptimizer = ({
   // Get optimized image URL
   const optimizedSrc = getOptimizedImageUrl(currentSrc, width, height);
 
-  // Return standard img tag for web environments
+  // Return enhanced image with loading state and animation
   return (
-    <img
-      src={optimizedSrc}
-      alt={alt}
-      width={width}
-      height={height}
-      className={className}
-      loading={loading || (priority ? 'eager' : 'lazy')}
-      onLoad={handleLoad}
-      onError={handleError}
-      style={{ opacity: isLoaded ? 1 : 0, transition: 'opacity 0.3s' }}
-    />
+    <div className="relative w-full h-full">
+      {/* Loading skeleton */}
+      {!isLoaded && (
+        <div className="absolute inset-0 overflow-hidden rounded-[inherit]">
+          <Skeleton className="w-full h-full" />
+        </div>
+      )}
+      
+      {/* Image with fade-in animation */}
+      <motion.img
+        src={optimizedSrc}
+        alt={alt}
+        width={width}
+        height={height}
+        className={`${className} relative z-10`}
+        loading={loading || (priority ? 'eager' : 'lazy')}
+        onLoad={handleLoad}
+        onError={handleError}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isLoaded ? 1 : 0 }}
+        transition={{ duration: 0.3 }}
+      />
+    </div>
   );
 };
