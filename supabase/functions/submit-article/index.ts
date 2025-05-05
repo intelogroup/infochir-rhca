@@ -6,6 +6,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.48.1";
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS'
 };
 
 // Create a Supabase client with the Admin key to bypass RLS
@@ -14,6 +15,38 @@ const supabaseAdmin = createClient(
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '',
   { auth: { persistSession: false } }
 );
+
+/**
+ * Send a notification email about the submission
+ */
+async function sendNotificationEmail(submissionData) {
+  try {
+    // Call the notification edge function
+    const notifyResponse = await fetch(
+      `${Deno.env.get('SUPABASE_URL')}/functions/v1/notify-submission`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${Deno.env.get('SUPABASE_ANON_KEY')}`
+        },
+        body: JSON.stringify(submissionData)
+      }
+    );
+    
+    if (!notifyResponse.ok) {
+      const errorData = await notifyResponse.json();
+      console.error("Failed to send notification:", errorData);
+      return false;
+    }
+    
+    console.log("Notification sent successfully");
+    return true;
+  } catch (error) {
+    console.error("Error sending notification:", error);
+    return false;
+  }
+}
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -67,8 +100,17 @@ serve(async (req) => {
     
     console.log("Submission successful:", data?.id);
     
+    // Send notification email about the submission
+    const notificationSent = await sendNotificationEmail(submissionData);
+    if (!notificationSent) {
+      console.warn("Notification email could not be sent, but submission was saved successfully");
+    }
+    
     return new Response(
-      JSON.stringify(data),
+      JSON.stringify({
+        ...data,
+        notification_sent: notificationSent
+      }),
       { 
         status: 200, 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
