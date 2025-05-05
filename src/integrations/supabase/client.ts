@@ -254,7 +254,7 @@ export const getAtlasImageUrl = (filename: string | null | undefined): string =>
       const cleanFilename = filename
         .replace(/^\//, '') // Remove leading slash
         .split('/').pop() || filename; // Get just filename if path
-        
+      
       const url = getStorageUrl(bucket, cleanFilename);
       
       logger.log(`[getAtlasImageUrl] Trying ${bucket} bucket: ${url}`);

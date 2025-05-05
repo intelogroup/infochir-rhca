@@ -31,6 +31,9 @@ const Home = () => {
         logger.info("Home page mounted and app-loaded event dispatched");
       }
       
+      // Test Supabase connection to identify any issues early
+      testSupabaseConnection();
+      
       // Only test email configurations in development mode and respect rate limits
       if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
         const shouldCheckEmailConfig = checkIfShouldTestEmailConfig();
@@ -45,6 +48,26 @@ const Home = () => {
       logger.info("Home page unmounted");
     };
   }, [isLoaded]);
+
+  // Test Supabase connection to identify potential issues
+  const testSupabaseConnection = async () => {
+    try {
+      logger.info("Testing Supabase connection...");
+      const connected = await supabase.from('articles').select('id').limit(1).maybeSingle();
+      
+      if (connected.error) {
+        logger.error("Supabase connection test failed:", connected.error);
+        // Only show error toast in development mode
+        if (import.meta.env.DEV) {
+          toast.error("Connexion à Supabase échouée. Vérifiez votre connexion réseau.");
+        }
+      } else {
+        logger.info("Supabase connection test succeeded");
+      }
+    } catch (error) {
+      logger.error("Error testing Supabase connection:", error);
+    }
+  };
 
   // Function to determine if we should test email configuration based on last check time
   const checkIfShouldTestEmailConfig = () => {

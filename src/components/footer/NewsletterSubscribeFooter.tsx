@@ -134,13 +134,36 @@ export const NewsletterSubscribeFooter = () => {
         throw new Error("Vous êtes hors ligne");
       }
       
-      // Try the edge function with improved error handling
-      const response = await supabase.functions.invoke("newsletter-subscribe", {
-        body: { name: subscriberName, email: subscriberEmail }
-      }).catch(error => {
-        logger.warn("Edge function call failed:", error);
+      // Enhanced error logging for Supabase function invocation
+      logger.log("Invoking Supabase function: newsletter-subscribe");
+      
+      // Try direct fetch as a fallback if supabase.functions.invoke doesn't work
+      let response;
+      
+      try {
+        // Try the edge function with improved error handling
+        response = await supabase.functions.invoke("newsletter-subscribe", {
+          body: { name: subscriberName, email: subscriberEmail }
+        });
+        
+        logger.log("Supabase function response received:", response);
+      } catch (error) {
+        logger.warn("Supabase functions.invoke failed:", error);
+        
+        // Log detailed information about the error
+        if (error instanceof Error) {
+          logger.error("Error details:", {
+            name: error.name,
+            message: error.message,
+            stack: error.stack,
+            cause: error.cause
+          });
+        } else {
+          logger.error("Non-Error object thrown:", error);
+        }
+        
         throw error;
-      });
+      }
       
       const { data, error } = response;
       
