@@ -92,7 +92,7 @@ async function sendDirectTestEmail(submissionData) {
   
   const emailData = {
     api_key: API_KEY,
-    to: ["jayveedz19@gmail.com"],
+    to: ["jimkalinov@gmail.com"], // Updated to specified email
     sender: "InfoChir Test <test@infochir.org>",
     subject: `TEST - Direct Email: New Submission (${new Date().toISOString()})`,
     text_body: `This is a direct test email from the submit-article function.
@@ -186,6 +186,14 @@ serve(async (req) => {
     
     if (!notificationSent) {
       console.warn("[submit-article] Notification email could not be sent, but submission was saved successfully");
+      
+      // Try direct email as another fallback
+      try {
+        await sendDirectTestEmail(submissionData);
+        console.log("[submit-article] Direct fallback email sent as backup");
+      } catch (directEmailError) {
+        console.error("[submit-article] Both notification methods failed:", directEmailError);
+      }
     }
     
     return new Response(

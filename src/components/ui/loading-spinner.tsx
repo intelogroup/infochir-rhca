@@ -1,178 +1,89 @@
 
-import { BookOpen, Loader2, Sparkles } from "lucide-react";
+import React from "react";
+import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState, useEffect } from "react";
 
-interface LoadingSpinnerProps {
-  size?: "sm" | "md" | "lg";
-  className?: string;
-  text?: string;
+export interface LoadingSpinnerProps {
+  /**
+   * The size of the loading spinner
+   */
+  size?: "sm" | "md" | "lg" | "xl";
+  /**
+   * The variant of the loading spinner
+   */
+  variant?: "default" | "primary" | "secondary" | "medical" | "fun";
+  /**
+   * Whether to display the loading spinner fullscreen
+   */
   fullScreen?: boolean;
-  variant?: "default" | "medical" | "primary" | "secondary" | "fun";
+  /**
+   * The text to display next to the loading spinner
+   */
+  text?: string;
+  /**
+   * The className to apply to the loading spinner container
+   */
+  className?: string;
 }
 
-export const LoadingSpinner = ({ 
-  size = "md", 
-  className = "", 
-  text = "Chargement...",
+/**
+ * A loading spinner component that can be used to indicate loading state
+ */
+export const LoadingSpinner = ({
+  size = "md",
+  variant = "default",
   fullScreen = false,
-  variant = "default"
+  text,
+  className,
 }: LoadingSpinnerProps) => {
   const sizeClasses = {
-    sm: "w-4 h-4",
-    md: "w-8 h-8",
-    lg: "w-12 h-12"
+    sm: "h-4 w-4",
+    md: "h-6 w-6",
+    lg: "h-8 w-8",
+    xl: "h-12 w-12",
   };
 
-  const [dotCount, setDotCount] = useState(0);
-  
-  // Animated dots for loading text
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setDotCount((prev) => (prev + 1) % 4);
-    }, 500);
-    return () => clearInterval(interval);
-  }, []);
+  const variantClasses = {
+    default: "text-gray-500",
+    primary: "text-ocean",
+    secondary: "text-secondary",
+    medical: "text-primary",
+    fun: "text-pink-500", // Added fun variant with a pink color
+  };
 
-  const loadingDots = ".".repeat(dotCount);
+  const textSizeClasses = {
+    sm: "text-xs",
+    md: "text-sm",
+    lg: "text-base",
+    xl: "text-lg",
+  };
 
-  const renderLoader = () => {
-    if (variant === "fun") {
-      return (
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-full w-full rounded-full border-t-2 border-b-2 border-blue-300/50 animate-[spin_3s_ease-in-out_infinite]"></div>
-          </div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-full w-full rounded-full border-r-2 border-l-2 border-indigo-400/50 animate-[spin_4s_linear_infinite_reverse]"></div>
-          </div>
-          <div className="animate-pulse bg-gradient-to-r from-blue-300/20 via-indigo-300/20 to-purple-300/20 rounded-full p-3 absolute inset-0 flex items-center justify-center">
-            <Sparkles className={cn(
-              "text-indigo-400 animate-[bounce_2s_ease-in-out_infinite]",
-              size === "sm" ? "h-3 w-3" : size === "md" ? "h-5 w-5" : "h-7 w-7"
-            )} />
-          </div>
-          <Loader2 
-            className={cn(
-              "animate-[spin_1.5s_linear_infinite] text-blue-500 relative z-10",
-              sizeClasses[size],
-              className
-            )} 
-          />
-        </div>
-      );
-    }
-    
-    if (variant === "secondary") {
-      return (
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-full w-full rounded-full border-t-2 border-b-2 border-ocean/30 animate-[spin_2s_linear_infinite]"></div>
-          </div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-full w-full rounded-full border-r-2 border-l-2 border-secondary/30 animate-[spin_3s_linear_infinite_reverse]"></div>
-          </div>
-          <div className="animate-pulse bg-gradient-to-r from-ocean/20 via-secondary/20 to-primary/20 rounded-full p-3 absolute inset-0 flex items-center justify-center">
-            <Sparkles className={cn(
-              "text-secondary animate-[bounce_2s_ease-in-out_infinite]",
-              size === "sm" ? "h-3 w-3" : size === "md" ? "h-5 w-5" : "h-7 w-7"
-            )} />
-          </div>
-          <Loader2 
-            className={cn(
-              "animate-[spin_1.5s_linear_infinite] text-ocean relative z-10",
-              sizeClasses[size],
-              className
-            )} 
-          />
-        </div>
-      );
-    }
-    
-    if (variant === "medical") {
-      return (
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-full w-full rounded-full border-t-2 border-b-2 border-primary/30 animate-[spin_2s_ease-out_infinite]"></div>
-          </div>
-          <div className="animate-pulse bg-gradient-to-r from-primary/10 via-ocean/10 to-primary/10 rounded-full p-3 absolute inset-0 flex items-center justify-center">
-            <BookOpen className={cn(
-              "text-primary/60 animate-[pulse_3s_ease-in-out_infinite]",
-              size === "sm" ? "h-3 w-3" : size === "md" ? "h-5 w-5" : "h-7 w-7"
-            )} />
-          </div>
-          <Loader2 
-            className={cn(
-              "animate-[spin_1.5s_ease-in-out_infinite] text-primary relative z-10",
-              sizeClasses[size],
-              className
-            )} 
-          />
-        </div>
-      );
-    }
-    
-    if (variant === "primary") {
-      return (
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-full w-full rounded-full border-t-2 border-b-2 border-blue-300/50 animate-[spin_2s_ease-out_infinite]"></div>
-          </div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="h-full w-full rounded-full border-r-2 border-l-2 border-blue-500/50 animate-[spin_3s_ease-in-out_infinite_reverse]"></div>
-          </div>
-          <Loader2 
-            className={cn(
-              "animate-[spin_1s_linear_infinite] relative z-10 text-blue-600",
-              sizeClasses[size],
-              className
-            )} 
-          />
-        </div>
-      );
-    }
-    
-    // Default variant with enhanced animation
-    return (
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="h-full w-full rounded-full border-t-2 border-b-2 border-primary/30 animate-[spin_1.5s_ease-in-out_infinite]"></div>
-        </div>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="h-full w-full rounded-full border-r-2 border-l-2 border-ocean/30 animate-[spin_2s_ease-in-out_infinite_reverse]"></div>
-        </div>
-        <Loader2 
+  const containerClasses = fullScreen
+    ? "fixed inset-0 flex items-center justify-center bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm z-50"
+    : "flex items-center justify-center";
+
+  return (
+    <div className={cn(containerClasses, className)}>
+      <div className="flex flex-col items-center gap-3">
+        <Loader2
           className={cn(
-            "animate-[spin_1s_linear_infinite] relative z-10 text-primary",
+            "animate-spin",
             sizeClasses[size],
-            className
-          )} 
+            variantClasses[variant]
+          )}
         />
-      </div>
-    );
-  };
-
-  if (fullScreen) {
-    return (
-      <div className="fixed inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center z-50">
-        {renderLoader()}
         {text && (
-          <p className="mt-4 text-primary font-medium text-sm animate-pulse">
-            {text.replace(/\.+$/, '')}{loadingDots}
+          <p
+            className={cn(
+              "font-medium animate-pulse",
+              textSizeClasses[size],
+              variantClasses[variant]
+            )}
+          >
+            {text}
           </p>
         )}
       </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col items-center justify-center py-6 mt-8">
-      {renderLoader()}
-      {text && (
-        <p className="mt-3 text-primary/80 font-medium text-sm animate-pulse">
-          {text.replace(/\.+$/, '')}{loadingDots}
-        </p>
-      )}
     </div>
   );
 };

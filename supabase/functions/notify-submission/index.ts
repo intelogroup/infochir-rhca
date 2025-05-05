@@ -8,8 +8,8 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-// Email notification recipient
-const NOTIFICATION_EMAIL = "jayveedz19@gmail.com";
+// Email notification recipient - updated to the specified email
+const NOTIFICATION_EMAIL = "jimkalinov@gmail.com";
 
 // Your native email service configuration
 const EMAIL_SERVICE_API_URL = "https://api.smtp2go.com/v3/email/send";
@@ -196,13 +196,45 @@ serve(async (req) => {
       console.error("[notify-submission] Exception while sending email:", emailErr);
       console.error("[notify-submission] Exception stack:", emailErr.stack);
       
-      // Try a backup method - direct email to a Gmail SMTP server
+      // Try a backup method - direct email using alternative method
       try {
         console.log("[notify-submission] Attempting backup email method...");
         
-        // Implement a backup email sending method here if needed
+        // Implement a simpler backup method with fewer headers and options
+        const backupEmailData = {
+          api_key: API_KEY,
+          to: [NOTIFICATION_EMAIL],
+          sender: "InfoChir <no-reply@infochir.org>",
+          subject: `BACKUP: Nouvelle soumission - ${submissionData.title}`,
+          text_body: textContent,
+        };
         
-        throw new Error("Backup email method not implemented");
+        const backupResponse = await fetch(EMAIL_SERVICE_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(backupEmailData)
+        });
+        
+        const backupResponseData = await backupResponse.json();
+        console.log("[notify-submission] Backup email response:", backupResponseData);
+        
+        if (!backupResponse.ok) {
+          throw new Error(`Backup email also failed with status ${backupResponse.status}`);
+        }
+        
+        return new Response(
+          JSON.stringify({ 
+            success: true,
+            message: "Email notification sent via backup method",
+            service_response: backupResponseData
+          }),
+          { 
+            status: 200, 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          }
+        );
       } catch (backupErr) {
         console.error("[notify-submission] Backup email method also failed:", backupErr);
         throw emailErr; // Re-throw the original error
