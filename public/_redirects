@@ -1,14 +1,16 @@
 
-# Redirect all routes to index.html for client-side routing with cache control
+# Redirects for Netlify
+
+# Serve all routes from index.html for SPA routing
 /*    /index.html   200
 
-# Add cache control headers for better performance
-/*.js     /index.html   200
-/*.css    /index.html   200
+# HTTP to HTTPS redirect
+http://info-chir.org/*    https://info-chir.org/:splat    301!
+http://www.info-chir.org/*    https://info-chir.org/:splat    301!
 
-# Handle specific legacy redirects
-/revues              /rhca            301
-/atlas               /adc             301
-/gazette             /igm             301
-/comite-editorial    /editorial       301
+# Cache common assets 
+/assets/*    200!    max-age=31536000
+/lovable-uploads/*    200!    max-age=31536000
 
+# Cache service worker
+/sw.js    200!    max-age=0

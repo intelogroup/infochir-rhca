@@ -16,68 +16,59 @@ const isDebugMode = process.env.NODE_ENV === 'development' ||
                    process.env.VITE_APP_PREVIEW === 'true' ||
                    process.env.DEBUG === 'true';
 
-// Create a loading indicator to show while the app initializes
-const LoadingIndicator = () => (
-  <div style={{
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100vh',
-    background: 'linear-gradient(to bottom, #f8fafc, #ffffff)'
-  }}>
-    <div style={{ textAlign: 'center' }}>
-      <div style={{ 
-        border: '4px solid #f3f3f3',
-        borderTop: '4px solid #3498db',
-        borderRadius: '50%',
-        width: '40px',
-        height: '40px',
-        margin: '0 auto 20px auto',
-        animation: 'spin 1s linear infinite'
-      }}></div>
-      <p style={{ fontFamily: 'sans-serif', color: '#666' }}>Chargement de l'application...</p>
-    </div>
-    <style>{`
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-    `}</style>
-  </div>
-);
-
 // Preload critical images
 const preloadCriticalImages = () => {
+  // These images should be preloaded with high priority
   const criticalImages = [
     '/lovable-uploads/75589792-dc14-4d53-9aae-5796c76a3b39.png',
     '/lovable-uploads/4e3c1f79-c9cc-4d01-8520-1af84d350a2a.png',
     '/lovable-uploads/745435b6-9abc-4051-b168-cf77c96ed9a0.png'
   ];
   
+  // Preload secondary images with lower priority
+  const secondaryImages = [
+    // Add secondary images here
+  ];
+  
+  // Create Image objects to force preload
   criticalImages.forEach(src => {
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.href = src;
-    link.as = 'image';
-    document.head.appendChild(link);
-    
-    // Also create an actual image to load it
     const img = new Image();
     img.src = src;
+    img.fetchPriority = 'high';
+    img.onload = () => console.log(`Preloaded critical image: ${src}`);
   });
+  
+  // Load secondary images with lower priority
+  if (window.requestIdleCallback) {
+    window.requestIdleCallback(() => {
+      secondaryImages.forEach(src => {
+        const img = new Image();
+        img.src = src;
+        img.fetchPriority = 'low';
+      });
+    });
+  } else {
+    // Fallback for browsers without requestIdleCallback
+    setTimeout(() => {
+      secondaryImages.forEach(src => {
+        const img = new Image();
+        img.src = src;
+      });
+    }, 200);
+  }
 };
 
 // Pre-initialize critical resources before mounting React
 const preFetchResources = async () => {
   try {
     // Prefetch critical data
-    await queryClient.prefetchQuery({
+    queryClient.prefetchQuery({
       queryKey: ['criticalData'],
       queryFn: () => Promise.resolve(true),
       staleTime: Infinity
     });
     
-    // Preload critical images
+    // Preload critical images immediately
     preloadCriticalImages();
     
     return true;
@@ -87,8 +78,8 @@ const preFetchResources = async () => {
   }
 };
 
-// App with providers
-const AppWithProviders = () => (
+// App with providers (memoized for performance)
+const AppWithProviders = React.memo(() => (
   <React.StrictMode>
     <ErrorBoundary name="AppRoot">
       <QueryClientProvider client={queryClient}>
@@ -101,49 +92,36 @@ const AppWithProviders = () => (
       </QueryClientProvider>
     </ErrorBoundary>
   </React.StrictMode>
-);
+));
 
-// Initialize application synchronously to prevent flashing
+// Initialize application with performance optimizations
 const initApp = async () => {
+  performance.mark('app-init');
+  
   const rootElement = document.getElementById("root");
   if (!rootElement) return;
   
-  // Clear any existing content
-  rootElement.innerHTML = '';
-  
-  // Show loading indicator instantly
-  const loadingContainer = document.createElement('div');
-  loadingContainer.id = 'app-loading';
-  loadingContainer.innerHTML = `
-    <div style="display:flex;justify-content:center;align-items:center;height:100vh;background:linear-gradient(to bottom,#f8fafc,#ffffff)">
-      <div style="text-align:center">
-        <div style="border:4px solid #f3f3f3;border-top:4px solid #3498db;border-radius:50%;width:40px;height:40px;margin:0 auto 20px auto;animation:spin 1s linear infinite"></div>
-        <p style="font-family:sans-serif;color:#666">Chargement de l'application...</p>
-      </div>
-    </div>
-    <style>
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-    </style>
-  `;
-  rootElement.appendChild(loadingContainer);
-  
-  // Pre-fetch critical resources in parallel with React initialization
+  // Start prefetching in parallel with React initialization
   preFetchResources().catch(console.error);
   
-  // Create React root
+  // Create React root and render immediately
   const root = ReactDOM.createRoot(rootElement);
   
   // Render the app without delay
   root.render(<AppWithProviders />);
   
-  // Remove the loading indicator once React has rendered
-  const appLoadingElement = document.getElementById('app-loading');
-  if (appLoadingElement) {
-    appLoadingElement.style.display = 'none';
+  // Hide the initial loader once React has rendered
+  const initialLoader = document.getElementById('initial-loader');
+  if (initialLoader) {
+    initialLoader.style.opacity = '0';
+    initialLoader.style.transition = 'opacity 0.3s ease';
+    setTimeout(() => {
+      initialLoader.style.display = 'none';
+    }, 300);
   }
+  
+  performance.mark('app-render-complete');
+  performance.measure('app-render-time', 'app-init', 'app-render-complete');
 };
 
 // Initialize immediately
@@ -153,30 +131,19 @@ if (document.readyState === 'loading') {
   initApp();
 }
 
-// Register the service worker after app is initialized and stable
-if ('serviceWorker' in navigator && !isDebugMode) {
-  window.addEventListener('load', () => {
-    // Register service worker immediately
-    navigator.serviceWorker.register('/sw.js').then(registration => {
-      if (isDebugMode) {
-        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-      }
-    }).catch(error => {
-      if (isDebugMode) {
-        console.error('ServiceWorker registration failed: ', error);
-      }
-    });
-  });
-}
-
 // Add a utility to force refresh the page if it's stuck
 if (typeof window !== 'undefined') {
   window.addEventListener('load', () => {
-    // If page is taking too long, provide a way to refresh
+    // Remove the initial loader when window is fully loaded
+    const initialLoader = document.getElementById('initial-loader');
+    if (initialLoader) {
+      initialLoader.style.display = 'none';
+    }
+    
+    // If the app is still not fully loaded after 10 seconds, show refresh button
     const refreshTimeout = setTimeout(() => {
-      // If the app is still not fully loaded after 10 seconds, show refresh button
       const appRoot = document.getElementById('root');
-      const appLoaded = appRoot && appRoot.childElementCount > 0 && !document.getElementById('app-loading');
+      const appLoaded = appRoot && appRoot.childElementCount > 0;
       
       if (!appLoaded) {
         const refreshButton = document.createElement('button');
@@ -190,6 +157,12 @@ if (typeof window !== 'undefined') {
     // Clear the timeout if the app loads successfully
     window.addEventListener('app-loaded', () => {
       clearTimeout(refreshTimeout);
+      
+      // Log performance metrics
+      if (performance.getEntriesByType) {
+        const perfEntries = performance.getEntriesByType('measure');
+        console.log('Performance metrics:', perfEntries);
+      }
     });
   });
 }
