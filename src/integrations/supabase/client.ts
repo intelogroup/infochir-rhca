@@ -58,6 +58,8 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, 
     headers: {
       'X-Client-Info': `infochir-app/${getEnvironment()}`,
       'X-Client-Mode': isDebugMode ? 'development' : 'production',
+      'Content-Type': 'application/json',
+      // Set proper origin header for CORS
       ...(getCurrentHostname() ? { 'Origin': getCurrentHostname() } : {})
     }
   },
