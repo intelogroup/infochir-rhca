@@ -17,6 +17,10 @@ let apiKeyValidationCache = {
 };
 const CACHE_TTL = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
 
+// Default sender configuration to use Resend's onboarding domain
+const DEFAULT_SENDER = "InfoChir <onboarding@resend.dev>";
+const DEFAULT_BACKUP_SENDER = "InfoChir Backup <onboarding@resend.dev>";
+
 // Lazy initialization of Resend client to avoid unnecessary instantiation
 const getResendClient = () => {
   if (!resend && RESEND_API_KEY) {
@@ -225,7 +229,7 @@ export async function sendEmail(
     // Send email using Resend with their default sender domain
     // This avoids the need for domain verification
     const emailResponse = await client.emails.send({
-      from: "InfoChir <onboarding@resend.dev>",
+      from: DEFAULT_SENDER,
       to: [recipient],
       subject: subject,
       html: html,
@@ -277,7 +281,7 @@ export async function sendBackupEmail(
     // Implement a simpler backup method with fewer headers and options
     // Using Resend's default sender domain
     const backupEmailResponse = await client.emails.send({
-      from: "InfoChir Backup <onboarding@resend.dev>",
+      from: DEFAULT_BACKUP_SENDER,
       to: [recipient],
       subject: `BACKUP: ${subject}`,
       text: text,

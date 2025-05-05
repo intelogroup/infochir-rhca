@@ -1,45 +1,35 @@
 
-/**
- * CORS utilities for Edge Functions
- */
-
-// Enhanced CORS headers to allow cross-origin requests with better compatibility
+// CORS headers to allow cross-origin requests
 export const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, content-length, content-type, range, accept, origin, referer, user-agent',
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
-  'Access-Control-Max-Age': '86400', // 24 hours
-  'Access-Control-Expose-Headers': 'Content-Length, Content-Range',
-  'Cache-Control': 'no-cache, no-store, must-revalidate', // Prevent caching of edge function responses
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-client-mode',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Max-Age': '86400', // 24 hours caching of preflight requests
 };
 
 /**
- * Handles CORS preflight requests with enhanced logging
+ * Handle CORS preflight requests
  * @param req The incoming request
- * @returns Response object for OPTIONS requests, null for other methods
+ * @returns A Response for OPTIONS requests or null for other methods
  */
 export function handleCors(req: Request): Response | null {
-  // Enhanced CORS preflight handler with detailed logging
+  // Log the origin in preflight requests for debugging
+  const origin = req.headers.get('Origin');
   if (req.method === 'OPTIONS') {
-    console.log("Handling CORS preflight request from origin:", req.headers.get('origin'));
+    console.log('Handling CORS preflight request from origin:', origin);
     
-    // Check for required CORS headers and log if missing
-    if (!req.headers.get('access-control-request-method')) {
-      console.warn("Missing access-control-request-method header in CORS preflight");
-    }
-    
+    // Return response with CORS headers for preflight requests
     return new Response(null, {
-      status: 204, // No content
-      headers: {
-        ...corsHeaders,
-        // Add origin-specific header if available
-        ...(req.headers.get('origin') ? {
-          'Access-Control-Allow-Origin': req.headers.get('origin') || '*'
-        } : {})
-      }
+      status: 204, // No content needed for preflight
+      headers: corsHeaders,
     });
   }
   
-  // For non-OPTIONS methods, just continue with normal handling
+  // Log the origin for non-preflight requests as well
+  if (origin) {
+    console.log('Request from origin:', origin);
+  }
+  
+  // Return null for non-preflight requests
   return null;
 }

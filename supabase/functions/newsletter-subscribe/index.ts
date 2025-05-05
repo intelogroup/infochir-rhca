@@ -36,7 +36,7 @@ const handler = async (req: Request): Promise<Response> => {
   console.log("Request method:", req.method);
   console.log("Request headers:", Object.fromEntries(req.headers.entries()));
 
-  // Handle CORS preflight request
+  // Handle CORS preflight request - improved with proper handling
   const corsResponse = handleCors(req);
   if (corsResponse) {
     console.log("Returning CORS preflight response");

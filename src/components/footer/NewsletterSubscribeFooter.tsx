@@ -1,8 +1,9 @@
+
 import { Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { z } from "zod";
@@ -136,31 +137,32 @@ export const NewsletterSubscribeFooter = () => {
       // Enhanced error logging for Supabase function invocation
       logger.log("Invoking Supabase function: newsletter-subscribe");
       
-      // Try direct fetch as a fallback if supabase.functions.invoke doesn't work
-      let response;
+      // Add timeout to prevent long-hanging requests
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error("Timeout dépassé pour la requête")), 10000)
+      );
       
+      // Attempt to invoke the edge function with timeout
+      const responsePromise = supabase.functions.invoke("newsletter-subscribe", {
+        body: { name: subscriberName, email: subscriberEmail }
+      });
+      
+      // Race between the response and the timeout
+      let response;
       try {
-        // Try the edge function with improved error handling
-        response = await supabase.functions.invoke("newsletter-subscribe", {
-          body: { name: subscriberName, email: subscriberEmail }
-        });
-        
+        response = await Promise.race([responsePromise, timeoutPromise]);
         logger.log("Supabase function response received:", response);
       } catch (error) {
-        logger.warn("Supabase functions.invoke failed:", error);
+        logger.warn("Edge function request failed or timed out:", error);
         
-        // Log detailed information about the error without using the 'cause' property
-        if (error instanceof Error) {
-          logger.error("Error details:", {
-            name: error.name,
-            message: error.message,
-            stack: error.stack
-          });
-        } else {
-          logger.error("Non-Error object thrown:", error);
+        // Store locally and show appropriate message
+        storeLocalSubscription();
+        
+        if (showToasts) {
+          toast.info("Nous n'avons pas pu communiquer avec notre serveur. Votre inscription sera envoyée automatiquement plus tard.");
         }
         
-        throw error;
+        return { success: false, error };
       }
       
       const { data, error } = response;
@@ -191,8 +193,12 @@ export const NewsletterSubscribeFooter = () => {
         // More user-friendly error message
         if (!navigator.onLine) {
           toast.info(`Vous êtes hors ligne. Votre inscription a été enregistrée localement et sera envoyée lorsque vous serez à nouveau en ligne.`);
+        } else if (error.message?.includes("Timeout")) {
+          toast.info("Le serveur met trop de temps à répondre. Votre inscription a été enregistrée localement et sera réessayée automatiquement.");
+        } else if (error.message?.includes("Failed to fetch") || error.message?.includes("NetworkError")) {
+          toast.info("Problème de réseau. Votre inscription a été enregistrée localement et nous réessaierons plus tard.");
         } else {
-          toast.error(`Une erreur est survenue, mais votre demande a été enregistrée localement`);
+          toast.info(`Une erreur est survenue, mais votre demande a été enregistrée localement`);
         }
       }
       
@@ -233,7 +239,7 @@ export const NewsletterSubscribeFooter = () => {
         <h3 className="font-semibold text-gray-900">Notre Newsletter</h3>
       </div>
       
-      <p className="text-gray-600 text-sm">
+      <p className="text-sm text-gray-600">
         Inscrivez-vous pour recevoir nos dernières actualités et publications
       </p>
       
