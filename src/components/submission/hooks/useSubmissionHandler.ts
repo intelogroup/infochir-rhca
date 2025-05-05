@@ -34,15 +34,10 @@ export const useSubmissionHandler = () => {
       setIsSubmitting(true);
       toast.loading("Envoi de votre soumission en cours...");
 
-      // Get user session if available, but don't require it
+      // Get user session if available (but we'll support anonymous submissions)
       const { data: sessionData } = await supabase.auth.getSession();
       const userId = sessionData?.session?.user?.id;
       
-      // If no user is logged in, we proceed with anonymous submission
-      if (!userId) {
-        console.log("Anonymous submission: user is not authenticated");
-      }
-
       // Prepare submission data
       const submissionData = {
         publication_type: values.publicationType,
@@ -60,49 +55,43 @@ export const useSubmissionHandler = () => {
         original_work: values.originalWork,
         article_files_urls: articleFiles,
         image_annexes_urls: imageAnnexes,
-        status: 'pending'
+        status: 'pending',
+        // Include user_id if available
+        user_id: userId || null
       };
-      
-      // Only add user_id if we have one (optional)
-      if (userId) {
-        Object.assign(submissionData, { user_id: userId });
-      }
 
-      // Use insertNoAuth option to bypass RLS policies
-      const { data, error } = await supabase
+      // Try to insert directly first (will work if RLS policies allow anonymous inserts)
+      let { data, error } = await supabase
         .from('article_submissions')
         .insert(submissionData)
-        .select()
-        .single();
+        .select();
 
-      if (error) {
-        console.error('Submission error:', error);
+      // If direct insertion fails due to RLS, call an edge function to bypass RLS
+      if (error && (error.code === '42501' || error.code === '401')) {
+        console.log("Direct submission failed due to RLS, trying edge function approach");
         
-        if (error.code === '42501') { // Row-level security violation
-          toast.dismiss();
-          toast.error("Erreur lors de la soumission. Veuillez réessayer.");
-          
-          // Try alternative approach for anonymous submissions
-          try {
-            // Use the service role key with .auth.admin to bypass RLS
-            // This is handled by server-side logic instead
-            console.log("Attempting alternative submission approach");
-            
-            // Since we can't use service role in browser directly, 
-            // let's notify the user that the form is currently in maintenance mode
-            toast.error("Le formulaire de soumission est en maintenance. Veuillez réessayer plus tard ou contacter l'assistance.");
-            
-            return { success: false, error };
-          } catch (innerError) {
-            console.error("Alternative approach failed:", innerError);
-            toast.error("Une erreur est survenue. Veuillez contacter l'assistance.");
-            return { success: false, error: innerError };
+        // Call our edge function to handle the submission
+        const { data: funcData, error: funcError } = await supabase.functions.invoke(
+          'submit-article',
+          {
+            body: submissionData
           }
-        } else {
+        );
+        
+        if (funcError) {
+          console.error('Edge function error:', funcError);
           toast.dismiss();
           toast.error("Une erreur est survenue lors de l'envoi de votre soumission");
-          return { success: false, error };
+          return { success: false, error: funcError };
         }
+        
+        data = funcData;
+        error = null;
+      } else if (error) {
+        console.error('Submission error:', error);
+        toast.dismiss();
+        toast.error("Une erreur est survenue lors de l'envoi de votre soumission");
+        return { success: false, error };
       }
 
       toast.dismiss();

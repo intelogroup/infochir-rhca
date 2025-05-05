@@ -18,3 +18,7 @@ verify_jwt = false
 
 [functions.upload-founder-images]
 verify_jwt = false
+
+[functions.submit-article]
+verify_jwt = false
+
