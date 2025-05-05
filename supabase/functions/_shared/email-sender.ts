@@ -1,3 +1,4 @@
+
 /**
  * Email sending functionality using Resend API
  */
@@ -221,9 +222,10 @@ export async function sendEmail(
       throw new Error("Resend API key is not configured");
     }
     
-    // Send email using Resend with verified domain
+    // Send email using Resend with their default sender domain
+    // This avoids the need for domain verification
     const emailResponse = await client.emails.send({
-      from: "InfoChir <submissions@info-chir.org>",
+      from: "InfoChir <onboarding@resend.dev>",
       to: [recipient],
       subject: subject,
       html: html,
@@ -273,8 +275,9 @@ export async function sendBackupEmail(
     }
     
     // Implement a simpler backup method with fewer headers and options
+    // Using Resend's default sender domain
     const backupEmailResponse = await client.emails.send({
-      from: "InfoChir <no-reply@info-chir.org>",
+      from: "InfoChir Backup <onboarding@resend.dev>",
       to: [recipient],
       subject: `BACKUP: ${subject}`,
       text: text,
