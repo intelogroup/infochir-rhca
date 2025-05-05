@@ -32,14 +32,21 @@ const NOTIFICATION_EMAIL = "jimkalinov@gmail.com";
 // Main handler function
 const handler = async (req: Request): Promise<Response> => {
   console.log("Newsletter subscription function called");
+  console.log("Request URL:", req.url);
+  console.log("Request method:", req.method);
+  console.log("Request headers:", Object.fromEntries(req.headers.entries()));
 
   // Handle CORS preflight request
   const corsResponse = handleCors(req);
-  if (corsResponse) return corsResponse;
+  if (corsResponse) {
+    console.log("Returning CORS preflight response");
+    return corsResponse;
+  }
 
   try {
     // Validate method
     if (req.method !== "POST") {
+      console.error(`Invalid method: ${req.method}`);
       return new Response(
         JSON.stringify({ 
           success: false, 
@@ -115,10 +122,49 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    // Test service role key length
+    if (!serviceRoleKey || serviceRoleKey.length < 10) {
+      console.error("Invalid service role key");
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: "Configuration error: Invalid service role key" 
+        }),
+        { 
+          status: 500,
+          headers: { 
+            "Content-Type": "application/json",
+            ...corsHeaders
+          }
+        }
+      );
+    }
+
+    // Test Supabase URL format
+    if (!supabaseUrl.startsWith("https://") || !supabaseUrl.includes("supabase.co")) {
+      console.error("Invalid Supabase URL:", supabaseUrl);
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: "Configuration error: Invalid Supabase URL" 
+        }),
+        { 
+          status: 500,
+          headers: { 
+            "Content-Type": "application/json",
+            ...corsHeaders
+          }
+        }
+      );
+    }
+
+    console.log("Creating Supabase client with URL:", supabaseUrl);
+    
     // Create Supabase client with service role key
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
     // Check if email already exists
+    console.log("Checking if email already exists:", email);
     const { data: existingData, error: searchError } = await supabase
       .from("newsletter_subscriptions")
       .select("id, email")
@@ -157,6 +203,7 @@ const handler = async (req: Request): Promise<Response> => {
     }
 
     // Insert new subscription
+    console.log("Inserting new subscription for:", name, email);
     const { data: insertData, error: insertError } = await supabase
       .from("newsletter_subscriptions")
       .insert([
@@ -197,10 +244,22 @@ const handler = async (req: Request): Promise<Response> => {
   } catch (error) {
     // Log and return error response
     console.error("Unhandled error in newsletter subscription:", error);
+    
+    // Add detailed error information for debugging
+    let errorDetails: any = {
+      message: error instanceof Error ? error.message : "Unknown error occurred",
+      type: error instanceof Error ? error.constructor.name : typeof error
+    };
+    
+    if (error instanceof Error && 'stack' in error) {
+      errorDetails.stack = error.stack;
+    }
+    
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error instanceof Error ? error.message : "Unknown error occurred" 
+        error: errorDetails.message,
+        errorDetails: isDebugMode() ? errorDetails : undefined
       }),
       { 
         status: 500,
@@ -212,6 +271,12 @@ const handler = async (req: Request): Promise<Response> => {
     );
   }
 };
+
+// Helper function to check if we're in debug mode
+function isDebugMode() {
+  const debugFlag = Deno.env.get("DEBUG");
+  return debugFlag === "true" || debugFlag === "1";
+}
 
 /**
  * Send notification email to admin about a new subscription

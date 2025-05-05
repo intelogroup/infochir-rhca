@@ -1,4 +1,3 @@
-
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 import { createLogger } from "@/lib/error-logger";
@@ -44,6 +43,15 @@ const getCurrentHostname = () => {
   return null;
 };
 
+// Create a connection timeout promise that will reject after a certain time
+const createTimeoutPromise = (timeoutMs = 10000) => {
+  return new Promise((_, reject) => {
+    setTimeout(() => {
+      reject(new Error(`Supabase connection timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+  });
+};
+
 /**
  * Configures and creates a Supabase client with settings optimized for the current environment
  */
@@ -74,27 +82,49 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, 
 });
 
 /**
- * Utility function for checking connection status
+ * Utility function for checking connection status with timeout
  */
-export const checkSupabaseConnection = async (): Promise<boolean> => {
+export const checkSupabaseConnection = async (timeoutMs = 10000): Promise<boolean> => {
   try {
     logger.log('Checking Supabase connection...');
     
-    const { data, error } = await supabase
-      .from('articles')
-      .select('id')
-      .limit(1)
-      .maybeSingle();
+    // Use Promise.race to implement a timeout
+    const result = await Promise.race([
+      supabase.from('articles').select('id').limit(1).maybeSingle(),
+      createTimeoutPromise(timeoutMs)
+    ]);
+    
+    // If we get here, the query completed before the timeout
+    const { data, error } = result as any;
       
     if (error) {
       logger.error('Supabase connection check failed', error);
+      
+      // Add more detailed error information
+      if (error.code) {
+        logger.error(`Error code: ${error.code}, Message: ${error.message}`);
+      }
+      
+      // Check for network-related errors
+      if (error.message && (
+        error.message.includes('fetch') || 
+        error.message.includes('network') ||
+        error.message.includes('timeout') ||
+        error.message.includes('connection')
+      )) {
+        logger.error('This appears to be a network connectivity issue');
+      }
     } else {
       logger.log('Supabase connection successful');
     }
     
     return !error;
   } catch (error) {
-    logger.error('Supabase connection check failed with exception', error);
+    if (error instanceof Error && error.message.includes('timed out')) {
+      logger.error('Supabase connection timed out - this could indicate network issues');
+    } else {
+      logger.error('Supabase connection check failed with exception', error);
+    }
     return false;
   }
 };

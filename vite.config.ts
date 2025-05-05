@@ -1,3 +1,4 @@
+
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
@@ -14,10 +15,10 @@ console.log(`Building in ${isPreview ? 'preview' : process.env.NODE_ENV} mode`);
 // Environment detection
 const isProduction = process.env.NODE_ENV === 'production' && !isPreview;
 
-// CSP for development and production - updated to include necessary domains
-const devCSP = `default-src 'self'; connect-src 'self' wss://*.lovable.ai https://*.supabase.co https://*.stripe.com vitals.vercel-insights.com https://ingesteer.services-prod.nsvcs.net; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.stripe.com https://m.stripe.network https://cdn.gpteng.co https://vitals.vercel-insights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; frame-src 'self' https://*.stripe.com https://*.supabase.co; media-src 'self' data:; object-src 'none'; worker-src 'self' blob:;`;
+// Updated CSP for development and production with all necessary domains
+const devCSP = `default-src 'self'; connect-src 'self' wss://*.lovable.ai https://*.supabase.co wss://*.supabase.co https://*.stripe.com https://*.netlify.app vitals.vercel-insights.com https://ingesteer.services-prod.nsvcs.net; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.stripe.com https://m.stripe.network https://cdn.gpteng.co https://vitals.vercel-insights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; frame-src 'self' https://*.stripe.com https://*.supabase.co; media-src 'self' data:; object-src 'none'; worker-src 'self' blob:;`;
 
-const prodCSP = `default-src 'self'; connect-src 'self' https://*.supabase.co https://*.stripe.com vitals.vercel-insights.com https://ingesteer.services-prod.nsvcs.net; script-src 'self' 'unsafe-inline' https://*.stripe.com https://m.stripe.network https://cdn.gpteng.co https://vitals.vercel-insights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; frame-src 'self' https://*.stripe.com https://*.supabase.co; media-src 'self' data:; object-src 'none'; worker-src 'self' blob:;`;
+const prodCSP = `default-src 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.stripe.com vitals.vercel-insights.com https://ingesteer.services-prod.nsvcs.net; script-src 'self' 'unsafe-inline' https://*.stripe.com https://m.stripe.network https://cdn.gpteng.co https://vitals.vercel-insights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; frame-src 'self' https://*.stripe.com https://*.supabase.co; media-src 'self' data:; object-src 'none'; worker-src 'self' blob:;`;
 
 export default defineConfig(({ mode }) => ({
   plugins: [
@@ -54,6 +55,8 @@ export default defineConfig(({ mode }) => ({
     'import.meta.env.DEV': mode === 'development' || isPreview,
     'import.meta.env.VITE_APP_PREVIEW': JSON.stringify(isPreview ? 'true' : 'false'),
     'import.meta.env.DEBUG': JSON.stringify(!isProduction || isPreview ? 'true' : undefined),
+    // Remove any references to process.env
+    'process.env': '{}',
   },
   build: {
     target: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari13'],
