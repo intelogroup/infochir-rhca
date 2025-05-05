@@ -1,4 +1,3 @@
-
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { ArticleGrid } from "@/components/index-medicus/ArticleGrid";
 import { Button } from "@/components/ui/button";
@@ -72,11 +71,12 @@ const IndexMedicus = () => {
                 
                 <TabsContent value="articles" className="mt-4 sm:mt-6">
                   <div className="bg-white rounded-lg p-2 sm:p-4 lg:p-6 shadow-md border border-gray-100">
-                    <Suspense fallback={<LoadingSpinner variant="fun" text="Chargement des articles..." />}>
+                    <Suspense fallback={<LoadingSpinner variant="primary" text="Chargement des articles..." />}>
                       <ArticleGrid viewMode="table" />
                     </Suspense>
                   </div>
                 </TabsContent>
+                
                 <TabsContent value="titre" className="mt-4 sm:mt-6">
                   <div className="bg-white rounded-lg p-4 sm:p-6 shadow-md border border-gray-100">
                     <div className="flex flex-col items-center justify-center py-6 sm:py-8">
@@ -85,6 +85,7 @@ const IndexMedicus = () => {
                     </div>
                   </div>
                 </TabsContent>
+                
                 <TabsContent value="authors" className="mt-4 sm:mt-6">
                   <div className="bg-white rounded-lg p-4 sm:p-6 shadow-md border border-gray-100">
                     <div className="flex flex-col items-center justify-center py-6 sm:py-8">
@@ -93,6 +94,7 @@ const IndexMedicus = () => {
                     </div>
                   </div>
                 </TabsContent>
+                
                 <TabsContent value="institutions" className="mt-4 sm:mt-6">
                   <div className="bg-white rounded-lg p-4 sm:p-6 shadow-md border border-gray-100">
                     <div className="flex flex-col items-center justify-center py-6 sm:py-8">

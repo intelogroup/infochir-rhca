@@ -30,7 +30,7 @@ export const IssuesGridContent = ({
   if (isLoading) {
     return (
       <div className="min-h-[50vh] flex flex-col items-center justify-center py-10">
-        <LoadingSpinner variant="fun" size="lg" text="Chargement des numéros..." />
+        <LoadingSpinner variant="primary" size="lg" text="Chargement des numéros..." />
       </div>
     );
   }

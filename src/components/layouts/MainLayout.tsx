@@ -7,6 +7,7 @@ import { Footer } from "@/components/Footer";
 import BackToTop from "@/components/navigation/BackToTop";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { motion, AnimatePresence } from "framer-motion";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export interface MainLayoutProps {
   children?: React.ReactNode;
@@ -58,7 +59,11 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         >
           {isLoading ? (
             <div className="flex items-center justify-center min-h-[50vh]">
-              <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+              <LoadingSpinner 
+                variant="primary"
+                size="lg"
+                text="Chargement..."
+              />
             </div>
           ) : (
             <>

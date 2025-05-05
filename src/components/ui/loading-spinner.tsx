@@ -8,7 +8,7 @@ interface LoadingSpinnerProps {
   className?: string;
   text?: string;
   fullScreen?: boolean;
-  variant?: "default" | "medical" | "primary" | "secondary";
+  variant?: "default" | "medical" | "primary" | "secondary" | "fun";
 }
 
 export const LoadingSpinner = ({ 
@@ -37,6 +37,32 @@ export const LoadingSpinner = ({
   const loadingDots = ".".repeat(dotCount);
 
   const renderLoader = () => {
+    if (variant === "fun") {
+      return (
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="h-full w-full rounded-full border-t-2 border-b-2 border-blue-300/50 animate-[spin_3s_ease-in-out_infinite]"></div>
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="h-full w-full rounded-full border-r-2 border-l-2 border-indigo-400/50 animate-[spin_4s_linear_infinite_reverse]"></div>
+          </div>
+          <div className="animate-pulse bg-gradient-to-r from-blue-300/20 via-indigo-300/20 to-purple-300/20 rounded-full p-3 absolute inset-0 flex items-center justify-center">
+            <Sparkles className={cn(
+              "text-indigo-400 animate-[bounce_2s_ease-in-out_infinite]",
+              size === "sm" ? "h-3 w-3" : size === "md" ? "h-5 w-5" : "h-7 w-7"
+            )} />
+          </div>
+          <Loader2 
+            className={cn(
+              "animate-[spin_1.5s_linear_infinite] text-blue-500 relative z-10",
+              sizeClasses[size],
+              className
+            )} 
+          />
+        </div>
+      );
+    }
+    
     if (variant === "secondary") {
       return (
         <div className="relative">

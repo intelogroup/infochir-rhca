@@ -109,7 +109,7 @@ const ArticleGrid: FC<ArticleGridProps> = ({ viewMode: initialViewMode = "table"
   if (isLoading) {
     return (
       <div className="min-h-[50vh] flex flex-col items-center justify-center py-8">
-        <LoadingSpinner size="lg" variant="default" text="Chargement des articles..." />
+        <LoadingSpinner size="lg" variant="primary" text="Chargement des articles..." />
       </div>
     );
   }

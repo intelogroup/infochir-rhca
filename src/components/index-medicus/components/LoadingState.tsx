@@ -68,7 +68,7 @@ export const LoadingSpinner = () => {
     <div className="flex flex-col items-center justify-center mt-8 py-8">
       <UILoadingSpinner 
         size="lg" 
-        variant="fun" 
+        variant="primary" 
         text={showFunnyMessage ? "Nos serveurs travaillent à pleine vitesse..." : "Chargement des articles scientifiques..."}
       />
       {showFunnyMessage && (

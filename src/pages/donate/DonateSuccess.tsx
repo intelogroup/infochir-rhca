@@ -52,7 +52,7 @@ const DonateSuccess = () => {
     return (
       <MainLayout>
         <div className="flex flex-col items-center justify-center pt-[150px]">
-          <LoadingSpinner size="lg" variant="fun" text="Vérification de votre paiement..." />
+          <LoadingSpinner size="lg" variant="primary" text="Vérification de votre paiement..." />
         </div>
       </MainLayout>
     );

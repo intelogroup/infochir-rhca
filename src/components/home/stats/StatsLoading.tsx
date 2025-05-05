@@ -7,7 +7,7 @@ export const StatsLoading = () => {
     <section className="py-16 bg-gradient-to-b from-white to-gray-50" aria-label="Statistiques">
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
-          <LoadingSpinner variant="fun" text="Chargement des statistiques" />
+          <LoadingSpinner variant="primary" text="Chargement des statistiques" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[1, 2, 3, 4].map((i) => (

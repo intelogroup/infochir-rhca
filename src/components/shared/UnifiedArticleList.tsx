@@ -46,7 +46,7 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
   if (isLoading) {
     return (
       <div className="py-8 mt-[50px]">
-        <LoadingSpinner variant="fun" text={variant === 'index-medicus' ? "Chargement des publications..." : "Chargement des données..."} />
+        <LoadingSpinner variant="primary" text={variant === 'index-medicus' ? "Chargement des publications..." : "Chargement des données..."} />
       </div>
     );
   }
