@@ -8,6 +8,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { z } from "zod";
 import { createLogger } from "@/lib/error-logger";
+import { supabase } from "@/integrations/supabase/client";
 
 // Create a logger for this component
 const logger = createLogger("NewsletterSubscribeFooter");
@@ -55,31 +56,17 @@ export const NewsletterSubscribeFooter = () => {
     try {
       logger.log("Submitting newsletter subscription:", { name, email });
       
-      // Use direct fetch for better control over the request
-      const response = await fetch("https://llxzstqejdrplmxdjxlu.supabase.co/functions/v1/newsletter-subscribe", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''}`,
-        },
-        body: JSON.stringify({ name, email })
+      // Use Supabase edge function for better reliability and monitoring
+      const { data, error } = await supabase.functions.invoke("newsletter-subscribe", {
+        body: { name, email }
       });
       
-      if (!response.ok) {
-        let errorMessage = "Erreur lors de l'inscription";
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.error || `Erreur: ${response.status} ${response.statusText}`;
-        } catch (e) {
-          // If we can't parse JSON, use the status text
-          errorMessage = `Erreur: ${response.status} ${response.statusText}`;
-        }
-        
-        logger.error("Newsletter subscription error from response:", { status: response.status, message: errorMessage });
-        throw new Error(errorMessage);
+      if (error) {
+        logger.error("Newsletter subscription error:", error);
+        throw new Error(error.message || "Erreur lors de l'inscription");
       }
       
-      const data = await response.json();
+      logger.log("Newsletter subscription response:", data);
       
       if (data.existingSubscription) {
         toast.info("Cette adresse email est déjà inscrite à notre newsletter", { id: toastId });
@@ -87,6 +74,12 @@ export const NewsletterSubscribeFooter = () => {
         toast.success("Merci pour votre inscription à notre newsletter!", {
           id: toastId
         });
+      }
+      
+      // Check notification status
+      if (data.notification && !data.notification.sent) {
+        logger.warn("Newsletter notification failed:", data.notification.message);
+        // Don't show this to the user as the subscription still worked
       }
       
       // Reset form

@@ -1,4 +1,3 @@
-
 import { Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +10,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { createLogger } from "@/lib/error-logger";
+
+// Create a logger for this component
+const logger = createLogger("NewsletterSection");
 
 // Define validation schema for the contact form
 const contactFormSchema = z.object({
@@ -41,7 +44,7 @@ export const NewsletterSection = () => {
     const toastId = toast.loading("Envoi en cours...");
 
     try {
-      console.log("Submitting contact form:", values);
+      logger.log("Submitting contact form:", values);
       
       // First, save to database
       const { data: dbData, error: dbError } = await supabase
@@ -57,13 +60,13 @@ export const NewsletterSection = () => {
 
       // Log database response for debugging
       if (dbError) {
-        console.error("Contact form database error:", dbError);
+        logger.error("Contact form database error:", dbError);
         throw new Error(`Database error: ${dbError.message}`);
       } else {
-        console.log("Database insert successful:", dbData);
+        logger.log("Database insert successful:", dbData);
       }
 
-      // Send email notification
+      // Send email notification using the edge function
       const { data, error } = await supabase.functions.invoke('send-contact-email', {
         body: { 
           name: values.name,
@@ -74,18 +77,29 @@ export const NewsletterSection = () => {
       });
 
       if (error) {
-        console.error("Contact form submission error:", error);
+        logger.error("Contact form submission error:", error);
         throw new Error(`Email sending error: ${error.message}`);
       }
 
-      toast.success("Merci pour votre message! Nous vous contacterons bientôt.", {
-        id: toastId
-      });
+      logger.log("Contact form submission response:", data);
+      
+      if (data?.notification?.sent === false) {
+        const errorMessage = data?.notification?.message || "L'email de notification n'a pas pu être envoyé.";
+        logger.warn("Email notification failed:", errorMessage);
+        
+        toast.dismiss();
+        toast.success("Votre message a été reçu!");
+        toast.warning(errorMessage, { duration: 5000 });
+      } else {
+        toast.success("Merci pour votre message! Nous vous contacterons bientôt.", {
+          id: toastId
+        });
+      }
       
       // Reset form values
       form.reset();
     } catch (error: any) {
-      console.error("Contact form submission error:", error);
+      logger.error("Contact form submission error:", error);
       toast.error(`Une erreur est survenue: ${error.message || "Veuillez réessayer plus tard"}`, {
         id: toastId
       });

@@ -8,6 +8,10 @@ import { SponsorsSection } from "@/components/home/SponsorsSection";
 import { StatsSection } from "@/components/home/StatsSection";
 import { NewsletterSection } from "@/components/home/NewsletterSection";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { createLogger } from "@/lib/error-logger";
+
+const logger = createLogger('HomePage');
 
 const Home = () => {
   const [isLoaded, setIsLoaded] = React.useState(false);
@@ -19,7 +23,7 @@ const Home = () => {
       setIsLoaded(true);
       window.dispatchEvent(new Event('app-loaded'));
       
-      // Test email configuration in development mode
+      // Test all email configurations in development mode or on initial deployment
       if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
         testEmailConfig();
       }
@@ -29,6 +33,9 @@ const Home = () => {
   // Function to test email configuration
   const testEmailConfig = async () => {
     try {
+      logger.info("Testing email configuration");
+      toast.loading("Vérification de la configuration des emails...");
+      
       const { data, error } = await fetch(
         'https://llxzstqejdrplmxdjxlu.supabase.co/functions/v1/check-email-config', 
         {
@@ -40,24 +47,96 @@ const Home = () => {
       ).then(res => res.json());
       
       if (error) {
-        console.error('Email config test failed:', error);
+        logger.error('Email config test failed:', error);
+        toast.dismiss();
+        toast.error(`Erreur de configuration email: ${error.message || JSON.stringify(error)}`);
       } else if (data) {
-        console.log('Email configuration status:', data);
+        logger.info('Email configuration status:', data);
+        toast.dismiss();
         
         // Check API key status
         if (!data.api_key_status?.valid) {
-          toast.error(`Email API key issue: ${data.api_key_status?.message}`);
+          toast.error(`Problème de clé API: ${data.api_key_status?.message}`);
         } else {
-          toast.success('Resend API key is configured correctly');
-        }
-        
-        // Check domain verification
-        if (data.primary_domain_status && !data.primary_domain_status.verified) {
-          toast.warning(`Domain verification issue: ${data.primary_domain_status.message}`);
+          toast.success('La clé API Resend est correctement configurée');
+          
+          // Check domain verification
+          if (data.primary_domain_status && !data.primary_domain_status.verified) {
+            toast.warning(`Problème de vérification du domaine: ${data.primary_domain_status?.message}`);
+          } else if (data.primary_domain_status?.verified) {
+            toast.success('Le domaine est correctement vérifié');
+          }
+          
+          // Check if both are working correctly
+          if (data.api_key_status?.valid && data.primary_domain_status?.verified) {
+            // Send a test email to verify everything works
+            testEmailNotifications();
+          }
         }
       }
     } catch (error) {
-      console.error('Error checking email configuration:', error);
+      logger.error('Error checking email configuration:', error);
+      toast.dismiss();
+      toast.error("Erreur lors de la vérification de la configuration email");
+    }
+  };
+  
+  // Function to test both newsletter and submission notifications
+  const testEmailNotifications = async () => {
+    try {
+      logger.info("Testing email notifications");
+      
+      // Test sending a newsletter notification
+      const newsletterResult = await supabase.functions.invoke('newsletter-subscribe', {
+        body: {
+          name: "Test User",
+          email: "test@example.com",
+          phone: "0123456789"
+        }
+      });
+      
+      if (newsletterResult.error) {
+        logger.error('Newsletter notification test failed:', newsletterResult.error);
+        toast.error(`Erreur de notification newsletter: ${newsletterResult.error.message}`);
+      } else {
+        logger.info('Newsletter notification test result:', newsletterResult.data);
+        
+        if (newsletterResult.data?.notification?.sent) {
+          toast.success('Test de notification newsletter réussi');
+        } else if (newsletterResult.data?.notification) {
+          toast.warning(`Notification newsletter: ${newsletterResult.data.notification.message || 'Non envoyé'}`);
+        }
+      }
+      
+      // Test submission notification (only in DEV environment to prevent duplicate data)
+      if (import.meta.env.DEV) {
+        const submissionResult = await supabase.functions.invoke('notify-submission', {
+          body: {
+            title: "Article de test",
+            publication_type: "TEST",
+            corresponding_author_name: "Test Author",
+            corresponding_author_email: "test@example.com",
+            abstract: "Test abstract for notification verification",
+            submission_date: new Date().toISOString()
+          }
+        });
+        
+        if (submissionResult.error) {
+          logger.error('Submission notification test failed:', submissionResult.error);
+          toast.error(`Erreur de notification soumission: ${submissionResult.error.message}`);
+        } else {
+          logger.info('Submission notification test result:', submissionResult.data);
+          
+          if (submissionResult.data?.success) {
+            toast.success('Test de notification de soumission réussi');
+          } else {
+            toast.warning(`Notification de soumission: ${submissionResult.data?.message || 'Non envoyé'}`);
+          }
+        }
+      }
+    } catch (error) {
+      logger.error('Error testing email notifications:', error);
+      toast.error("Erreur lors du test des notifications email");
     }
   };
 

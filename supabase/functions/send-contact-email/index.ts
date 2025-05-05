@@ -1,20 +1,12 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { Resend } from "npm:resend@2.0.0";
+import { corsHeaders, handleCors } from "../_shared/cors.ts";
+import { sendEmail } from "../_shared/email-sender.ts";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
-const RECIPIENT_EMAILS = ["jayveedz19@gmail.com", "tlmq15@gmail.com"];
+// Email notification recipient - updated to the specified email
+const NOTIFICATION_EMAIL = "jimkalinov@gmail.com";
 
-// Updated CORS configuration to include all required headers
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-client-mode, x-client-info",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Max-Age": "86400"
-};
-
-interface ContactFormData {
+interface ContactRequest {
   name: string;
   email: string;
   phone?: string;
@@ -22,110 +14,139 @@ interface ContactFormData {
 }
 
 const handler = async (req: Request): Promise<Response> => {
-  // Handle CORS preflight requests
-  if (req.method === "OPTIONS") {
-    return new Response(null, { 
-      status: 204,
-      headers: corsHeaders 
-    });
-  }
+  console.log("[send-contact-email] Function called");
+
+  // Handle CORS preflight request
+  const corsResponse = handleCors(req);
+  if (corsResponse) return corsResponse;
 
   try {
-    console.log("Contact email function called");
-    
-    let formData: ContactFormData;
-    try {
-      formData = await req.json();
-      console.log("Form data received:", formData);
-    } catch (parseError) {
-      console.error("Error parsing request JSON:", parseError);
-      return new Response(
-        JSON.stringify({ error: "Invalid JSON in request body" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
-        }
-      );
-    }
-    
-    const { name, email, phone, message } = formData;
+    // Parse request body
+    const data: ContactRequest = await req.json();
+    console.log("[send-contact-email] Received contact form data:", {
+      name: data.name,
+      email: data.email,
+      messageLength: data.message?.length || 0
+    });
     
     // Validate required fields
-    if (!name || !email || !message) {
-      console.error("Missing required fields:", { name, email, message });
+    if (!data.name || !data.email || !data.message) {
+      console.error("[send-contact-email] Missing required fields");
       return new Response(
-        JSON.stringify({ error: "Name, email, and message are required" }),
-        {
+        JSON.stringify({ 
+          success: false, 
+          error: "Name, email, and message are required" 
+        }),
+        { 
           status: 400,
-          headers: { "Content-Type": "application/json", ...corsHeaders },
+          headers: { 
+            "Content-Type": "application/json",
+            ...corsHeaders
+          }
         }
       );
     }
 
-    // Send email to admins
-    try {
-      const emailResponse = await resend.emails.send({
-        from: "InfoChir Contact <onboarding@resend.dev>",
-        to: RECIPIENT_EMAILS,
-        subject: `Nouveau message de contact de ${name}`,
-        html: `
-          <h1>Nouveau message de contact</h1>
-          <p><strong>Nom:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          ${phone ? `<p><strong>Téléphone:</strong> ${phone}</p>` : ''}
-          <h2>Message:</h2>
-          <p>${message.replace(/\n/g, '<br>')}</p>
-        `,
-      });
-
-      console.log("Admin email sent successfully:", emailResponse);
-    } catch (emailError) {
-      console.error("Error sending admin email:", emailError);
-      throw new Error(`Failed to send admin notification: ${emailError.message}`);
-    }
-
-    // Also send confirmation email to the sender
-    try {
-      const confirmationResponse = await resend.emails.send({
-        from: "InfoChir <onboarding@resend.dev>",
-        to: [email],
-        subject: "Nous avons reçu votre message",
-        html: `
-          <h1>Merci de nous avoir contactés, ${name}!</h1>
-          <p>Nous avons bien reçu votre message et nous vous répondrons dans les plus brefs délais.</p>
-          <p>Cordialement,<br>L'équipe InfoChir</p>
-        `,
-      });
-
-      console.log("Confirmation email sent successfully:", confirmationResponse);
-    } catch (confirmError) {
-      console.error("Error sending confirmation email:", confirmError);
-      // Continue with success response even if confirmation email fails
-    }
-
-    return new Response(
-      JSON.stringify({ 
-        success: true,
-        message: "Contact message sent successfully"
-      }),
-      {
-        status: 200,
-        headers: {
-          "Content-Type": "application/json",
-          ...corsHeaders,
-        },
-      }
+    // Prepare email content
+    const contactTime = new Date().toLocaleString('fr-FR', {
+      dateStyle: 'full',
+      timeStyle: 'medium'
+    });
+    
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #333;">Nouveau message de contact</h2>
+        <p>Un nouveau message a été envoyé via le formulaire de contact à ${contactTime}.</p>
+        
+        <div style="background-color: #f4f4f4; padding: 15px; border-radius: 5px; margin: 20px 0;">
+          <h3 style="margin-top: 0;">Informations de contact:</h3>
+          <p><strong>Nom:</strong> ${data.name}</p>
+          <p><strong>Email:</strong> ${data.email}</p>
+          ${data.phone ? `<p><strong>Téléphone:</strong> ${data.phone}</p>` : ''}
+          
+          <h3>Message:</h3>
+          <p style="white-space: pre-line;">${data.message}</p>
+        </div>
+        
+        <p style="color: #666; font-size: 12px;">Ceci est une notification automatique de votre site InfoChir.</p>
+      </div>
+    `;
+    
+    const text = `
+      NOUVEAU MESSAGE DE CONTACT
+      
+      Un nouveau message a été envoyé via le formulaire de contact à ${contactTime}.
+      
+      Informations de contact:
+      Nom: ${data.name}
+      Email: ${data.email}
+      ${data.phone ? `Téléphone: ${data.phone}` : ''}
+      
+      Message:
+      ${data.message}
+      
+      Ceci est une notification automatique de votre site InfoChir.
+    `;
+    
+    // Send email notification
+    const emailResult = await sendEmail(
+      NOTIFICATION_EMAIL,
+      `Contact InfoChir de: ${data.name}`,
+      html,
+      text,
+      data.email // set reply-to as the sender's email
     );
-  } catch (error: any) {
-    console.error("Error in send-contact-email function:", error);
+    
+    if (emailResult.success) {
+      console.log("[send-contact-email] Contact notification email sent successfully");
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          message: "Contact message sent successfully",
+          notification: { sent: true } 
+        }),
+        { 
+          status: 200,
+          headers: { 
+            "Content-Type": "application/json",
+            ...corsHeaders
+          }
+        }
+      );
+    } else {
+      console.error("[send-contact-email] Failed to send contact notification email:", emailResult.error);
+      return new Response(
+        JSON.stringify({ 
+          success: true, // Still mark as success since the form data was saved
+          message: "Contact message received but notification failed to send",
+          notification: { 
+            sent: false, 
+            message: emailResult.error instanceof Error ? emailResult.error.message : String(emailResult.error)
+          } 
+        }),
+        { 
+          status: 200,
+          headers: { 
+            "Content-Type": "application/json",
+            ...corsHeaders
+          }
+        }
+      );
+    }
+  } catch (error) {
+    console.error("[send-contact-email] Unhandled error:", error);
     return new Response(
       JSON.stringify({ 
-        error: error.message || "An unknown error occurred",
-        success: false
+        success: false, 
+        error: error instanceof Error ? error.message : "Unknown error occurred",
+        notification: { sent: false }
       }),
-      {
+      { 
         status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
+        headers: { 
+          "Content-Type": "application/json",
+          ...corsHeaders
+        }
       }
     );
   }
