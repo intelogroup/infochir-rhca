@@ -17,23 +17,26 @@ export const queryClient = new QueryClient({
       retry: isDebugMode ? 1 : 3, // More retries in production
       retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
       networkMode: 'always',
-      // Add fallback behavior for failed queries
-      onError: (error) => {
-        console.error('Query error:', error);
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        
-        // Only show toast for non-canceled requests
-        if (!errorMessage.includes('canceled') && !errorMessage.includes('aborted')) {
-          toast.error("Erreur de chargement des données. Veuillez réessayer.");
+      meta: {
+        errorHandler: (error: unknown) => {
+          console.error('Query error:', error);
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          
+          // Only show toast for non-canceled requests
+          if (!errorMessage.includes('canceled') && !errorMessage.includes('aborted')) {
+            toast.error("Erreur de chargement des données. Veuillez réessayer.");
+          }
         }
       }
     },
     mutations: {
       retry: isDebugMode ? 0 : 2,
       networkMode: 'always',
-      onError: (error) => {
-        console.error('Mutation error:', error);
-        toast.error("Erreur lors de la mise à jour des données. Veuillez réessayer.");
+      meta: {
+        errorHandler: (error: unknown) => {
+          console.error('Mutation error:', error);
+          toast.error("Erreur lors de la mise à jour des données. Veuillez réessayer.");
+        }
       }
     }
   }
