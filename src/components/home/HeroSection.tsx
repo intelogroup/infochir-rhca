@@ -1,4 +1,3 @@
-
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState, useRef } from "react";
@@ -97,10 +96,7 @@ export const HeroSection = () => {
   }, []);
 
   return (
-    <section 
-      ref={sectionRef} 
-      className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(70vh-4rem)] sm:min-h-[calc(80vh-4rem-30px)] pt-16 sm:pt-20 md:pt-28 z-0 content-visibility-auto"
-    >
+    <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(70vh-4rem)] sm:min-h-[calc(80vh-4rem-30px)] pt-16 sm:pt-20 md:pt-28 z-0 content-visibility-auto">
       <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#348d57] to-[#348d57] opacity-90 z-0"></div>
       
       <AnimatePresence mode="wait">
@@ -108,19 +104,15 @@ export const HeroSection = () => {
           key={currentIndex}
           className="absolute inset-0 z-1"
         >
-          <motion.div 
+          <div 
             className={`absolute inset-0 bg-gradient-to-br ${gradients[currentIndex]} opacity-70 z-0`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.7 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1 }}
           />
           <motion.div 
             className="absolute bottom-0 right-0 w-[85%] sm:w-[75%] h-[calc(4/5*120%-30px)] md:h-[calc(3/4*120%-30px)] lg:h-[calc(2/3*120%-30px)] z-2"
-            initial={{ opacity: 0, scale: 1.05 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
             style={{ 
               backgroundImage: `url(${images[currentIndex]})`,
               backgroundSize: 'contain',
@@ -129,7 +121,7 @@ export const HeroSection = () => {
               opacity: 0.9,
               right: '5%',
               paddingLeft: '5px',
-              willChange: 'opacity, transform',
+              willChange: 'opacity',
             }}
           />
         </div>
@@ -147,57 +139,32 @@ export const HeroSection = () => {
       ></div>
       
       <div className="relative max-w-7xl mx-auto text-left z-10">
-        <motion.div 
-          className="max-w-xl lg:max-w-3xl"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 tracking-tight md:whitespace-nowrap whitespace-normal leading-tight">
+        <div className="max-w-xl lg:max-w-3xl">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 animate-fade-up tracking-tight md:whitespace-nowrap whitespace-normal">
             Votre espace scientifique<br className="md:hidden" /> en ligne
           </h1>
-          <p className="text-sm sm:text-base md:text-lg text-white/90 mb-6 sm:mb-8 leading-relaxed max-w-lg">
+          <p className="text-sm sm:text-base md:text-lg text-white/90 mb-6 sm:mb-8 animate-fade-up leading-relaxed">
             La plateforme de référence pour les professionnels de santé en Haïti
           </p>
           <div className="flex flex-wrap gap-3 sm:gap-4">
             <Button 
               size="default"
               variant="secondary" 
-              className="group bg-white hover:bg-white/90 text-[#122db0] font-medium text-xs sm:text-sm md:text-base py-1.5 sm:py-2 shadow-lg hover:shadow-xl transition-all duration-300"
+              className="group bg-white hover:bg-white/90 text-[#122db0] font-medium text-xs sm:text-sm md:text-base py-1.5 sm:py-2"
               onClick={() => navigate('/submission')}
             >
               Soumettre votre article
-              <motion.span
-                initial={{ x: 0 }}
-                whileHover={{ x: 4 }}
-                transition={{ type: "spring", stiffness: 400 }}
-              >
-                <ArrowRight className="ml-1.5 sm:ml-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
-              </motion.span>
+              <ArrowRight className="ml-1.5 sm:ml-2 h-3.5 w-3.5 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform" />
             </Button>
             <Button 
               size="default"
-              className="bg-transparent hover:bg-white/10 text-white border-white border text-xs sm:text-sm md:text-base py-1.5 sm:py-2 transition-all duration-300"
+              className="bg-transparent hover:bg-white/10 text-white border-white border text-xs sm:text-sm md:text-base py-1.5 sm:py-2"
               onClick={() => navigate('/about')}
             >
               En savoir plus
             </Button>
           </div>
-        </motion.div>
-      </div>
-      
-      {/* Dots indicator */}
-      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
-        {images.map((_, index) => (
-          <button
-            key={index}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${
-              index === currentIndex ? 'bg-white scale-125' : 'bg-white/50'
-            }`}
-            onClick={() => setCurrentIndex(index)}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
+        </div>
       </div>
     </section>
   );
