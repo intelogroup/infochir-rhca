@@ -8,9 +8,24 @@
 http://info-chir.org/*    https://info-chir.org/:splat    301!
 http://www.info-chir.org/*    https://info-chir.org/:splat    301!
 
-# Cache common assets 
+# Cache static assets
 /assets/*    200!    max-age=31536000
 /lovable-uploads/*    200!    max-age=31536000
+/*.js    200!    max-age=31536000
+/*.css    200!    max-age=31536000
+/*.png    200!    max-age=31536000
+/*.jpg    200!    max-age=31536000
+/*.svg    200!    max-age=31536000
+/*.webp    200!    max-age=31536000
+/*.woff2    200!    max-age=31536000
 
 # Cache service worker
 /sw.js    200!    max-age=0
+
+# Add security headers
+/*    200
+  X-Frame-Options: SAMEORIGIN
+  X-XSS-Protection: 1; mode=block
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()

@@ -1,6 +1,7 @@
 
 import * as React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { optimizeImageUrl } from "@/utils/imageLoader";
 
 interface LazyImageProps {
   src: string;
@@ -23,32 +24,34 @@ const LazyImage = ({
   const [hasError, setHasError] = React.useState(false);
   const imgRef = React.useRef<HTMLImageElement>(null);
   
-  // Add width and height parameters for image optimization
+  // Get optimized image URL
   const optimizedSrc = React.useMemo(() => {
-    if (!src || !width || !height) return src;
-    
-    const separator = src.includes('?') ? '&' : '?';
-    return `${src}${separator}w=${width}&h=${height}&quality=${priority ? '85' : '75'}&format=webp`;
+    if (!src) return "";
+    return optimizeImageUrl(src, { 
+      width, 
+      height, 
+      priority,
+      format: 'webp'
+    });
   }, [src, width, height, priority]);
   
-  // Use intersection observer for lazy loading
+  // Use intersection observer for non-priority images
   React.useEffect(() => {
-    // Skip intersection observer for priority images
-    if (priority) {
-      return;
-    }
+    if (!src || priority) return;
     
     const observer = new IntersectionObserver(
       (entries) => {
         const [entry] = entries;
         if (entry.isIntersecting && imgRef.current) {
-          // Set the src attribute when image becomes visible
-          imgRef.current.src = optimizedSrc;
+          // Set data-src to actual src when in viewport
+          if (imgRef.current.dataset.src) {
+            imgRef.current.src = imgRef.current.dataset.src;
+          }
           observer.disconnect();
         }
       },
       {
-        rootMargin: '200px', // Load 200px before image becomes visible
+        rootMargin: '200px', // Load images 200px before they appear in viewport
         threshold: 0.01
       }
     );
@@ -57,12 +60,10 @@ const LazyImage = ({
       observer.observe(imgRef.current);
     }
     
-    return () => {
-      observer.disconnect();
-    };
-  }, [optimizedSrc, priority]);
+    return () => observer.disconnect();
+  }, [optimizedSrc, priority, src]);
 
-  // Handle image load error
+  // Handle image errors gracefully
   const handleError = () => {
     setIsLoading(false);
     setHasError(true);
@@ -77,11 +78,13 @@ const LazyImage = ({
     return style;
   }, [width, height]);
 
+  // If image failed to load, show a placeholder
   if (hasError) {
     return (
       <div 
         className={`${className} bg-gray-100 flex items-center justify-center`} 
         style={dimensionStyle}
+        aria-label={`Image ${alt} not available`}
       >
         <span className="text-gray-400 text-xs">Image indisponible</span>
       </div>
@@ -98,7 +101,8 @@ const LazyImage = ({
       )}
       <img
         ref={imgRef}
-        src={priority ? optimizedSrc : (imgRef.current ? optimizedSrc : '')} // Only set src for priority images initially
+        src={priority ? optimizedSrc : undefined}
+        data-src={!priority ? optimizedSrc : undefined}
         alt={alt}
         className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
         style={{

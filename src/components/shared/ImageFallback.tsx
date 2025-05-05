@@ -1,31 +1,37 @@
 
-import React from 'react';
-import { FileText } from "lucide-react";
+import * as React from "react";
 
 interface ImageFallbackProps {
   alt: string;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
   className?: string;
   fallbackText?: string;
 }
 
-export const ImageFallback: React.FC<ImageFallbackProps> = ({
+export const ImageFallback = ({
   alt,
   width,
   height,
   className = "",
-  fallbackText
-}) => (
-  <div 
-    className={`${className} flex items-center justify-center bg-gray-100 border border-gray-200 rounded-lg`}
-    style={{ width, height, minHeight: '100px' }}
-    role="img"
-    aria-label={alt}
-  >
-    <div className="flex flex-col items-center text-gray-500">
-      <FileText className="h-8 w-8 mb-2 text-gray-400" />
-      <span className="text-sm font-medium px-2 text-center">{fallbackText || "Image non disponible"}</span>
+  fallbackText = "Image indisponible"
+}: ImageFallbackProps) => {
+  // Generate dimensions style
+  const style: React.CSSProperties = {};
+  if (width) style.width = `${width}px`;
+  if (height) style.height = `${height}px`;
+
+  return (
+    <div 
+      className={`${className} bg-gray-100 flex items-center justify-center text-center rounded`} 
+      style={style}
+      aria-label={`${alt} - ${fallbackText}`}
+    >
+      <div className="px-2">
+        <span className="text-gray-400 text-xs">{fallbackText}</span>
+      </div>
     </div>
-  </div>
-);
+  );
+};
+
+export default ImageFallback;

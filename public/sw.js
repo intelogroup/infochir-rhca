@@ -1,6 +1,6 @@
 
 // Service Worker for InfoChir application
-const CACHE_NAME = 'infochir-cache-v5';  // Increased cache version
+const CACHE_NAME = 'infochir-cache-v6';  // Increased cache version
 
 // Assets to cache immediately on install
 const CRITICAL_ASSETS = [
@@ -95,13 +95,12 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Handle HTML navigation requests
+  // Handle HTML navigation requests with network-first strategy
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      // Try network first with a fast timeout
-      Promise.race([
-        fetch(event.request).then(response => {
-          // Cache successful responses for future use
+      fetch(event.request)
+        .then(response => {
+          // Cache successful responses
           if (response.status === 200) {
             const clonedResponse = response.clone();
             caches.open(CACHE_NAME).then(cache => {
@@ -109,30 +108,28 @@ self.addEventListener('fetch', event => {
             });
           }
           return response;
-        }),
-        // Time out after 2 seconds - fall back to cache
-        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 2000))
-      ])
-      .catch(() => {
-        // Fallback to cache if network fails or times out
-        return caches.match(event.request)
-          .then(cachedResponse => {
-            if (cachedResponse) {
-              return cachedResponse;
-            }
-            // Final fallback if both network and cache fail
-            return caches.match('/index.html');
-          });
-      })
+        })
+        .catch(() => {
+          // Fallback to cache if network fails
+          return caches.match(event.request)
+            .then(cachedResponse => {
+              if (cachedResponse) {
+                return cachedResponse;
+              }
+              // Final fallback
+              return caches.match('/index.html');
+            });
+        })
     );
     return;
   }
 
-  // Optimized strategy for images - cache first, then network
+  // Optimized strategy for images - stale-while-revalidate with background update
   if (event.request.destination === 'image') {
     event.respondWith(
       caches.match(event.request)
         .then(cachedResponse => {
+          // Return cached response immediately if available
           if (cachedResponse) {
             // Update cache in the background
             fetch(event.request)
@@ -160,6 +157,48 @@ self.addEventListener('fetch', event => {
                 .then(cache => cache.put(event.request, responseToCache));
               
               return networkResponse;
+            })
+            .catch(error => {
+              console.error('[ServiceWorker] Fetch error:', error);
+              // No fallback for images that fail to load
+              return new Response('Image not available', { 
+                status: 404, 
+                headers: {'Content-Type': 'text/plain'} 
+              });
+            });
+        })
+    );
+    return;
+  }
+
+  // For CSS/JS assets, use cache-first approach for fast loading
+  if (event.request.destination === 'script' || event.request.destination === 'style') {
+    event.respondWith(
+      caches.match(event.request)
+        .then(cachedResponse => {
+          if (cachedResponse) {
+            // Also update the cache in the background
+            fetch(event.request)
+              .then(networkResponse => {
+                if (networkResponse.status === 200) {
+                  caches.open(CACHE_NAME)
+                    .then(cache => cache.put(event.request, networkResponse));
+                }
+              })
+              .catch(() => {});
+              
+            return cachedResponse;
+          }
+          
+          // Not in cache, get from network
+          return fetch(event.request)
+            .then(networkResponse => {
+              if (networkResponse.status === 200) {
+                const responseToCache = networkResponse.clone();
+                caches.open(CACHE_NAME)
+                  .then(cache => cache.put(event.request, responseToCache));
+              }
+              return networkResponse;
             });
         })
     );
@@ -170,7 +209,7 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     caches.open(CACHE_NAME).then(cache => {
       return cache.match(event.request).then(cachedResponse => {
-        const fetchPromise = fetch(event.request.clone())
+        const fetchPromise = fetch(event.request)
           .then(networkResponse => {
             // Only cache successful responses
             if (networkResponse && networkResponse.status === 200) {
@@ -194,5 +233,35 @@ self.addEventListener('fetch', event => {
 self.addEventListener('message', event => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
+  }
+});
+
+// Clean up old caches periodically
+self.addEventListener('periodicsync', event => {
+  if (event.tag === 'cache-cleanup') {
+    event.waitUntil(
+      caches.keys().then(cacheNames => {
+        return Promise.all(
+          cacheNames.filter(cacheName => cacheName !== CACHE_NAME)
+            .map(cacheToDelete => caches.delete(cacheToDelete))
+        );
+      })
+    );
+  }
+});
+
+// Improve performance by preloading the next likely page
+self.addEventListener('fetch', event => {
+  // Additional optimization for preloading the next page
+  if (event.request.mode === 'navigate') {
+    // Detect navigation patterns and preload the likely next page
+    // This is a simplistic implementation - could be improved with analytics data
+    if (event.request.url.includes('/rhca')) {
+      // After RHCA, users often go to IGM
+      fetch('/igm').catch(() => {});
+    } else if (event.request.url.includes('/igm')) {
+      // After IGM, users often go to submissions
+      fetch('/submission').catch(() => {});
+    }
   }
 });

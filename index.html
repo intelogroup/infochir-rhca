@@ -24,11 +24,18 @@
     <!-- Resource hints for fast loading -->
     <link rel="preconnect" href="https://llxzstqejdrplmxdjxlu.supabase.co" crossorigin />
     <link rel="dns-prefetch" href="https://llxzstqejdrplmxdjxlu.supabase.co" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     
     <!-- Preload critical assets -->
     <link rel="preload" href="/lovable-uploads/75589792-dc14-4d53-9aae-5796c76a3b39.png" as="image" fetchpriority="high" />
     <link rel="preload" href="/src/index.css" as="style" />
     <link rel="preload" href="/favicon.ico" as="image" />
+    
+    <!-- Prefetch primary routes -->
+    <link rel="prefetch" href="/about" as="document" />
+    <link rel="prefetch" href="/rhca" as="document" />
+    <link rel="prefetch" href="/igm" as="document" />
     
     <!-- Favicon -->
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
@@ -47,6 +54,10 @@
         // Add performance marks for measuring load times
         if (window.performance && window.performance.mark) {
           window.performance.mark('app-init-start');
+          performance.clearMarks = performance.clearMarks || function(){};
+          performance.clearMeasures = performance.clearMeasures || function(){};
+          performance.measure = performance.measure || function(){};
+          performance.getEntriesByType = performance.getEntriesByType || function(){ return []; };
         }
         
         // Prefetch critical routes
@@ -58,21 +69,45 @@
           link.as = 'document';
           document.head.appendChild(link);
         });
+        
+        // Check for service worker support and register it
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', function() {
+            navigator.serviceWorker.register('/sw.js')
+              .then(function(registration) {
+                console.log('ServiceWorker registration successful with scope: ', registration.scope);
+              })
+              .catch(function(err) {
+                console.log('ServiceWorker registration failed: ', err);
+              });
+          });
+        }
       })();
     </script>
     
     <!-- Inline critical CSS for fastest rendering -->
     <style>
       /* Critical CSS for initial render */
-      body { margin: 0; font-family: system-ui, sans-serif; }
+      :root { --bg-main: #f8fafc; --text-main: #1f2937; --blue-primary: #1E40AF; --transition-default: all 0.3s ease; }
+      body { margin: 0; padding: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; background: var(--bg-main); color: var(--text-main); }
       .no-js-warning { display: none; }
-      .no-js .no-js-warning { display: block; padding: 20px; text-align: center; background: #f8fafc; color: #1f2937; font-family: system, -apple-system, sans-serif; }
+      .no-js .no-js-warning { display: block; padding: 20px; text-align: center; background: var(--bg-main); color: var(--text-main); }
       .js-content { display: block; }
       .no-js .js-content { display: none; }
-      #initial-loader { display: flex; position: fixed; inset: 0; justify-content: center; align-items: center; background: linear-gradient(to bottom, #f8fafc, #ffffff); z-index: 9999; }
-      .loader-spinner { border: 4px solid #f3f3f3; border-top: 4px solid #1E40AF; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 20px; }
+      #initial-loader { display: flex; position: fixed; inset: 0; justify-content: center; align-items: center; background: linear-gradient(to bottom, var(--bg-main), #ffffff); z-index: 9999; opacity: 1; transition: opacity 0.3s ease; }
+      .loader-spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--blue-primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 20px; }
       @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
       .loader-text { font-family: sans-serif; color: #666; }
+      
+      /* Nav placeholder to prevent layout shift */
+      .nav-placeholder { height: 64px; width: 100%; }
+      
+      /* Hero section minimal styles */
+      .hero-placeholder { min-height: 400px; background: linear-gradient(to right, #f9fafb, #f3f4f6); display: flex; align-items: center; justify-content: center; margin-bottom: 2rem; }
+      
+      /* Animate content when it loads */
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+      .fade-in { animation: fadeIn 0.5s ease forwards; }
     </style>
     
     <!-- Service Worker Registration -->
@@ -96,6 +131,9 @@
       </div>
     </div>
     
+    <!-- Nav placeholder to prevent layout shift -->
+    <div class="nav-placeholder" aria-hidden="true"></div>
+    
     <!-- No JavaScript fallback -->
     <div class="no-js-warning">
       <h1>JavaScript Required</h1>
@@ -110,44 +148,71 @@
     
     <!-- Main app content -->
     <div id="root" class="js-content"></div>
+    
+    <!-- Script to monitor and optimize loading -->
+    <script>
+      // Monitor page load performance
+      const monitorPerformance = () => {
+        if (!window.performance || !window.performance.getEntriesByType) return;
+        
+        // Get timing metrics
+        const pageLoadTime = window.performance.timing.loadEventEnd - window.performance.timing.navigationStart;
+        const domContentLoadedTime = window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart;
+        
+        console.log(`Page load: ${pageLoadTime}ms, DOM content loaded: ${domContentLoadedTime}ms`);
+        
+        // Report to analytics if it's too slow (over 3 seconds)
+        if (pageLoadTime > 3000) {
+          console.warn('Page load time is too slow:', pageLoadTime);
+          // Here you could send this data to your analytics service
+        }
+      };
+      
+      window.addEventListener('load', function() {
+        // Mark load event
+        if (window.performance && window.performance.mark) {
+          window.performance.mark('page-loaded');
+          window.performance.measure('full-page-load', 'app-init-start', 'page-loaded');
+        }
+        
+        // Log performance data
+        setTimeout(monitorPerformance, 0);
+        
+        // Remove initial loader
+        const loader = document.getElementById('initial-loader');
+        if (loader) {
+          loader.style.opacity = '0';
+          setTimeout(() => {
+            loader.style.display = 'none';
+          }, 300);
+        }
+        
+        // Remove nav placeholder when real nav is loaded
+        setTimeout(() => {
+          const navPlaceholder = document.querySelector('.nav-placeholder');
+          if (navPlaceholder) {
+            navPlaceholder.style.display = 'none';
+          }
+        }, 100);
+      });
+      
+      // Set up app-loaded event listener
+      window.addEventListener('app-loaded', function() {
+        // Log the time it took for the app to load
+        if (window.performance && window.performance.mark) {
+          window.performance.mark('app-loaded');
+          window.performance.measure('app-load-time', 'app-init-start', 'app-loaded');
+          
+          const measures = window.performance.getEntriesByType('measure');
+          measures.forEach(measure => {
+            console.log(`${measure.name}: ${Math.round(measure.duration)}ms`);
+          });
+        }
+      });
+    </script>
+    
     <!-- GPT Engineer script must be before the main application script -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
-    
-    <!-- Remove initial loader when app is done -->
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Mark DOMContentLoaded
-        if (window.performance && window.performance.mark) {
-          window.performance.mark('dom-content-loaded');
-        }
-        
-        // Listen for app-loaded event
-        window.addEventListener('app-loaded', function() {
-          const loader = document.getElementById('initial-loader');
-          if (loader) {
-            loader.style.opacity = '0';
-            loader.style.transition = 'opacity 0.3s ease';
-            setTimeout(() => {
-              loader.style.display = 'none';
-            }, 300);
-          }
-          
-          // Mark app-loaded performance
-          if (window.performance && window.performance.mark) {
-            window.performance.mark('app-loaded');
-            window.performance.measure('app-total-load', 'app-init-start', 'app-loaded');
-          }
-        });
-        
-        // Fallback if event never fires
-        setTimeout(function() {
-          const loader = document.getElementById('initial-loader');
-          if (loader && loader.style.display !== 'none') {
-            loader.style.display = 'none';
-          }
-        }, 5000);
-      });
-    </script>
   </body>
 </html>
