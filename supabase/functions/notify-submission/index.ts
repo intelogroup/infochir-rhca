@@ -1,9 +1,5 @@
 
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
-import { Resend } from "npm:resend@2.0.0";
-
-// Create a Resend client for sending emails
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 // Define CORS headers
 const corsHeaders = {
@@ -15,6 +11,10 @@ const corsHeaders = {
 // Email notification recipient
 const NOTIFICATION_EMAIL = "jayveedz19@gmail.com";
 
+// Your native email service configuration
+const EMAIL_SERVICE_API_URL = "https://api.smtp2go.com/v3/email/send";
+const API_KEY = Deno.env.get("SMTP2GO_API_KEY");
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -25,11 +25,12 @@ serve(async (req) => {
     // Get the submission data
     const submissionData = await req.json();
     
-    console.log("[notify-submission] Received data:", JSON.stringify(submissionData));
-    console.log("[notify-submission] Preparing email notification for submission:", submissionData.title);
-    console.log("[notify-submission] Using Resend API key:", Deno.env.get("RESEND_API_KEY") ? "API key is set" : "API key is missing");
-    console.log("[notify-submission] Sending email to:", NOTIFICATION_EMAIL);
-
+    console.log("[notify-submission] Received data for notification:", {
+      title: submissionData.title,
+      type: submissionData.publication_type,
+      author: submissionData.corresponding_author_name
+    });
+    
     // Format the submission data for email
     const formattedDate = new Date().toLocaleString('fr-FR', {
       timeZone: 'UTC',
@@ -110,30 +111,81 @@ serve(async (req) => {
       </ul>
     `;
 
-    try {
-      console.log("[notify-submission] Attempting to send email...");
+    const textContent = `
+      Nouvelle soumission d'article
+
+      Une nouvelle soumission d'article a été reçue le ${formattedDate}.
       
-      // Send the notification email
-      const { data, error } = await resend.emails.send({
-        from: "InfoChir Notifications <onboarding@resend.dev>",
-        to: NOTIFICATION_EMAIL,
+      Détails de la soumission
+      Type de publication: ${submissionData.publication_type}
+      Titre: ${submissionData.title}
+      Auteurs: ${submissionData.authors}
+      Institution: ${submissionData.institution}
+      Mots-clés: ${submissionData.keywords}
+      Résumé: ${submissionData.abstract}
+      
+      Coordonnées de l'auteur correspondant
+      Nom: ${submissionData.corresponding_author_name}
+      Email: ${submissionData.corresponding_author_email}
+      Téléphone: ${submissionData.corresponding_author_phone}
+      Adresse: ${submissionData.corresponding_author_address}
+      
+      Fichiers
+      Fichiers d'article: ${submissionData.article_files_urls ? submissionData.article_files_urls.length : 0} fichier(s)
+      Images et annexes: ${submissionData.image_annexes_urls ? submissionData.image_annexes_urls.length : 0} fichier(s)
+      
+      Déclarations
+      Approbation éthique: ${submissionData.ethics_approval ? 'Oui' : 'Non'}
+      Absence de conflit d'intérêt: ${submissionData.no_conflict ? 'Oui' : 'Non'}
+      Travail original: ${submissionData.original_work ? 'Oui' : 'Non'}
+    `;
+
+    try {
+      console.log("[notify-submission] Attempting to send email notification using SMTP2GO...");
+      console.log("[notify-submission] API URL:", EMAIL_SERVICE_API_URL);
+      console.log("[notify-submission] API Key present:", !!API_KEY);
+      console.log("[notify-submission] Recipient:", NOTIFICATION_EMAIL);
+      
+      // Directly send the email using SMTP2Go API
+      const emailData = {
+        api_key: API_KEY,
+        to: [NOTIFICATION_EMAIL],
+        sender: "InfoChir <submissions@infochir.org>",
         subject: `Nouvelle soumission d'article: ${submissionData.title}`,
-        html: htmlContent,
+        html_body: htmlContent,
+        text_body: textContent,
+        custom_headers: [
+          {
+            header: "Reply-To",
+            value: submissionData.corresponding_author_email
+          }
+        ]
+      };
+      
+      const response = await fetch(EMAIL_SERVICE_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(emailData)
       });
-
-      if (error) {
-        console.error("[notify-submission] Error sending notification email:", error);
-        console.error("[notify-submission] Error details:", JSON.stringify(error));
-        throw new Error(`Failed to send email notification: ${error.message}`);
+      
+      const responseData = await response.json();
+      
+      console.log("[notify-submission] Email service response status:", response.status);
+      console.log("[notify-submission] Email service response:", responseData);
+      
+      if (!response.ok) {
+        throw new Error(`Email API responded with status ${response.status}: ${JSON.stringify(responseData)}`);
       }
-
-      console.log("[notify-submission] Email notification sent successfully:", data);
-      console.log("[notify-submission] Email ID:", data?.id);
+      
+      console.log("[notify-submission] Email notification sent successfully");
       
       return new Response(
         JSON.stringify({ 
           success: true,
-          message: "Email notification sent successfully" 
+          message: "Email notification sent successfully",
+          service_response: responseData
         }),
         { 
           status: 200, 
@@ -143,7 +195,18 @@ serve(async (req) => {
     } catch (emailErr) {
       console.error("[notify-submission] Exception while sending email:", emailErr);
       console.error("[notify-submission] Exception stack:", emailErr.stack);
-      throw emailErr; // Re-throw to be caught by outer try/catch
+      
+      // Try a backup method - direct email to a Gmail SMTP server
+      try {
+        console.log("[notify-submission] Attempting backup email method...");
+        
+        // Implement a backup email sending method here if needed
+        
+        throw new Error("Backup email method not implemented");
+      } catch (backupErr) {
+        console.error("[notify-submission] Backup email method also failed:", backupErr);
+        throw emailErr; // Re-throw the original error
+      }
     }
   } catch (err) {
     console.error("[notify-submission] Error in notify-submission function:", err);

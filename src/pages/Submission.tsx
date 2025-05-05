@@ -4,6 +4,7 @@ import { MainLayout } from "@/components/layouts/MainLayout";
 import { Form } from "@/components/ui/form";
 import { motion } from "framer-motion";
 import { FormErrors } from "@/components/admin/article-form/FormErrors";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 // Newly refactored components
 import { submissionFormSchema } from "@/components/submission/schema";
@@ -36,6 +37,15 @@ const Submission = () => {
 
   return (
     <MainLayout>
+      {isSubmitting && (
+        <LoadingSpinner 
+          fullScreen
+          text="Envoi de votre soumission en cours..."
+          variant="medical"
+          size="lg"
+        />
+      )}
+      
       <div className="relative min-h-screen">
         <div className="absolute inset-0 bg-gradient-to-b from-gray-50 to-white" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_70%,transparent_100%)]" />
@@ -50,7 +60,12 @@ const Submission = () => {
 
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                <div className="space-y-8 bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-gray-100">
+                <motion.div 
+                  className="space-y-8 bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-gray-100"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
                   {/* Display form errors */}
                   <FormErrors errors={{
                     ...formErrors,
@@ -84,7 +99,7 @@ const Submission = () => {
                   {formErrors.declarations && (
                     <p className="text-sm text-destructive">{formErrors.declarations}</p>
                   )}
-                </div>
+                </motion.div>
 
                 <SubmissionFormActions 
                   isSubmitting={isSubmitting}

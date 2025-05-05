@@ -8,7 +8,7 @@ interface LoadingSpinnerProps {
   className?: string;
   text?: string;
   fullScreen?: boolean;
-  variant?: "default" | "medical" | "fun";
+  variant?: "default" | "medical" | "primary" | "secondary";
 }
 
 export const LoadingSpinner = ({ 
@@ -37,7 +37,7 @@ export const LoadingSpinner = ({
   const loadingDots = ".".repeat(dotCount);
 
   const renderLoader = () => {
-    if (variant === "fun") {
+    if (variant === "secondary") {
       return (
         <div className="relative">
           <div className="absolute inset-0 flex items-center justify-center">
@@ -78,6 +78,26 @@ export const LoadingSpinner = ({
           <Loader2 
             className={cn(
               "animate-[spin_1.5s_ease-in-out_infinite] text-primary relative z-10",
+              sizeClasses[size],
+              className
+            )} 
+          />
+        </div>
+      );
+    }
+    
+    if (variant === "primary") {
+      return (
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="h-full w-full rounded-full border-t-2 border-b-2 border-blue-300/50 animate-[spin_2s_ease-out_infinite]"></div>
+          </div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="h-full w-full rounded-full border-r-2 border-l-2 border-blue-500/50 animate-[spin_3s_ease-in-out_infinite_reverse]"></div>
+          </div>
+          <Loader2 
+            className={cn(
+              "animate-[spin_1s_linear_infinite] relative z-10 text-blue-600",
               sizeClasses[size],
               className
             )} 

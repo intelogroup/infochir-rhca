@@ -24,4 +24,3 @@ verify_jwt = false
 
 [functions.notify-submission]
 verify_jwt = false
-
