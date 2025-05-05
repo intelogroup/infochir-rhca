@@ -12,7 +12,7 @@ const corsHeaders = {
 // Email notification recipient - updated to the specified email
 const NOTIFICATION_EMAIL = "jimkalinov@gmail.com";
 
-// Initialize Resend email client
+// Initialize Resend email client with the environment variable
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 serve(async (req) => {
@@ -144,9 +144,9 @@ serve(async (req) => {
       console.log("[notify-submission] Attempting to send email notification using Resend...");
       console.log("[notify-submission] Recipient:", NOTIFICATION_EMAIL);
       
-      // Send email using Resend
+      // Send email using Resend with your own verified domain
       const emailResponse = await resend.emails.send({
-        from: "InfoChir <submissions@infochir.org>",
+        from: "InfoChir <submissions@info-chir.org>",
         to: [NOTIFICATION_EMAIL],
         subject: `Nouvelle soumission d'article: ${submissionData.title}`,
         html: htmlContent,
@@ -183,7 +183,7 @@ serve(async (req) => {
         
         // Implement a simpler backup method with fewer headers and options
         const backupEmailResponse = await resend.emails.send({
-          from: "InfoChir <no-reply@infochir.org>",
+          from: "InfoChir <no-reply@info-chir.org>",
           to: [NOTIFICATION_EMAIL],
           subject: `BACKUP: Nouvelle soumission - ${submissionData.title}`,
           text: textContent,

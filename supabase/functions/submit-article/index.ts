@@ -1,13 +1,7 @@
 
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.48.1";
-
-// Define CORS headers
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS'
-};
+import { corsHeaders, handleCors } from "../_shared/cors.ts";
 
 // Create a Supabase client with the Admin key to bypass RLS
 const supabaseAdmin = createClient(
@@ -71,8 +65,9 @@ async function sendNotificationEmail(submissionData) {
 
 serve(async (req) => {
   // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+  const corsResponse = handleCors(req);
+  if (corsResponse) {
+    return corsResponse;
   }
   
   try {
