@@ -1,7 +1,8 @@
-// Service Worker for InfoChir application
-const CACHE_NAME = 'infochir-cache-v7';  // Increased cache version
 
-// Assets to cache immediately on install
+// Service Worker for InfoChir application
+const CACHE_NAME = 'infochir-cache-v8';  // Increased cache version
+
+// Assets to cache immediately on install - critical path
 const CRITICAL_ASSETS = [
   '/',
   '/index.html',
@@ -17,17 +18,6 @@ const CRITICAL_ASSETS = [
   'https://cdn.gpteng.co/gptengineer.js'
 ];
 
-// Secondary assets to cache in the background
-const SECONDARY_ASSETS = [
-  // Additional key assets that are often used
-  '/src/App.css',
-  // Common route assets
-  '/about',
-  '/rhca',
-  '/igm',
-  '/submission'
-];
-
 // CSP-safe fetch - doesn't modify headers that could conflict with CSP
 const safeFetch = (request) => {
   return fetch(request).then(response => {
@@ -36,7 +26,7 @@ const safeFetch = (request) => {
   });
 };
 
-// Install event - precache critical assets first, then secondary assets
+// Install event - precache critical assets
 self.addEventListener('install', event => {
   console.log('[ServiceWorker] Install');
   
@@ -44,26 +34,16 @@ self.addEventListener('install', event => {
   self.skipWaiting();
   
   // Add critical assets to cache immediately (blocking)
-  const criticalCachePromise = caches.open(CACHE_NAME)
-    .then(cache => {
-      console.log('[ServiceWorker] Pre-caching critical assets');
-      return cache.addAll(CRITICAL_ASSETS);
-    });
-    
-  // Wait for critical assets before activation
-  event.waitUntil(criticalCachePromise);
-  
-  // Cache secondary assets in the background (non-blocking)
-  criticalCachePromise.then(() => {
+  event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('[ServiceWorker] Caching secondary assets in background');
-        return cache.addAll(SECONDARY_ASSETS);
+        console.log('[ServiceWorker] Pre-caching critical assets');
+        return cache.addAll(CRITICAL_ASSETS);
       })
       .catch(err => {
-        console.warn('[ServiceWorker] Secondary caching failed:', err);
-      });
-  });
+        console.warn('[ServiceWorker] Caching failed:', err);
+      })
+  );
 });
 
 // Activate event - clean up old caches and take control immediately
@@ -96,7 +76,7 @@ self.addEventListener('fetch', event => {
     return;
   }
   
-  // Skip cross-origin requests for cdn.gpteng.co and allow them to proceed normally
+  // Skip cross-origin requests for specific domains and allow them to proceed normally
   if (!event.request.url.startsWith(self.location.origin) && 
       (event.request.url.includes('cdn.gpteng.co') || 
        event.request.url.includes('stripe.com') || 
@@ -141,54 +121,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Optimized strategy for images - stale-while-revalidate with background update
-  if (event.request.destination === 'image') {
-    event.respondWith(
-      caches.match(event.request)
-        .then(cachedResponse => {
-          // Return cached response immediately if available
-          if (cachedResponse) {
-            // Update cache in the background
-            safeFetch(event.request)
-              .then(networkResponse => {
-                if (networkResponse && networkResponse.status === 200) {
-                  caches.open(CACHE_NAME)
-                    .then(cache => cache.put(event.request, networkResponse));
-                }
-              })
-              .catch(() => {});
-            
-            return cachedResponse;
-          }
-          
-          // Not in cache, get from network
-          return safeFetch(event.request)
-            .then(networkResponse => {
-              if (!networkResponse || networkResponse.status !== 200) {
-                return networkResponse;
-              }
-              
-              // Cache the new response
-              const responseToCache = networkResponse.clone();
-              caches.open(CACHE_NAME)
-                .then(cache => cache.put(event.request, responseToCache));
-              
-              return networkResponse;
-            })
-            .catch(error => {
-              console.error('[ServiceWorker] Fetch error:', error);
-              // No fallback for images that fail to load
-              return new Response('Image not available', { 
-                status: 404, 
-                headers: {'Content-Type': 'text/plain'} 
-              });
-            });
-        })
-    );
-    return;
-  }
-
-  // For CSS/JS assets, use cache-first approach for fast loading
+  // For JS/CSS assets, use cache-first for fast loading but update cache in background
   if (event.request.destination === 'script' || event.request.destination === 'style') {
     event.respondWith(
       caches.match(event.request)
@@ -222,15 +155,17 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // For all other assets, use stale-while-revalidate
+  // For all other assets, use stale-while-revalidate strategy
   event.respondWith(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.match(event.request).then(cachedResponse => {
-        const fetchPromise = fetch(event.request)
+    caches.match(event.request)
+      .then(cachedResponse => {
+        // Return cached response immediately if available
+        const fetchPromise = safeFetch(event.request)
           .then(networkResponse => {
-            // Only cache successful responses
-            if (networkResponse && networkResponse.status === 200) {
-              cache.put(event.request, networkResponse.clone());
+            // Update cache with new response
+            if (networkResponse.status === 200) {
+              caches.open(CACHE_NAME)
+                .then(cache => cache.put(event.request, networkResponse.clone()));
             }
             return networkResponse;
           })
@@ -239,10 +174,8 @@ self.addEventListener('fetch', event => {
             throw error;
           });
         
-        // Return cached response immediately if available, otherwise wait for network
         return cachedResponse || fetchPromise;
-      });
-    })
+      })
   );
 });
 
@@ -253,26 +186,11 @@ self.addEventListener('message', event => {
   }
 });
 
-// Clean up old caches periodically
-self.addEventListener('periodicsync', event => {
-  if (event.tag === 'cache-cleanup') {
-    event.waitUntil(
-      caches.keys().then(cacheNames => {
-        return Promise.all(
-          cacheNames.filter(cacheName => cacheName !== CACHE_NAME)
-            .map(cacheToDelete => caches.delete(cacheToDelete))
-        );
-      })
-    );
-  }
-});
-
 // Improve performance by preloading the next likely page
 self.addEventListener('fetch', event => {
   // Additional optimization for preloading the next page
   if (event.request.mode === 'navigate') {
     // Detect navigation patterns and preload the likely next page
-    // This is a simplistic implementation - could be improved with analytics data
     if (event.request.url.includes('/rhca')) {
       // After RHCA, users often go to IGM
       fetch('/igm').catch(() => {});
@@ -281,4 +199,14 @@ self.addEventListener('fetch', event => {
       fetch('/submission').catch(() => {});
     }
   }
+});
+
+// Force clients to update when a new service worker is activated
+self.addEventListener('activate', event => {
+  // After activation, force all clients to use this version
+  self.clients.matchAll().then(clients => {
+    clients.forEach(client => {
+      client.navigate(client.url);
+    });
+  });
 });

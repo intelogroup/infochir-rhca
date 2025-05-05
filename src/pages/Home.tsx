@@ -19,16 +19,24 @@ const Home = () => {
   // Signal that the app has loaded completely to clear timeout in main.tsx
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Mark page as loaded
-      setIsLoaded(true);
-      window.dispatchEvent(new Event('app-loaded'));
+      // Mark page as loaded immediately to prevent double refresh issues
+      if (!isLoaded) {
+        setIsLoaded(true);
+        window.dispatchEvent(new Event('app-loaded'));
+        logger.info("Home page mounted and app-loaded event dispatched");
+      }
       
-      // Test all email configurations in development mode or on initial deployment
+      // Test email configurations only in development mode
       if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
         testEmailConfig();
       }
     }
-  }, []);
+    
+    // Cleanup function
+    return () => {
+      logger.info("Home page unmounted");
+    };
+  }, [isLoaded]);
 
   // Function to test email configuration
   const testEmailConfig = async () => {
@@ -66,77 +74,12 @@ const Home = () => {
           } else if (data.primary_domain_status?.verified) {
             toast.success('Le domaine est correctement vérifié');
           }
-          
-          // Check if both are working correctly
-          if (data.api_key_status?.valid && data.primary_domain_status?.verified) {
-            // Send a test email to verify everything works
-            testEmailNotifications();
-          }
         }
       }
     } catch (error) {
       logger.error('Error checking email configuration:', error);
       toast.dismiss();
       toast.error("Erreur lors de la vérification de la configuration email");
-    }
-  };
-  
-  // Function to test both newsletter and submission notifications
-  const testEmailNotifications = async () => {
-    try {
-      logger.info("Testing email notifications");
-      
-      // Test sending a newsletter notification
-      const newsletterResult = await supabase.functions.invoke('newsletter-subscribe', {
-        body: {
-          name: "Test User",
-          email: "test@example.com",
-          phone: "0123456789"
-        }
-      });
-      
-      if (newsletterResult.error) {
-        logger.error('Newsletter notification test failed:', newsletterResult.error);
-        toast.error(`Erreur de notification newsletter: ${newsletterResult.error.message}`);
-      } else {
-        logger.info('Newsletter notification test result:', newsletterResult.data);
-        
-        if (newsletterResult.data?.notification?.sent) {
-          toast.success('Test de notification newsletter réussi');
-        } else if (newsletterResult.data?.notification) {
-          toast.warning(`Notification newsletter: ${newsletterResult.data.notification.message || 'Non envoyé'}`);
-        }
-      }
-      
-      // Test submission notification (only in DEV environment to prevent duplicate data)
-      if (import.meta.env.DEV) {
-        const submissionResult = await supabase.functions.invoke('notify-submission', {
-          body: {
-            title: "Article de test",
-            publication_type: "TEST",
-            corresponding_author_name: "Test Author",
-            corresponding_author_email: "test@example.com",
-            abstract: "Test abstract for notification verification",
-            submission_date: new Date().toISOString()
-          }
-        });
-        
-        if (submissionResult.error) {
-          logger.error('Submission notification test failed:', submissionResult.error);
-          toast.error(`Erreur de notification soumission: ${submissionResult.error.message}`);
-        } else {
-          logger.info('Submission notification test result:', submissionResult.data);
-          
-          if (submissionResult.data?.success) {
-            toast.success('Test de notification de soumission réussi');
-          } else {
-            toast.warning(`Notification de soumission: ${submissionResult.data?.message || 'Non envoyé'}`);
-          }
-        }
-      }
-    } catch (error) {
-      logger.error('Error testing email notifications:', error);
-      toast.error("Erreur lors du test des notifications email");
     }
   };
 

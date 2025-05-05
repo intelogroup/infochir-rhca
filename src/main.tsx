@@ -16,8 +16,10 @@ const isDebugMode = process.env.NODE_ENV === 'development' ||
                    process.env.VITE_APP_PREVIEW === 'true' ||
                    process.env.DEBUG === 'true';
 
-// Preload critical images
+// Preload critical images but don't block rendering
 const preloadCriticalImages = () => {
+  if (typeof window === 'undefined') return;
+  
   // These images should be preloaded with high priority
   const criticalImages = [
     '/lovable-uploads/75589792-dc14-4d53-9aae-5796c76a3b39.png',
@@ -25,32 +27,19 @@ const preloadCriticalImages = () => {
     '/lovable-uploads/745435b6-9abc-4051-b168-cf77c96ed9a0.png'
   ];
   
-  // Preload secondary images with lower priority
-  const secondaryImages = [
-    // Add secondary images here
-  ];
-  
-  // Create Image objects to force preload
-  criticalImages.forEach(src => {
-    const img = new Image();
-    img.src = src;
-    img.fetchPriority = 'high';
-    img.onload = () => console.log(`Preloaded critical image: ${src}`);
-  });
-  
-  // Load secondary images with lower priority
+  // Use requestIdleCallback to avoid blocking the main thread
   if (window.requestIdleCallback) {
     window.requestIdleCallback(() => {
-      secondaryImages.forEach(src => {
+      criticalImages.forEach(src => {
         const img = new Image();
         img.src = src;
-        img.fetchPriority = 'low';
+        img.fetchPriority = 'high';
       });
     });
   } else {
     // Fallback for browsers without requestIdleCallback
     setTimeout(() => {
-      secondaryImages.forEach(src => {
+      criticalImages.forEach(src => {
         const img = new Image();
         img.src = src;
       });
@@ -58,18 +47,15 @@ const preloadCriticalImages = () => {
   }
 };
 
-// Pre-initialize critical resources before mounting React
+// Pre-initialize critical resources asynchronously
 const preFetchResources = async () => {
   try {
-    // Prefetch critical data
+    // Prefetch critical data in parallel
     queryClient.prefetchQuery({
       queryKey: ['criticalData'],
       queryFn: () => Promise.resolve(true),
       staleTime: Infinity
     });
-    
-    // Preload critical images immediately
-    preloadCriticalImages();
     
     return true;
   } catch (err) {
@@ -99,18 +85,24 @@ const initApp = async () => {
   performance.mark('app-init');
   
   const rootElement = document.getElementById("root");
-  if (!rootElement) return;
+  if (!rootElement) {
+    console.error("Root element not found");
+    return;
+  }
   
-  // Start prefetching in parallel with React initialization
+  // Create React root
+  const root = ReactDOM.createRoot(rootElement);
+  
+  // Start prefetching in parallel but don't wait
   preFetchResources().catch(console.error);
   
-  // Create React root and render immediately
-  const root = ReactDOM.createRoot(rootElement);
+  // Preload images in background
+  preloadCriticalImages();
   
   // Render the app without delay
   root.render(<AppWithProviders />);
   
-  // Hide the initial loader once React has rendered
+  // Hide the initial loader after a short delay to ensure React has started rendering
   const initialLoader = document.getElementById('initial-loader');
   if (initialLoader) {
     initialLoader.style.opacity = '0';
@@ -122,6 +114,11 @@ const initApp = async () => {
   
   performance.mark('app-render-complete');
   performance.measure('app-render-time', 'app-init', 'app-render-complete');
+  
+  // Explicitly dispatch app-loaded event after React has rendered
+  setTimeout(() => {
+    window.dispatchEvent(new Event('app-loaded'));
+  }, 100);
 };
 
 // Initialize immediately
@@ -140,23 +137,25 @@ if (typeof window !== 'undefined') {
       initialLoader.style.display = 'none';
     }
     
-    // If the app is still not fully loaded after 10 seconds, show refresh button
+    // If the app is still not fully loaded after 8 seconds (reduced from 10), show refresh button
     const refreshTimeout = setTimeout(() => {
       const appRoot = document.getElementById('root');
       const appLoaded = appRoot && appRoot.childElementCount > 0;
       
       if (!appLoaded) {
+        console.error("App failed to load properly within timeout period");
         const refreshButton = document.createElement('button');
         refreshButton.textContent = 'Page bloquée? Cliquez pour rafraîchir';
         refreshButton.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:9999;padding:10px 15px;background:#f44336;color:white;border:none;border-radius:4px;cursor:pointer;';
         refreshButton.onclick = () => window.location.reload();
         document.body.appendChild(refreshButton);
       }
-    }, 10000);
+    }, 8000);
     
     // Clear the timeout if the app loads successfully
     window.addEventListener('app-loaded', () => {
       clearTimeout(refreshTimeout);
+      console.log("App successfully loaded and rendered");
       
       // Log performance metrics
       if (performance.getEntriesByType) {
@@ -166,3 +165,4 @@ if (typeof window !== 'undefined') {
     });
   });
 }
+

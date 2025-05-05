@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" class="no-js">
   <head>
@@ -8,7 +9,7 @@
     <meta name="author" content="Infochir-RHCA" />
     
     <!-- Content Security Policy -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://*.supabase.co https://*.stripe.com vitals.vercel-insights.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.stripe.com https://m.stripe.network https://cdn.gpteng.co https://vitals.vercel-insights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; frame-src 'self' https://*.stripe.com https://*.supabase.co; media-src 'self' data:; object-src 'none'; worker-src 'self' blob:;" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' wss://*.lovable.ai https://*.supabase.co https://*.stripe.com vitals.vercel-insights.com; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.stripe.com https://m.stripe.network https://cdn.gpteng.co https://vitals.vercel-insights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; frame-src 'self' https://*.stripe.com https://*.supabase.co; media-src 'self' data:; object-src 'none'; worker-src 'self' blob:;" />
     
     <!-- Open Graph tags -->
     <meta property="og:title" content="Infochir-RHCA | Votre Espace Scientifique En Ligne" />
@@ -65,27 +66,16 @@
           performance.getEntriesByType = performance.getEntriesByType || function(){ return []; };
         }
         
-        // Prefetch critical routes
-        const routes = ['/', '/about', '/rhca', '/igm', '/submission'];
-        routes.forEach(route => {
-          const link = document.createElement('link');
-          link.rel = 'prefetch';
-          link.href = route;
-          link.as = 'document';
-          document.head.appendChild(link);
-        });
-        
-        // Check for service worker support and register it
+        // Register service worker eagerly
         if ('serviceWorker' in navigator) {
-          window.addEventListener('load', function() {
+          try {
             navigator.serviceWorker.register('/sw.js')
-              .then(function(registration) {
-                console.log('ServiceWorker registration successful with scope: ', registration.scope);
-              })
               .catch(function(err) {
                 console.log('ServiceWorker registration failed: ', err);
               });
-          });
+          } catch (e) {
+            console.error('Service worker registration error:', e);
+          }
         }
       })();
     </script>
@@ -115,16 +105,8 @@
       .fade-in { animation: fadeIn 0.5s ease forwards; }
     </style>
     
-    <!-- Service Worker Registration -->
-    <script>
-      if ('serviceWorker' in navigator) {
-        // Register service worker immediately
-        navigator.serviceWorker.register('/sw.js', {scope: '/'})
-          .catch(function(error) {
-            console.error('ServiceWorker registration failed:', error);
-          });
-      }
-    </script>
+    <!-- GPT Engineer script must be before the main application script -->
+    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
   </head>
 
   <body>
@@ -169,7 +151,6 @@
         // Report to analytics if it's too slow (over 3 seconds)
         if (pageLoadTime > 3000) {
           console.warn('Page load time is too slow:', pageLoadTime);
-          // Here you could send this data to your analytics service
         }
       };
       
@@ -200,24 +181,8 @@
           }
         }, 100);
       });
-      
-      // Set up app-loaded event listener
-      window.addEventListener('app-loaded', function() {
-        // Log the time it took for the app to load
-        if (window.performance && window.performance.mark) {
-          window.performance.mark('app-loaded');
-          window.performance.measure('app-load-time', 'app-init-start', 'app-loaded');
-          
-          const measures = window.performance.getEntriesByType('measure');
-          measures.forEach(measure => {
-            console.log(`${measure.name}: ${Math.round(measure.duration)}ms`);
-          });
-        }
-      });
     </script>
     
-    <!-- GPT Engineer script must be before the main application script -->
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
