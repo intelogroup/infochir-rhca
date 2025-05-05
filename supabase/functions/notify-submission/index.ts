@@ -1,5 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import { Resend } from "npm:resend@2.0.0";
 
 // Define CORS headers
 const corsHeaders = {
@@ -11,9 +12,8 @@ const corsHeaders = {
 // Email notification recipient - updated to the specified email
 const NOTIFICATION_EMAIL = "jimkalinov@gmail.com";
 
-// Your native email service configuration
-const EMAIL_SERVICE_API_URL = "https://api.smtp2go.com/v3/email/send";
-const API_KEY = Deno.env.get("SMTP2GO_API_KEY");
+// Initialize Resend email client
+const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -141,42 +141,23 @@ serve(async (req) => {
     `;
 
     try {
-      console.log("[notify-submission] Attempting to send email notification using SMTP2GO...");
-      console.log("[notify-submission] API URL:", EMAIL_SERVICE_API_URL);
-      console.log("[notify-submission] API Key present:", !!API_KEY);
+      console.log("[notify-submission] Attempting to send email notification using Resend...");
       console.log("[notify-submission] Recipient:", NOTIFICATION_EMAIL);
       
-      // Directly send the email using SMTP2Go API
-      const emailData = {
-        api_key: API_KEY,
+      // Send email using Resend
+      const emailResponse = await resend.emails.send({
+        from: "InfoChir <submissions@infochir.org>",
         to: [NOTIFICATION_EMAIL],
-        sender: "InfoChir <submissions@infochir.org>",
         subject: `Nouvelle soumission d'article: ${submissionData.title}`,
-        html_body: htmlContent,
-        text_body: textContent,
-        custom_headers: [
-          {
-            header: "Reply-To",
-            value: submissionData.corresponding_author_email
-          }
-        ]
-      };
-      
-      const response = await fetch(EMAIL_SERVICE_API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(emailData)
+        html: htmlContent,
+        text: textContent,
+        reply_to: submissionData.corresponding_author_email
       });
       
-      const responseData = await response.json();
+      console.log("[notify-submission] Email service response:", emailResponse);
       
-      console.log("[notify-submission] Email service response status:", response.status);
-      console.log("[notify-submission] Email service response:", responseData);
-      
-      if (!response.ok) {
-        throw new Error(`Email API responded with status ${response.status}: ${JSON.stringify(responseData)}`);
+      if (emailResponse.error) {
+        throw new Error(`Email API responded with error: ${JSON.stringify(emailResponse.error)}`);
       }
       
       console.log("[notify-submission] Email notification sent successfully");
@@ -185,7 +166,7 @@ serve(async (req) => {
         JSON.stringify({ 
           success: true,
           message: "Email notification sent successfully",
-          service_response: responseData
+          service_response: emailResponse
         }),
         { 
           status: 200, 
@@ -196,39 +177,29 @@ serve(async (req) => {
       console.error("[notify-submission] Exception while sending email:", emailErr);
       console.error("[notify-submission] Exception stack:", emailErr.stack);
       
-      // Try a backup method - direct email using alternative method
+      // Try a backup method using the same Resend API but with a simpler email
       try {
         console.log("[notify-submission] Attempting backup email method...");
         
         // Implement a simpler backup method with fewer headers and options
-        const backupEmailData = {
-          api_key: API_KEY,
+        const backupEmailResponse = await resend.emails.send({
+          from: "InfoChir <no-reply@infochir.org>",
           to: [NOTIFICATION_EMAIL],
-          sender: "InfoChir <no-reply@infochir.org>",
           subject: `BACKUP: Nouvelle soumission - ${submissionData.title}`,
-          text_body: textContent,
-        };
-        
-        const backupResponse = await fetch(EMAIL_SERVICE_API_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(backupEmailData)
+          text: textContent,
         });
         
-        const backupResponseData = await backupResponse.json();
-        console.log("[notify-submission] Backup email response:", backupResponseData);
+        console.log("[notify-submission] Backup email response:", backupEmailResponse);
         
-        if (!backupResponse.ok) {
-          throw new Error(`Backup email also failed with status ${backupResponse.status}`);
+        if (backupEmailResponse.error) {
+          throw new Error(`Backup email also failed with error: ${JSON.stringify(backupEmailResponse.error)}`);
         }
         
         return new Response(
           JSON.stringify({ 
             success: true,
             message: "Email notification sent via backup method",
-            service_response: backupResponseData
+            service_response: backupEmailResponse
           }),
           { 
             status: 200, 
