@@ -18,10 +18,16 @@ export const WelcomeModal = () => {
     const hasSeenWelcome = localStorage.getItem("hasSeenSpecialNote");
 
     if (!hasSeenWelcome) {
-      // If not, show the welcome dialog after a short delay
+      // If not, show the welcome dialog after a longer delay to ensure content loads first
       const timer = setTimeout(() => {
-        setIsOpen(true);
-      }, 500); // Reduced delay for faster pop-up
+        // Check if the page is already loaded before showing modal
+        if (document.readyState === 'complete') {
+          setIsOpen(true);
+        } else {
+          // If page isn't loaded yet, wait for load event
+          window.addEventListener('load', () => setIsOpen(true), { once: true });
+        }
+      }, 1500); // Increased delay to ensure content loads first
 
       return () => clearTimeout(timer);
     }

@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
@@ -64,20 +63,28 @@ const preFetchResources = async () => {
   }
 };
 
-// App with providers (memoized for performance)
-const AppWithProviders = React.memo(() => (
+// Split the app rendering into main app and modals
+const AppCore = React.memo(() => (
   <React.StrictMode>
     <ErrorBoundary name="AppRoot">
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <App />
-          <WelcomeModal />
-          <ProductInfoModal />
           <Toaster richColors position="top-center" closeButton />
         </BrowserRouter>
       </QueryClientProvider>
     </ErrorBoundary>
   </React.StrictMode>
+));
+
+// Separate modals from core app
+const ModalsContainer = React.memo(() => (
+  <ErrorBoundary name="Modals">
+    <BrowserRouter>
+      <WelcomeModal />
+      <ProductInfoModal />
+    </BrowserRouter>
+  </ErrorBoundary>
 ));
 
 // Initialize application with performance optimizations
@@ -99,8 +106,8 @@ const initApp = async () => {
   // Preload images in background
   preloadCriticalImages();
   
-  // Render the app without delay
-  root.render(<AppWithProviders />);
+  // Render the core app first
+  root.render(<AppCore />);
   
   // Hide the initial loader after a short delay to ensure React has started rendering
   const initialLoader = document.getElementById('initial-loader');
@@ -118,7 +125,19 @@ const initApp = async () => {
   // Explicitly dispatch app-loaded event after React has rendered
   setTimeout(() => {
     window.dispatchEvent(new Event('app-loaded'));
-  }, 100);
+    
+    // Render modals only after core app is loaded
+    const modalsRoot = document.getElementById('modals-root');
+    if (!modalsRoot) {
+      // Create modals container if it doesn't exist
+      const modalsContainer = document.createElement('div');
+      modalsContainer.id = 'modals-root';
+      document.body.appendChild(modalsContainer);
+      
+      const modalsRootDom = ReactDOM.createRoot(modalsContainer);
+      modalsRootDom.render(<ModalsContainer />);
+    }
+  }, 200);
 };
 
 // Initialize immediately
@@ -165,4 +184,3 @@ if (typeof window !== 'undefined') {
     });
   });
 }
-

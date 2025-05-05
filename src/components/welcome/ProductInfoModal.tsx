@@ -29,10 +29,16 @@ export const ProductInfoModal = () => {
     const hasSeenInfo = localStorage.getItem(storageKey);
 
     if (!hasSeenInfo) {
-      // Show the product info dialog after a short delay
+      // Show the product info dialog after the page has fully loaded
       const timer = setTimeout(() => {
-        setIsOpen(true);
-      }, 1500);
+        // Only show modal if page is completely loaded
+        if (document.readyState === 'complete') {
+          setIsOpen(true);
+        } else {
+          // If page isn't loaded yet, wait for load event
+          window.addEventListener('load', () => setIsOpen(true), { once: true });
+        }
+      }, 2500); // Increased delay to prioritize content loading
 
       return () => clearTimeout(timer);
     }
