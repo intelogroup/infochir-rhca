@@ -16,30 +16,73 @@ export const AppRoutes = () => {
   // Log the current route for debugging
   React.useEffect(() => {
     logger.info(`Route changed to: ${location.pathname}`);
+    
+    // Signal that route change is complete
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('route-changed'));
+    }
   }, [location]);
 
-  // Preload components when possible to improve performance
+  // Preload components for immediate routes when app first loads
   React.useEffect(() => {
-    // Attempt to preload next likely routes based on current route
-    const preloadNextRoutes = () => {
-      // This is a simple example; could be expanded based on navigation patterns
-      if (location.pathname === '/') {
-        // Preload common routes from home page
+    // Preload all top-level routes immediately
+    const preloadTopLevelRoutes = () => {
+      routes.forEach(route => {
+        if (route.element) {
+          // Just accessing the element property triggers preload for lazy components
+          const _ = route.element;
+        }
+      });
+    };
+    
+    // Run preloading immediately on mount
+    preloadTopLevelRoutes();
+    
+    // Also preload when idle
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(() => {
         routes.forEach(route => {
-          if (['about', 'rhca', 'igm'].includes(route.path)) {
-            // Just accessing the element property triggers preload
+          if (route.children) {
+            route.children.forEach(childRoute => {
+              if (childRoute.element) {
+                const _ = childRoute.element;
+              }
+            });
+          }
+        });
+      });
+    }
+  }, []);
+
+  // Preload next likely routes based on current route
+  React.useEffect(() => {
+    // Preload related routes when a specific route is active
+    const preloadRelatedRoutes = () => {
+      // Home -> About, RHCA, IGM are common paths
+      if (location.pathname === '/') {
+        ['about', 'rhca', 'igm'].forEach(path => {
+          const route = routes[0]?.children?.find(r => r.path === path);
+          if (route && route.element) {
             const _ = route.element;
           }
         });
       }
+      
+      // RHCA -> RHCA article detail is a common path
+      if (location.pathname === '/rhca') {
+        const route = routes[0]?.children?.find(r => r.path === 'rhca/article/:id');
+        if (route && route.element) {
+          const _ = route.element;
+        }
+      }
     };
     
-    // Use requestIdleCallback for non-critical preloading if available
+    // Use requestIdleCallback for non-critical preloading
     if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      (window as any).requestIdleCallback(preloadNextRoutes);
+      (window as any).requestIdleCallback(preloadRelatedRoutes, { timeout: 2000 });
     } else {
-      // Fallback to setTimeout
-      setTimeout(preloadNextRoutes, 1000);
+      // Fallback to setTimeout with a short delay
+      setTimeout(preloadRelatedRoutes, 500);
     }
   }, [location.pathname]);
 

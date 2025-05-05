@@ -1,8 +1,8 @@
 
 # Redirect all routes to index.html for client-side routing
-/* /index.html 200
+/*    /index.html   200
 
-# Handle specific legacy redirects if needed
+# Handle specific legacy redirects
 /revues              /rhca            301
 /atlas               /adc             301
 /gazette             /igm             301

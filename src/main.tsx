@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
@@ -46,6 +45,35 @@ const LoadingIndicator = () => (
   </div>
 );
 
+// Pre-initialize critical resources before mounting React
+const preFetchResources = async () => {
+  try {
+    // Prefetch critical data
+    await queryClient.prefetchQuery({
+      queryKey: ['criticalData'],
+      queryFn: () => Promise.resolve(true),
+      staleTime: Infinity
+    });
+    
+    // Preload critical images
+    const criticalImages = [
+      '/lovable-uploads/75589792-dc14-4d53-9aae-5796c76a3b39.png',
+      '/lovable-uploads/4e3c1f79-c9cc-4d01-8520-1af84d350a2a.png',
+      '/lovable-uploads/745435b6-9abc-4051-b168-cf77c96ed9a0.png'
+    ];
+    
+    criticalImages.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+    
+    return true;
+  } catch (err) {
+    console.error('Error prefetching resources:', err);
+    return false;
+  }
+};
+
 // App with providers
 const AppWithProviders = () => (
   <React.Suspense fallback={<LoadingIndicator />}>
@@ -62,45 +90,62 @@ const AppWithProviders = () => (
   </React.Suspense>
 );
 
-// Initialize application - ensure the DOM is fully loaded before rendering
-const initApp = () => {
+// Initialize application synchronously to prevent flashing
+const initApp = async () => {
   const rootElement = document.getElementById("root");
-  if (rootElement) {
-    // Clear any existing content
-    rootElement.innerHTML = '';
-    
-    // Add a loading indicator while React initializes
-    const loadingElement = document.createElement('div');
-    loadingElement.id = 'app-loading';
-    rootElement.appendChild(loadingElement);
-    
-    // Create React root and render the app
-    const root = ReactDOM.createRoot(rootElement);
-    
-    // Render with React.StrictMode only in development
-    if (process.env.NODE_ENV === 'development') {
-      root.render(
-        <React.StrictMode>
-          <AppWithProviders />
-        </React.StrictMode>
-      );
-    } else {
-      root.render(<AppWithProviders />);
-    }
+  if (!rootElement) return;
+  
+  // Clear any existing content
+  rootElement.innerHTML = '';
+  
+  // Show loading indicator instantly
+  const loadingContainer = document.createElement('div');
+  loadingContainer.id = 'app-loading';
+  loadingContainer.innerHTML = `
+    <div style="display:flex;justify-content:center;align-items:center;height:100vh;background:linear-gradient(to bottom,#f8fafc,#ffffff)">
+      <div style="text-align:center">
+        <div style="border:4px solid #f3f3f3;border-top:4px solid #3498db;border-radius:50%;width:40px;height:40px;margin:0 auto 20px auto;animation:spin 1s linear infinite"></div>
+        <p style="font-family:sans-serif;color:#666">Chargement de l'application...</p>
+      </div>
+    </div>
+    <style>
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+  `;
+  rootElement.appendChild(loadingContainer);
+  
+  // Pre-fetch critical resources in parallel with React initialization
+  preFetchResources().catch(console.error);
+  
+  // Create React root and render the app
+  const root = ReactDOM.createRoot(rootElement);
+  
+  // Render without StrictMode in production for better performance
+  if (process.env.NODE_ENV === 'development') {
+    root.render(
+      <React.StrictMode>
+        <AppWithProviders />
+      </React.StrictMode>
+    );
+  } else {
+    root.render(<AppWithProviders />);
   }
 };
 
-// Initialize immediately (modern browsers)
+// Initialize immediately
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initApp);
 } else {
   initApp();
 }
 
-// Register the service worker - moved to after app initialization for better performance
+// Register the service worker after app is initialized and stable
 if ('serviceWorker' in navigator && !isDebugMode) {
   window.addEventListener('load', () => {
-    // Delay service worker registration to improve initial page load
+    // Delay service worker registration to improve initial load
     setTimeout(() => {
       navigator.serviceWorker.register('/sw.js').then(registration => {
         if (isDebugMode) {

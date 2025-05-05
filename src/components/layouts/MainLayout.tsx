@@ -18,28 +18,37 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   const showFooter = location.pathname === "/" || location.pathname === "/index";
   const [isLoading, setIsLoading] = useState(false);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  const prevPathRef = React.useRef(location.pathname);
 
   // Initialize analytics
   useAnalytics();
 
-  // Handle initial load and navigation
-  useEffect(() => {
-    // Skip loading state for initial render after component is mounted
-    if (!initialLoadComplete) {
-      setInitialLoadComplete(true);
-      return;
+  // Notify that the app has loaded when component mounts
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('app-loaded'));
     }
+    setInitialLoadComplete(true);
+  }, []);
+
+  // Handle navigation loading states
+  React.useEffect(() => {
+    // Don't show loading on initial render
+    if (!initialLoadComplete) return;
     
-    // Only show loading state for navigation (not initial page load)
-    setIsLoading(true);
-    
-    // Short timeout to simulate minimum loading time and prevent flickering
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 300);
-    
-    return () => clearTimeout(timer);
-  }, [location.pathname]);
+    // Only show loading when changing paths (not on initial load)
+    if (location.pathname !== prevPathRef.current) {
+      setIsLoading(true);
+      
+      // Short timeout to simulate minimum loading time and prevent flickering
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+        prevPathRef.current = location.pathname;
+      }, 300);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [location.pathname, initialLoadComplete]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f8fafc] to-white">

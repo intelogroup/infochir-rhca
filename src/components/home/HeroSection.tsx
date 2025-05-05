@@ -1,3 +1,4 @@
+
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState, useRef } from "react";
@@ -16,29 +17,75 @@ const gradients = [
   'from-[#0C4A6E] via-[#307045] to-[#307045]'
 ];
 
+// Track preloaded state globally to avoid redundant preloading
 let imagesPreloaded = false;
+const preloadedImagesMap = new Map();
+
+// Preload all hero images and store them in memory
+const preloadHeroImages = () => {
+  if (imagesPreloaded) return Promise.resolve(true);
+  
+  const preloadPromises = images.map((src, index) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        preloadedImagesMap.set(index, img);
+        resolve(true);
+      };
+      img.onerror = () => resolve(false);
+      img.src = src;
+    });
+  });
+  
+  return Promise.all(preloadPromises).then(() => {
+    imagesPreloaded = true;
+    return true;
+  });
+};
+
+// Start preloading immediately outside of the component
+preloadHeroImages();
 
 export const HeroSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [cycleCount, setCycleCount] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
+  const [areImagesLoaded, setAreImagesLoaded] = useState(imagesPreloaded);
   const sectionRef = useRef(null);
   const intervalRef = useRef(null);
   const navigate = useNavigate();
 
-  const startImageCycle = () => {
-    if (cycleCount >= 3) return;
-    
-    intervalRef.current = setInterval(() => {
-      setCurrentIndex((prev) => {
-        const nextIndex = (prev + 1) % images.length;
-        if (nextIndex === 0) {
-          setCycleCount(count => count + 1);
-        }
-        return nextIndex;
+  // Preload images as soon as component mounts
+  useEffect(() => {
+    if (!areImagesLoaded) {
+      preloadHeroImages().then(() => {
+        setAreImagesLoaded(true);
       });
-    }, 8000);
+    }
+  }, [areImagesLoaded]);
+
+  const startImageCycle = () => {
+    if (cycleCount >= 3 || !areImagesLoaded) return;
+    
+    if (intervalRef.current === null) {
+      intervalRef.current = setInterval(() => {
+        setCurrentIndex((prev) => {
+          const nextIndex = (prev + 1) % images.length;
+          if (nextIndex === 0) {
+            setCycleCount(count => count + 1);
+          }
+          return nextIndex;
+        });
+      }, 8000);
+    }
   };
+
+  // Start image cycle when component becomes visible and images are loaded
+  useEffect(() => {
+    if (isVisible && areImagesLoaded) {
+      startImageCycle();
+    }
+  }, [isVisible, areImagesLoaded]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -46,7 +93,7 @@ export const HeroSection = () => {
         if (isVisible !== entry.isIntersecting) {
           setIsVisible(entry.isIntersecting);
           
-          if (entry.isIntersecting) {
+          if (entry.isIntersecting && areImagesLoaded) {
             setCycleCount(0);
             startImageCycle();
           } else if (intervalRef.current) {
@@ -71,7 +118,7 @@ export const HeroSection = () => {
         observer.unobserve(sectionRef.current);
       }
     };
-  }, [isVisible]);
+  }, [isVisible, areImagesLoaded]);
 
   useEffect(() => {
     if (cycleCount >= 3 && intervalRef.current) {
@@ -79,21 +126,6 @@ export const HeroSection = () => {
       intervalRef.current = null;
     }
   }, [cycleCount]);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined' && !imagesPreloaded) {
-      imagesPreloaded = true;
-      
-      const timer = setTimeout(() => {
-        images.forEach((src) => {
-          const img = new Image();
-          img.src = src;
-        });
-      }, 1000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, []);
 
   return (
     <section ref={sectionRef} className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(70vh-4rem)] sm:min-h-[calc(80vh-4rem-30px)] pt-16 sm:pt-20 md:pt-28 z-0 content-visibility-auto">
