@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { z } from "zod";
 import { createLogger } from "@/lib/error-logger";
@@ -27,6 +27,36 @@ export const NewsletterSubscribeFooter = () => {
   const [name, setName] = useState("");
   const [errors, setErrors] = useState<{name?: string; email?: string}>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isOffline, setIsOffline] = useState(false);
+
+  // Check online status and update state
+  useEffect(() => {
+    const handleOnlineStatusChange = () => {
+      setIsOffline(!navigator.onLine);
+    };
+
+    // Set initial state
+    setIsOffline(!navigator.onLine);
+
+    // Add event listeners for online/offline status
+    window.addEventListener('online', handleOnlineStatusChange);
+    window.addEventListener('offline', handleOnlineStatusChange);
+
+    // Check for pending subscriptions when online
+    if (navigator.onLine) {
+      const timer = setTimeout(() => {
+        trySubmitPendingSubscriptions();
+      }, 5000); // 5 second delay
+      
+      return () => clearTimeout(timer);
+    }
+
+    // Clean up event listeners
+    return () => {
+      window.removeEventListener('online', handleOnlineStatusChange);
+      window.removeEventListener('offline', handleOnlineStatusChange);
+    };
+  }, []);
 
   const validateForm = () => {
     try {
@@ -99,7 +129,12 @@ export const NewsletterSubscribeFooter = () => {
     try {
       logger.log("Submitting newsletter subscription:", { name: subscriberName, email: subscriberEmail });
       
-      // Try the edge function
+      // Check if we're offline
+      if (!navigator.onLine) {
+        throw new Error("Vous êtes hors ligne");
+      }
+      
+      // Try the edge function with improved error handling
       const response = await supabase.functions.invoke("newsletter-subscribe", {
         body: { name: subscriberName, email: subscriberEmail }
       }).catch(error => {
@@ -132,7 +167,12 @@ export const NewsletterSubscribeFooter = () => {
       storeLocalSubscription();
       
       if (showToasts) {
-        toast.error(`Une erreur est survenue, mais votre demande a été enregistrée localement`);
+        // More user-friendly error message
+        if (!navigator.onLine) {
+          toast.info(`Vous êtes hors ligne. Votre inscription a été enregistrée localement et sera envoyée lorsque vous serez à nouveau en ligne.`);
+        } else {
+          toast.error(`Une erreur est survenue, mais votre demande a été enregistrée localement`);
+        }
       }
       
       return { success: false, error };
@@ -164,16 +204,6 @@ export const NewsletterSubscribeFooter = () => {
       setIsSubmitting(false);
     }
   };
-
-  // Try to submit any pending subscriptions when component mounts
-  useState(() => {
-    // Small delay to avoid immediate API calls on page load
-    const timer = setTimeout(() => {
-      trySubmitPendingSubscriptions();
-    }, 5000); // 5 second delay
-
-    return () => clearTimeout(timer);
-  });
 
   return (
     <div className="space-y-4">
@@ -226,6 +256,12 @@ export const NewsletterSubscribeFooter = () => {
           />
           {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
         </div>
+
+        {isOffline && (
+          <div className="text-amber-600 text-xs bg-amber-50 p-2 rounded border border-amber-200">
+            Vous êtes actuellement hors ligne. Votre inscription sera enregistrée localement.
+          </div>
+        )}
 
         <motion.div
           whileHover={{ scale: 1.02 }}
