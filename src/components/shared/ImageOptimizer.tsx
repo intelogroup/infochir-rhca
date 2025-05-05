@@ -112,9 +112,22 @@ export const ImageOptimizer = ({
           const vol = match[1].padStart(2, '0');
           const issue = match[2].padStart(2, '0');
           
-          // Try simplified filename formats
-          const simplifiedUrl = `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/rhca_covers/RHCA_vol_${vol}_no_${issue}.png`;
-          logger.log(`[ImageOptimizer] Trying simplified filename: ${simplifiedUrl}`);
+          // Try additional formats - now try other extension types too
+          const alternativeFormats = [
+            `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/rhca_covers/RHCA_vol_${vol}_no_${issue}.png`,
+            `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/rhca_covers/RHCA_vol_${vol}_no_${issue}.jpg`,
+            `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/rhca-covers/RHCA_vol_${vol}_no_${issue}.png`,
+            `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/rhca-covers/RHCA_vol_${vol}_no_${issue}.jpg`,
+            // Try alternatives without leading zeros
+            `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/rhca_covers/RHCA_vol_${parseInt(vol)}_no_${parseInt(issue)}.png`,
+            `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/rhca-covers/RHCA_vol_${parseInt(vol)}_no_${parseInt(issue)}.png`
+          ];
+          
+          logger.log(`[ImageOptimizer] Trying ${alternativeFormats.length} alternative formats for vol ${vol} no ${issue}`);
+          
+          // Use a static URL for now (best attempt), but set up for future sequential tries
+          const simplifiedUrl = alternativeFormats[0];
+          logger.log(`[ImageOptimizer] Trying simplified format: ${simplifiedUrl}`);
           setRetryCount(prev => prev + 1);
           setCurrentSrc(simplifiedUrl);
           return;

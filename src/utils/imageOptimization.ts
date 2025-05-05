@@ -10,7 +10,7 @@ export const getOptimizedImageUrl = (src: string | undefined, width: number, hei
     if (src.includes('supabase.co') || src.includes('llxzstqejdrplmxdjxlu')) {
       // Remove any existing width/height params to avoid duplicates
       const baseUrl = src.split('?')[0];
-      return `${baseUrl}?width=${width}&height=${height}`;
+      return `${baseUrl}?width=${width}&height=${height}&quality=80`;
     }
     
     return src;
@@ -43,6 +43,8 @@ export const getAlternativeRHCAUrl = (src: string): string | null => {
         // Try different date formats and separators
         variations.push(`RHCA_vol_${vol}_no_${issue}.png`);
         variations.push(`RHCA_vol_${vol}_no_${issue}.jpg`);
+        variations.push(`RHCA_vol_${vol}_no_${issue}_cover.png`);
+        variations.push(`RHCA_vol_${vol}_no_${issue}_cover.jpg`);
         
         // Try with different casing
         variations.push(`rhca_vol_${vol}_no_${issue}.png`);
@@ -53,6 +55,10 @@ export const getAlternativeRHCAUrl = (src: string): string | null => {
           variations.push(`RHCA_vol_${parseInt(vol)}_no_${parseInt(issue)}.png`);
           variations.push(`RHCA_vol_${parseInt(vol)}_no_${parseInt(issue)}.jpg`);
         }
+        
+        // Try with "issue_" prefix instead of "no_"
+        variations.push(`RHCA_vol_${vol}_issue_${issue}.png`);
+        variations.push(`RHCA_vol_${vol}_issue_${issue}.jpg`);
       }
     }
     
@@ -204,4 +210,34 @@ export const getReliableImageUrl = async (
     console.error('[getReliableImageUrl] Error resolving image URL:', error);
     return primaryUrl || fallbackUrl || null;
   }
+};
+
+// Helper function to get all possible RHCA cover image URLs for a volume and issue
+export const getAllPossibleRHCACoverUrls = (volume: string, issue: string): string[] => {
+  const possibleUrls = [];
+  
+  // Ensure volume and issue are padded with leading zeros
+  const paddedVol = String(volume).padStart(2, '0');
+  const paddedIssue = String(issue).padStart(2, '0');
+  
+  // Generate variations with both buckets and both image formats
+  const buckets = ['rhca_covers', 'rhca-covers'];
+  const formats = ['png', 'jpg'];
+  const patterns = [
+    `RHCA_vol_${paddedVol}_no_${paddedIssue}`,
+    `RHCA_vol_${paddedVol}_no_${paddedIssue}_cover`,
+    `RHCA_vol_${parseInt(volume)}_no_${parseInt(issue)}`,
+    `rhca_vol_${paddedVol}_no_${paddedIssue}`,
+    `rhca_vol_${parseInt(volume)}_no_${parseInt(issue)}`
+  ];
+  
+  for (const bucket of buckets) {
+    for (const pattern of patterns) {
+      for (const format of formats) {
+        possibleUrls.push(`https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/${bucket}/${pattern}.${format}`);
+      }
+    }
+  }
+  
+  return possibleUrls;
 };
