@@ -13,6 +13,11 @@ import { createLogger } from "@/lib/error-logger";
 
 const logger = createLogger('HomePage');
 
+// Storage key for last check timestamp
+const EMAIL_CONFIG_CHECK_KEY = 'email_config_last_check';
+// Minimum time between checks (12 hours in milliseconds)
+const MIN_CHECK_INTERVAL = 12 * 60 * 60 * 1000;
+
 const Home = () => {
   const [isLoaded, setIsLoaded] = React.useState(false);
 
@@ -26,9 +31,12 @@ const Home = () => {
         logger.info("Home page mounted and app-loaded event dispatched");
       }
       
-      // Test email configurations only in development mode
+      // Only test email configurations in development mode and respect rate limits
       if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
-        testEmailConfig();
+        const shouldCheckEmailConfig = checkIfShouldTestEmailConfig();
+        if (shouldCheckEmailConfig) {
+          testEmailConfig();
+        }
       }
     }
     
@@ -38,13 +46,39 @@ const Home = () => {
     };
   }, [isLoaded]);
 
+  // Function to determine if we should test email configuration based on last check time
+  const checkIfShouldTestEmailConfig = () => {
+    try {
+      const lastCheckStr = localStorage.getItem(EMAIL_CONFIG_CHECK_KEY);
+      if (!lastCheckStr) {
+        return true; // No previous check, so we should check
+      }
+      
+      const lastCheck = parseInt(lastCheckStr, 10);
+      const now = Date.now();
+      
+      // Only check if enough time has passed since last check
+      if (now - lastCheck > MIN_CHECK_INTERVAL) {
+        return true;
+      }
+      
+      logger.info(`Skipping email config check, last check was ${Math.round((now - lastCheck) / (60 * 60 * 1000))} hours ago`);
+      return false;
+    } catch (error) {
+      logger.error('Error checking email config timestamp:', error);
+      return false; // On error, don't check to prevent potential issues
+    }
+  };
+
   // Function to test email configuration
   const testEmailConfig = async () => {
     try {
       logger.info("Testing email configuration");
-      toast.loading("Vérification de la configuration des emails...");
       
-      const { data, error } = await fetch(
+      // Record the check time immediately to prevent parallel requests
+      localStorage.setItem(EMAIL_CONFIG_CHECK_KEY, Date.now().toString());
+      
+      const response = await fetch(
         'https://llxzstqejdrplmxdjxlu.supabase.co/functions/v1/check-email-config', 
         {
           method: 'GET',
@@ -52,34 +86,33 @@ const Home = () => {
             'Content-Type': 'application/json'
           }
         }
-      ).then(res => res.json());
+      );
+      
+      if (!response.ok) {
+        logger.error('Email config test failed with status:', response.status);
+        return;
+      }
+      
+      const { data, error } = await response.json();
       
       if (error) {
         logger.error('Email config test failed:', error);
-        toast.dismiss();
         toast.error(`Erreur de configuration email: ${error.message || JSON.stringify(error)}`);
       } else if (data) {
         logger.info('Email configuration status:', data);
-        toast.dismiss();
         
         // Check API key status
         if (!data.api_key_status?.valid) {
           toast.error(`Problème de clé API: ${data.api_key_status?.message}`);
-        } else {
-          toast.success('La clé API Resend est correctement configurée');
-          
-          // Check domain verification
-          if (data.primary_domain_status && !data.primary_domain_status.verified) {
-            toast.warning(`Problème de vérification du domaine: ${data.primary_domain_status?.message}`);
-          } else if (data.primary_domain_status?.verified) {
-            toast.success('Le domaine est correctement vérifié');
-          }
+        }
+        
+        // Check domain verification
+        if (data.primary_domain_status && !data.primary_domain_status.verified) {
+          toast.warning(`Problème de vérification du domaine: ${data.primary_domain_status?.message}`);
         }
       }
     } catch (error) {
       logger.error('Error checking email configuration:', error);
-      toast.dismiss();
-      toast.error("Erreur lors de la vérification de la configuration email");
     }
   };
 

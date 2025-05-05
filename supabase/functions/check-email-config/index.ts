@@ -32,7 +32,8 @@ serve(async (req) => {
       );
     }
     
-    // Check both domains we're using
+    // Only check domain if API key is valid
+    // This prevents multiple API calls that could trigger rate limiting
     const primaryDomainResult = await checkDomainVerification('info-chir.org');
     console.log("[check-email-config] Domain verification result:", primaryDomainResult);
     

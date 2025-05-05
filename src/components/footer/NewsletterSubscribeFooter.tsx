@@ -13,6 +13,9 @@ import { supabase } from "@/integrations/supabase/client";
 // Create a logger for this component
 const logger = createLogger("NewsletterSubscribeFooter");
 
+// Storage key for pending subscriptions
+const PENDING_SUBSCRIPTIONS_KEY = 'pendingSubscriptions';
+
 // Define validation schema for the newsletter form
 const newsletterSchema = z.object({
   name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
@@ -43,6 +46,99 @@ export const NewsletterSubscribeFooter = () => {
     }
   };
 
+  // Helper function to store subscription locally
+  const storeLocalSubscription = () => {
+    try {
+      const localSubscriptions = JSON.parse(localStorage.getItem(PENDING_SUBSCRIPTIONS_KEY) || '[]');
+      localSubscriptions.push({ name, email, date: new Date().toISOString() });
+      localStorage.setItem(PENDING_SUBSCRIPTIONS_KEY, JSON.stringify(localSubscriptions));
+      logger.log("Subscription stored locally");
+      return true;
+    } catch (err) {
+      logger.error("Failed to store subscription locally:", err);
+      return false;
+    }
+  };
+
+  // Function to try submitting pending subscriptions
+  const trySubmitPendingSubscriptions = async () => {
+    try {
+      const pendingStr = localStorage.getItem(PENDING_SUBSCRIPTIONS_KEY);
+      if (!pendingStr) return;
+
+      const pending = JSON.parse(pendingStr);
+      if (!Array.isArray(pending) || pending.length === 0) return;
+
+      logger.log(`Attempting to submit ${pending.length} pending subscriptions`);
+      
+      // Only try to submit one subscription per page load to avoid rate limiting
+      const subscription = pending[0];
+      const result = await submitSubscription(subscription.name, subscription.email, false);
+      
+      if (result.success) {
+        // Remove the successful submission from pending
+        const updatedPending = pending.slice(1);
+        localStorage.setItem(PENDING_SUBSCRIPTIONS_KEY, JSON.stringify(updatedPending));
+        logger.log(`Successfully submitted pending subscription, ${updatedPending.length} remaining`);
+        
+        if (updatedPending.length === 0) {
+          toast.success("Toutes les inscriptions en attente ont été traitées", { duration: 3000 });
+        }
+      }
+    } catch (err) {
+      logger.error("Error processing pending subscriptions:", err);
+    }
+  };
+
+  // Function to handle actual subscription submission
+  const submitSubscription = async (
+    subscriberName: string, 
+    subscriberEmail: string,
+    showToasts = true
+  ) => {
+    try {
+      logger.log("Submitting newsletter subscription:", { name: subscriberName, email: subscriberEmail });
+      
+      // Try the edge function
+      const response = await supabase.functions.invoke("newsletter-subscribe", {
+        body: { name: subscriberName, email: subscriberEmail }
+      }).catch(error => {
+        logger.warn("Edge function call failed:", error);
+        throw error;
+      });
+      
+      const { data, error } = response;
+      
+      if (error) {
+        logger.error("Newsletter subscription error:", error);
+        throw new Error(error.message || "Erreur lors de l'inscription");
+      }
+      
+      logger.log("Newsletter subscription response:", data);
+      
+      if (showToasts) {
+        if (data.existingSubscription) {
+          toast.info("Cette adresse email est déjà inscrite à notre newsletter");
+        } else {
+          toast.success("Merci pour votre inscription à notre newsletter!");
+        }
+      }
+      
+      return { success: true, data };
+    } catch (error: any) {
+      logger.error("Newsletter subscription error:", error);
+      
+      // Store failed submission locally
+      storeLocalSubscription();
+      
+      if (showToasts) {
+        toast.error(`Une erreur est survenue, mais votre demande a été enregistrée localement`);
+      }
+      
+      return { success: false, error };
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -54,74 +150,30 @@ export const NewsletterSubscribeFooter = () => {
     const toastId = toast.loading("Traitement de votre inscription...");
 
     try {
-      logger.log("Submitting newsletter subscription:", { name, email });
+      const result = await submitSubscription(name, email);
       
-      // Fallback to direct API call if edge function fails
-      let response;
+      toast.dismiss(toastId);
       
-      try {
-        // Try the edge function first
-        response = await supabase.functions.invoke("newsletter-subscribe", {
-          body: { name, email }
-        });
-      } catch (edgeFunctionError) {
-        // Log the edge function error
-        logger.warn("Edge function failed, using direct API:", edgeFunctionError);
-        
-        // Simulate a successful subscription if the edge function fails
-        response = {
-          data: { 
-            success: true,
-            message: "Votre inscription a bien été enregistrée",
-            existingSubscription: false
-          },
-          error: null
-        };
-        
-        // Store the subscription in local storage as a fallback
-        const localSubscriptions = JSON.parse(localStorage.getItem('pendingSubscriptions') || '[]');
-        localSubscriptions.push({ name, email, date: new Date().toISOString() });
-        localStorage.setItem('pendingSubscriptions', JSON.stringify(localSubscriptions));
-      }
-      
-      const { data, error } = response;
-      
-      if (error) {
-        logger.error("Newsletter subscription error:", error);
-        throw new Error(error.message || "Erreur lors de l'inscription");
-      }
-      
-      logger.log("Newsletter subscription response:", data);
-      
-      if (data.existingSubscription) {
-        toast.info("Cette adresse email est déjà inscrite à notre newsletter", { id: toastId });
-      } else {
-        toast.success("Merci pour votre inscription à notre newsletter!", {
-          id: toastId
-        });
-      }
-      
-      // Reset form
+      // Reset form on success or if stored locally
       setEmail("");
       setName("");
     } catch (error: any) {
-      logger.error("Newsletter subscription error:", error);
-      toast.error(`Une erreur est survenue, mais votre demande a été enregistrée localement`, {
-        id: toastId
-      });
-      
-      // Store the subscription in local storage as a fallback
-      const localSubscriptions = JSON.parse(localStorage.getItem('pendingSubscriptions') || '[]');
-      localSubscriptions.push({ name, email, date: new Date().toISOString() });
-      localStorage.setItem('pendingSubscriptions', JSON.stringify(localSubscriptions));
-      
-      // Reset form anyway
-      setEmail("");
-      setName("");
+      logger.error("Unexpected error during newsletter submission:", error);
+      toast.error(`Une erreur inattendue est survenue`, { id: toastId });
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  // Try to submit any pending subscriptions when component mounts
+  useState(() => {
+    // Small delay to avoid immediate API calls on page load
+    const timer = setTimeout(() => {
+      trySubmitPendingSubscriptions();
+    }, 5000); // 5 second delay
+
+    return () => clearTimeout(timer);
+  });
 
   return (
     <div className="space-y-4">
