@@ -25,7 +25,10 @@ serve(async (req) => {
     // Get the submission data
     const submissionData = await req.json();
     
-    console.log("Preparing email notification for submission:", submissionData.title);
+    console.log("[notify-submission] Received data:", JSON.stringify(submissionData));
+    console.log("[notify-submission] Preparing email notification for submission:", submissionData.title);
+    console.log("[notify-submission] Using Resend API key:", Deno.env.get("RESEND_API_KEY") ? "API key is set" : "API key is missing");
+    console.log("[notify-submission] Sending email to:", NOTIFICATION_EMAIL);
 
     // Format the submission data for email
     const formattedDate = new Date().toLocaleString('fr-FR', {
@@ -107,37 +110,49 @@ serve(async (req) => {
       </ul>
     `;
 
-    // Send the notification email
-    const { data, error } = await resend.emails.send({
-      from: "InfoChir Notifications <onboarding@resend.dev>",
-      to: NOTIFICATION_EMAIL,
-      subject: `Nouvelle soumission d'article: ${submissionData.title}`,
-      html: htmlContent,
-    });
+    try {
+      console.log("[notify-submission] Attempting to send email...");
+      
+      // Send the notification email
+      const { data, error } = await resend.emails.send({
+        from: "InfoChir Notifications <onboarding@resend.dev>",
+        to: NOTIFICATION_EMAIL,
+        subject: `Nouvelle soumission d'article: ${submissionData.title}`,
+        html: htmlContent,
+      });
 
-    if (error) {
-      console.error("Error sending notification email:", error);
-      throw new Error(`Failed to send email notification: ${error.message}`);
-    }
-
-    console.log("Email notification sent successfully:", data);
-    
-    return new Response(
-      JSON.stringify({ 
-        success: true,
-        message: "Email notification sent successfully" 
-      }),
-      { 
-        status: 200, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      if (error) {
+        console.error("[notify-submission] Error sending notification email:", error);
+        console.error("[notify-submission] Error details:", JSON.stringify(error));
+        throw new Error(`Failed to send email notification: ${error.message}`);
       }
-    );
+
+      console.log("[notify-submission] Email notification sent successfully:", data);
+      console.log("[notify-submission] Email ID:", data?.id);
+      
+      return new Response(
+        JSON.stringify({ 
+          success: true,
+          message: "Email notification sent successfully" 
+        }),
+        { 
+          status: 200, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
+    } catch (emailErr) {
+      console.error("[notify-submission] Exception while sending email:", emailErr);
+      console.error("[notify-submission] Exception stack:", emailErr.stack);
+      throw emailErr; // Re-throw to be caught by outer try/catch
+    }
   } catch (err) {
-    console.error("Error in notify-submission function:", err);
+    console.error("[notify-submission] Error in notify-submission function:", err);
+    console.error("[notify-submission] Error stack:", err.stack);
     
     return new Response(
       JSON.stringify({ 
         error: err.message || 'Internal server error',
+        errorStack: err.stack,
         success: false 
       }),
       { 

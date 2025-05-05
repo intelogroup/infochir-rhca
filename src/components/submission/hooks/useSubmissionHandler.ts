@@ -4,6 +4,10 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { SubmissionFormValues } from "../schema";
+import { createLogger } from "@/lib/error-logger";
+
+// Create a logger specifically for submissions
+const logger = createLogger("SubmissionHandler");
 
 export const useSubmissionHandler = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,6 +42,16 @@ export const useSubmissionHandler = () => {
       const { data: sessionData } = await supabase.auth.getSession();
       const userId = sessionData?.session?.user?.id;
       
+      logger.info("Starting submission process", {
+        publicationType: values.publicationType,
+        title: values.title,
+        userId: userId || "anonymous"
+      });
+      
+      if (!userId) {
+        logger.info("Anonymous submission: user is not authenticated");
+      }
+      
       // Prepare submission data
       const submissionData = {
         publication_type: values.publicationType,
@@ -61,41 +75,64 @@ export const useSubmissionHandler = () => {
       };
 
       // Try to insert directly first (will work if RLS policies allow anonymous inserts)
-      let { data, error } = await supabase
-        .from('article_submissions')
-        .insert(submissionData)
-        .select();
+      try {
+        logger.info("Attempting direct submission to database");
+        let { data, error } = await supabase
+          .from('article_submissions')
+          .insert(submissionData)
+          .select();
 
-      // If direct insertion fails due to RLS, call an edge function to bypass RLS
-      if (error && (error.code === '42501' || error.code === '401')) {
-        console.log("Direct submission failed due to RLS, trying edge function approach");
-        
-        // Call our edge function to handle the submission
-        const { data: funcData, error: funcError } = await supabase.functions.invoke(
-          'submit-article',
-          {
-            body: submissionData
+        // If direct insertion fails due to RLS, call an edge function to bypass RLS
+        if (error) {
+          logger.error("Direct submission error:", error);
+          
+          if (error.code === '42501' || error.code === '401') {
+            logger.info("Direct submission failed due to RLS, trying edge function approach");
+            
+            // Call our edge function to handle the submission
+            logger.info("Calling submit-article edge function");
+            const { data: funcData, error: funcError } = await supabase.functions.invoke(
+              'submit-article',
+              {
+                body: submissionData
+              }
+            );
+            
+            if (funcError) {
+              logger.error('Edge function error:', funcError);
+              toast.dismiss();
+              toast.error("Une erreur est survenue lors de l'envoi de votre soumission");
+              return { success: false, error: funcError };
+            }
+            
+            logger.info("Edge function submission successful", funcData);
+            
+            if (funcData.notification_sent === false) {
+              logger.warn("Email notification was not sent but submission was saved");
+              toast.dismiss();
+              toast.success("Votre soumission a été envoyée avec succès, mais l'email de notification n'a pas pu être envoyé.");
+            } else {
+              logger.info("Submission and notification successful");
+              toast.dismiss();
+              toast.success("Votre soumission a été envoyée avec succès!");
+            }
+            
+            data = funcData;
+            error = null;
+          } else {
+            throw error; // Re-throw other errors to be caught by outer catch
           }
-        );
-        
-        if (funcError) {
-          console.error('Edge function error:', funcError);
+        } else {
+          logger.info("Direct submission successful");
           toast.dismiss();
-          toast.error("Une erreur est survenue lors de l'envoi de votre soumission");
-          return { success: false, error: funcError };
+          toast.success("Votre soumission a été envoyée avec succès!");
         }
-        
-        data = funcData;
-        error = null;
-      } else if (error) {
-        console.error('Submission error:', error);
+      } catch (submissionError) {
+        logger.error('Submission error:', submissionError);
         toast.dismiss();
         toast.error("Une erreur est survenue lors de l'envoi de votre soumission");
-        return { success: false, error };
+        return { success: false, error: submissionError };
       }
-
-      toast.dismiss();
-      toast.success("Votre soumission a été envoyée avec succès!");
       
       // Determine where to redirect based on publication type
       if (values.publicationType === 'RHCA') {
@@ -106,7 +143,7 @@ export const useSubmissionHandler = () => {
       
       return { success: true };
     } catch (error) {
-      console.error('Submission error:', error);
+      logger.error('Submission error:', error);
       toast.dismiss();
       toast.error("Une erreur est survenue lors de l'envoi de votre soumission");
       return { success: false, error };
