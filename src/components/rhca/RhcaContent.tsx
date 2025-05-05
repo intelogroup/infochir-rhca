@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { RHCASidebar } from './components/RHCASidebar';
 import { RhcaGrid } from './RhcaGrid';
 import { useRHCAArticles } from './hooks/useRHCAArticles';
@@ -14,10 +14,45 @@ export const RhcaContent: React.FC = () => {
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const { articles, loading, error, refetch } = useRHCAArticles();
+  const [isClient, setIsClient] = useState(false);
+  
+  // Ensure we have a stable component tree on initial render
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
   
   const toggleViewMode = () => {
     setViewMode(prev => prev === "grid" ? "table" : "grid");
   };
+  
+  // Default UI to show while loading client-side
+  const staticLayout = (
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-8">
+      <div className="lg:col-span-3 order-1 lg:order-1">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-[#41b06e]">Articles RHCA</h2>
+          <div className="flex flex-col sm:flex-row gap-2 sm:items-center w-full sm:w-auto">
+            <div className="relative flex-1 sm:w-64 md:w-72">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <div className="w-full h-10 bg-gray-100 rounded-md animate-pulse"></div>
+            </div>
+            <div className="w-10 h-10 bg-gray-100 rounded-md animate-pulse"></div>
+          </div>
+        </div>
+        <div className="min-h-[50vh] flex flex-col items-center justify-center py-10">
+          <LoadingSpinner variant="medical" size="lg" text="Chargement des articles RHCA..." />
+        </div>
+      </div>
+      <div className="lg:col-span-1 order-2 lg:order-2 mb-6 lg:mb-0">
+        <div className="bg-gray-50 p-4 rounded-lg animate-pulse h-[300px]"></div>
+      </div>
+    </div>
+  );
+  
+  // Show static layout on server or while client-side JavaScript initializes
+  if (!isClient) {
+    return staticLayout;
+  }
   
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-4 lg:gap-8">

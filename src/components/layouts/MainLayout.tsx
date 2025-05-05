@@ -1,12 +1,11 @@
 
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import BackToTop from "@/components/navigation/BackToTop";
 import { useAnalytics } from "@/hooks/use-analytics";
-import { motion, AnimatePresence } from "framer-motion";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export interface MainLayoutProps {
@@ -18,15 +17,15 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   const showFooter = location.pathname === "/" || location.pathname === "/index";
   const [isLoading, setIsLoading] = useState(false);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
-  const prevPathRef = React.useRef(location.pathname);
-  const navbarRef = React.useRef<HTMLDivElement>(null);
-  const contentRef = React.useRef<HTMLDivElement>(null);
+  const prevPathRef = useRef(location.pathname);
+  const navbarRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   // Initialize analytics
   useAnalytics();
 
   // Mark initial load as complete and notify that the app has loaded
-  React.useEffect(() => {
+  useEffect(() => {
     setInitialLoadComplete(true);
     
     // Notify that the app has loaded
@@ -53,13 +52,13 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   }, []);
 
   // Handle navigation loading states
-  React.useEffect(() => {
+  useEffect(() => {
     // Only show loading when changing paths (not on initial load)
     if (initialLoadComplete && location.pathname !== prevPathRef.current) {
       console.log(`Navigation: ${prevPathRef.current} -> ${location.pathname}`);
       setIsLoading(true);
       
-      // Increased timeout for smoother transitions
+      // Reduced timeout for smoother transitions
       const timer = setTimeout(() => {
         setIsLoading(false);
         prevPathRef.current = location.pathname;
@@ -67,16 +66,16 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         // Dispatch route change event
         window.dispatchEvent(new Event('route-changed'));
         console.log(`Navigation complete: ${location.pathname}`);
-      }, 300); // Increased from 150ms to 300ms for more reliable loading
+      }, 150); // Reduced from 300ms to 150ms for faster transitions
       
       return () => clearTimeout(timer);
     }
   }, [location.pathname, initialLoadComplete]);
 
   // Calculate the height offset for the main content based on navbar height
-  const [navbarHeight, setNavbarHeight] = React.useState('4rem');
+  const [navbarHeight, setNavbarHeight] = useState('4rem');
   
-  React.useEffect(() => {
+  useEffect(() => {
     if (navbarRef.current) {
       const updateNavHeight = () => {
         const height = `${navbarRef.current?.offsetHeight || 64}px`;
@@ -90,14 +89,14 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   }, []);
 
   // Ensure content is visible even if animations fail
-  React.useEffect(() => {
+  useEffect(() => {
     // Safety timeout to ensure content is shown even if animations fail
     const safetyTimer = setTimeout(() => {
       if (isLoading) {
         console.log('Safety timeout triggered - forcing content to display');
         setIsLoading(false);
       }
-    }, 2000);
+    }, 800); // Reduced from 2000ms to 800ms
     
     return () => clearTimeout(safetyTimer);
   }, [isLoading]);
@@ -113,40 +112,24 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         style={{ minHeight: `calc(100vh - ${navbarHeight})` }}
         ref={contentRef}
       >
-        <AnimatePresence mode="wait" initial={false}>
-          {isLoading ? (
-            <motion.div
-              key="loading"
-              className="flex items-center justify-center min-h-[50vh]"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <LoadingSpinner 
-                variant="primary"
-                size="lg"
-                text="Chargement..."
-              />
-            </motion.div>
-          ) : (
-            <motion.div
-              key={location.pathname}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="w-full"
-            >
-              {children || <Outlet />}
-              
-              {/* Fallback content in case children or Outlet fail to render */}
-              <div id="content-fallback" style={{ display: 'none' }}>
-                {location.pathname === '/' && <div className="text-center p-8">Page d'accueil</div>}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {isLoading ? (
+          <div className="flex items-center justify-center min-h-[50vh] transition-opacity duration-300">
+            <LoadingSpinner 
+              variant="primary"
+              size="lg"
+              text="Chargement..."
+            />
+          </div>
+        ) : (
+          <div className="w-full transition-opacity duration-300">
+            {children || <Outlet />}
+            
+            {/* Fallback content in case children or Outlet fail to render */}
+            <div id="content-fallback" style={{ display: 'none' }}>
+              {location.pathname === '/' && <div className="text-center p-8">Page d'accueil</div>}
+            </div>
+          </div>
+        )}
       </main>
       
       {showFooter && <Footer />}

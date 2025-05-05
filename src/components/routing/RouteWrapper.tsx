@@ -27,19 +27,13 @@ export const RouteWrapper = ({ component: Component }: RouteWrapperProps) => {
     // Log route change for debugging
     logger.info(`RouteWrapper: Rendering route ${location.pathname}`);
     
-    // Mark component as loaded
-    const timer = setTimeout(() => {
-      if (!isLoaded) {
-        setIsLoaded(true);
-        logger.info(`RouteWrapper: Component for ${location.pathname} loaded`);
-      }
-    }, 100);
+    // Mark component as loaded immediately to avoid delay
+    setIsLoaded(true);
     
     return () => {
-      clearTimeout(timer);
       logger.info(`RouteWrapper: Unmounting route ${location.pathname}`);
     };
-  }, [location.pathname, isLoaded]);
+  }, [location.pathname]);
 
   return (
     <ErrorBoundary 
