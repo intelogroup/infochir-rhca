@@ -1,6 +1,6 @@
 
 // Service Worker for InfoChir application
-const CACHE_NAME = 'infochir-cache-v3';  // Increment cache version
+const CACHE_NAME = 'infochir-cache-v4';  // Increment cache version
 
 // Assets to cache on install
 const PRECACHE_ASSETS = [
@@ -8,18 +8,22 @@ const PRECACHE_ASSETS = [
   '/index.html',
   '/favicon.ico',
   '/og-image.png',
-  // Add critical CSS/JS assets that should be cached
-  '/src/index.css'
+  // Critical CSS/JS assets
+  '/src/index.css',
+  // Critical images
+  '/lovable-uploads/75589792-dc14-4d53-9aae-5796c76a3b39.png',
+  '/lovable-uploads/4e3c1f79-c9cc-4d01-8520-1af84d350a2a.png',
+  '/lovable-uploads/745435b6-9abc-4051-b168-cf77c96ed9a0.png'
 ];
 
-// Install event - precache static assets but don't block activation
+// Install event - precache static assets
 self.addEventListener('install', event => {
   console.log('[ServiceWorker] Install');
   
   // Skip waiting to ensure the new service worker activates immediately
   self.skipWaiting();
   
-  // Precache in background, don't block installation
+  // Precache in background
   const precachePromise = caches.open(CACHE_NAME)
     .then(cache => {
       console.log('[ServiceWorker] Pre-caching offline page');
@@ -30,7 +34,6 @@ self.addEventListener('install', event => {
     });
     
   // Don't wait for precaching to complete before activating
-  // This prevents the service worker from blocking the main thread
   event.waitUntil(precachePromise);
 });
 
@@ -67,81 +70,47 @@ self.addEventListener('fetch', event => {
   // Skip API and Supabase requests - always use network for these
   if (event.request.url.includes('/api/') || 
       event.request.url.includes('/_supabase/') || 
-      event.request.url.includes('/rest/')) {
+      event.request.url.includes('/rest/') ||
+      event.request.url.includes('/functions/')) {
     return;
   }
 
   // For initial page loads, use network-first with fast timeout fallback
   if (event.request.mode === 'navigate') {
     event.respondWith(
-      Promise.race([
-        // Network request with timeout
-        new Promise((resolve, reject) => {
-          // 3 second timeout for network request
-          const timeoutId = setTimeout(() => {
-            // If network is too slow, try cache
-            caches.match(event.request)
-              .then(cachedResponse => {
-                if (cachedResponse) {
-                  resolve(cachedResponse);
-                } else {
-                  // If no cached response, continue waiting for network
-                }
-              });
-          }, 3000);
-          
-          fetch(event.request).then(response => {
-            // Clear timeout as we got a response
-            clearTimeout(timeoutId);
-            
-            // Cache successful responses for future use
-            if (response.status === 200) {
-              const clonedResponse = response.clone();
-              caches.open(CACHE_NAME).then(cache => {
-                cache.put(event.request, clonedResponse);
-              });
-            }
-            
-            resolve(response);
-          }).catch(err => {
-            clearTimeout(timeoutId);
-            reject(err);
-          });
-        }),
-        
-        // Fallback to cache if available, or basic HTML after timeout
-        new Promise(resolve => {
-          setTimeout(() => {
-            caches.match(event.request)
-              .then(cachedResponse => {
-                if (cachedResponse) {
-                  resolve(cachedResponse);
-                } else {
-                  resolve(new Response(
-                    '<!DOCTYPE html><html><body><h1>Offline</h1><p>L\'application est actuellement hors ligne.</p></body></html>',
-                    { headers: { 'Content-Type': 'text/html' } }
-                  ));
-                }
-              });
-          }, 5000); // Wait slightly longer than the network timeout
+      fetch(event.request)
+        .then(response => {
+          // Cache successful responses for future use
+          if (response.status === 200) {
+            const clonedResponse = response.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, clonedResponse);
+            });
+          }
+          return response;
         })
-      ]).catch(() => {
-        // Final fallback if both network and cache fail
-        return caches.match('/index.html') || new Response(
-          '<!DOCTYPE html><html><body><h1>Erreur de connexion</h1><p>Impossible de charger l\'application.</p></body></html>',
-          { headers: { 'Content-Type': 'text/html' } }
-        );
-      })
+        .catch(() => {
+          // Fallback to cache if network fails
+          return caches.match(event.request)
+            .then(cachedResponse => {
+              if (cachedResponse) {
+                return cachedResponse;
+              }
+              // Final fallback if both network and cache fail
+              return caches.match('/index.html') || new Response(
+                '<!DOCTYPE html><html><body><h1>Erreur de connexion</h1><p>Impossible de charger l\'application.</p></body></html>',
+                { headers: { 'Content-Type': 'text/html' } }
+              );
+            });
+        })
     );
     return;
   }
 
   // For assets (CSS, JS, images), use a stale-while-revalidate strategy
-  // This provides immediate response from cache if available
   event.respondWith(
     caches.open(CACHE_NAME).then(cache => {
       return cache.match(event.request).then(cachedResponse => {
-        // Clone the request because it's a stream that can only be consumed once
         const fetchPromise = fetch(event.request.clone())
           .then(networkResponse => {
             // Only cache successful responses

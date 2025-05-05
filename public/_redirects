@@ -1,9 +1,14 @@
 
-# Redirect all routes to index.html for client-side routing
+# Redirect all routes to index.html for client-side routing with cache control
 /*    /index.html   200
+
+# Add cache control headers for better performance
+/*.js     /index.html   200
+/*.css    /index.html   200
 
 # Handle specific legacy redirects
 /revues              /rhca            301
 /atlas               /adc             301
 /gazette             /igm             301
 /comite-editorial    /editorial       301
+

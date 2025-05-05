@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
@@ -45,6 +46,27 @@ const LoadingIndicator = () => (
   </div>
 );
 
+// Preload critical images
+const preloadCriticalImages = () => {
+  const criticalImages = [
+    '/lovable-uploads/75589792-dc14-4d53-9aae-5796c76a3b39.png',
+    '/lovable-uploads/4e3c1f79-c9cc-4d01-8520-1af84d350a2a.png',
+    '/lovable-uploads/745435b6-9abc-4051-b168-cf77c96ed9a0.png'
+  ];
+  
+  criticalImages.forEach(src => {
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.href = src;
+    link.as = 'image';
+    document.head.appendChild(link);
+    
+    // Also create an actual image to load it
+    const img = new Image();
+    img.src = src;
+  });
+};
+
 // Pre-initialize critical resources before mounting React
 const preFetchResources = async () => {
   try {
@@ -56,16 +78,7 @@ const preFetchResources = async () => {
     });
     
     // Preload critical images
-    const criticalImages = [
-      '/lovable-uploads/75589792-dc14-4d53-9aae-5796c76a3b39.png',
-      '/lovable-uploads/4e3c1f79-c9cc-4d01-8520-1af84d350a2a.png',
-      '/lovable-uploads/745435b6-9abc-4051-b168-cf77c96ed9a0.png'
-    ];
-    
-    criticalImages.forEach(src => {
-      const img = new Image();
-      img.src = src;
-    });
+    preloadCriticalImages();
     
     return true;
   } catch (err) {
@@ -76,7 +89,7 @@ const preFetchResources = async () => {
 
 // App with providers
 const AppWithProviders = () => (
-  <React.Suspense fallback={<LoadingIndicator />}>
+  <React.StrictMode>
     <ErrorBoundary name="AppRoot">
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
@@ -87,7 +100,7 @@ const AppWithProviders = () => (
         </BrowserRouter>
       </QueryClientProvider>
     </ErrorBoundary>
-  </React.Suspense>
+  </React.StrictMode>
 );
 
 // Initialize application synchronously to prevent flashing
@@ -120,18 +133,16 @@ const initApp = async () => {
   // Pre-fetch critical resources in parallel with React initialization
   preFetchResources().catch(console.error);
   
-  // Create React root and render the app
+  // Create React root
   const root = ReactDOM.createRoot(rootElement);
   
-  // Render without StrictMode in production for better performance
-  if (process.env.NODE_ENV === 'development') {
-    root.render(
-      <React.StrictMode>
-        <AppWithProviders />
-      </React.StrictMode>
-    );
-  } else {
-    root.render(<AppWithProviders />);
+  // Render the app without delay
+  root.render(<AppWithProviders />);
+  
+  // Remove the loading indicator once React has rendered
+  const appLoadingElement = document.getElementById('app-loading');
+  if (appLoadingElement) {
+    appLoadingElement.style.display = 'none';
   }
 };
 
@@ -145,18 +156,16 @@ if (document.readyState === 'loading') {
 // Register the service worker after app is initialized and stable
 if ('serviceWorker' in navigator && !isDebugMode) {
   window.addEventListener('load', () => {
-    // Delay service worker registration to improve initial load
-    setTimeout(() => {
-      navigator.serviceWorker.register('/sw.js').then(registration => {
-        if (isDebugMode) {
-          console.log('ServiceWorker registration successful with scope: ', registration.scope);
-        }
-      }).catch(error => {
-        if (isDebugMode) {
-          console.error('ServiceWorker registration failed: ', error);
-        }
-      });
-    }, 3000); // 3 second delay
+    // Register service worker immediately
+    navigator.serviceWorker.register('/sw.js').then(registration => {
+      if (isDebugMode) {
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      }
+    }).catch(error => {
+      if (isDebugMode) {
+        console.error('ServiceWorker registration failed: ', error);
+      }
+    });
   });
 }
 

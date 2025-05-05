@@ -20,71 +20,58 @@ export const AppRoutes = () => {
     // Signal that route change is complete
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event('route-changed'));
+      
+      // Preload common sub-routes for the current route
+      if (location.pathname === '/') {
+        // From Home, users often go to About, RHCA or IGM
+        preloadRoute('/about');
+        preloadRoute('/rhca');
+        preloadRoute('/igm');
+      } else if (location.pathname === '/rhca') {
+        // From RHCA, users often go to article details
+        preloadRoute('/rhca/article');
+      } else if (location.pathname === '/igm') {
+        // From IGM, users often go to details or directives
+        preloadRoute('/igm/directives');
+      }
     }
   }, [location]);
 
-  // Preload components for immediate routes when app first loads
-  React.useEffect(() => {
-    // Preload all top-level routes immediately
-    const preloadTopLevelRoutes = () => {
-      routes.forEach(route => {
-        if (route.element) {
-          // Just accessing the element property triggers preload for lazy components
-          const _ = route.element;
-        }
-      });
-    };
+  // Function to preload a specific route
+  const preloadRoute = (path: string) => {
+    const link = document.createElement('link');
+    link.rel = 'prefetch';
+    link.href = path;
+    link.as = 'document';
     
-    // Run preloading immediately on mount
-    preloadTopLevelRoutes();
-    
-    // Also preload when idle
-    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      (window as any).requestIdleCallback(() => {
-        routes.forEach(route => {
-          if (route.children) {
-            route.children.forEach(childRoute => {
-              if (childRoute.element) {
-                const _ = childRoute.element;
-              }
-            });
-          }
-        });
-      });
+    // Check if this link already exists
+    if (!document.head.querySelector(`link[rel="prefetch"][href="${path}"]`)) {
+      document.head.appendChild(link);
     }
-  }, []);
+  };
 
-  // Preload next likely routes based on current route
+  // Aggressively preload all routes on initial load
   React.useEffect(() => {
-    // Preload related routes when a specific route is active
-    const preloadRelatedRoutes = () => {
-      // Home -> About, RHCA, IGM are common paths
-      if (location.pathname === '/') {
-        ['about', 'rhca', 'igm'].forEach(path => {
-          const route = routes[0]?.children?.find(r => r.path === path);
-          if (route && route.element) {
-            const _ = route.element;
-          }
-        });
+    // Immediately preload all top-level routes
+    routes.forEach(route => {
+      if (route.path) {
+        preloadRoute(route.path);
       }
       
-      // RHCA -> RHCA article detail is a common path
-      if (location.pathname === '/rhca') {
-        const route = routes[0]?.children?.find(r => r.path === 'rhca/article/:id');
-        if (route && route.element) {
-          const _ = route.element;
-        }
+      // Also preload first-level child routes
+      if (route.children) {
+        route.children.forEach(childRoute => {
+          if (childRoute.path && !childRoute.path.includes(':')) {
+            // Don't preload dynamic routes with parameters
+            const fullPath = route.path 
+              ? `${route.path}/${childRoute.path}`.replace('//', '/') 
+              : childRoute.path;
+            preloadRoute(fullPath);
+          }
+        });
       }
-    };
-    
-    // Use requestIdleCallback for non-critical preloading
-    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      (window as any).requestIdleCallback(preloadRelatedRoutes, { timeout: 2000 });
-    } else {
-      // Fallback to setTimeout with a short delay
-      setTimeout(preloadRelatedRoutes, 500);
-    }
-  }, [location.pathname]);
+    });
+  }, []);
 
   const renderRoutes = (routes: any[]) => {
     return routes.map((route) => {

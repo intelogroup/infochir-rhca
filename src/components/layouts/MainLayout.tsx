@@ -25,25 +25,40 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 
   // Notify that the app has loaded when component mounts
   React.useEffect(() => {
+    // Mark the initial load as complete immediately to prevent loading spinner on first render
+    setInitialLoadComplete(true);
+    
+    // Notify that the app has loaded
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event('app-loaded'));
     }
-    setInitialLoadComplete(true);
+    
+    // Immediately preload all top-level routes
+    const preloadLinks = document.head.querySelectorAll('link[rel="prefetch"]');
+    if (preloadLinks.length === 0) {
+      ['/', '/about', '/rhca', '/igm', '/submission', '/donate'].forEach(path => {
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = path;
+        link.as = 'document';
+        document.head.appendChild(link);
+      });
+    }
   }, []);
 
   // Handle navigation loading states
   React.useEffect(() => {
-    // Don't show loading on initial render
-    if (!initialLoadComplete) return;
-    
     // Only show loading when changing paths (not on initial load)
-    if (location.pathname !== prevPathRef.current) {
+    if (initialLoadComplete && location.pathname !== prevPathRef.current) {
       setIsLoading(true);
       
       // Short timeout to simulate minimum loading time and prevent flickering
       const timer = setTimeout(() => {
         setIsLoading(false);
         prevPathRef.current = location.pathname;
+        
+        // Dispatch route change event
+        window.dispatchEvent(new Event('route-changed'));
       }, 300);
       
       return () => clearTimeout(timer);
