@@ -49,14 +49,18 @@ export const WelcomeModal = () => {
           <DialogDescription className="text-center text-gray-800 font-semibold">
             DE LA REVUE HAÏTIENNE DE CHIRURGIE ET D'ANESTHÉSIOLOGIE ET DE L'INFO GAZETTE MÉDICALE D'INFOCHIR/RHCA
           </DialogDescription>
+          <div className="text-center text-gray-600 mt-1">Mai 2025</div>
         </DialogHeader>
         
         <div className="mt-4 space-y-4 text-gray-700">
           <p className="leading-relaxed">
-            La situation d'insécurité en Haiti prend de plus en plus d'ampleur et terrorise la population. L'aire métropolitaine est pratiquement assiégée : aucun moyen d'en sortir.
+            En l'année 2025, la situation d'insécurité en Haïti prend de plus en plus d'ampleur et la population est grandement affectée. L'aire métropolitaine et d'autres régions du pays subissent les assauts répétés de bandes armées. La désolation, la disparition brutale d'institutions publiques et privées de renom, l'exode massive interne des habitants chassés de leur logis vandalisés ou détruits, l'aggravation des carences nutritionnelles, les maladies infectieuses, les traumatismes par balle, le stress chronique sont le lot quotidien de toute la population qui ne sait à quel saint se vouer.
           </p>
           <p className="leading-relaxed">
-            Comme des millions de concitoyens, les membres d'INFOCHIR/RHCA vivent un stress incessant. Ils sont menacés quotidiennement dans leurs vies et leurs biens, par des rafales d'armes continuelles dans certains quartiers. Certains ont dû fuir leurs maisons alors que d'autres craignent, perplexes que leur tour n'arrive. Une incertitude grandissante, assez ankylosante qui favorise peu l'opérationnalisation de notre plateforme. Toutefois, en dépit de ce contexte délétère, l'équipe, dans un instinct de survie, entend maintenir ses publications tant et aussi longtemps qu'elle le pourra.
+            Comme des millions de concitoyens, les membres d'INFOCHIR/RHCA n'en sont pas épargnés. Leurs vies et leurs biens sont aussi menacés. Les rafales continuelles d'armes automatiques chassent certains de leurs maisons qu'ils ne retrouveront peut-être plus ; d'autres craignent, perplexes, que leur tour n'arrive ; d'autres encore redoutent une fin tragique…
+          </p>
+          <p className="leading-relaxed">
+            Cette incertitude grandissante et cette lutte quotidienne pour la survie sont débilitantes. Elles sont assez ankylosantes et favorisent peu l'opérationnalisation de notre plateforme. Toutefois, en dépit de ce contexte délétère, l'équipe, dans un instinct de survie, entend maintenir ses publications tant et aussi longtemps qu'elle le pourra.
           </p>
           <p className="leading-relaxed">
             Aussi, veut-t-elle encourager les auteurs à continuer à lui envoyer leurs textes et aux lecteurs à poursuivre les consultations de nos périodiques. Il devient encore plus pertinent de nous faire parvenir vos réactions. Cependant, compte tenu de la situation décrite plus haut et de l'état d'esprit dans lequel nous fonctionnons, la périodicité de nos publications connaîtra des fluctuations dans les mois à venir et, ce, jusqu'à nouvel ordre.
