@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import {
   Table,
@@ -29,7 +30,7 @@ export const ArticleList = ({ articles, onEdit, onDelete }: ArticleListProps) =>
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Title</TableHead>
+          <TableHead>Titre</TableHead>
           <TableHead>Date</TableHead>
           <TableHead>PDF</TableHead>
           <TableHead className="text-right">Actions</TableHead>

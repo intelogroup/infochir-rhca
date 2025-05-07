@@ -88,7 +88,7 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
 
       {igmIssues.length > 0 && (
         <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-4">IGM Issues</h2>
+          <h2 className="text-xl font-semibold mb-4">IGM Numéros</h2>
           {effectiveViewMode === "grid" ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {igmIssues.map((issue) => (
@@ -123,7 +123,7 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
 
       {rhcaArticles.length > 0 && (
         <div>
-          <h2 className="text-xl font-semibold mb-4">RHCA Articles</h2>
+          <h2 className="text-xl font-semibold mb-4">RHCA Numéros</h2>
           {effectiveViewMode === "grid" ? (
             <ScrollArea className={isMobile ? "h-[500px] pr-4" : "h-[600px] pr-4"}>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 pb-4">

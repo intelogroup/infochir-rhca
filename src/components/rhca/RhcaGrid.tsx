@@ -58,7 +58,7 @@ export const RhcaGrid: React.FC<RhcaGridProps> = ({
                 <div className="flex items-center">
                   <span className="text-base sm:text-lg font-semibold">{year}</span>
                   <span className="ml-2 text-xs sm:text-sm text-muted-foreground">
-                    ({articlesByYear[year]?.length || 0} articles)
+                    ({articlesByYear[year]?.length || 0} numéros)
                   </span>
                 </div>
               </AccordionTrigger>
