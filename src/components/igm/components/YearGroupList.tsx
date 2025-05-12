@@ -51,7 +51,8 @@ export const YearGroupList = ({ issuesByYear, sortedYears }: YearGroupListProps)
       {allDisplayYears.map((year) => {
         // Check if the year actually has issues
         const hasIssues = issuesByYear[year]?.length > 0;
-        console.log(`Year ${year} has issues: ${hasIssues}, count: ${issuesByYear[year]?.length || 0}`);
+        const issueCount = issuesByYear[year]?.length || 0;
+        console.log(`Year ${year} has issues: ${hasIssues}, count: ${issueCount}`);
         
         return (
           <div key={year} className="mb-10">
@@ -64,6 +65,11 @@ export const YearGroupList = ({ issuesByYear, sortedYears }: YearGroupListProps)
                 {!hasIssues && (
                   <span className="text-xs text-gray-500 px-2 py-1 bg-gray-200 rounded-full">
                     Aucun numéro
+                  </span>
+                )}
+                {hasIssues && (
+                  <span className="text-xs text-gray-500 px-2 py-1 bg-gray-200 rounded-full">
+                    {issueCount === 1 ? "1 numéro" : `${issueCount} numéros`}
                   </span>
                 )}
               </div>
