@@ -52,33 +52,37 @@ export const RhcaGrid: React.FC<RhcaGridProps> = ({
     <div className="grid grid-cols-1 gap-6">
       {viewMode === "grid" ? (
         <Accordion type="multiple" defaultValue={years.map(year => year.toString())} className="space-y-4">
-          {years.map(year => (
-            <AccordionItem key={year} value={year.toString()} className="border rounded-lg overflow-hidden">
-              <AccordionTrigger className="px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-gray-50">
-                <div className="flex items-center">
-                  <span className="text-base sm:text-lg font-semibold">{year}</span>
-                  <span className="ml-2 text-xs sm:text-sm text-muted-foreground">
-                    ({articlesByYear[year]?.length || 0} numéros)
-                  </span>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="px-2 sm:px-4 py-2 sm:py-3">
-                  <ScrollArea className={`w-full ${isMobile ? 'h-[350px]' : 'max-h-[70vh]'}`}>
-                    <div 
-                      className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 py-2 sm:py-4 px-2 sm:px-4" 
-                    >
-                      {articlesByYear[year]?.map((article) => (
-                        <div key={article.id} className="w-full flex justify-center">
-                          <RhcaCard article={article} />
-                        </div>
-                      ))}
-                    </div>
-                  </ScrollArea>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
+          {years.map(year => {
+            const articleCount = articlesByYear[year]?.length || 0;
+            
+            return (
+              <AccordionItem key={year} value={year.toString()} className="border rounded-lg overflow-hidden">
+                <AccordionTrigger className="px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-gray-50">
+                  <div className="flex items-center">
+                    <span className="text-base sm:text-lg font-semibold">{year}</span>
+                    <span className="ml-2 text-xs sm:text-sm text-muted-foreground">
+                      ({articleCount === 1 ? "1 numéro" : `${articleCount} numéros`})
+                    </span>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="px-2 sm:px-4 py-2 sm:py-3">
+                    <ScrollArea className={`w-full ${isMobile ? 'h-[350px]' : 'max-h-[70vh]'}`}>
+                      <div 
+                        className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 py-2 sm:py-4 px-2 sm:px-4" 
+                      >
+                        {articlesByYear[year]?.map((article) => (
+                          <div key={article.id} className="w-full flex justify-center">
+                            <RhcaCard article={article} />
+                          </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            );
+          })}
         </Accordion>
       ) : (
         <RhcaTable 
