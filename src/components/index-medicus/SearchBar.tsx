@@ -39,6 +39,7 @@ interface SearchBarProps {
     categories: Record<string, number>;
     authors: Record<string, number>;
   };
+  disableSourceFilter?: boolean;
 }
 
 export const SearchBar = ({
@@ -60,7 +61,8 @@ export const SearchBar = ({
   sources,
   availableTags,
   availableAuthors,
-  articleStats
+  articleStats,
+  disableSourceFilter = false
 }: SearchBarProps) => {
   const isMobile = useIsMobile();
   const hasActiveFilters = Boolean(
@@ -122,6 +124,7 @@ export const SearchBar = ({
               articleStats={articleStats}
               hasActiveFilters={hasActiveFilters}
               clearFilters={clearFilters}
+              disableSourceFilter={disableSourceFilter}
             />
           </AccordionContent>
         </AccordionItem>

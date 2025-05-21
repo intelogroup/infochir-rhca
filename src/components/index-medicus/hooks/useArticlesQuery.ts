@@ -1,26 +1,34 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import type { Article } from "@/components/index-medicus/types";
+import type { Article, ArticleSource } from "@/components/index-medicus/types";
 import { toast } from "sonner";
 import { createLogger } from "@/lib/error-logger";
 
 const logger = createLogger('useArticlesQuery');
 const PAGE_SIZE = 10;
 
-export const useArticlesQuery = (page = 0) => {
+export const useArticlesQuery = (page = 0, source?: ArticleSource) => {
   return useQuery({
-    queryKey: ["articles", page],
+    queryKey: ["articles", page, source],
     queryFn: async () => {
       const start = page * PAGE_SIZE;
       const end = start + PAGE_SIZE - 1;
 
       try {
-        const { data, error, count } = await supabase
+        // Create initial query
+        let query = supabase
           .from("articles")
           .select("*", { count: 'exact' })
-          .order("publication_date", { ascending: false })
-          .range(start, end);
+          .order("publication_date", { ascending: false });
+          
+        // Add source filter if specified
+        if (source) {
+          query = query.eq("source", source);
+        }
+          
+        // Execute query with pagination
+        const { data, error, count } = await query.range(start, end);
 
         if (error) {
           logger.error(error);

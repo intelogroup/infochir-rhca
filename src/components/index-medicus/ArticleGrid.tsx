@@ -10,18 +10,23 @@ import { ErrorDisplay } from "./components/ErrorDisplay";
 import { Pagination } from "./components/Pagination";
 import { ViewToggle } from "./ViewToggle";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { ArticleSource } from "./types";
 
 interface ArticleGridProps {
   viewMode?: "grid" | "table" | "list";
+  source?: ArticleSource; // Added source prop
 }
 
-const ArticleGrid: FC<ArticleGridProps> = ({ viewMode: initialViewMode = "table" }) => {
+const ArticleGrid: FC<ArticleGridProps> = ({ 
+  viewMode: initialViewMode = "table",
+  source 
+}) => {
   const isMobile = useIsMobile();
   // Always default to table view for better article title visibility
   const [viewMode, setViewMode] = useState<"grid" | "table" | "list">("table");
   const [currentPage, setCurrentPage] = useState(0);
   const mountedRef = useRef(false);
-  const { data, isLoading, error, refetch } = useArticlesQuery(currentPage);
+  const { data, isLoading, error, refetch } = useArticlesQuery(currentPage, source);
   
   // Mark component as mounted
   useEffect(() => {
@@ -43,7 +48,7 @@ const ArticleGrid: FC<ArticleGridProps> = ({ viewMode: initialViewMode = "table"
     }
   }, [error, refetch]);
   
-  console.log('ArticleGrid rendering with viewMode:', viewMode, 'isMobile:', isMobile);
+  console.log('ArticleGrid rendering with viewMode:', viewMode, 'isMobile:', isMobile, 'source:', source);
   
   const articles = data?.articles || [];
   const totalPages = data?.totalPages || 0;
@@ -143,7 +148,7 @@ const ArticleGrid: FC<ArticleGridProps> = ({ viewMode: initialViewMode = "table"
         setSearchTerm={setSearchTerm}
         selectedCategory={selectedCategory}
         setSelectedCategory={setSelectedCategory}
-        selectedSource={selectedSource}
+        selectedSource={source ? undefined : selectedSource} // Don't allow source filter if source is specified via props
         setSelectedSource={setSelectedSource}
         selectedTags={selectedTags}
         setSelectedTags={setSelectedTags}
@@ -159,6 +164,7 @@ const ArticleGrid: FC<ArticleGridProps> = ({ viewMode: initialViewMode = "table"
         availableTags={availableTags}
         availableAuthors={availableAuthors}
         articleStats={articleStats}
+        disableSourceFilter={!!source} // Disable source filter if source is specified via props
       />
       
       <div className="flex justify-end">

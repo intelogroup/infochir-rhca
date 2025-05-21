@@ -1,3 +1,4 @@
+
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { ArticleGrid } from "@/components/index-medicus/ArticleGrid";
 import { Button } from "@/components/ui/button";
@@ -50,6 +51,12 @@ const IndexMedicus = () => {
                     Articles
                   </TabsTrigger>
                   <TabsTrigger 
+                    value="index-medicus" 
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary font-medium px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm whitespace-nowrap transition-colors"
+                  >
+                    Index Medicus
+                  </TabsTrigger>
+                  <TabsTrigger 
                     value="titre" 
                     className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary font-medium px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm whitespace-nowrap transition-colors"
                   >
@@ -73,6 +80,14 @@ const IndexMedicus = () => {
                   <div className="bg-white rounded-lg p-2 sm:p-4 lg:p-6 shadow-md border border-gray-100">
                     <Suspense fallback={<LoadingSpinner variant="primary" text="Chargement des articles..." />}>
                       <ArticleGrid viewMode="table" />
+                    </Suspense>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="index-medicus" className="mt-4 sm:mt-6">
+                  <div className="bg-white rounded-lg p-2 sm:p-4 lg:p-6 shadow-md border border-gray-100">
+                    <Suspense fallback={<LoadingSpinner variant="primary" text="Chargement des articles Index Medicus..." />}>
+                      <ArticleGrid viewMode="table" source="INDEX" />
                     </Suspense>
                   </div>
                 </TabsContent>

@@ -1,12 +1,20 @@
-import { Filter, X } from "lucide-react";
+
+import React from "react";
+import { DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
 import { DateRangeSelector } from "./DateRangeSelector";
 import { TagSelector } from "./TagSelector";
-import { DateRange } from "react-day-picker";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { RefreshCw, X } from "lucide-react";
 
 interface FilterAccordionProps {
   selectedCategory: string;
@@ -34,9 +42,10 @@ interface FilterAccordionProps {
   };
   hasActiveFilters: boolean;
   clearFilters: () => void;
+  disableSourceFilter?: boolean;
 }
 
-export const FilterAccordion = ({
+export const FilterAccordion: React.FC<FilterAccordionProps> = ({
   selectedCategory,
   setSelectedCategory,
   selectedSource,
@@ -56,124 +65,183 @@ export const FilterAccordion = ({
   articleStats,
   hasActiveFilters,
   clearFilters,
-}: FilterAccordionProps) => {
-  const handleTagToggle = (tag: string) => {
-    if (selectedTags.includes(tag)) {
-      setSelectedTags(selectedTags.filter(t => t !== tag));
-    } else {
-      setSelectedTags([...selectedTags, tag]);
-    }
+  disableSourceFilter = false
+}) => {
+  const clearTag = (tag: string) => {
+    setSelectedTags(selectedTags.filter(t => t !== tag));
   };
 
-  const handleAuthorToggle = (author: string) => {
-    if (selectedAuthors.includes(author)) {
-      setSelectedAuthors(selectedAuthors.filter(a => a !== author));
-    } else {
-      setSelectedAuthors([...selectedAuthors, author]);
-    }
+  const clearAuthor = (author: string) => {
+    setSelectedAuthors(selectedAuthors.filter(a => a !== author));
   };
 
   return (
-    <div className="space-y-6 mt-4">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="pt-4 pb-2 space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Title filter */}
         <div className="space-y-2">
-          <label htmlFor="title-filter" className="text-sm font-medium text-gray-700">
+          <label htmlFor="title-filter" className="text-sm font-medium">
             Titre
           </label>
           <Input
             id="title-filter"
-            placeholder="Filtrer par titre..."
             value={titleFilter}
-            onChange={(e) => setTitleFilter(e.target.value)}
+            onChange={e => setTitleFilter(e.target.value)}
+            placeholder="Filtrer par titre..."
+            className="w-full"
           />
         </div>
 
-        <Select onValueChange={setSelectedCategory} value={selectedCategory}>
-          <SelectTrigger>
-            <SelectValue placeholder="Catégorie" />
-          </SelectTrigger>
-          <SelectContent>
-            <ScrollArea className="h-[200px]">
-              {categories.map((category) => (
-                <SelectItem key={category} value={category}>
-                  <span className="flex items-center justify-between w-full">
-                    <span>{category}</span>
-                    <Badge variant="secondary" className="ml-2">
-                      {articleStats.categories[category]}
-                    </Badge>
-                  </span>
-                </SelectItem>
-              ))}
-            </ScrollArea>
-          </SelectContent>
-        </Select>
-
-        <Select onValueChange={setSelectedSource} value={selectedSource}>
-          <SelectTrigger>
-            <SelectValue placeholder="Source" />
-          </SelectTrigger>
-          <SelectContent>
-            {sources.map((source) => (
-              <SelectItem key={source} value={source}>
-                <span className="flex items-center justify-between w-full">
-                  <span>{source}</span>
-                  <Badge variant="secondary" className="ml-2">
-                    {articleStats.sources[source]}
-                  </Badge>
-                </span>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        <DateRangeSelector date={date} setDate={setDate} />
-      </div>
-
-      <div className="space-y-4">
-        <div>
-          <h3 className="text-sm font-medium text-gray-700 mb-2">Auteurs</h3>
-          <ScrollArea className="h-[100px] w-full border rounded-md p-2">
-            <div className="flex flex-wrap gap-2">
-              {availableAuthors.map((author) => (
-                <Badge
-                  key={author}
-                  variant={selectedAuthors.includes(author) ? "default" : "outline"}
-                  className="cursor-pointer"
-                  onClick={() => handleAuthorToggle(author)}
-                >
-                  {author}
-                  <span className="ml-1 text-xs">
-                    ({articleStats.authors[author] || 0})
-                  </span>
-                </Badge>
-              ))}
-            </div>
-          </ScrollArea>
+        {/* Category filter */}
+        <div className="space-y-2">
+          <label htmlFor="category-filter" className="text-sm font-medium">
+            Catégorie
+          </label>
+          <Select
+            value={selectedCategory}
+            onValueChange={setSelectedCategory}
+          >
+            <SelectTrigger id="category-filter">
+              <SelectValue placeholder="Toutes les catégories" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="">Toutes les catégories</SelectItem>
+                {categories.map(category => (
+                  <SelectItem key={category} value={category}>
+                    {category} ({articleStats.categories[category] || 0})
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
 
-        <TagSelector
-          availableTags={availableTags}
-          selectedTags={selectedTags}
-          onTagToggle={handleTagToggle}
-        />
+        {/* Source filter - Only show if not disabled */}
+        {!disableSourceFilter && (
+          <div className="space-y-2">
+            <label htmlFor="source-filter" className="text-sm font-medium">
+              Source
+            </label>
+            <Select
+              value={selectedSource}
+              onValueChange={setSelectedSource}
+            >
+              <SelectTrigger id="source-filter">
+                <SelectValue placeholder="Toutes les sources" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="">Toutes les sources</SelectItem>
+                  {sources.map(source => (
+                    <SelectItem key={source} value={source}>
+                      {source} ({articleStats.sources[source] || 0})
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
+        {/* Date range filter */}
+        <div className="space-y-2">
+          <label htmlFor="date-filter" className="text-sm font-medium">
+            Date de publication
+          </label>
+          <DateRangeSelector
+            date={date}
+            setDate={setDate}
+          />
+        </div>
       </div>
 
-      {hasActiveFilters && (
-        <div className="flex items-center justify-between pt-4 border-t">
-          <p className="text-sm text-gray-600">
-            {articleStats.filtered} résultat{articleStats.filtered !== 1 ? 's' : ''} sur {articleStats.total}
-          </p>
+      {/* Tags filter */}
+      <div className="space-y-3">
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Tags</label>
+          <TagSelector
+            availableTags={availableTags}
+            selectedTags={selectedTags}
+            onSelectTag={tag => setSelectedTags([...selectedTags, tag])}
+          />
+        </div>
+
+        {selectedTags.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {selectedTags.map(tag => (
+              <Badge key={tag} variant="secondary" className="px-2 py-1">
+                {tag}
+                <button
+                  onClick={() => clearTag(tag)}
+                  className="ml-1 rounded-full hover:bg-gray-300/20"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Authors filter */}
+      <div className="space-y-3">
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Auteurs</label>
+          <Select
+            value=""
+            onValueChange={author => {
+              if (!selectedAuthors.includes(author)) {
+                setSelectedAuthors([...selectedAuthors, author]);
+              }
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Sélectionner des auteurs" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {availableAuthors.map(author => (
+                  <SelectItem key={author} value={author}>
+                    {author}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {selectedAuthors.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {selectedAuthors.map(author => (
+              <Badge key={author} variant="secondary" className="px-2 py-1">
+                {author}
+                <button
+                  onClick={() => clearAuthor(author)}
+                  className="ml-1 rounded-full hover:bg-gray-300/20"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Filter actions */}
+      <div className="flex justify-end pt-2">
+        {hasActiveFilters && (
           <Button
             variant="ghost"
             size="sm"
             onClick={clearFilters}
-            className="gap-2 text-gray-600 hover:text-gray-900"
+            className="text-xs sm:text-sm gap-1 sm:gap-2"
           >
-            <X className="h-4 w-4" />
-            Effacer les filtres
+            <RefreshCw className="h-3 w-3 sm:h-4 sm:w-4" />
+            Réinitialiser les filtres
           </Button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

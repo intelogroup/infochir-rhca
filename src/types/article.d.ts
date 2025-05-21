@@ -3,7 +3,7 @@ export interface Article {
   id?: string;
   title: string;
   abstract: string;
-  publication_type?: "RHCA" | "IGM" | "ADC";
+  publication_type?: "RHCA" | "IGM" | "ADC" | "INDEX";
   source?: string;
   article_files?: string[];
   image_url?: string;
@@ -16,5 +16,5 @@ export interface Article {
 export interface ArticleFormData {
   title: string;
   abstract: string;
-  publicationType: "RHCA" | "IGM" | "ADC";
+  publicationType: "RHCA" | "IGM" | "ADC" | "INDEX";
 }
