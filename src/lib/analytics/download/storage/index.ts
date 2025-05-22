@@ -4,6 +4,7 @@ export { getFilePublicUrl } from './file-operations';
 
 // Add IndexMedicus-specific functions
 import { supabase } from "@/integrations/supabase/client";
+import { checkFileExists } from './file-operations';
 
 /**
  * Check if a file exists in the IndexMedicus PDF bucket

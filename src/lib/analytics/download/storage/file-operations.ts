@@ -34,3 +34,19 @@ export const checkFileExists = async (bucketName: string, filePath: string): Pro
     return false;
   }
 };
+
+/**
+ * Gets the public URL for a file in Supabase storage
+ */
+export const getFilePublicUrl = (bucketName: string, fileName: string): string => {
+  if (!bucketName || !fileName) return '';
+  
+  // If it's already a URL, return it
+  if (fileName.startsWith('http')) return fileName;
+  
+  const { data } = supabase.storage
+    .from(bucketName)
+    .getPublicUrl(fileName);
+    
+  return data.publicUrl;
+};
