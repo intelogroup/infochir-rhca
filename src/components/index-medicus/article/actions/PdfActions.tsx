@@ -110,7 +110,7 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
         url: pdfUrl,
         fileName: fileName,
         documentId: articleId || 'unknown',
-        documentType: DocumentType.Article,
+        documentType: DocumentType.INDEX, // Use the correct document type
         trackingEnabled: !!articleId
       });
       

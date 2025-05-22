@@ -4,6 +4,7 @@ import { trackDownload } from './track-downloads';
 import { DocumentType } from './statistics/types';
 
 export { checkFileExists } from './storage';
+export { trackDownload } from './track-downloads'; // Export trackDownload
 
 /**
  * Download a PDF file and track the download
@@ -36,7 +37,8 @@ export const downloadPDF = async ({
         [DocumentType.RHCA]: 'rhca-pdfs',
         [DocumentType.IGM]: 'article-pdfs',
         [DocumentType.ADC]: 'article-pdfs',
-        [DocumentType.INDEX]: 'indexmedicus_pdfs',
+        [DocumentType.INDEX]: 'indexmedicus_pdfs', // Add INDEX type mapping
+        [DocumentType.Test]: 'article-pdfs' // Add Test type mapping
       };
       
       const bucket = bucketMap[documentType] || 'article-pdfs';
@@ -59,10 +61,10 @@ export const downloadPDF = async ({
     // Track the download if tracking is enabled
     if (trackingEnabled) {
       await trackDownload({
-        status: 'success',
-        documentId,
-        documentType,
-        fileName
+        document_id: documentId, // Fix property name
+        document_type: documentType,
+        file_name: fileName,
+        status: 'success'
       });
     }
     
@@ -72,11 +74,11 @@ export const downloadPDF = async ({
     
     if (trackingEnabled) {
       await trackDownload({
+        document_id: documentId, // Fix property name
+        document_type: documentType,
+        file_name: fileName,
         status: 'failed',
-        documentId,
-        documentType,
-        fileName,
-        error: error instanceof Error ? error.message : String(error)
+        error_details: error instanceof Error ? error.message : String(error)
       });
     }
     

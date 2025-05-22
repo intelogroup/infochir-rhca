@@ -7,7 +7,7 @@ export enum DocumentType {
   RHCA = 'rhca',
   IGM = 'igm',
   ADC = 'adc',
-  IndexMedicus = 'index-medicus',
+  INDEX = 'index-medicus', // Changed to match what's expected in the code
   Test = 'test' // Adding Test type for testing purposes
 }
 
