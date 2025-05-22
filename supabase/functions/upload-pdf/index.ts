@@ -7,6 +7,18 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// Define allowed buckets
+const validBuckets = [
+  'rhca-pdfs', 
+  'indexmedicus_pdfs', 
+  'igm-pdfs', 
+  'article-pdfs', 
+  'rhca_covers', 
+  'indexmedicus_covers',
+  'article_files',
+  'article_annexes'
+];
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
@@ -30,10 +42,13 @@ serve(async (req) => {
     )
 
     // Validate the bucket name to prevent security issues
-    const validBuckets = ['rhca-pdfs', 'indexmedicus_pdfs', 'igm-pdfs', 'article-pdfs', 'rhca_covers', 'indexmedicus_covers']
     if (!validBuckets.includes(bucketName.toString())) {
       return new Response(
-        JSON.stringify({ error: 'Invalid bucket name' }),
+        JSON.stringify({ 
+          error: 'Invalid bucket name', 
+          provided: bucketName.toString(), 
+          validOptions: validBuckets 
+        }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
       )
     }
@@ -50,6 +65,7 @@ serve(async (req) => {
       })
 
     if (uploadError) {
+      console.error("Upload error:", uploadError);
       return new Response(
         JSON.stringify({ error: 'Failed to upload file', details: uploadError }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
@@ -61,6 +77,7 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
     )
   } catch (error) {
+    console.error("Unexpected error:", error);
     return new Response(
       JSON.stringify({ error: 'An unexpected error occurred', details: error.message }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }

@@ -2,6 +2,7 @@
 import { MultiFileUploader } from "@/components/pdf/MultiFileUploader";
 import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { BUCKET_ID_PDF as INDEX_MEDICUS_PDF_BUCKET, BUCKET_ID_COVERS as INDEX_MEDICUS_COVERS_BUCKET } from "@/lib/analytics/download/storage/index-medicus";
 
 export interface FileUploadersProps {
   setArticleFilesUrls: Dispatch<SetStateAction<string[]>>;
@@ -25,7 +26,7 @@ export const FileUploaders = ({
       case "RHCA":
         return "rhca-pdfs";
       case "INDEX":
-        return "indexmedicus_pdfs";
+        return INDEX_MEDICUS_PDF_BUCKET;
       default:
         return "article_files";
     }
@@ -36,7 +37,7 @@ export const FileUploaders = ({
       case "RHCA":
         return "rhca_covers";
       case "INDEX":
-        return "indexmedicus_covers";
+        return INDEX_MEDICUS_COVERS_BUCKET;
       default:
         return "article_annexes";
     }

@@ -1,6 +1,7 @@
 
 import { createLogger } from "@/lib/error-logger";
 import { checkFileExists } from "@/lib/analytics/download";
+import { BUCKET_ID_PDF } from "@/lib/analytics/download/storage/index-medicus";
 
 const logger = createLogger('FileValidation');
 
@@ -15,13 +16,13 @@ export const validateFileExists = async (pdfUrl?: string): Promise<boolean> => {
   }
 
   try {
-    if (pdfUrl.includes('article-pdfs') || pdfUrl.includes('rhca-pdfs') || pdfUrl.includes('indexmedicus_pdfs')) {
+    if (pdfUrl.includes('article-pdfs') || pdfUrl.includes('rhca-pdfs') || pdfUrl.includes(BUCKET_ID_PDF)) {
       // Extract bucket name and file name from URL
       const bucketName = pdfUrl.includes('article-pdfs') 
         ? 'article-pdfs' 
         : pdfUrl.includes('rhca-pdfs') 
           ? 'rhca-pdfs' 
-          : 'indexmedicus_pdfs';
+          : BUCKET_ID_PDF;
       
       const fileName = pdfUrl.split('/').pop();
       if (!fileName) {

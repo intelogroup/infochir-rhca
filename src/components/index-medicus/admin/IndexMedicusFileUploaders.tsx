@@ -3,6 +3,7 @@ import React from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { MultiFileUploader } from "@/components/pdf/MultiFileUploader";
+import { BUCKET_ID_PDF, BUCKET_ID_COVERS } from "@/lib/analytics/download/storage/index-medicus";
 
 interface IndexMedicusFileUploadersProps {
   onPdfUploadComplete: (urls: string[]) => void;
@@ -18,7 +19,7 @@ export const IndexMedicusFileUploaders: React.FC<IndexMedicusFileUploadersProps>
       <div>
         <h3 className="text-md font-medium mb-2">Cover Images</h3>
         <MultiFileUploader
-          bucket="indexmedicus_covers"
+          bucket={BUCKET_ID_COVERS}
           acceptedFileTypes={{
             'image/*': ['.png', '.jpg', '.jpeg', '.webp']
           }}
@@ -32,7 +33,7 @@ export const IndexMedicusFileUploaders: React.FC<IndexMedicusFileUploadersProps>
       <div>
         <h3 className="text-md font-medium mb-2">PDF Documents</h3>
         <MultiFileUploader
-          bucket="indexmedicus_pdfs"
+          bucket={BUCKET_ID_PDF}
           acceptedFileTypes={{
             'application/pdf': ['.pdf']
           }}

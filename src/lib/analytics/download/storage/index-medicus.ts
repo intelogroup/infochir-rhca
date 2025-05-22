@@ -5,6 +5,10 @@ import { checkFileExists } from './file-operations';
 
 const logger = createLogger('IndexMedicusStorage');
 
+// Define constants for bucket IDs
+export const BUCKET_ID_PDF = 'indexmedicus_pdfs';
+export const BUCKET_ID_COVERS = 'indexmedicus_covers';
+
 /**
  * Check if a file exists in the IndexMedicus PDF bucket
  * @param fileName File name to check
@@ -21,7 +25,7 @@ export const checkIndexMedicusFileExists = async (fileName: string): Promise<boo
       
     if (!fileNameOnly) return false;
     
-    return checkFileExists('indexmedicus_pdfs', fileNameOnly);
+    return checkFileExists(BUCKET_ID_PDF, fileNameOnly);
   } catch (err) {
     logger.error('Exception checking if file exists:', err);
     return false;
@@ -41,7 +45,7 @@ export const getIndexMedicusPdfUrl = (fileName: string): string => {
   
   // Get public URL from Supabase
   const { data } = supabase.storage
-    .from('indexmedicus_pdfs')
+    .from(BUCKET_ID_PDF)
     .getPublicUrl(fileName);
     
   return data.publicUrl;
@@ -60,7 +64,7 @@ export const getIndexMedicusCoverUrl = (fileName: string): string => {
   
   // Get public URL from Supabase
   const { data } = supabase.storage
-    .from('indexmedicus_covers')
+    .from(BUCKET_ID_COVERS)
     .getPublicUrl(fileName);
     
   return data.publicUrl;
