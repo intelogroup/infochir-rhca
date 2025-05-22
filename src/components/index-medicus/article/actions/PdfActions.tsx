@@ -1,18 +1,16 @@
+
 import React, { useEffect, useState } from "react";
 import { Download, ExternalLink, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { checkFileExists, downloadPDF } from "@/lib/analytics/download";
+import { downloadPDF } from "@/lib/analytics/download";
 import { createLogger } from "@/lib/error-logger";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { DocumentType } from "@/lib/analytics/download/statistics/types";
+import { validateFileExists } from "./utils/fileValidation";
+import { PdfButtonGroup } from "./components/PdfButtonGroup";
+import { PdfDropdownMenu } from "./components/PdfDropdownMenu";
 
 const logger = createLogger('PdfActions');
 
@@ -34,34 +32,17 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    const validateFile = async () => {
+    const checkFileExistence = async () => {
       if (!pdfUrl) {
         setFileExists(false);
         return;
       }
 
-      try {
-        if (pdfUrl.includes('article-pdfs') || pdfUrl.includes('rhca-pdfs')) {
-          const bucketName = pdfUrl.includes('article-pdfs') ? 'article-pdfs' : 'rhca-pdfs';
-          const fileName = pdfUrl.split('/').pop();
-          if (!fileName) {
-            setFileExists(false);
-            return;
-          }
-          
-          const exists = await checkFileExists(bucketName, fileName);
-          setFileExists(exists);
-        } else {
-          const response = await fetch(pdfUrl, { method: 'HEAD' });
-          setFileExists(response.ok);
-        }
-      } catch (err) {
-        logger.error(err);
-        setFileExists(false);
-      }
+      const exists = await validateFileExists(pdfUrl);
+      setFileExists(exists);
     };
 
-    validateFile();
+    checkFileExistence();
   }, [pdfUrl]);
 
   const handleOpenPdf = (e: React.MouseEvent) => {
@@ -157,63 +138,18 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
     );
   }
   
-  if (isMobile) {
-    return (
-      <div className="flex gap-1 flex-wrap">
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-8 px-2 py-1 text-xs"
-          onClick={handleOpenPdf}
-        >
-          <ExternalLink className="h-3 w-3 mr-1" />
-          <span className="text-xs">Ouvrir</span>
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-8 px-2 py-1 text-xs"
-          onClick={handleDownloadPdf}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-          ) : (
-            <Download className="h-3 w-3 mr-1" />
-          )}
-          <span className="text-xs">Télécharger</span>
-        </Button>
-      </div>
-    );
-  }
-  
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="gap-2"
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Download className="h-4 w-4" />
-          )}
-          PDF
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuItem onClick={handleOpenPdf}>
-          <ExternalLink className="h-4 w-4 mr-2" />
-          Ouvrir dans un nouvel onglet
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={handleDownloadPdf}>
-          <Download className="h-4 w-4 mr-2" />
-          Télécharger
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+  // Render mobile version or desktop version based on screen size
+  return isMobile ? (
+    <PdfButtonGroup 
+      isLoading={isLoading}
+      handleDownloadPdf={handleDownloadPdf}
+      handleOpenPdf={handleOpenPdf}
+    />
+  ) : (
+    <PdfDropdownMenu
+      isLoading={isLoading}
+      handleDownloadPdf={handleDownloadPdf}
+      handleOpenPdf={handleOpenPdf}
+    />
   );
 };
