@@ -7,15 +7,40 @@ export interface FileUploadersProps {
   setArticleFilesUrls: Dispatch<SetStateAction<string[]>>;
   setImageAnnexesUrls: Dispatch<SetStateAction<string[]>>;
   errors?: { [key: string]: string };
+  publicationType?: "RHCA" | "IGM" | "ADC" | "INDEX";
 }
 
 export const FileUploaders = ({
   setArticleFilesUrls,
   setImageAnnexesUrls,
-  errors
+  errors,
+  publicationType = "RHCA"
 }: FileUploadersProps) => {
   const [articleFiles, setArticleFiles] = useState<string[]>([]);
   const [imageAnnexes, setImageAnnexes] = useState<string[]>([]);
+  
+  // Determine correct bucket names based on publication type
+  const getArticleFilesBucket = () => {
+    switch (publicationType) {
+      case "RHCA":
+        return "rhca-pdfs";
+      case "INDEX":
+        return "indexmedicus_pdfs";
+      default:
+        return "article_files";
+    }
+  };
+  
+  const getImageAnnexesBucket = () => {
+    switch (publicationType) {
+      case "RHCA":
+        return "rhca_covers";
+      case "INDEX":
+        return "indexmedicus_covers";
+      default:
+        return "article_annexes";
+    }
+  };
   
   // Pass uploads to parent and maintain local state
   const handleArticleFilesUpload = (urls: string[]) => {
@@ -44,7 +69,7 @@ export const FileUploaders = ({
           </span>
         </h3>
         <MultiFileUploader
-          bucket="article_files"
+          bucket={getArticleFilesBucket()}
           acceptedFileTypes={{
             'application/pdf': ['.pdf'],
             'application/msword': ['.doc'],
@@ -80,7 +105,7 @@ export const FileUploaders = ({
           </span>
         </h3>
         <MultiFileUploader
-          bucket="article_annexes"
+          bucket={getImageAnnexesBucket()}
           acceptedFileTypes={{
             'image/*': ['.png', '.jpg', '.jpeg', '.gif']
           }}

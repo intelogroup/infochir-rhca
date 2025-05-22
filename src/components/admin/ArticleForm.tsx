@@ -18,7 +18,7 @@ import { SubmitButton } from "./article-form/SubmitButton";
 const formSchema = z.object({
   title: z.string().min(3, "Le titre doit contenir au moins 3 caractères").max(200, "Le titre ne doit pas dépasser 200 caractères"),
   abstract: z.string().min(50, "Le résumé doit contenir au moins 50 caractères").max(2000, "Le résumé ne doit pas dépasser 2000 caractères"),
-  publicationType: z.enum(["RHCA", "IGM", "ADC"], {
+  publicationType: z.enum(["RHCA", "IGM", "ADC", "INDEX"], {
     required_error: "Veuillez sélectionner un type de publication",
   }),
 });
@@ -39,7 +39,7 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
   const form = useForm<ArticleFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      publicationType: (initialData?.publication_type as "RHCA" | "IGM" | "ADC") || "RHCA",
+      publicationType: (initialData?.publication_type as "RHCA" | "IGM" | "ADC" | "INDEX") || "RHCA",
       title: initialData?.title || "",
       abstract: initialData?.abstract || "",
     },
@@ -48,6 +48,7 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
   
   // Watch for form changes to update validation state
   const formValues = form.watch();
+  const publicationType = form.watch("publicationType");
   
   // Watch for form errors
   useEffect(() => {
@@ -184,6 +185,7 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
             setArticleFilesUrls={setArticleFilesUrls}
             setImageAnnexesUrls={setImageAnnexesUrls}
             errors={formErrors}
+            publicationType={publicationType}
           />
         </div>
 
