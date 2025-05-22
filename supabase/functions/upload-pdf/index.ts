@@ -15,6 +15,7 @@ serve(async (req) => {
   try {
     const formData = await req.formData()
     const file = formData.get('file')
+    const bucketName = formData.get('bucket') || 'rhca-pdfs'
 
     if (!file) {
       return new Response(
@@ -28,12 +29,21 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
+    // Validate the bucket name to prevent security issues
+    const validBuckets = ['rhca-pdfs', 'indexmedicus_pdfs', 'igm-pdfs', 'article-pdfs', 'rhca_covers', 'indexmedicus_covers']
+    if (!validBuckets.includes(bucketName.toString())) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid bucket name' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      )
+    }
+
     // Sanitize filename - remove non-ASCII characters
     const sanitizedFileName = (file as File).name.replace(/[^\x00-\x7F]/g, '')
     
     // Upload file to Supabase storage
     const { data, error: uploadError } = await supabase.storage
-      .from('rhca-pdfs')
+      .from(bucketName.toString())
       .upload(sanitizedFileName, file, {
         contentType: 'application/pdf',
         upsert: true
@@ -47,7 +57,7 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ message: 'File uploaded successfully', path: sanitizedFileName }),
+      JSON.stringify({ message: 'File uploaded successfully', path: sanitizedFileName, bucket: bucketName }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
     )
   } catch (error) {

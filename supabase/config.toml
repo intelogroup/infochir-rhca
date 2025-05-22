@@ -30,3 +30,6 @@ verify_jwt = false
 
 [functions.test-connectivity]
 verify_jwt = false
+
+[functions.upload-pdf]
+verify_jwt = false
