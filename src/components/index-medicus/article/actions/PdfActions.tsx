@@ -60,16 +60,21 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
     window.open(pdfUrl, '_blank');
     
     if (articleId) {
-      // Fix error by properly handling the Promise
+      // Fix the promise handling by using then/catch properly
       supabase.rpc('increment_count', {
         table_name: 'articles',
         column_name: 'views',
         row_id: articleId
-      }).then(() => {
-        logger.log("View count incremented");
-      }).catch(err => {
-        logger.error("Failed to increment view count:", err);
-      });
+      })
+        .then(({ error }) => {
+          if (error) {
+            throw error;
+          }
+          logger.log("View count incremented");
+        })
+        .catch(err => {
+          logger.error("Failed to increment view count:", err);
+        });
     }
     
     toast.success("PDF ouvert dans un nouvel onglet");
