@@ -60,24 +60,11 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
     window.open(pdfUrl, '_blank');
     
     if (articleId) {
-      // Use a try-catch block to handle potential errors without using .catch()
-      try {
-        (async () => {
-          const { error } = await supabase.rpc('increment_count', {
-            table_name: 'articles',
-            column_name: 'views',
-            row_id: articleId
-          });
-          
-          if (error) {
-            logger.error("Failed to increment view count:", error);
-          } else {
-            logger.log("View count incremented");
-          }
-        })();
-      } catch (err) {
-        logger.error("Error executing view count increment:", err);
-      }
+      supabase.rpc('increment_count', {
+        table_name: 'articles',
+        column_name: 'views',
+        row_id: articleId
+      }).catch(err => logger.error("Failed to increment view count:", err));
     }
     
     toast.success("PDF ouvert dans un nouvel onglet");

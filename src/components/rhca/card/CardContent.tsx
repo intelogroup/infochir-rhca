@@ -3,10 +3,10 @@ import React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { CalendarIcon, BookOpen } from "lucide-react";
 import { CardActions } from "./CardActions";
-import type { Article } from "@/components/index-medicus/types/article";
+import type { RhcaArticle } from "../types";
 
 interface CardContentProps {
-  article: Article;
+  article: RhcaArticle;
   pdfUrl: string | null;
 }
 
@@ -17,18 +17,20 @@ export const CardContent: React.FC<CardContentProps> = ({ article, pdfUrl }) => 
       if (!article.pageNumber) return "- Pages";
       
       // Convert pageNumber to string for processing
-      const pageNumberStr = article.pageNumber ? article.pageNumber.toString() : '';
+      const pageNumber = typeof article.pageNumber === 'number' 
+        ? article.pageNumber.toString() 
+        : article.pageNumber.trim();
       
       // Handle page range format (e.g., "1-28")
-      if (pageNumberStr.includes('-')) {
-        const [start, end] = pageNumberStr.split('-').map(num => parseInt(num.trim(), 10));
+      if (pageNumber.includes('-')) {
+        const [start, end] = pageNumber.split('-').map(num => parseInt(num.trim(), 10));
         if (!isNaN(end)) {
           return `${end} Pages`;
         }
       } 
       // Handle single page format (e.g., "34")
       else {
-        const pageNum = parseInt(pageNumberStr, 10);
+        const pageNum = parseInt(pageNumber, 10);
         if (!isNaN(pageNum)) {
           return `${pageNum} Pages`;
         }
@@ -41,30 +43,13 @@ export const CardContent: React.FC<CardContentProps> = ({ article, pdfUrl }) => 
     }
   })();
 
-  // Fix the toString error by adding a type guard
-  const formatDate = (dateString?: string): string => {
-    if (!dateString) return 'Date inconnue';
-    
-    try {
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) return 'Date invalide';
-      
-      return date.toLocaleDateString('fr-FR', {
-        year: 'numeric',
-        month: 'long'
-      });
-    } catch (error) {
-      return 'Date inconnue';
-    }
-  };
-
   return (
     <div className="flex flex-col h-full min-h-0">
       <div className="flex flex-wrap items-center text-sm text-muted-foreground mb-1.5 gap-2">
         <div className="flex items-center">
           <CalendarIcon className="mr-1 h-3 w-3 text-primary/60 flex-shrink-0" />
           <span className="font-medium truncate">
-            {article.publicationDate ? formatDate(article.publicationDate) : 'Date non disponible'}
+            {article.publicationDate ? new Date(article.publicationDate).toLocaleDateString('fr-FR') : 'Date non disponible'}
           </span>
         </div>
         {article.volume && article.issue && (

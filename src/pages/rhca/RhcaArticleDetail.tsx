@@ -1,108 +1,248 @@
 
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import { MainLayout } from '@/components/layouts/MainLayout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, BookOpen, Calendar, Download, FileText, Quote, Share2, User, Eye } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { ArticleActions } from '@/components/index-medicus/article/ArticleActions';
-import { ShareAction } from '@/components/index-medicus/article/actions/ShareAction';
-import { PdfActions } from '@/components/index-medicus/article/actions/PdfActions';
-import { ViewAction } from '@/components/index-medicus/article/actions/ViewAction';
-import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
-import type { Article } from "@/components/index-medicus/types/article";
-import type { ArticleSource } from "@/components/index-medicus/types";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { MainLayout } from "@/components/layouts/MainLayout";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, AlertTriangle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { toast } from "sonner";
+import { useScrollToTop } from "@/hooks/useScrollToTop";
+import { RhcaArticle } from "@/components/rhca/types";
+import { getStorageUrl } from "@/integrations/supabase/client";
+import { ArticleActions } from "@/components/rhca/article/ArticleActions";
+import { ArticleSource } from "@/components/index-medicus/types/article";
+import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
+import { createLogger } from "@/lib/error-logger";
 
-const RhcaArticleDetail = () => {
-  const { articleId } = useParams<{ articleId: string }>();
+const logger = createLogger('RhcaArticleDetail');
 
-  // Mock data for demonstration
-  const mockArticle: Article = {
-    id: articleId || '1',
-    title: "Article Title",
-    abstract: "This is a mock abstract for the article.",
-    authors: ["John Doe", "Jane Smith"],
-    publicationDate: "2023-01-01",
-    source: "RHCA",
-    pdfUrl: "https://example.com/mock.pdf",
-    imageUrl: "https://example.com/mock.jpg",
-    volume: "1",
-    issue: "1",
-    pageNumber: "1-10",
-    specialty: "General Medicine",
-    institution: "Mock Institution",
-    category: "Research",
-    tags: ["mock", "article"],
-    views: 100,
-    shares: 10,
-    downloads: 50,
-    citations: 5,
-    status: "published"
+const RhcaArticleDetail: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  useScrollToTop();
+  
+  const [article, setArticle] = useState<RhcaArticle | null>(null);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  // Mark as client-side rendered
+  useEffect(() => {
+    setIsClient(true);
+    logger.info(`RhcaArticleDetail mounted for article ID: ${id}`);
+  }, [id]);
+
+  useEffect(() => {
+    const fetchArticle = async () => {
+      if (!id) {
+        setError("ID de l'article manquant");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        
+        // Fetch article from Supabase
+        const { data, error } = await supabase
+          .from("rhca_articles_view")
+          .select("*")
+          .eq("id", id)
+          .maybeSingle();
+        
+        if (error) {
+          throw error;
+        }
+        
+        if (!data) {
+          throw new Error("Article introuvable");
+        }
+        
+        // Map to RhcaArticle type
+        const article: RhcaArticle = {
+          id: data.id,
+          title: data.title,
+          abstract: data.abstract,
+          authors: Array.isArray(data.authors) ? data.authors : [],
+          pdfFileName: data.pdf_filename,
+          coverImageFileName: data.cover_image_filename,
+          publicationDate: data.publication_date,
+          volume: data.volume,
+          issue: data.issue,
+          pageNumber: data.page_number,
+          category: data.category,
+          status: data.status === 'published' ? "published" : (data.status === 'pending' ? "pending" : "draft"),
+          views: data.views || 0,
+          downloads: data.downloads || 0,
+          // Add the missing required properties
+          date: data.publication_date || new Date().toISOString(),
+          source: (data.source as ArticleSource) || "RHCA" as ArticleSource,
+          tags: Array.isArray(data.tags) ? data.tags : [],
+          // Include optional properties if they exist in data
+          imageUrl: data.image_url,
+          shares: data.shares || 0,
+          specialty: data.specialty
+        };
+        
+        setArticle(article);
+        
+        // Get PDF URL if available
+        if (article.pdfFileName) {
+          const url = getStorageUrl('rhca-pdfs', article.pdfFileName);
+          setPdfUrl(url);
+          
+          // Open PDF directly
+          if (url) {
+            window.open(url, '_blank');
+            
+            // Go back to articles list after opening PDF
+            navigate('/rhca');
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching article:", err);
+        setError(err instanceof Error ? err.message : "Erreur lors du chargement de l'article");
+        toast.error("Impossible de charger les détails de l'article");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (isClient) {
+      fetchArticle();
+    }
+  }, [id, navigate, isClient]);
+
+  const handleGoBack = () => {
+    navigate('/rhca');
   };
 
-  const formattedDate = format(new Date(mockArticle.publicationDate), "PPP", { locale: fr });
+  // Static layout to show immediately
+  if (!isClient) {
+    return (
+      <MainLayout>
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex flex-col items-center justify-center pt-16">
+            <LoadingSpinner size="md" text="Chargement de l'article..." />
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
-      <div className="container mx-auto py-10">
-        <div className="mb-6">
-          <Link to="/rhca">
-            <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary-light">
-              <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
-              Retour
-            </Button>
-          </Link>
-        </div>
+      <div className="container mx-auto px-4 py-8">
+        <Button
+          variant="ghost"
+          className="mb-6"
+          onClick={handleGoBack}
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Retour à la liste des articles
+        </Button>
 
-        <Card className="max-w-3xl mx-auto">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold">{mockArticle.title}</CardTitle>
-            <CardDescription>
-              Publié le {formattedDate} par {mockArticle.authors.join(", ")}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4">
-            <div className="flex flex-wrap gap-2">
-              {mockArticle.tags.map((tag) => (
-                <Badge key={tag} variant="secondary">
-                  {tag}
-                </Badge>
-              ))}
+        <ErrorBoundary
+          name="rhca-article-detail"
+          fallback={
+            <div className="p-6 border border-destructive/20 bg-destructive/10 rounded-lg text-center">
+              <AlertTriangle className="mx-auto h-12 w-12 text-destructive mb-4" />
+              <p className="text-destructive font-medium">Une erreur est survenue lors du chargement de l'article</p>
+              <Button 
+                className="mt-4" 
+                variant="outline" 
+                onClick={handleGoBack}
+              >
+                Retourner à la liste des articles
+              </Button>
             </div>
-
-            <div className="grid gap-2">
-              <h3 className="text-lg font-semibold">Résumé</h3>
-              <p>{mockArticle.abstract}</p>
+          }
+        >
+          {loading ? (
+            <div className="flex flex-col items-center justify-center pt-16">
+              <LoadingSpinner size="md" text="Chargement de l'article..." />
             </div>
-
-            <div className="flex flex-wrap gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <Eye className="h-4 w-4" />
-                <span>{mockArticle.views} vues</span>
+          ) : error ? (
+            <div className="p-6 border border-destructive/20 bg-destructive/10 rounded-lg text-center">
+              <p className="text-destructive font-medium">{error}</p>
+              <Button 
+                className="mt-4" 
+                variant="outline" 
+                onClick={handleGoBack}
+              >
+                Retourner à la liste des articles
+              </Button>
+            </div>
+          ) : article ? (
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h1 className="text-2xl font-bold mb-4">{article.title}</h1>
+              
+              <div className="flex flex-wrap gap-2 mb-6">
+                {article.authors.map((author, index) => (
+                  <span 
+                    key={index} 
+                    className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm"
+                  >
+                    {author}
+                  </span>
+                ))}
               </div>
-              <div className="flex items-center gap-2">
-                <Quote className="h-4 w-4" />
-                <span>{mockArticle.citations} citations</span>
+              
+              {article.abstract && (
+                <div className="mb-6">
+                  <h2 className="text-lg font-semibold mb-2">Résumé</h2>
+                  <p className="text-gray-700 whitespace-pre-line">{article.abstract}</p>
+                </div>
+              )}
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {article.volume && (
+                  <div>
+                    <h3 className="font-medium text-gray-500">Volume</h3>
+                    <p>{article.volume}</p>
+                  </div>
+                )}
+                {article.issue && (
+                  <div>
+                    <h3 className="font-medium text-gray-500">Numéro</h3>
+                    <p>{article.issue}</p>
+                  </div>
+                )}
+                {article.publicationDate && (
+                  <div>
+                    <h3 className="font-medium text-gray-500">Date de publication</h3>
+                    <p>{new Date(article.publicationDate).toLocaleDateString('fr-FR')}</p>
+                  </div>
+                )}
+                {article.pageNumber && (
+                  <div>
+                    <h3 className="font-medium text-gray-500">Pages</h3>
+                    <p>{article.pageNumber}</p>
+                  </div>
+                )}
               </div>
-              <div className="flex items-center gap-2">
-                <Download className="h-4 w-4" />
-                <span>{mockArticle.downloads} téléchargements</span>
+              
+              <div className="mt-6 pt-4 border-t border-gray-100">
+                <div className="flex justify-between items-center">
+                  <div className="text-sm text-gray-500">
+                    <span className="mr-4">{article.views || 0} vue{article.views !== 1 ? 's' : ''}</span>
+                    <span>{article.downloads || 0} téléchargement{article.downloads !== 1 ? 's' : ''}</span>
+                  </div>
+                  
+                  {pdfUrl && article.pdfFileName && article.date && (
+                    <ArticleActions
+                      id={article.id}
+                      pdfFileName={article.pdfFileName}
+                      date={article.date}
+                    />
+                  )}
+                </div>
               </div>
             </div>
-
-            <div className="border-t py-4">
-              <ArticleActions
-                title={mockArticle.title}
-                pdfUrl={mockArticle.pdfUrl}
-                article={mockArticle}
-                showViewButton={false}
-              />
-            </div>
-          </CardContent>
-        </Card>
+          ) : null}
+        </ErrorBoundary>
       </div>
     </MainLayout>
   );

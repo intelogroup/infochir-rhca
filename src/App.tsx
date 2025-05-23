@@ -1,12 +1,15 @@
 
 import React, { useState, useEffect } from 'react';
 import {
+  BrowserRouter as Router,
   Route,
   Routes,
   Navigate,
   useLocation
 } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from "sonner";
+import { createClient } from '@supabase/supabase-js';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 
@@ -22,55 +25,11 @@ import Users from './pages/admin/Users';
 import Analytics from './pages/admin/Analytics';
 import Settings from './pages/admin/Settings';
 import { supabase } from './integrations/supabase/client';
-import { WelcomeModal } from "./components/welcome/WelcomeModal";
-import { ProductInfoModal } from "./components/welcome/ProductInfoModal";
-import { MainLayout } from './components/layouts/MainLayout';
-import { getPublicRoutes, getAdminRoutes } from './config/routes';
-import { preloadCommonRoutes, preloadRoute } from './lib/route-utils';
+
+const queryClient = new QueryClient();
 
 function App() {
   const [session, setSession] = useState(null);
-  const location = useLocation();
-  const [showWelcomeModals, setShowWelcomeModals] = useState(false);
-
-  // Determine if welcome modals should be shown
-  useEffect(() => {
-    // Only show welcome modals on homepage and if not seen before
-    const hasSeenWelcome = localStorage.getItem("hasSeenWelcome");
-    
-    if (location.pathname === '/' && !hasSeenWelcome) {
-      // Short delay before showing welcome modal
-      const timer = setTimeout(() => {
-        setShowWelcomeModals(true);
-      }, 500);
-      
-      return () => clearTimeout(timer);
-    } else {
-      setShowWelcomeModals(false);
-    }
-  }, [location.pathname]);
-
-  // Preload common routes on initial load
-  useEffect(() => {
-    // Preload common routes
-    preloadCommonRoutes();
-    
-    // Log route changes
-    console.info(`Route changed to: ${location.pathname}`);
-    
-    // Signal that route change is complete
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new Event('route-changed'));
-    }
-    
-    // Context-specific route preloading
-    if (location.pathname === '/') {
-      preloadRoute('/about');
-      preloadRoute('/rhca');
-    } else if (location.pathname === '/rhca') {
-      preloadRoute('/rhca/article');
-    }
-  }, [location]);
 
   useEffect(() => {
     // Set up auth state listener
@@ -90,73 +49,52 @@ function App() {
   }, []);
 
   return (
-    <>
-      <Toaster position="bottom-center" richColors closeButton />
-      
-      <Routes>
-        {/* Public routes wrapped in MainLayout */}
-        <Route element={<MainLayout />}>
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <Toaster position="bottom-center" richColors closeButton />
+        <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
+          
+          {/* Index Medicus Routes */}
           <Route path="/index-medicus" element={<IndexMedicus />} />
-          <Route path="/adc" element={<ADC />} />
-          {/* Map all public routes from config */}
-          {getPublicRoutes().map((route) => (
-            route.path !== "" && 
-            route.path !== "/" && 
-            route.path !== "about" && 
-            route.path !== "index-medicus" && 
-            route.path !== "adc" && (
-              <Route 
-                key={route.name} 
-                path={route.path} 
-                element={route.element} 
-              />
-            )
-          ))}
-        </Route>
 
-        {/* Auth route */}
-        <Route
-          path="/login"
-          element={
-            !session ? (
-              <div className="flex justify-center items-center min-h-screen">
-                <div className="w-full max-w-md">
-                  <Auth
-                    supabaseClient={supabase}
-                    appearance={{ theme: ThemeSupa }}
-                    providers={['google', 'github']}
-                    redirectTo={`${window.location.origin}/admin/dashboard`}
-                  />
+          {/* ADC Route */}
+          <Route path="/adc" element={<ADC />} />
+
+          <Route
+            path="/login"
+            element={
+              !session ? (
+                <div className="flex justify-center items-center min-h-screen">
+                  <div className="w-full max-w-md">
+                    <Auth
+                      supabaseClient={supabase}
+                      appearance={{ theme: ThemeSupa }}
+                      providers={['google', 'github']}
+                      redirectTo={`${window.location.origin}/admin/dashboard`}
+                    />
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <Navigate to="/admin/dashboard" replace />
-            )
-          }
-        />
-        
-        {/* Admin Routes */}
-        <Route path="/admin">
-          <Route index element={<AdminProtectedRoute><Dashboard /></AdminProtectedRoute>} />
-          <Route path="dashboard" element={<AdminProtectedRoute><Dashboard /></AdminProtectedRoute>} />
-          <Route path="content" element={<AdminProtectedRoute><Content /></AdminProtectedRoute>} />
-          <Route path="users" element={<AdminProtectedRoute><Users /></AdminProtectedRoute>} />
-          <Route path="analytics" element={<AdminProtectedRoute><Analytics /></AdminProtectedRoute>} />
-          <Route path="settings" element={<AdminProtectedRoute><Settings /></AdminProtectedRoute>} />
-          <Route path="index-medicus" element={<AdminProtectedRoute><IndexMedicusAdmin /></AdminProtectedRoute>} />
-        </Route>
-      </Routes>
-      
-      {/* Welcome modals - Only show on specific routes when needed */}
-      {showWelcomeModals && (
-        <>
-          <WelcomeModal />
-          <ProductInfoModal />
-        </>
-      )}
-    </>
+              ) : (
+                <Navigate to="/admin/dashboard" replace />
+              )
+            }
+          />
+          
+          {/* Admin Routes */}
+          <Route path="/admin">
+            <Route index element={<AdminProtectedRoute><Dashboard /></AdminProtectedRoute>} />
+            <Route path="dashboard" element={<AdminProtectedRoute><Dashboard /></AdminProtectedRoute>} />
+            <Route path="content" element={<AdminProtectedRoute><Content /></AdminProtectedRoute>} />
+            <Route path="users" element={<AdminProtectedRoute><Users /></AdminProtectedRoute>} />
+            <Route path="analytics" element={<AdminProtectedRoute><Analytics /></AdminProtectedRoute>} />
+            <Route path="settings" element={<AdminProtectedRoute><Settings /></AdminProtectedRoute>} />
+            <Route path="index-medicus" element={<AdminProtectedRoute><IndexMedicusAdmin /></AdminProtectedRoute>} />
+          </Route>
+        </Routes>
+      </Router>
+    </QueryClientProvider>
   );
 }
 

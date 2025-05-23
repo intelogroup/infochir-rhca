@@ -1,9 +1,9 @@
 
-// Import only primitive components that don't create circular dependencies
 import Home from "@/pages/Home";
 import NotFound from "@/pages/NotFound";
 import TriggerUploads from "@/pages/TriggerUploads";
 import ArticleDetail from "@/pages/articles/ArticleDetail";
+import { MainLayout } from "@/components/layouts/MainLayout";
 import About from "@/pages/About";
 import RHCA from "@/pages/RHCA";
 import RhcaArticleDetail from "@/pages/rhca/RhcaArticleDetail";
@@ -22,11 +22,10 @@ import { AdminLayout } from "@/components/layouts/AdminLayout";
 import AdminNotFound from "@/pages/admin/NotFound";
 import { AdminRouteWrapper } from "@/components/routing/AdminRouteWrapper";
 
-// Define public routes - NOTE: We're not directly referencing MainLayout here
 export const routes = [
   {
     path: "/",
-    element: null, // No longer using MainLayout directly here
+    element: <MainLayout>{null}</MainLayout>,
     name: "main",
     children: [
       {
@@ -106,12 +105,13 @@ export const routes = [
       },
     ],
   },
-  // Admin routes
+  // New parent admin route with AdminLayout
   {
     path: "/admin",
     element: <AdminRouteWrapper component={() => <AdminLayout><Dashboard /></AdminLayout>} />,
     name: "admin",
   },
+  // Admin sub-routes
   {
     path: "/admin/uploads",
     element: <AdminRouteWrapper component={() => <AdminLayout><TriggerUploads /></AdminLayout>} />,
@@ -128,13 +128,3 @@ export const routes = [
     name: "admin-not-found",
   },
 ];
-
-// Utility function to get public routes (first route's children)
-export const getPublicRoutes = () => {
-  return routes[0].children || [];
-};
-
-// Utility function to get admin routes
-export const getAdminRoutes = () => {
-  return routes.slice(1) || [];
-};

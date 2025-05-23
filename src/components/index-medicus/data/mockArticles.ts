@@ -1,27 +1,26 @@
+
 import { Article } from "../types";
 
 export const mockArticles: Article[] = [
   {
     id: "1",
-    title: "Évaluation des facteurs de risque de l'hypertension artérielle en Haïti",
-    abstract: "Cette étude vise à identifier les facteurs de risque liés à l'hypertension artérielle dans la population haïtienne...",
-    authors: ["Dr. Jean-Pierre Louis", "Dr. Marie Claire Juste"],
-    publicationDate: "2023-05-15",
+    title: "Advances in Surgical Techniques",
+    abstract: "Recent developments in minimally invasive procedures...",
+    authors: ["Dr. Smith", "Dr. Johnson"],
+    date: "2024-01-15",
+    publicationDate: "2024-01-15",
+    category: "Research",
+    specialty: "Surgery",
     source: "INDEX",
-    pdfUrl: "https://example.com/pdf1.pdf",
-    imageUrl: "/lovable-uploads/f2409464-47cf-4348-ada0-e328e86be01b.png",
+    tags: ["surgery", "minimally invasive"],
+    views: 1200,
+    citations: 45,
+    downloads: 89,
+    shares: 34,
+    status: "published",
     volume: "12",
-    issue: "3",
-    pageNumber: "45-52",
-    specialty: "Cardiologie",
-    institution: "Université d'État d'Haïti",
-    category: "Recherche",
-    tags: ["Hypertension", "Épidémiologie", "Santé publique"],
-    views: 120,
-    downloads: 45,
-    citations: 12,
-    shares: 8,
-    status: "published"
+    issue: "1",
+    pageNumber: "23-30"
   },
   {
     id: "2",
