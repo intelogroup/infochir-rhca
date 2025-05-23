@@ -22,13 +22,11 @@ import { AdminLayout } from "@/components/layouts/AdminLayout";
 import AdminNotFound from "@/pages/admin/NotFound";
 import { AdminRouteWrapper } from "@/components/routing/AdminRouteWrapper";
 
-// Define route structure without directly importing MainLayout
+// Define public routes - NOTE: We're not directly referencing MainLayout here
 export const routes = [
   {
     path: "/",
-    // Instead of directly using MainLayout as the element, we'll render a null element
-    // and handle the layout wrapping in App.tsx
-    element: null,
+    element: null, // No longer using MainLayout directly here
     name: "main",
     children: [
       {

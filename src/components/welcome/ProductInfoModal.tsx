@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -15,9 +16,9 @@ export const ProductInfoModal = () => {
     const hasSeenProductInfo = localStorage.getItem("hasSeenProductInfo");
     
     // Only show after welcome modal and if not seen before
-    const welcomeModalSeen = localStorage.getItem("welcomeModalSeen");
+    const hasSeenWelcome = localStorage.getItem("hasSeenWelcome");
     
-    if (welcomeModalSeen === "true" && !hasSeenProductInfo) {
+    if (hasSeenWelcome === "true" && !hasSeenProductInfo) {
       // Delay showing this modal if welcome modal was just shown
       const timer = setTimeout(() => {
         setIsOpen(true);

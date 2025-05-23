@@ -26,21 +26,7 @@ import { WelcomeModal } from "./components/welcome/WelcomeModal";
 import { ProductInfoModal } from "./components/welcome/ProductInfoModal";
 import { MainLayout } from './components/layouts/MainLayout';
 import { getPublicRoutes, getAdminRoutes } from './config/routes';
-
-// Utility for route preloading
-const preloadRoute = (path: string) => {
-  if (typeof window === 'undefined') return;
-  
-  const link = document.createElement('link');
-  link.rel = 'prefetch';
-  link.href = path;
-  link.as = 'document';
-  
-  // Check if this link already exists
-  if (!document.head.querySelector(`link[rel="prefetch"][href="${path}"]`)) {
-    document.head.appendChild(link);
-  }
-};
+import { preloadCommonRoutes, preloadRoute } from './lib/route-utils';
 
 function App() {
   const [session, setSession] = useState(null);
@@ -48,8 +34,8 @@ function App() {
 
   // Preload common routes on initial load
   useEffect(() => {
-    const commonRoutes = ['/', '/about', '/rhca', '/igm', '/index-medicus'];
-    commonRoutes.forEach(route => preloadRoute(route));
+    // Preload common routes
+    preloadCommonRoutes();
     
     // Log route changes
     console.info(`Route changed to: ${location.pathname}`);
@@ -57,6 +43,14 @@ function App() {
     // Signal that route change is complete
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event('route-changed'));
+    }
+    
+    // Context-specific route preloading
+    if (location.pathname === '/') {
+      preloadRoute('/about');
+      preloadRoute('/rhca');
+    } else if (location.pathname === '/rhca') {
+      preloadRoute('/rhca/article');
     }
   }, [location]);
 
@@ -137,11 +131,13 @@ function App() {
         </Route>
       </Routes>
       
-      {/* Welcome modals */}
-      <div id="welcome-modals">
-        <WelcomeModal />
-        <ProductInfoModal />
-      </div>
+      {/* Welcome modals - Only show on specific routes */}
+      {location.pathname === '/' && (
+        <div id="welcome-modals">
+          <WelcomeModal />
+          <ProductInfoModal />
+        </div>
+      )}
     </>
   );
 }
