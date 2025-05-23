@@ -107,7 +107,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
       {/* Include AppRoutes to handle route tracking and preloading */}
       <AppRoutes />
       
-      <div ref={navbarRef}>
+      <div ref={navbarRef} className="sticky top-0 z-50">
         <Navbar />
       </div>
       
