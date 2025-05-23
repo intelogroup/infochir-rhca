@@ -7,8 +7,6 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "sonner";
-import { WelcomeModal } from "./components/welcome/WelcomeModal";
-import { ProductInfoModal } from "./components/welcome/ProductInfoModal";
 
 // Set up in production mode or preview mode
 const isDebugMode = process.env.NODE_ENV === 'development' || 
@@ -63,30 +61,6 @@ const preFetchResources = async () => {
   }
 };
 
-// Split the app rendering into main app and modals
-const AppCore = React.memo(() => (
-  <React.StrictMode>
-    <ErrorBoundary name="AppRoot">
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <App />
-          <Toaster richColors position="top-center" closeButton />
-        </BrowserRouter>
-      </QueryClientProvider>
-    </ErrorBoundary>
-  </React.StrictMode>
-));
-
-// Separate modals from core app
-const ModalsContainer = React.memo(() => (
-  <ErrorBoundary name="Modals">
-    <BrowserRouter>
-      <WelcomeModal />
-      <ProductInfoModal />
-    </BrowserRouter>
-  </ErrorBoundary>
-));
-
 // Initialize application with performance optimizations
 const initApp = async () => {
   performance.mark('app-init');
@@ -106,8 +80,18 @@ const initApp = async () => {
   // Preload images in background
   preloadCriticalImages();
   
-  // Render the core app first
-  root.render(<AppCore />);
+  // Render the core app with a single router
+  root.render(
+    <React.StrictMode>
+      <ErrorBoundary name="AppRoot">
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </QueryClientProvider>
+      </ErrorBoundary>
+    </React.StrictMode>
+  );
   
   // Hide the initial loader after a short delay to ensure React has started rendering
   const initialLoader = document.getElementById('initial-loader');
@@ -125,18 +109,6 @@ const initApp = async () => {
   // Explicitly dispatch app-loaded event after React has rendered
   setTimeout(() => {
     window.dispatchEvent(new Event('app-loaded'));
-    
-    // Render modals only after core app is loaded
-    const modalsRoot = document.getElementById('modals-root');
-    if (!modalsRoot) {
-      // Create modals container if it doesn't exist
-      const modalsContainer = document.createElement('div');
-      modalsContainer.id = 'modals-root';
-      document.body.appendChild(modalsContainer);
-      
-      const modalsRootDom = ReactDOM.createRoot(modalsContainer);
-      modalsRootDom.render(<ModalsContainer />);
-    }
   }, 200);
 };
 

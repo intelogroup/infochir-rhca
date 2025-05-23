@@ -21,12 +21,19 @@ export const ProductInfoModal = () => {
   );
 
   useEffect(() => {
-    // Only show on product pages
+    // Only show on product pages after user has navigated there, not on initial load
     if (!isProductPage) return;
     
     // Use a different key for this modal
     const storageKey = `hasSeenProductInfo_${location.pathname.split('/')[1]}`;
     const hasSeenInfo = localStorage.getItem(storageKey);
+
+    // Don't show on initial page load - check if this was a navigation
+    const isInitialLoad = sessionStorage.getItem('appInitialized') !== 'true';
+    if (isInitialLoad) {
+      sessionStorage.setItem('appInitialized', 'true');
+      return;
+    }
 
     if (!hasSeenInfo) {
       // Show the product info dialog after the page has fully loaded

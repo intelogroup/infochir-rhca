@@ -7,6 +7,8 @@ import { Footer } from "@/components/Footer";
 import BackToTop from "@/components/navigation/BackToTop";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { WelcomeModal } from "@/components/welcome/WelcomeModal";
+import { ProductInfoModal } from "@/components/welcome/ProductInfoModal";
 
 export interface MainLayoutProps {
   children?: React.ReactNode;
@@ -66,7 +68,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         // Dispatch route change event
         window.dispatchEvent(new Event('route-changed'));
         console.log(`Navigation complete: ${location.pathname}`);
-      }, 150); // Reduced from 300ms to 150ms for faster transitions
+      }, 150);
       
       return () => clearTimeout(timer);
     }
@@ -96,7 +98,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         console.log('Safety timeout triggered - forcing content to display');
         setIsLoading(false);
       }
-    }, 800); // Reduced from 2000ms to 800ms
+    }, 800);
     
     return () => clearTimeout(safetyTimer);
   }, [isLoading]);
