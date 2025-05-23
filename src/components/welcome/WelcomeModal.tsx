@@ -15,12 +15,11 @@ export const WelcomeModal = () => {
     const hasSeenWelcome = localStorage.getItem("hasSeenWelcome");
     
     // Only show the modal if the user hasn't seen it before
-    // and they're on the homepage
-    if (!hasSeenWelcome && window.location.pathname === "/") {
-      // Delay showing the modal to avoid interrupting initial page load
+    if (!hasSeenWelcome) {
+      // Short delay before showing the modal
       const timer = setTimeout(() => {
         setIsOpen(true);
-      }, 1500);
+      }, 1000);
       
       return () => clearTimeout(timer);
     }

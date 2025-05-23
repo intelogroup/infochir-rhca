@@ -31,6 +31,24 @@ import { preloadCommonRoutes, preloadRoute } from './lib/route-utils';
 function App() {
   const [session, setSession] = useState(null);
   const location = useLocation();
+  const [showWelcomeModals, setShowWelcomeModals] = useState(false);
+
+  // Determine if welcome modals should be shown
+  useEffect(() => {
+    // Only show welcome modals on homepage and if not seen before
+    const hasSeenWelcome = localStorage.getItem("hasSeenWelcome");
+    
+    if (location.pathname === '/' && !hasSeenWelcome) {
+      // Short delay before showing welcome modal
+      const timer = setTimeout(() => {
+        setShowWelcomeModals(true);
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    } else {
+      setShowWelcomeModals(false);
+    }
+  }, [location.pathname]);
 
   // Preload common routes on initial load
   useEffect(() => {
@@ -131,12 +149,12 @@ function App() {
         </Route>
       </Routes>
       
-      {/* Welcome modals - Only show on specific routes */}
-      {location.pathname === '/' && (
-        <div id="welcome-modals">
+      {/* Welcome modals - Only show on specific routes when needed */}
+      {showWelcomeModals && (
+        <>
           <WelcomeModal />
           <ProductInfoModal />
-        </div>
+        </>
       )}
     </>
   );

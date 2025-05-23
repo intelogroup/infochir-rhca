@@ -2,11 +2,11 @@
 import * as React from "react";
 import { useState, useEffect, useRef } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import BackToTop from "@/components/navigation/BackToTop";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Navbar } from "@/components/Navbar";
 
 export interface MainLayoutProps {
   children?: React.ReactNode;

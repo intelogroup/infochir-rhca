@@ -38,6 +38,5 @@ export const AppRoutes = () => {
     preloadCommonRoutes();
   }, []);
 
-  // This component no longer renders routes directly
   return null;
 };

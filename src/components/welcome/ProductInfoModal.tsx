@@ -19,10 +19,10 @@ export const ProductInfoModal = () => {
     const hasSeenWelcome = localStorage.getItem("hasSeenWelcome");
     
     if (hasSeenWelcome === "true" && !hasSeenProductInfo) {
-      // Delay showing this modal if welcome modal was just shown
+      // Short delay showing this modal if welcome modal was just shown
       const timer = setTimeout(() => {
         setIsOpen(true);
-      }, 1000);
+      }, 500);
       
       return () => clearTimeout(timer);
     }
