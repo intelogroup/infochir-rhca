@@ -7,7 +7,6 @@ import { Footer } from "@/components/Footer";
 import BackToTop from "@/components/navigation/BackToTop";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { AppRoutes } from "@/components/routing/AppRoutes";
 
 export interface MainLayoutProps {
   children?: React.ReactNode;
@@ -38,18 +37,6 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         window.performance.mark('layout-mounted');
       }
     }
-    
-    // Preload common routes for better performance
-    const preloadRoutes = ['/', '/about', '/rhca', '/igm', '/submission'];
-    preloadRoutes.forEach(route => {
-      if (!document.head.querySelector(`link[rel="prefetch"][href="${route}"]`)) {
-        const link = document.createElement('link');
-        link.rel = 'prefetch';
-        link.href = route;
-        link.as = 'document';
-        document.head.appendChild(link);
-      }
-    });
   }, []);
 
   // Handle navigation loading states
@@ -104,9 +91,6 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f8fafc] to-white">
-      {/* Include AppRoutes to handle route tracking and preloading */}
-      <AppRoutes />
-      
       <div ref={navbarRef} className="sticky top-0 z-50">
         <Navbar />
       </div>

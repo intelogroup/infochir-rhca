@@ -25,10 +25,40 @@ import { supabase } from './integrations/supabase/client';
 import { WelcomeModal } from "./components/welcome/WelcomeModal";
 import { ProductInfoModal } from "./components/welcome/ProductInfoModal";
 import { MainLayout } from './components/layouts/MainLayout';
+import { getPublicRoutes, getAdminRoutes } from './config/routes';
+
+// Utility for route preloading
+const preloadRoute = (path: string) => {
+  if (typeof window === 'undefined') return;
+  
+  const link = document.createElement('link');
+  link.rel = 'prefetch';
+  link.href = path;
+  link.as = 'document';
+  
+  // Check if this link already exists
+  if (!document.head.querySelector(`link[rel="prefetch"][href="${path}"]`)) {
+    document.head.appendChild(link);
+  }
+};
 
 function App() {
   const [session, setSession] = useState(null);
   const location = useLocation();
+
+  // Preload common routes on initial load
+  useEffect(() => {
+    const commonRoutes = ['/', '/about', '/rhca', '/igm', '/index-medicus'];
+    commonRoutes.forEach(route => preloadRoute(route));
+    
+    // Log route changes
+    console.info(`Route changed to: ${location.pathname}`);
+    
+    // Signal that route change is complete
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('route-changed'));
+    }
+  }, [location]);
 
   useEffect(() => {
     // Set up auth state listener
@@ -58,6 +88,20 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/index-medicus" element={<IndexMedicus />} />
           <Route path="/adc" element={<ADC />} />
+          {/* Map all public routes from config */}
+          {getPublicRoutes().map((route) => (
+            route.path !== "" && 
+            route.path !== "/" && 
+            route.path !== "about" && 
+            route.path !== "index-medicus" && 
+            route.path !== "adc" && (
+              <Route 
+                key={route.name} 
+                path={route.path} 
+                element={route.element} 
+              />
+            )
+          ))}
         </Route>
 
         {/* Auth route */}

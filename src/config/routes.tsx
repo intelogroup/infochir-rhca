@@ -1,9 +1,9 @@
 
+// Import only primitive components that don't create circular dependencies
 import Home from "@/pages/Home";
 import NotFound from "@/pages/NotFound";
 import TriggerUploads from "@/pages/TriggerUploads";
 import ArticleDetail from "@/pages/articles/ArticleDetail";
-import { MainLayout } from "@/components/layouts/MainLayout";
 import About from "@/pages/About";
 import RHCA from "@/pages/RHCA";
 import RhcaArticleDetail from "@/pages/rhca/RhcaArticleDetail";
@@ -22,10 +22,13 @@ import { AdminLayout } from "@/components/layouts/AdminLayout";
 import AdminNotFound from "@/pages/admin/NotFound";
 import { AdminRouteWrapper } from "@/components/routing/AdminRouteWrapper";
 
+// Define route structure without directly importing MainLayout
 export const routes = [
   {
     path: "/",
-    element: <MainLayout>{null}</MainLayout>,
+    // Instead of directly using MainLayout as the element, we'll render a null element
+    // and handle the layout wrapping in App.tsx
+    element: null,
     name: "main",
     children: [
       {
@@ -105,13 +108,12 @@ export const routes = [
       },
     ],
   },
-  // New parent admin route with AdminLayout
+  // Admin routes
   {
     path: "/admin",
     element: <AdminRouteWrapper component={() => <AdminLayout><Dashboard /></AdminLayout>} />,
     name: "admin",
   },
-  // Admin sub-routes
   {
     path: "/admin/uploads",
     element: <AdminRouteWrapper component={() => <AdminLayout><TriggerUploads /></AdminLayout>} />,
@@ -128,3 +130,13 @@ export const routes = [
     name: "admin-not-found",
   },
 ];
+
+// Utility function to get public routes (first route's children)
+export const getPublicRoutes = () => {
+  return routes[0].children || [];
+};
+
+// Utility function to get admin routes
+export const getAdminRoutes = () => {
+  return routes.slice(1) || [];
+};

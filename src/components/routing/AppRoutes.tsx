@@ -2,8 +2,8 @@
 import * as React from "react";
 import { useLocation } from "react-router-dom";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
-import { routes } from "@/config/routes";
 import { createLogger } from "@/lib/error-logger";
+import { preloadCommonRoutes, handleRouteChange, preloadRoute } from "@/lib/route-utils";
 
 // Create a logger for routes
 const logger = createLogger('AppRoutes');
@@ -20,7 +20,7 @@ export const AppRoutes = () => {
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event('route-changed'));
       
-      // Preload common sub-routes for the current route
+      // Context-based route preloading
       if (location.pathname === '/') {
         // From Home, users often go to About, RHCA or IGM
         preloadRoute('/about');
@@ -36,40 +36,10 @@ export const AppRoutes = () => {
     }
   }, [location]);
 
-  // Function to preload a specific route
-  const preloadRoute = (path: string) => {
-    const link = document.createElement('link');
-    link.rel = 'prefetch';
-    link.href = path;
-    link.as = 'document';
-    
-    // Check if this link already exists
-    if (!document.head.querySelector(`link[rel="prefetch"][href="${path}"]`)) {
-      document.head.appendChild(link);
-    }
-  };
-
   // Aggressively preload all routes on initial load
   React.useEffect(() => {
-    // Immediately preload all top-level routes
-    routes.forEach(route => {
-      if (route.path) {
-        preloadRoute(route.path);
-      }
-      
-      // Also preload first-level child routes
-      if (route.children) {
-        route.children.forEach(childRoute => {
-          if (childRoute.path && !childRoute.path.includes(':')) {
-            // Don't preload dynamic routes with parameters
-            const fullPath = route.path 
-              ? `${route.path}/${childRoute.path}`.replace('//', '/') 
-              : childRoute.path;
-            preloadRoute(fullPath);
-          }
-        });
-      }
-    });
+    // Immediately preload all common routes
+    preloadCommonRoutes();
   }, []);
 
   return null; // This component no longer renders routes directly
