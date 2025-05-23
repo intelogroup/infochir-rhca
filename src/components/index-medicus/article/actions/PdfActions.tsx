@@ -64,7 +64,7 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
         table_name: 'articles',
         column_name: 'views',
         row_id: articleId
-      });
+      }).catch(err => logger.error("Failed to increment view count:", err));
     }
     
     toast.success("PDF ouvert dans un nouvel onglet");
@@ -85,19 +85,21 @@ export const PdfActions: React.FC<PdfActionsProps> = ({
     setIsLoading(true);
     
     try {
-      const fileName = title ? `${title.slice(0, 30)}.pdf` : 'article.pdf';
+      const fileName = title ? `${title.slice(0, 30).replace(/[^a-zA-Z0-9]/g, '_')}.pdf` : 'article.pdf';
       
       const success = await downloadPDF({
         url: pdfUrl,
         fileName: fileName,
         documentId: articleId || 'unknown',
-        documentType: DocumentType.INDEX, // Use the correct document type
+        documentType: DocumentType.INDEX,
         trackingEnabled: !!articleId
       });
       
       if (!success) {
         throw new Error('Download failed');
       }
+      
+      toast.success("Téléchargement du PDF réussi");
     } catch (error) {
       logger.error(error);
       toast.error("Une erreur est survenue lors du téléchargement");

@@ -1,6 +1,6 @@
 
 import { createLogger } from "@/lib/error-logger";
-import { checkFileExists } from "@/lib/analytics/download";
+import { checkFileExists } from "@/lib/analytics/download/storage";
 import { BUCKET_ID_PDF } from "@/lib/analytics/download/storage/index-medicus";
 
 const logger = createLogger('FileValidation');
@@ -40,7 +40,7 @@ export const validateFileExists = async (pdfUrl?: string): Promise<boolean> => {
       return response.ok;
     }
   } catch (err) {
-    logger.error(err);
+    logger.error('Error validating file existence:', err);
     return false;
   }
 };
