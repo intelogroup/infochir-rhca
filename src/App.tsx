@@ -25,6 +25,8 @@ import Analytics from './pages/admin/Analytics';
 import Settings from './pages/admin/Settings';
 import { supabase } from './integrations/supabase/client';
 import { queryClient } from '@/lib/react-query';
+import { WelcomeModal } from "./components/welcome/WelcomeModal";
+import { ProductInfoModal } from "./components/welcome/ProductInfoModal";
 
 function App() {
   const [session, setSession] = useState(null);
@@ -91,6 +93,12 @@ function App() {
           <Route path="index-medicus" element={<AdminProtectedRoute><IndexMedicusAdmin /></AdminProtectedRoute>} />
         </Route>
       </Routes>
+      
+      {/* Welcome modals */}
+      <div id="welcome-modals">
+        <WelcomeModal />
+        <ProductInfoModal />
+      </div>
     </>
   );
 }

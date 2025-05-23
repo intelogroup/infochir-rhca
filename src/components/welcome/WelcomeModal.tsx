@@ -1,82 +1,104 @@
-
-import { useEffect, useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, X } from "lucide-react";
 
 export const WelcomeModal = () => {
   const [isOpen, setIsOpen] = useState(false);
-
+  const navigate = useNavigate();
+  
   useEffect(() => {
-    // Use a unique key for the welcome modal
-    const hasSeenWelcome = localStorage.getItem("hasSeenSpecialNote");
-
-    if (!hasSeenWelcome) {
-      // If not, show the welcome dialog after a longer delay to ensure content loads first
+    // Check if the user has seen the welcome modal before
+    const hasSeenWelcome = localStorage.getItem("hasSeenWelcome");
+    
+    // Only show the modal if the user hasn't seen it before
+    // and they're on the homepage
+    if (!hasSeenWelcome && window.location.pathname === "/") {
+      // Delay showing the modal to avoid interrupting initial page load
       const timer = setTimeout(() => {
-        // Check if the page is already loaded before showing modal
-        if (document.readyState === 'complete') {
-          setIsOpen(true);
-        } else {
-          // If page isn't loaded yet, wait for load event
-          window.addEventListener('load', () => setIsOpen(true), { once: true });
-        }
-      }, 1500); // Increased delay to ensure content loads first
-
+        setIsOpen(true);
+      }, 1500);
+      
       return () => clearTimeout(timer);
     }
   }, []);
-
+  
   const handleClose = () => {
-    // Mark that the user has seen the welcome message with the unique key
-    localStorage.setItem("hasSeenSpecialNote", "true");
+    // Mark that the user has seen the welcome modal
+    localStorage.setItem("hasSeenWelcome", "true");
     setIsOpen(false);
   };
-
+  
+  const handleExplore = () => {
+    // Mark that the user has seen the welcome modal
+    localStorage.setItem("hasSeenWelcome", "true");
+    setIsOpen(false);
+    
+    // Navigate to the about page
+    navigate("/about");
+  };
+  
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[650px] max-h-[85vh] overflow-auto">
-        <DialogHeader>
-          <DialogTitle className="text-xl text-center font-bold text-primary">
-            NOTE SPÉCIALE AUX AUTEURS ET LECTEURS
-          </DialogTitle>
-          <DialogDescription className="text-center text-gray-800 font-semibold">
-            DE LA REVUE HAÏTIENNE DE CHIRURGIE ET D'ANESTHÉSIOLOGIE ET DE L'INFO GAZETTE MÉDICALE D'INFOCHIR/RHCA
-          </DialogDescription>
-          <div className="text-center text-gray-600 mt-1">Mai 2025</div>
-        </DialogHeader>
-        
-        <div className="mt-4 space-y-4 text-gray-700">
-          <p className="leading-relaxed">
-            En l'année 2025, la situation d'insécurité en Haïti prend de plus en plus d'ampleur et la population est grandement affectée. L'aire métropolitaine et d'autres régions du pays subissent les assauts répétés de bandes armées. La désolation, la disparition brutale d'institutions publiques et privées de renom, l'exode massive interne des habitants chassés de leur logis vandalisés ou détruits, l'aggravation des carences nutritionnelles, les maladies infectieuses, les traumatismes par balle, le stress chronique sont le lot quotidien de toute la population qui ne sait à quel saint se vouer.
-          </p>
-          <p className="leading-relaxed">
-            Comme des millions de concitoyens, les membres d'INFOCHIR/RHCA n'en sont pas épargnés. Leurs vies et leurs biens sont aussi menacés. Les rafales continuelles d'armes automatiques chassent certains de leurs maisons qu'ils ne retrouveront peut-être plus ; d'autres craignent, perplexes, que leur tour n'arrive ; d'autres encore redoutent une fin tragique…
-          </p>
-          <p className="leading-relaxed">
-            Cette incertitude grandissante et cette lutte quotidienne pour la survie sont débilitantes. Elles sont assez ankylosantes et favorisent peu l'opérationnalisation de notre plateforme. Toutefois, en dépit de ce contexte délétère, l'équipe, dans un instinct de survie, entend maintenir ses publications tant et aussi longtemps qu'elle le pourra.
-          </p>
-          <p className="leading-relaxed">
-            Aussi, veut-t-elle encourager les auteurs à continuer à lui envoyer leurs textes et aux lecteurs à poursuivre les consultations de nos périodiques. Il devient encore plus pertinent de nous faire parvenir vos réactions. Cependant, compte tenu de la situation décrite plus haut et de l'état d'esprit dans lequel nous fonctionnons, la périodicité de nos publications connaîtra des fluctuations dans les mois à venir et, ce, jusqu'à nouvel ordre.
-          </p>
-          <p className="leading-relaxed">
-            Comptant sur votre compréhension et votre accompagnement en la circonstance, nous vous en remercions.
-          </p>
-          <p className="text-right font-semibold">La Rédaction</p>
-        </div>
-        
-        <DialogFooter className="mt-6">
-          <Button onClick={handleClose} className="w-full">
-            Continuer
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <AnimatePresence>
+      {isOpen && (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-center">
+                Bienvenue sur InfoChir
+              </DialogTitle>
+              <DialogDescription className="text-center">
+                Découvrez notre plateforme dédiée aux professionnels de santé en Haïti.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="grid gap-4 py-4">
+              <div className="flex justify-center">
+                <motion.img
+                  src="/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png"
+                  alt="InfoChir Logo"
+                  className="h-24 w-24 object-contain"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                />
+              </div>
+              
+              <p className="text-center text-muted-foreground">
+                InfoChir est votre portail d'accès aux publications scientifiques
+                et ressources médicales pour les professionnels de santé en Haïti.
+              </p>
+            </div>
+            
+            <DialogFooter className="flex flex-col sm:flex-row gap-2">
+              <Button
+                variant="outline"
+                onClick={handleClose}
+                className="sm:w-auto w-full"
+              >
+                Fermer
+              </Button>
+              <Button
+                onClick={handleExplore}
+                className="sm:w-auto w-full group"
+              >
+                Explorer
+                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </DialogFooter>
+            
+            <button
+              onClick={handleClose}
+              className="absolute top-4 right-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+            >
+              <X className="h-4 w-4" />
+              <span className="sr-only">Close</span>
+            </button>
+          </DialogContent>
+        </Dialog>
+      )}
+    </AnimatePresence>
   );
 };

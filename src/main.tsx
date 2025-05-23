@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
@@ -7,7 +6,6 @@ import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/react-query";
 import { BrowserRouter } from "react-router-dom";
-import { Toaster } from "sonner";
 
 // Set up in production mode or preview mode
 const isDebugMode = process.env.NODE_ENV === 'development' || 
@@ -93,11 +91,6 @@ const initApp = async () => {
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>
             <App />
-            <Toaster richColors position="top-center" closeButton />
-            <div id="welcome-modals">
-              <WelcomeModal />
-              <ProductInfoModal />
-            </div>
           </BrowserRouter>
         </QueryClientProvider>
       </ErrorBoundary>
