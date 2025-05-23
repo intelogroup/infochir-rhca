@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/layouts/MainLayout";
@@ -10,6 +9,33 @@ import { toast } from "sonner";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { formatDate } from "@/lib/utils";
+
+// When creating mock article data, include the status field
+const mockArticle: Article = {
+  id: "123",
+  title: "Sample Article",
+  authors: ["Author 1", "Author 2"],
+  abstract: "This is a sample abstract.",
+  date: "2023-01-01",
+  publicationDate: "2023-01-01",
+  source: "Sample Source",
+  tags: ["Tag 1", "Tag 2"],
+  category: "Category 1",
+  specialty: "Specialty 1",
+  pdfUrl: "https://example.com/sample.pdf",
+  status: "published",
+  imageUrl: "https://example.com/sample.jpg",
+  coverImage: "https://example.com/sample.jpg",
+  views: 100,
+  citations: 5,
+  downloads: 20,
+  shares: 15,
+  institution: "Sample Institution",
+  volume: "1",
+  issue: "1",
+  pageNumber: "1",
+  pdfFileName: "sample.pdf"
+};
 
 const ArticleDetail = () => {
   const { id } = useParams<{ id: string }>();

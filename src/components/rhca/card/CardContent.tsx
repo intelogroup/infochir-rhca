@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { CalendarIcon, BookOpen } from "lucide-react";
@@ -43,13 +42,30 @@ export const CardContent: React.FC<CardContentProps> = ({ article, pdfUrl }) => 
     }
   })();
 
+  // Fix the toString error by adding a type guard
+  const formatDate = (dateString?: string): string => {
+    if (!dateString) return 'Date inconnue';
+    
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return 'Date invalide';
+      
+      return date.toLocaleDateString('fr-FR', {
+        year: 'numeric',
+        month: 'long'
+      });
+    } catch (error) {
+      return 'Date inconnue';
+    }
+  };
+
   return (
     <div className="flex flex-col h-full min-h-0">
       <div className="flex flex-wrap items-center text-sm text-muted-foreground mb-1.5 gap-2">
         <div className="flex items-center">
           <CalendarIcon className="mr-1 h-3 w-3 text-primary/60 flex-shrink-0" />
           <span className="font-medium truncate">
-            {article.publicationDate ? new Date(article.publicationDate).toLocaleDateString('fr-FR') : 'Date non disponible'}
+            {article.publicationDate ? formatDate(article.publicationDate) : 'Date non disponible'}
           </span>
         </div>
         {article.volume && article.issue && (

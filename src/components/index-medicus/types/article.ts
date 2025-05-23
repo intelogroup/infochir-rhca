@@ -20,4 +20,5 @@ export interface Article {
   shares?: number;
   downloads?: number;
   citations?: number;
+  status?: string; // Adding status field to fix errors
 }
