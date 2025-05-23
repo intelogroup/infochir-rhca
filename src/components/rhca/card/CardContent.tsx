@@ -1,11 +1,12 @@
+
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { CalendarIcon, BookOpen } from "lucide-react";
 import { CardActions } from "./CardActions";
-import type { RhcaArticle } from "../types";
+import type { Article } from "@/components/index-medicus/types/article";
 
 interface CardContentProps {
-  article: RhcaArticle;
+  article: Article;
   pdfUrl: string | null;
 }
 
@@ -16,20 +17,18 @@ export const CardContent: React.FC<CardContentProps> = ({ article, pdfUrl }) => 
       if (!article.pageNumber) return "- Pages";
       
       // Convert pageNumber to string for processing
-      const pageNumber = typeof article.pageNumber === 'number' 
-        ? article.pageNumber.toString() 
-        : article.pageNumber.trim();
+      const pageNumberStr = article.pageNumber ? article.pageNumber.toString() : '';
       
       // Handle page range format (e.g., "1-28")
-      if (pageNumber.includes('-')) {
-        const [start, end] = pageNumber.split('-').map(num => parseInt(num.trim(), 10));
+      if (pageNumberStr.includes('-')) {
+        const [start, end] = pageNumberStr.split('-').map(num => parseInt(num.trim(), 10));
         if (!isNaN(end)) {
           return `${end} Pages`;
         }
       } 
       // Handle single page format (e.g., "34")
       else {
-        const pageNum = parseInt(pageNumber, 10);
+        const pageNum = parseInt(pageNumberStr, 10);
         if (!isNaN(pageNum)) {
           return `${pageNum} Pages`;
         }

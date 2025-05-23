@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger } from "@/lib/error-logger";
@@ -66,6 +67,6 @@ export const useRHCAArticles = ({ initialData }: UseRHCAArticlesProps = {}) => {
     },
     initialData: initialData,
     staleTime: 60 * 60 * 1000, // 1 hour
-    cacheTime: 24 * 60 * 60 * 1000, // 24 hours
+    gcTime: 24 * 60 * 60 * 1000, // 24 hours (changed from cacheTime)
   });
 };

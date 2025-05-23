@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { MainLayout } from '@/components/layouts/MainLayout';
@@ -5,7 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, BookOpen, Calendar, Download, FileText, Quote, Share2, User, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { ArticleActions } from '@/components/index-medicus/ArticleActions';
+import { Button } from '@/components/ui/button';
+import { ArticleActions } from '@/components/index-medicus/article/ArticleActions';
 import { ShareAction } from '@/components/index-medicus/article/actions/ShareAction';
 import { PdfActions } from '@/components/index-medicus/article/actions/PdfActions';
 import { ViewAction } from '@/components/index-medicus/article/actions/ViewAction';
