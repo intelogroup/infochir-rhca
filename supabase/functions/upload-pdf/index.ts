@@ -11,6 +11,7 @@ const corsHeaders = {
 const validBuckets = [
   'rhca-pdfs', 
   'indexmedicus_pdfs', 
+  'indexmedicuspdf',  // Added the new bucket
   'igm-pdfs', 
   'article-pdfs', 
   'rhca_covers', 

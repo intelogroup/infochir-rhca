@@ -16,13 +16,16 @@ export const validateFileExists = async (pdfUrl?: string): Promise<boolean> => {
   }
 
   try {
-    if (pdfUrl.includes('article-pdfs') || pdfUrl.includes('rhca-pdfs') || pdfUrl.includes(BUCKET_ID_PDF)) {
+    if (pdfUrl.includes('article-pdfs') || pdfUrl.includes('rhca-pdfs') || 
+        pdfUrl.includes('indexmedicuspdf') || pdfUrl.includes(BUCKET_ID_PDF)) {
       // Extract bucket name and file name from URL
       const bucketName = pdfUrl.includes('article-pdfs') 
         ? 'article-pdfs' 
         : pdfUrl.includes('rhca-pdfs') 
-          ? 'rhca-pdfs' 
-          : BUCKET_ID_PDF;
+          ? 'rhca-pdfs'
+          : pdfUrl.includes('indexmedicuspdf')
+            ? 'indexmedicuspdf'
+            : BUCKET_ID_PDF;
       
       const fileName = pdfUrl.split('/').pop();
       if (!fileName) {

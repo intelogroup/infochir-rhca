@@ -6,8 +6,8 @@ import { checkFileExists } from './file-operations';
 const logger = createLogger('IndexMedicusStorage');
 
 // Define constants for bucket IDs
-export const BUCKET_ID_PDF = 'indexmedicus_pdfs';
-export const BUCKET_ID_COVERS = 'indexmedicus_covers';
+export const BUCKET_ID_PDF = 'indexmedicuspdf';
+export const BUCKET_ID_COVERS = 'indexmedicuspdf'; // Using same bucket for covers temporarily
 
 /**
  * Check if a file exists in the IndexMedicus PDF bucket
@@ -34,7 +34,7 @@ export const checkIndexMedicusFileExists = async (fileName: string): Promise<boo
 
 /**
  * Get public URL for an IndexMedicus PDF file
- * @param fileName File name in the indexmedicus_pdfs bucket
+ * @param fileName File name in the indexmedicuspdf bucket
  * @returns Public URL for the file
  */
 export const getIndexMedicusPdfUrl = (fileName: string): string => {
@@ -53,7 +53,7 @@ export const getIndexMedicusPdfUrl = (fileName: string): string => {
 
 /**
  * Get public URL for an IndexMedicus cover image
- * @param fileName File name in the indexmedicus_covers bucket
+ * @param fileName File name in the indexmedicuspdf bucket
  * @returns Public URL for the image
  */
 export const getIndexMedicusCoverUrl = (fileName: string): string => {
