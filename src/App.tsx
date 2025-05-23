@@ -6,9 +6,7 @@ import {
   Navigate,
   useLocation
 } from 'react-router-dom';
-import { QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from "sonner";
-import { createClient } from '@supabase/supabase-js';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 
@@ -24,9 +22,9 @@ import Users from './pages/admin/Users';
 import Analytics from './pages/admin/Analytics';
 import Settings from './pages/admin/Settings';
 import { supabase } from './integrations/supabase/client';
-import { queryClient } from '@/lib/react-query';
 import { WelcomeModal } from "./components/welcome/WelcomeModal";
 import { ProductInfoModal } from "./components/welcome/ProductInfoModal";
+import { MainLayout } from './components/layouts/MainLayout';
 
 function App() {
   const [session, setSession] = useState(null);
@@ -52,16 +50,17 @@ function App() {
   return (
     <>
       <Toaster position="bottom-center" richColors closeButton />
+      
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        
-        {/* Index Medicus Routes */}
-        <Route path="/index-medicus" element={<IndexMedicus />} />
+        {/* Public routes wrapped in MainLayout */}
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/index-medicus" element={<IndexMedicus />} />
+          <Route path="/adc" element={<ADC />} />
+        </Route>
 
-        {/* ADC Route */}
-        <Route path="/adc" element={<ADC />} />
-
+        {/* Auth route */}
         <Route
           path="/login"
           element={

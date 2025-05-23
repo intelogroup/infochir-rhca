@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
@@ -115,10 +116,6 @@ const initApp = async () => {
     window.dispatchEvent(new Event('app-loaded'));
   }, 200);
 };
-
-// Import modals directly in main.tsx
-import { WelcomeModal } from "./components/welcome/WelcomeModal";
-import { ProductInfoModal } from "./components/welcome/ProductInfoModal";
 
 // Initialize immediately
 if (document.readyState === 'loading') {

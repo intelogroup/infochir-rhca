@@ -7,6 +7,7 @@ import { Footer } from "@/components/Footer";
 import BackToTop from "@/components/navigation/BackToTop";
 import { useAnalytics } from "@/hooks/use-analytics";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { AppRoutes } from "@/components/routing/AppRoutes";
 
 export interface MainLayoutProps {
   children?: React.ReactNode;
@@ -103,12 +104,15 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f8fafc] to-white">
+      {/* Include AppRoutes to handle route tracking and preloading */}
+      <AppRoutes />
+      
       <div ref={navbarRef}>
         <Navbar />
       </div>
       
       <main 
-        className="relative min-h-[calc(100vh-4rem)] w-full overflow-x-hidden" 
+        className="relative min-h-[calc(100vh-4rem)] w-full overflow-x-hidden pt-16 md:pt-[4.5rem] lg:pt-20" 
         style={{ minHeight: `calc(100vh - ${navbarHeight})` }}
         ref={contentRef}
       >
