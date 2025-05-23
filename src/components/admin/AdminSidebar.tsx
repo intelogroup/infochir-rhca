@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   BarChart,
@@ -5,7 +6,8 @@ import {
   Users,
   FileText,
   Database,
-  BookOpen
+  BookOpen,
+  LogOut
 } from 'lucide-react';
 import {
   Sheet,
@@ -17,18 +19,16 @@ import {
 } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { Link } from 'react-router-dom';
-import { useAuth } from '@/hooks/use-auth';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 export const AdminSidebar = () => {
-  const { signOut } = useAuth();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
     try {
-      await signOut();
+      await supabase.auth.signOut();
       navigate('/login');
       toast.success("Déconnexion réussie");
     } catch (error) {
@@ -93,8 +93,9 @@ export const AdminSidebar = () => {
           ))}
         </div>
         <Separator className="my-4" />
-        <Button variant="destructive" onClick={handleSignOut} className="w-full">
-          Se déconnecter
+        <Button variant="destructive" onClick={handleSignOut} className="w-full flex items-center gap-2">
+          <LogOut className="h-4 w-4" />
+          <span>Se déconnecter</span>
         </Button>
       </SheetContent>
     </Sheet>

@@ -5,7 +5,7 @@ import { checkFileExists } from './file-operations';
 
 const logger = createLogger('IndexMedicusStorage');
 
-// Define constants for bucket IDs
+// Define constants for bucket IDs - using the new bucket name you created
 export const BUCKET_ID_PDF = 'indexmedicuspdf';
 export const BUCKET_ID_COVERS = 'indexmedicuspdf'; // Using same bucket for covers temporarily
 

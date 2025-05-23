@@ -7,11 +7,11 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-// Define allowed buckets
+// Define allowed buckets - updated to include our new bucket
 const validBuckets = [
   'rhca-pdfs', 
   'indexmedicus_pdfs', 
-  'indexmedicuspdf',  // Added the new bucket
+  'indexmedicuspdf',  // This is the bucket you've created
   'igm-pdfs', 
   'article-pdfs', 
   'rhca_covers', 
