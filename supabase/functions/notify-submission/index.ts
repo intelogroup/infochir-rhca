@@ -3,7 +3,9 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { corsHeaders, handleCors } from "../_shared/cors.ts";
 import { 
   generateSubmissionHtmlContent,
-  generateSubmissionTextContent
+  generateSubmissionTextContent,
+  generateUserConfirmationHtmlContent,
+  generateUserConfirmationTextContent
 } from "../_shared/email-templates.ts";
 import { 
   sendEmail,
@@ -44,7 +46,8 @@ serve(async (req) => {
     console.log("[notify-submission] Received data for notification:", {
       title: submissionData.title,
       type: submissionData.publication_type,
-      author: submissionData.corresponding_author_name
+      author: submissionData.corresponding_author_name,
+      email: submissionData.corresponding_author_email
     });
     
     // Format the submission date for the email
@@ -54,53 +57,124 @@ serve(async (req) => {
       timeStyle: 'medium'
     });
 
-    // Generate email content
-    const htmlContent = generateSubmissionHtmlContent(submissionData, formattedDate);
-    const textContent = generateSubmissionTextContent(submissionData, formattedDate);
+    // Generate admin notification email content
+    const adminHtmlContent = generateSubmissionHtmlContent(submissionData, formattedDate);
+    const adminTextContent = generateSubmissionTextContent(submissionData, formattedDate);
+
+    // Generate user confirmation email content
+    const userHtmlContent = generateUserConfirmationHtmlContent(submissionData, formattedDate);
+    const userTextContent = generateUserConfirmationTextContent(submissionData, formattedDate);
+
+    const emailResults = [];
 
     try {
-      // Send the email notification
-      const emailResult = await sendEmail(
+      // Send admin notification email
+      console.log("[notify-submission] Sending admin notification email");
+      const adminEmailResult = await sendEmail(
         NOTIFICATION_EMAIL,
         `Nouvelle soumission d'article: ${submissionData.title}`,
-        htmlContent,
-        textContent,
+        adminHtmlContent,
+        adminTextContent,
         submissionData.corresponding_author_email
       );
       
-      if (emailResult.success) {
-        console.log("[notify-submission] Email sent successfully");
-        return createSuccessResponse({ 
-          success: true,
-          message: "Email notification sent successfully",
-          service_response: emailResult.data
-        }, 200, corsHeaders);
-      }
-      
-      // Try backup method if primary method fails
-      console.log("[notify-submission] Primary email method failed, trying backup method");
-      const backupResult = await sendBackupEmail(
-        NOTIFICATION_EMAIL,
-        `Nouvelle soumission - ${submissionData.title}`,
-        textContent
+      emailResults.push({
+        type: 'admin',
+        success: adminEmailResult.success,
+        data: adminEmailResult.data,
+        error: adminEmailResult.error
+      });
+
+      // Send user confirmation email
+      console.log("[notify-submission] Sending user confirmation email");
+      const userEmailResult = await sendEmail(
+        submissionData.corresponding_author_email,
+        `Confirmation de soumission: ${submissionData.title}`,
+        userHtmlContent,
+        userTextContent
       );
       
-      if (backupResult.success) {
-        console.log("[notify-submission] Backup email sent successfully");
+      emailResults.push({
+        type: 'user',
+        success: userEmailResult.success,
+        data: userEmailResult.data,
+        error: userEmailResult.error
+      });
+
+      // Check if both emails were successful
+      const adminSuccess = emailResults.find(r => r.type === 'admin')?.success;
+      const userSuccess = emailResults.find(r => r.type === 'user')?.success;
+
+      if (adminSuccess && userSuccess) {
+        console.log("[notify-submission] Both admin and user emails sent successfully");
         return createSuccessResponse({ 
           success: true,
-          message: "Email notification sent via backup method",
-          service_response: backupResult.data
+          message: "Email notifications sent successfully to both admin and user",
+          results: emailResults
         }, 200, corsHeaders);
       }
       
-      // If both methods fail, return error
-      throw emailResult.error || backupResult.error || new Error("Both email methods failed");
+      // If admin email failed, try backup method
+      if (!adminSuccess) {
+        console.log("[notify-submission] Admin email failed, trying backup method");
+        const adminBackupResult = await sendBackupEmail(
+          NOTIFICATION_EMAIL,
+          `Nouvelle soumission - ${submissionData.title}`,
+          adminTextContent
+        );
+        
+        emailResults[0] = {
+          type: 'admin',
+          success: adminBackupResult.success,
+          data: adminBackupResult.data,
+          error: adminBackupResult.error,
+          backup: true
+        };
+      }
+
+      // If user email failed, try backup method
+      if (!userSuccess) {
+        console.log("[notify-submission] User email failed, trying backup method");
+        const userBackupResult = await sendBackupEmail(
+          submissionData.corresponding_author_email,
+          `Confirmation de soumission - ${submissionData.title}`,
+          userTextContent
+        );
+        
+        emailResults[1] = {
+          type: 'user',
+          success: userBackupResult.success,
+          data: userBackupResult.data,
+          error: userBackupResult.error,
+          backup: true
+        };
+      }
+
+      // Final check after backup attempts
+      const finalAdminSuccess = emailResults.find(r => r.type === 'admin')?.success;
+      const finalUserSuccess = emailResults.find(r => r.type === 'user')?.success;
+
+      if (finalAdminSuccess || finalUserSuccess) {
+        const message = finalAdminSuccess && finalUserSuccess ? 
+          "Email notifications sent successfully to both admin and user" :
+          finalAdminSuccess ? "Admin notification sent, but user confirmation failed" :
+          "User confirmation sent, but admin notification failed";
+        
+        console.log(`[notify-submission] ${message}`);
+        return createSuccessResponse({ 
+          success: true,
+          message: message,
+          results: emailResults
+        }, 200, corsHeaders);
+      }
+      
+      // If both methods fail for both emails, return error
+      throw new Error("Both admin and user email sending failed with all methods");
       
     } catch (emailErr) {
-      logError("[notify-submission] Error sending email notification", emailErr);
+      logError("[notify-submission] Error sending email notifications", emailErr);
       return createErrorResponse(
-        "Failed to send email notification", 
+        "Failed to send email notifications", 
         500, 
         corsHeaders, 
         emailErr

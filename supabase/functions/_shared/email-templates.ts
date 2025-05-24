@@ -1,4 +1,3 @@
-
 /**
  * Email templates for notifications
  * Provides functions to generate HTML and text content for emails
@@ -119,4 +118,107 @@ export function generateSubmissionTextContent(submissionData: any, formattedDate
     Absence de conflit d'intérêt: ${submissionData.no_conflict ? 'Oui' : 'Non'}
     Travail original: ${submissionData.original_work ? 'Oui' : 'Non'}
   `;
+}
+
+/**
+ * Generate HTML content for user confirmation email
+ */
+export function generateUserConfirmationHtmlContent(submissionData: any, formattedDate: string): string {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Confirmation de soumission</title>
+        <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #1E40AF, #41b06e); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }
+            .info-box { background: white; padding: 20px; margin: 20px 0; border-radius: 6px; border-left: 4px solid #41b06e; }
+            .label { font-weight: bold; color: #1E40AF; margin-bottom: 5px; }
+            .value { margin-bottom: 15px; }
+            .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+            .success-icon { color: #41b06e; font-size: 48px; text-align: center; margin-bottom: 20px; }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <div class="success-icon">✓</div>
+            <h1 style="margin: 0;">Soumission reçue avec succès</h1>
+            <p style="margin: 10px 0 0 0; opacity: 0.9;">Merci pour votre soumission</p>
+        </div>
+        
+        <div class="content">
+            <p>Cher(e) <strong>${submissionData.corresponding_author_name}</strong>,</p>
+            
+            <p>Nous avons bien reçu votre soumission d'article intitulé "<strong>${submissionData.title}</strong>" le ${formattedDate}.</p>
+            
+            <div class="info-box">
+                <div class="label">Détails de votre soumission :</div>
+                <div class="value">
+                    <strong>Titre :</strong> ${submissionData.title}<br>
+                    <strong>Type de publication :</strong> ${submissionData.publication_type}<br>
+                    <strong>Auteur(s) :</strong> ${submissionData.authors}<br>
+                    <strong>Institution :</strong> ${submissionData.institution}<br>
+                    <strong>Mots-clés :</strong> ${submissionData.keywords}
+                </div>
+            </div>
+            
+            <p><strong>Prochaines étapes :</strong></p>
+            <ul>
+                <li>Notre équipe éditoriale va examiner votre soumission</li>
+                <li>Vous recevrez une confirmation de réception dans les 48 heures</li>
+                <li>Le processus d'évaluation prendra environ 2-4 semaines</li>
+                <li>Nous vous tiendrons informé(e) de l'avancement du processus</li>
+            </ul>
+            
+            <p>Si vous avez des questions concernant votre soumission, n'hésitez pas à nous contacter en répondant à cet email.</p>
+            
+            <p>Cordialement,<br>
+            <strong>L'équipe éditoriale</strong><br>
+            Info-Chir</p>
+        </div>
+        
+        <div class="footer">
+            <p>Cet email a été envoyé automatiquement. Merci de ne pas répondre directement à cet email si vous n'avez pas de questions spécifiques.</p>
+        </div>
+    </body>
+    </html>
+  `;
+}
+
+/**
+ * Generate plain text content for user confirmation email
+ */
+export function generateUserConfirmationTextContent(submissionData: any, formattedDate: string): string {
+  return `
+CONFIRMATION DE SOUMISSION
+
+Cher(e) ${submissionData.corresponding_author_name},
+
+Nous avons bien reçu votre soumission d'article intitulé "${submissionData.title}" le ${formattedDate}.
+
+DÉTAILS DE VOTRE SOUMISSION :
+- Titre : ${submissionData.title}
+- Type de publication : ${submissionData.publication_type}
+- Auteur(s) : ${submissionData.authors}
+- Institution : ${submissionData.institution}
+- Mots-clés : ${submissionData.keywords}
+
+PROCHAINES ÉTAPES :
+- Notre équipe éditoriale va examiner votre soumission
+- Vous recevrez une confirmation de réception dans les 48 heures
+- Le processus d'évaluation prendra environ 2-4 semaines
+- Nous vous tiendrons informé(e) de l'avancement du processus
+
+Si vous avez des questions concernant votre soumission, n'hésitez pas à nous contacter en répondant à cet email.
+
+Cordialement,
+L'équipe éditoriale
+Info-Chir
+
+---
+Cet email a été envoyé automatiquement. Merci de ne pas répondre directement à cet email si vous n'avez pas de questions spécifiques.
+  `.trim();
 }
