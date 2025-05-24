@@ -9,7 +9,7 @@ export const correspondingAuthorSchema = z.object({
 });
 
 export const submissionFormSchema = z.object({
-  publicationType: z.enum(["RHCA", "IGM"], {
+  publicationType: z.enum(["RHCA", "IGM", "ATLAS"], {
     required_error: "Veuillez sélectionner un type de publication",
   }),
   title: z.string()

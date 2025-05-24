@@ -1,9 +1,6 @@
 
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { BookText, Newspaper } from "lucide-react";
-import { motion } from "framer-motion";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const PublicationTypeField = ({ form }: { form: any }) => {
   return (
@@ -12,67 +9,34 @@ export const PublicationTypeField = ({ form }: { form: any }) => {
       name="publicationType"
       render={({ field }) => (
         <FormItem>
-          <FormLabel className="text-lg font-semibold" htmlFor="publicationType">Type de publication</FormLabel>
-          <FormControl>
-            <RadioGroup
-              onValueChange={field.onChange}
-              defaultValue={field.value}
-              className="grid grid-cols-1 md:grid-cols-2 gap-4"
-              id="publicationType"
-            >
-              <motion.div 
-                whileHover={{ scale: 1.02 }}
-                className="relative"
-              >
-                <RadioGroupItem
-                  value="RHCA"
-                  id="rhca"
-                  className="peer sr-only"
-                />
-                <Label
-                  htmlFor="rhca"
-                  className="flex flex-col items-center gap-2 rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                >
-                  <div className="w-10 h-10">
-                    <img 
-                      src="/lovable-uploads/d58e1745-03a7-4274-9d8f-889b058635f6.png" 
-                      alt="RHCA Logo"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  <div className="text-center">
-                    <div className="font-semibold">RHCA</div>
-                    <div className="text-sm text-muted-foreground">
-                      Revue Haïtienne de Chirurgie et d'Anesthésiologie
-                    </div>
-                  </div>
-                </Label>
-              </motion.div>
-
-              <motion.div 
-                whileHover={{ scale: 1.02 }}
-                className="relative"
-              >
-                <RadioGroupItem
-                  value="IGM"
-                  id="igm"
-                  className="peer sr-only"
-                />
-                <Label
-                  htmlFor="igm"
-                  className="flex flex-col items-center gap-2 rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                >
-                  <Newspaper className="h-6 w-6" />
-                  <div className="text-center">
-                    <div className="font-semibold">IGM</div>
-                    <div className="text-sm text-muted-foreground">
-                      Info Gazette Médicale
-                    </div>
-                  </div>
-                </Label>
-              </motion.div>
-            </RadioGroup>
-          </FormControl>
+          <FormLabel className="text-lg font-semibold">Type de publication</FormLabel>
+          <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <FormControl>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Sélectionnez un type de publication" />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              <SelectItem value="RHCA">
+                <div className="flex flex-col">
+                  <span className="font-medium">RHCA</span>
+                  <span className="text-sm text-muted-foreground">Revue Haïtienne de Chirurgie et d'Anesthésiologie</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="IGM">
+                <div className="flex flex-col">
+                  <span className="font-medium">IGM</span>
+                  <span className="text-sm text-muted-foreground">Info Gazette Médicale</span>
+                </div>
+              </SelectItem>
+              <SelectItem value="ATLAS">
+                <div className="flex flex-col">
+                  <span className="font-medium">ATLAS</span>
+                  <span className="text-sm text-muted-foreground">Atlas de Chirurgie</span>
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
           <FormMessage />
         </FormItem>
       )}
