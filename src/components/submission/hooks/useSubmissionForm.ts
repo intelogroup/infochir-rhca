@@ -10,17 +10,29 @@ export const useSubmissionForm = (articleFiles: string[]) => {
   const form = useForm<SubmissionFormValues>({
     resolver: zodResolver(submissionFormSchema),
     defaultValues: {
+      publicationType: undefined,
+      title: "",
+      authors: "",
+      institution: "",
+      keywords: "",
+      correspondingAuthor: {
+        name: "",
+        email: "",
+        phone: "",
+        address: "",
+      },
+      abstract: "",
       ethicsApproval: false,
       noConflict: false,
       originalWork: false,
     },
-    mode: "onChange", // Real-time validation
+    mode: "onChange",
   });
 
   // Watch for form changes
   const formValues = form.watch();
 
-  // Effect to validate declarations when the form changes
+  // Effect to validate files and declarations
   useEffect(() => {
     const newErrors = {...formErrors};
     
@@ -38,8 +50,15 @@ export const useSubmissionForm = (articleFiles: string[]) => {
       delete newErrors.declarations;
     }
 
+    // Validate publication type
+    if (!formValues.publicationType) {
+      newErrors.publicationType = "Veuillez sélectionner un type de publication";
+    } else {
+      delete newErrors.publicationType;
+    }
+
     setFormErrors(newErrors);
-  }, [formValues, articleFiles, formErrors]);
+  }, [formValues, articleFiles]);
 
   return { form, formErrors, setFormErrors };
 };
