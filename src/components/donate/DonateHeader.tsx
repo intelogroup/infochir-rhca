@@ -53,7 +53,7 @@ export const DonateHeader = () => {
       <motion.h1 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-ocean bg-clip-text text-transparent relative cursor-pointer"
+        className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-ocean bg-clip-text text-transparent relative cursor-pointer py-4"
         onClick={triggerAnimation}
       >
         Support INFOCHIR/RHCA
@@ -98,7 +98,7 @@ export const DonateHeader = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto bg-white/80 backdrop-blur-sm p-4 rounded-xl border border-gray-100 shadow-xl"
+        className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto bg-white/80 backdrop-blur-sm p-6 rounded-xl border border-gray-100 shadow-xl leading-relaxed"
       >
         Votre don contribue à faire avancer la recherche médicale en Haïti. Ensemble, nous pouvons améliorer la qualité des soins et soutenir la prochaine génération de médecins.
       </motion.p>
