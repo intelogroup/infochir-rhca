@@ -18,13 +18,15 @@ import { AbstractField } from "@/components/submission/AbstractField";
 import { DeclarationsFields } from "@/components/submission/DeclarationsFields";
 import { FileUploadsSection } from "@/components/submission/FileUploadsSection";
 import { SubmissionFormActions } from "@/components/submission/SubmissionFormActions";
+import { ErrorSummarySection } from "@/components/submission/ErrorSummarySection";
 
 const Submission = () => {
   const [articleFiles, setArticleFiles] = useState<string[]>([]);
   const [imageAnnexes, setImageAnnexes] = useState<string[]>([]);
+  const [errorSummaryDismissed, setErrorSummaryDismissed] = useState(false);
   
   // Use our custom hooks
-  const { form, formErrors, setFormErrors } = useSubmissionForm(articleFiles);
+  const { form, formErrors, setFormErrors, hasUserInteracted } = useSubmissionForm(articleFiles);
   const { isSubmitting, handleSubmit, handleSaveDraft } = useSubmissionHandler();
 
   const onSubmit = async (values: any) => {
@@ -33,6 +35,22 @@ const Submission = () => {
     if (!result.success && result.errors) {
       setFormErrors(result.errors);
     }
+  };
+
+  // Combine all errors for the summary
+  const allErrors = {
+    ...formErrors,
+    ...Object.entries(form.formState.errors).reduce((acc, [key, error]) => {
+      if (error && error.message) {
+        if (key.includes('correspondingAuthor.')) {
+          const fieldName = key.replace('correspondingAuthor.', '');
+          acc[`author_${fieldName}`] = error.message as string;
+        } else {
+          acc[key] = error.message as string;
+        }
+      }
+      return acc;
+    }, {} as Record<string, string>)
   };
 
   return (
@@ -67,20 +85,7 @@ const Submission = () => {
                   transition={{ delay: 0.2 }}
                 >
                   {/* Display form errors */}
-                  <FormErrors errors={{
-                    ...formErrors,
-                    ...Object.entries(form.formState.errors).reduce((acc, [key, error]) => {
-                      if (error && error.message) {
-                        if (key.includes('correspondingAuthor.')) {
-                          const fieldName = key.replace('correspondingAuthor.', '');
-                          acc[`author_${fieldName}`] = error.message as string;
-                        } else {
-                          acc[key] = error.message as string;
-                        }
-                      }
-                      return acc;
-                    }, {} as Record<string, string>)
-                  }} />
+                  <FormErrors errors={allErrors} />
 
                   <PublicationTypeField form={form} />
                   <ArticleDetailsFields form={form} />
@@ -106,6 +111,13 @@ const Submission = () => {
                   isValid={form.formState.isValid}
                   hasErrors={Object.keys(formErrors).length > 0}
                   onSaveDraft={handleSaveDraft}
+                />
+
+                {/* Error Summary Section - appears at the end when user interacts and has errors */}
+                <ErrorSummarySection
+                  errors={allErrors}
+                  hasUserInteracted={hasUserInteracted && !errorSummaryDismissed}
+                  onDismiss={() => setErrorSummaryDismissed(true)}
                 />
               </form>
             </Form>

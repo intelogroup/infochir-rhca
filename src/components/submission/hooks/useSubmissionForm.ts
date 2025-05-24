@@ -6,6 +6,7 @@ import { submissionFormSchema, SubmissionFormValues } from "../schema";
 
 export const useSubmissionForm = (articleFiles: string[]) => {
   const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
   
   const form = useForm<SubmissionFormValues>({
     resolver: zodResolver(submissionFormSchema),
@@ -31,6 +32,16 @@ export const useSubmissionForm = (articleFiles: string[]) => {
 
   // Watch for form changes
   const formValues = form.watch();
+
+  // Track when user starts interacting with the form
+  useEffect(() => {
+    const subscription = form.watch((value, { name, type }) => {
+      if (type === 'change' && name) {
+        setHasUserInteracted(true);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
 
   // Effect to validate files and declarations
   useEffect(() => {
@@ -60,5 +71,11 @@ export const useSubmissionForm = (articleFiles: string[]) => {
     setFormErrors(newErrors);
   }, [formValues, articleFiles]);
 
-  return { form, formErrors, setFormErrors };
+  return { 
+    form, 
+    formErrors, 
+    setFormErrors, 
+    hasUserInteracted,
+    setHasUserInteracted 
+  };
 };
