@@ -4,7 +4,7 @@ import { MainLayout } from "@/components/layouts/MainLayout";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Share, FileText, Quote } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { Article } from "@/components/index-medicus/types";
+import { Article, ArticleSource } from "@/components/index-medicus/types";
 import { toast } from "sonner";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";

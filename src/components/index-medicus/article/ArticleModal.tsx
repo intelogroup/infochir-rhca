@@ -50,7 +50,11 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
           <div className="py-6 space-y-6">
             <div className="flex flex-wrap gap-2">
               {article.tags && article.tags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="bg-secondary/10 text-secondary-foreground hover:bg-secondary/20">
+                <Badge 
+                  key={tag} 
+                  variant="default" 
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-1 text-sm font-medium"
+                >
                   {tag}
                 </Badge>
               ))}
@@ -131,9 +135,8 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
           />
           
           <PdfActions 
-            title={article.title}
+            article={article}
             pdfUrl={article.pdfUrl}
-            articleId={article.id}
           />
         </div>
       </DialogContent>
