@@ -21,40 +21,6 @@ interface ArticleCardProps {
 export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick, selectedTags }) => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
-  const generateCitation = React.useCallback((format: 'APA' | 'MLA' | 'Chicago' | 'Harvard') => {
-    const year = new Date(article.publicationDate).getFullYear();
-    const authors = article.authors.join(", ");
-    let citation = '';
-
-    switch (format) {
-      case 'APA':
-        citation = `${authors} (${year}). ${article.title}. ${article.source}, ${article.category}. DOI: ${article.id}`;
-        break;
-      case 'MLA':
-        citation = `${authors}. "${article.title}." ${article.source}, ${year}.`;
-        break;
-      case 'Chicago':
-        citation = `${authors}. "${article.title}." ${article.source} (${year}).`;
-        break;
-      case 'Harvard':
-        citation = `${authors} ${year}, '${article.title}', ${article.source}, ${article.category}.`;
-        break;
-      default:
-        citation = `${authors} (${year}). ${article.title}`;
-    }
-
-    navigator.clipboard.writeText(citation);
-    toast("Citation copiée", {
-      description: `Format ${format} copié dans le presse-papier`
-    });
-  }, [article]);
-
-  const handleShare = React.useCallback(() => {
-    const shareUrl = `${window.location.origin}/articles/${article.id}`;
-    navigator.clipboard.writeText(shareUrl);
-    toast.success("Lien copié dans le presse-papier");
-  }, [article.id]);
-
   const handleCardClick = (e: React.MouseEvent) => {
     // Only open the PDF if clicking the card itself, not the buttons or tags
     if ((e.target as HTMLElement).closest('button') || 
@@ -135,10 +101,8 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick, s
                   />
                 </div>
                 <ArticleActions 
-                  title={article.title}
+                  article={article}
                   pdfUrl={article.pdfUrl}
-                  onCitation={generateCitation}
-                  onShare={handleShare}
                 />
               </CardContent>
             </div>
