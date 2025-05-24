@@ -4,8 +4,8 @@ import { z } from "zod";
 export const correspondingAuthorSchema = z.object({
   name: z.string().min(1, "Le nom est requis"),
   email: z.string().email("Email invalide"),
-  phone: z.string().min(1, "Le téléphone est requis"),
-  address: z.string().min(1, "L'adresse est requise"),
+  phone: z.string().optional(),
+  address: z.string().optional(),
 });
 
 export const submissionFormSchema = z.object({

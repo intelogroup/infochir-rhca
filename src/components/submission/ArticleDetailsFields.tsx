@@ -19,7 +19,7 @@ export const ArticleDetailsFields = ({ form }: { form: any }) => {
           <FormItem>
             <FormLabel className="flex items-center gap-2" htmlFor="article-title">
               <FileText className="h-4 w-4" />
-              Titre de l'article
+              Titre de l'article *
             </FormLabel>
             <FormControl>
               <Input 
@@ -41,7 +41,7 @@ export const ArticleDetailsFields = ({ form }: { form: any }) => {
           <FormItem>
             <FormLabel className="flex items-center gap-2" htmlFor="article-authors">
               <Users className="h-4 w-4" />
-              Auteurs
+              Auteurs *
             </FormLabel>
             <FormControl>
               <Input 
@@ -66,7 +66,7 @@ export const ArticleDetailsFields = ({ form }: { form: any }) => {
           <FormItem>
             <FormLabel className="flex items-center gap-2" htmlFor="article-institution">
               <Building2 className="h-4 w-4" />
-              Institution
+              Institution *
             </FormLabel>
             <FormControl>
               <Input 
@@ -88,7 +88,7 @@ export const ArticleDetailsFields = ({ form }: { form: any }) => {
           <FormItem>
             <FormLabel className="flex items-center gap-2" htmlFor="article-keywords">
               <Tag className="h-4 w-4" />
-              Mots clés
+              Mots clés *
             </FormLabel>
             <FormControl>
               <Input 

@@ -18,7 +18,7 @@ export const AbstractField = ({ form }: { form: any }) => {
         <FormItem>
           <FormLabel className="flex items-center gap-2" htmlFor="abstract">
             <FileText className="h-4 w-4" />
-            Résumé
+            Résumé *
           </FormLabel>
           <FormControl>
             <Textarea 

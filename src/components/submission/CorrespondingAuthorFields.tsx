@@ -15,7 +15,7 @@ export const CorrespondingAuthorFields = ({ form }: { form: any }) => {
         <AuthorField
           form={form}
           name="correspondingAuthor.name"
-          label="Nom complet"
+          label="Nom complet *"
           icon={User}
           placeholder="Nom et prénom"
         />
@@ -23,7 +23,7 @@ export const CorrespondingAuthorFields = ({ form }: { form: any }) => {
         <AuthorField
           form={form}
           name="correspondingAuthor.email"
-          label="Email"
+          label="Email *"
           icon={Mail}
           type="email"
           placeholder="exemple@domain.com"
