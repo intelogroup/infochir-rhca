@@ -3,8 +3,15 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescripti
 import { Textarea } from "@/components/ui/textarea";
 import { motion } from "framer-motion";
 import { FileText } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export const AbstractField = ({ form }: { form: any }) => {
+interface AbstractFieldProps {
+  form: any;
+  hasSubmissionAttempt?: boolean;
+  hasError?: boolean;
+}
+
+export const AbstractField = ({ form, hasSubmissionAttempt = false, hasError = false }: AbstractFieldProps) => {
   // Helper function to count words in text
   const countWords = (text: string) => {
     return text.trim().split(/\s+/).filter(Boolean).length;
@@ -14,7 +21,7 @@ export const AbstractField = ({ form }: { form: any }) => {
     <FormField
       control={form.control}
       name="abstract"
-      render={({ field }) => (
+      render={({ field, fieldState }) => (
         <FormItem>
           <FormLabel className="flex items-center gap-2" htmlFor="abstract">
             <FileText className="h-4 w-4" />
@@ -25,7 +32,10 @@ export const AbstractField = ({ form }: { form: any }) => {
               id="abstract" 
               name="abstract"
               placeholder="Entrez le résumé de votre article (max 3000 mots)" 
-              className="min-h-[250px] bg-white/50 backdrop-blur-sm"
+              className={cn(
+                "min-h-[250px] bg-white/50 backdrop-blur-sm",
+                hasSubmissionAttempt && (fieldState.error || hasError) && "border-destructive ring-destructive focus:ring-destructive"
+              )}
               {...field}
             />
           </FormControl>

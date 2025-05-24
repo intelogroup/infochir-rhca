@@ -26,14 +26,30 @@ const Submission = () => {
   const [errorSummaryDismissed, setErrorSummaryDismissed] = useState(false);
   
   // Use our custom hooks
-  const { form, formErrors, setFormErrors, hasUserInteracted } = useSubmissionForm(articleFiles);
+  const { 
+    form, 
+    formErrors, 
+    setFormErrors, 
+    hasUserInteracted,
+    hasSubmissionAttempt,
+    scrollToFirstError
+  } = useSubmissionForm(articleFiles);
   const { isSubmitting, handleSubmit, handleSaveDraft } = useSubmissionHandler();
 
   const onSubmit = async (values: any) => {
+    // Check if form is valid before submission
+    const isFormValid = form.formState.isValid && Object.keys(formErrors).length === 0;
+    
+    if (!isFormValid) {
+      scrollToFirstError();
+      return;
+    }
+
     const result = await handleSubmit(values, articleFiles, imageAnnexes, formErrors);
     
     if (!result.success && result.errors) {
       setFormErrors(result.errors);
+      scrollToFirstError();
     }
   };
 
@@ -87,10 +103,27 @@ const Submission = () => {
                   {/* Display form errors */}
                   <FormErrors errors={allErrors} />
 
-                  <PublicationTypeField form={form} />
-                  <ArticleDetailsFields form={form} />
-                  <CorrespondingAuthorFields form={form} />
-                  <AbstractField form={form} />
+                  <PublicationTypeField 
+                    form={form} 
+                    hasSubmissionAttempt={hasSubmissionAttempt}
+                    hasError={!!formErrors.publicationType || !!form.formState.errors.publicationType}
+                  />
+                  
+                  <ArticleDetailsFields 
+                    form={form} 
+                    hasSubmissionAttempt={hasSubmissionAttempt}
+                  />
+                  
+                  <CorrespondingAuthorFields 
+                    form={form} 
+                    hasSubmissionAttempt={hasSubmissionAttempt}
+                  />
+                  
+                  <AbstractField 
+                    form={form} 
+                    hasSubmissionAttempt={hasSubmissionAttempt}
+                    hasError={!!form.formState.errors.abstract}
+                  />
                   
                   <FileUploadsSection 
                     articleFiles={articleFiles}
@@ -98,9 +131,14 @@ const Submission = () => {
                     imageAnnexes={imageAnnexes}
                     setImageAnnexes={setImageAnnexes}
                     formErrors={formErrors}
+                    hasSubmissionAttempt={hasSubmissionAttempt}
                   />
 
-                  <DeclarationsFields form={form} />
+                  <DeclarationsFields 
+                    form={form} 
+                    hasSubmissionAttempt={hasSubmissionAttempt}
+                    hasError={!!formErrors.declarations}
+                  />
                   {formErrors.declarations && (
                     <p className="text-sm text-destructive">{formErrors.declarations}</p>
                   )}

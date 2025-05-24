@@ -3,7 +3,12 @@ import { motion } from "framer-motion";
 import { User, Mail, Phone, MapPin } from "lucide-react";
 import { AuthorField } from "./author/AuthorField";
 
-export const CorrespondingAuthorFields = ({ form }: { form: any }) => {
+interface CorrespondingAuthorFieldsProps {
+  form: any;
+  hasSubmissionAttempt?: boolean;
+}
+
+export const CorrespondingAuthorFields = ({ form, hasSubmissionAttempt = false }: CorrespondingAuthorFieldsProps) => {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -18,6 +23,7 @@ export const CorrespondingAuthorFields = ({ form }: { form: any }) => {
           label="Nom complet *"
           icon={User}
           placeholder="Nom et prénom"
+          hasSubmissionAttempt={hasSubmissionAttempt}
         />
 
         <AuthorField
@@ -27,6 +33,7 @@ export const CorrespondingAuthorFields = ({ form }: { form: any }) => {
           icon={Mail}
           type="email"
           placeholder="exemple@domain.com"
+          hasSubmissionAttempt={hasSubmissionAttempt}
         />
 
         <AuthorField
@@ -35,6 +42,7 @@ export const CorrespondingAuthorFields = ({ form }: { form: any }) => {
           label="Téléphone"
           icon={Phone}
           placeholder="+1234567890"
+          hasSubmissionAttempt={hasSubmissionAttempt}
         />
 
         <AuthorField
@@ -43,6 +51,7 @@ export const CorrespondingAuthorFields = ({ form }: { form: any }) => {
           label="Adresse"
           icon={MapPin}
           placeholder="Adresse professionnelle"
+          hasSubmissionAttempt={hasSubmissionAttempt}
         />
       </div>
     </motion.div>

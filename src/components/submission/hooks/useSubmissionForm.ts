@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { submissionFormSchema, SubmissionFormValues } from "../schema";
@@ -7,6 +7,8 @@ import { submissionFormSchema, SubmissionFormValues } from "../schema";
 export const useSubmissionForm = (articleFiles: string[]) => {
   const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const [hasSubmissionAttempt, setHasSubmissionAttempt] = useState(false);
+  const scrollToErrorRef = useRef<(() => void) | null>(null);
   
   const form = useForm<SubmissionFormValues>({
     resolver: zodResolver(submissionFormSchema),
@@ -71,11 +73,63 @@ export const useSubmissionForm = (articleFiles: string[]) => {
     setFormErrors(newErrors);
   }, [formValues, articleFiles]);
 
+  // Function to scroll to first error
+  const scrollToFirstError = () => {
+    setHasSubmissionAttempt(true);
+    
+    // Combine form errors with validation errors
+    const allErrors = {
+      ...formErrors,
+      ...Object.keys(form.formState.errors).reduce((acc, key) => {
+        acc[key] = true;
+        return acc;
+      }, {} as Record<string, boolean>)
+    };
+
+    // Get first error field
+    const errorFields = Object.keys(allErrors);
+    if (errorFields.length > 0) {
+      const firstErrorField = errorFields[0];
+      
+      // Map field names to more specific selectors if needed
+      let selector = `[name="${firstErrorField}"]`;
+      
+      if (firstErrorField === 'articleFiles') {
+        selector = '[data-field="articleFiles"]';
+      } else if (firstErrorField === 'declarations') {
+        selector = '[data-field="declarations"]';
+      } else if (firstErrorField === 'publicationType') {
+        selector = '[data-field="publicationType"]';
+      } else if (firstErrorField.startsWith('correspondingAuthor.')) {
+        const subField = firstErrorField.replace('correspondingAuthor.', '');
+        selector = `[name="correspondingAuthor.${subField}"]`;
+      }
+
+      // Scroll to the element
+      setTimeout(() => {
+        const element = document.querySelector(selector);
+        if (element) {
+          element.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+          
+          // Focus the element if it's focusable
+          if (element instanceof HTMLElement && element.focus) {
+            element.focus();
+          }
+        }
+      }, 100);
+    }
+  };
+
   return { 
     form, 
     formErrors, 
     setFormErrors, 
     hasUserInteracted,
-    setHasUserInteracted 
+    setHasUserInteracted,
+    hasSubmissionAttempt,
+    scrollToFirstError
   };
 };

@@ -1,6 +1,7 @@
 
 import React from "react";
 import { MultiFileUploader } from "@/components/pdf/MultiFileUploader";
+import { cn } from "@/lib/utils";
 
 interface FileUploadsSectionProps {
   articleFiles: string[];
@@ -8,6 +9,7 @@ interface FileUploadsSectionProps {
   imageAnnexes: string[];
   setImageAnnexes: React.Dispatch<React.SetStateAction<string[]>>;
   formErrors: {[key: string]: string};
+  hasSubmissionAttempt?: boolean;
 }
 
 export const FileUploadsSection: React.FC<FileUploadsSectionProps> = ({
@@ -15,24 +17,30 @@ export const FileUploadsSection: React.FC<FileUploadsSectionProps> = ({
   setArticleFiles,
   imageAnnexes,
   setImageAnnexes,
-  formErrors
+  formErrors,
+  hasSubmissionAttempt = false
 }) => {
   return (
     <>
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Fichiers de l'article</h3>
-        <MultiFileUploader
-          bucket="article_files"
-          acceptedFileTypes={{
-            'application/pdf': ['.pdf'],
-            'application/msword': ['.doc'],
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
-          }}
-          maxFileSize={30}
-          maxFiles={20} 
-          onUploadComplete={setArticleFiles}
-          helperText="Formats acceptés: DOC, DOCX, PDF. Taille max: 30MB. Maximum 20 fichiers"
-        />
+      <div className="space-y-4" data-field="articleFiles">
+        <h3 className="text-lg font-semibold">Fichiers de l'article *</h3>
+        <div className={cn(
+          "rounded-lg border-2 border-dashed p-4",
+          hasSubmissionAttempt && formErrors.articleFiles && "border-destructive bg-destructive/5"
+        )}>
+          <MultiFileUploader
+            bucket="article_files"
+            acceptedFileTypes={{
+              'application/pdf': ['.pdf'],
+              'application/msword': ['.doc'],
+              'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
+            }}
+            maxFileSize={30}
+            maxFiles={20} 
+            onUploadComplete={setArticleFiles}
+            helperText="Formats acceptés: DOC, DOCX, PDF. Taille max: 30MB. Maximum 20 fichiers"
+          />
+        </div>
         {formErrors.articleFiles && (
           <p className="text-sm text-destructive">{formErrors.articleFiles}</p>
         )}
