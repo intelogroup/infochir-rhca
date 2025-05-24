@@ -74,71 +74,84 @@ export const useSubmissionHandler = () => {
         user_id: userId || null
       };
 
-      // Try to insert directly first (will work if RLS policies allow anonymous inserts)
-      try {
-        logger.info("Attempting direct submission to database");
-        let { data, error } = await supabase
-          .from('article_submissions')
-          .insert(submissionData)
-          .select();
+      logger.info("Calling submit-article edge function with data:", {
+        title: submissionData.title,
+        userEmail: submissionData.corresponding_author_email,
+        fileCount: submissionData.article_files_urls.length
+      });
 
-        // If direct insertion fails due to RLS, call an edge function to bypass RLS
-        if (error) {
-          logger.error("Direct submission error:", error);
-          
-          if (error.code === '42501' || error.code === '401') {
-            logger.info("Direct submission failed due to RLS, trying edge function approach");
-            
-            // Call our edge function to handle the submission
-            logger.info("Calling submit-article edge function");
-            const { data: funcData, error: funcError } = await supabase.functions.invoke(
-              'submit-article',
-              {
-                body: submissionData
-              }
-            );
-            
-            if (funcError) {
-              logger.error('Edge function error:', funcError);
-              toast.dismiss();
-              toast.error("Une erreur est survenue lors de l'envoi de votre soumission");
-              return { success: false, error: funcError };
-            }
-            
-            logger.info("Edge function submission successful", funcData);
-            
-            // Check notification status from the response
-            if (funcData.notification_sent === false) {
-              const errorMessage = funcData.notification_message || "L'email de notification n'a pas pu être envoyé.";
-              logger.warn("Email notification failed:", errorMessage);
-              
-              toast.dismiss();
-              toast.success("Votre soumission a été enregistrée avec succès!");
-              toast.error("Notification d'email: " + errorMessage, { duration: 5000 });
-            } else {
-              logger.info("Submission and notification successful");
-              toast.dismiss();
-              toast.success("Votre soumission a été envoyée avec succès!");
-            }
-            
-            data = funcData;
-            error = null;
-          } else {
-            throw error; // Re-throw other errors to be caught by outer catch
-          }
-        } else {
-          logger.info("Direct submission successful");
-          toast.dismiss();
-          toast.success("Votre soumission a été envoyée avec succès!");
+      // Call our edge function to handle the submission
+      const { data: funcData, error: funcError } = await supabase.functions.invoke(
+        'submit-article',
+        {
+          body: submissionData
         }
-      } catch (submissionError) {
-        logger.error('Submission error:', submissionError);
+      );
+      
+      if (funcError) {
+        logger.error('Edge function error:', funcError);
         toast.dismiss();
         toast.error("Une erreur est survenue lors de l'envoi de votre soumission");
-        return { success: false, error: submissionError };
+        return { success: false, error: funcError };
       }
       
-      // Test email configuration in development mode
+      logger.info("Edge function submission successful", {
+        submissionId: funcData.id,
+        notificationSent: funcData.notification_sent
+      });
+      
+      toast.dismiss();
+      
+      // Check notification status from the response
+      if (funcData.notification_sent === false) {
+        const errorMessage = funcData.notification_message || "L'email de notification n'a pas pu être envoyé.";
+        logger.warn("Email notification failed:", errorMessage);
+        
+        // Show success for submission but warning for email
+        toast.success("Votre soumission a été enregistrée avec succès!");
+        
+        // Show detailed email error information
+        if (errorMessage.includes("API key")) {
+          toast.error("Configuration email manquante - L'administrateur sera notifié", { 
+            duration: 6000,
+            description: "Votre soumission est sauvegardée mais l'email automatique n'a pas pu être envoyé."
+          });
+        } else if (errorMessage.includes("rate limit")) {
+          toast.warning("Email temporairement indisponible", {
+            duration: 4000,
+            description: "Votre soumission est enregistrée. L'équipe sera notifiée manuellement."
+          });
+        } else {
+          toast.error("Notification email échouée: " + errorMessage, { 
+            duration: 5000,
+            description: "Votre soumission est sauvegardée."
+          });
+        }
+      } else {
+        logger.info("Submission and notification successful");
+        toast.success("Votre soumission a été envoyée avec succès!");
+        
+        // Show additional confirmation if we have notification details
+        if (funcData.notification_details?.results) {
+          const results = funcData.notification_details.results;
+          const adminSuccess = results.find(r => r.type === 'admin')?.success;
+          const userSuccess = results.find(r => r.type === 'user')?.success;
+          
+          if (adminSuccess && userSuccess) {
+            toast.success("Emails de confirmation envoyés avec succès", {
+              duration: 3000,
+              description: "Vous et l'équipe éditoriale avez reçu une confirmation."
+            });
+          } else if (userSuccess) {
+            toast.success("Email de confirmation envoyé", {
+              duration: 3000,
+              description: "Vérifiez votre boîte de réception."
+            });
+          }
+        }
+      }
+      
+      // Test email configuration in development mode for debugging
       if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
         try {
           logger.info("Development mode: Testing email configuration");
@@ -159,6 +172,11 @@ export const useSubmissionHandler = () => {
             
             if (!configData.primary_domain_status?.verified) {
               logger.warn('Domain verification issue:', configData.primary_domain_status?.message);
+            }
+            
+            // Show developer notifications for configuration issues
+            if (configData.overall_status === "CONFIGURATION_NEEDED") {
+              console.warn("Email configuration needs attention:", configData.recommendations);
             }
           }
         } catch (configCheckError) {

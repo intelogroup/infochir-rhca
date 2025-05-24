@@ -1,14 +1,8 @@
 
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { corsHeaders, handleCors } from "../_shared/cors.ts";
-import { 
-  checkResendApiKey,
-  checkDomainVerification
-} from "../_shared/email-sender.ts";
-import { 
-  createSuccessResponse,
-  createErrorResponse
-} from "../_shared/error-logger.ts";
+import { checkResendApiKey, checkDomainVerification } from "../_shared/email-sender.ts";
+import { createSuccessResponse, createErrorResponse } from "../_shared/error-logger.ts";
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -16,48 +10,67 @@ serve(async (req) => {
   if (corsResponse) {
     return corsResponse;
   }
-
+  
   try {
     console.log("[check-email-config] Testing email configuration");
     
-    // Check API key first
-    const apiKeyResult = await checkResendApiKey();
-    console.log("[check-email-config] API key check result:", apiKeyResult);
+    // Check API key status
+    const apiKeyStatus = await checkResendApiKey();
+    console.log("[check-email-config] API key check result:", apiKeyStatus);
     
-    if (!apiKeyResult.valid) {
-      return createErrorResponse(
-        `Resend API key issue: ${apiKeyResult.message}`,
-        400,
-        corsHeaders
-      );
-    }
+    // Check primary domain verification (info-chir.org)
+    const primaryDomainStatus = await checkDomainVerification("info-chir.org");
+    console.log("[check-email-config] Domain verification result:", primaryDomainStatus);
     
-    // Only check domain if API key is valid
-    // This prevents multiple API calls that could trigger rate limiting
-    const primaryDomainResult = await checkDomainVerification('info-chir.org');
-    console.log("[check-email-config] Domain verification result:", primaryDomainResult);
-    
-    // Include current API key information without exposing the actual key
-    const apiKeyInfo = {
-      present: !!Deno.env.get("RESEND_API_KEY"),
-      keyPrefix: Deno.env.get("RESEND_API_KEY")?.substring(0, 5) + '...',
-      lastUpdated: new Date().toISOString()
+    // Check environment variables
+    const envCheck = {
+      resend_api_key: !!Deno.env.get("RESEND_API_KEY"),
+      supabase_url: !!Deno.env.get("SUPABASE_URL"),
+      supabase_anon_key: !!Deno.env.get("SUPABASE_ANON_KEY"),
+      supabase_service_role_key: !!Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")
     };
     
-    return createSuccessResponse({
-      api_key_status: apiKeyResult,
-      primary_domain_status: primaryDomainResult,
-      environment: {
-        has_api_key: !!Deno.env.get("RESEND_API_KEY"),
-        api_key_info: apiKeyInfo,
-        runtime: Deno.version.deno
-      }
-    }, 200, corsHeaders);
+    console.log("[check-email-config] Environment variables check:", envCheck);
+    
+    const configStatus = {
+      api_key_status: apiKeyStatus,
+      primary_domain_status: primaryDomainStatus,
+      environment_variables: envCheck,
+      overall_status: apiKeyStatus.valid && envCheck.resend_api_key ? "READY" : "CONFIGURATION_NEEDED",
+      recommendations: []
+    };
+    
+    // Generate recommendations
+    if (!apiKeyStatus.valid) {
+      configStatus.recommendations.push({
+        type: "critical",
+        message: "Configure valid Resend API key",
+        action: "Add RESEND_API_KEY secret in Supabase Edge Functions settings"
+      });
+    }
+    
+    if (!primaryDomainStatus.verified) {
+      configStatus.recommendations.push({
+        type: "warning",
+        message: "Domain not verified - using Resend default domain",
+        action: "Verify info-chir.org domain in Resend dashboard for better deliverability"
+      });
+    }
+    
+    if (!envCheck.supabase_url || !envCheck.supabase_anon_key) {
+      configStatus.recommendations.push({
+        type: "critical",
+        message: "Missing Supabase configuration",
+        action: "Ensure SUPABASE_URL and SUPABASE_ANON_KEY are properly set"
+      });
+    }
+    
+    return createSuccessResponse(configStatus, 200, corsHeaders);
     
   } catch (error) {
-    console.error("[check-email-config] Error:", error);
+    console.error("[check-email-config] Error checking configuration:", error);
     return createErrorResponse(
-      `Error checking email configuration: ${error instanceof Error ? error.message : String(error)}`,
+      "Failed to check email configuration",
       500,
       corsHeaders,
       error

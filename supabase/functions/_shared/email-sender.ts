@@ -24,6 +24,7 @@ const DEFAULT_BACKUP_SENDER = "InfoChir Backup <onboarding@resend.dev>";
 // Lazy initialization of Resend client to avoid unnecessary instantiation
 const getResendClient = () => {
   if (!resend && RESEND_API_KEY) {
+    console.log("[email-sender] Initializing Resend client");
     resend = new Resend(RESEND_API_KEY);
   }
   return resend;
@@ -35,11 +36,13 @@ const getResendClient = () => {
  * @returns Object with validation status and message
  */
 export async function checkResendApiKey(): Promise<{ valid: boolean; message: string }> {
+  console.log("[email-sender] Checking Resend API key validity");
+  
   // Check cache first
   const now = Date.now();
   if (apiKeyValidationCache.timestamp > 0 && 
       now - apiKeyValidationCache.timestamp < CACHE_TTL) {
-    console.log("[email-sender] Using cached API key validation result");
+    console.log("[email-sender] Using cached API key validation result:", apiKeyValidationCache.valid);
     return { 
       valid: apiKeyValidationCache.valid, 
       message: apiKeyValidationCache.message 
@@ -51,9 +54,12 @@ export async function checkResendApiKey(): Promise<{ valid: boolean; message: st
       valid: false, 
       message: "Resend API key is not configured. Please add the RESEND_API_KEY secret in Supabase." 
     };
+    console.error("[email-sender] No API key found");
     apiKeyValidationCache = {...result, timestamp: now};
     return result;
   }
+  
+  console.log("[email-sender] API key found, checking format");
   
   // Simple validation - just check that it follows the basic format of Resend API keys
   if (!RESEND_API_KEY.startsWith('re_')) {
@@ -61,6 +67,7 @@ export async function checkResendApiKey(): Promise<{ valid: boolean; message: st
       valid: false, 
       message: "Resend API key appears to be invalid. Keys should start with 're_'." 
     };
+    console.error("[email-sender] API key format invalid");
     apiKeyValidationCache = {...result, timestamp: now};
     return result;
   }
@@ -77,12 +84,15 @@ export async function checkResendApiKey(): Promise<{ valid: boolean; message: st
       },
     });
     
+    console.log("[email-sender] Domains API response status:", domainsResponse.status);
+    
     // Handle rate limiting explicitly
     if (domainsResponse.status === 429) {
       console.log("[email-sender] API key validation rate limited by Resend API");
       
       // If rate limited but we've validated successfully before, use the last success
       if (apiKeyValidationCache.valid) {
+        console.log("[email-sender] Using previous validation result due to rate limiting");
         return { 
           valid: true, 
           message: "API key previously validated successfully (using cached result due to rate limiting)" 
@@ -98,7 +108,8 @@ export async function checkResendApiKey(): Promise<{ valid: boolean; message: st
     }
     
     if (!domainsResponse.ok) {
-      const errorData = await domainsResponse.json();
+      const errorData = await domainsResponse.json().catch(() => ({ message: 'Unknown error' }));
+      console.error("[email-sender] API key validation failed:", errorData);
       const result = { 
         valid: false, 
         message: `API key validation failed: ${errorData.message || domainsResponse.statusText}` 
@@ -107,10 +118,12 @@ export async function checkResendApiKey(): Promise<{ valid: boolean; message: st
       return result;
     }
     
+    console.log("[email-sender] API key validation successful");
     const result = { valid: true, message: "API key validated successfully" };
     apiKeyValidationCache = {...result, timestamp: now};
     return result;
   } catch (error) {
+    console.error("[email-sender] Error validating API key:", error);
     const result = { 
       valid: false, 
       message: `Error validating API key: ${error instanceof Error ? error.message : String(error)}` 
@@ -218,38 +231,68 @@ export async function sendEmail(
   replyTo?: string
 ): Promise<{ success: boolean; data?: any; error?: any }> {
   try {
-    console.log("[email-sender] Attempting to send email notification using Resend...");
-    console.log("[email-sender] Recipient:", recipient);
+    console.log("[email-sender] === SENDING EMAIL ===");
+    console.log("- To:", recipient);
+    console.log("- Subject:", subject);
+    console.log("- HTML length:", html.length);
+    console.log("- Text length:", text.length);
+    console.log("- Reply-to:", replyTo || "none");
     
     const client = getResendClient();
     if (!client) {
-      throw new Error("Resend API key is not configured");
+      const error = new Error("Resend API key is not configured");
+      console.error("[email-sender] No Resend client available");
+      throw error;
     }
     
-    // Send email using Resend with their default sender domain
-    // This avoids the need for domain verification
-    const emailResponse = await client.emails.send({
+    // Prepare email payload
+    const emailPayload = {
       from: DEFAULT_SENDER,
       to: [recipient],
       subject: subject,
       html: html,
       text: text,
       ...(replyTo && { reply_to: replyTo })
+    };
+    
+    console.log("[email-sender] Email payload prepared:", {
+      from: emailPayload.from,
+      to: emailPayload.to,
+      subject: emailPayload.subject,
+      hasHtml: !!emailPayload.html,
+      hasText: !!emailPayload.text,
+      hasReplyTo: !!emailPayload.reply_to
     });
     
-    console.log("[email-sender] Email service response:", emailResponse);
+    // Send email using Resend with their default sender domain
+    console.log("[email-sender] Calling Resend API...");
+    const emailResponse = await client.emails.send(emailPayload);
+    
+    console.log("[email-sender] Resend API response:", {
+      hasData: !!emailResponse.data,
+      hasError: !!emailResponse.error,
+      dataId: emailResponse.data?.id,
+      errorMessage: emailResponse.error?.message
+    });
     
     if (emailResponse.error) {
+      console.error("[email-sender] Resend API returned error:", emailResponse.error);
       throw new Error(`Email API responded with error: ${JSON.stringify(emailResponse.error)}`);
     }
     
-    console.log("[email-sender] Email notification sent successfully");
+    console.log("[email-sender] ✅ Email sent successfully");
+    console.log("- Email ID:", emailResponse.data?.id);
     
     return {
       success: true,
-      data: emailResponse
+      data: emailResponse.data
     };
   } catch (emailErr) {
+    console.error("[email-sender] ❌ Email sending failed:", emailErr);
+    console.error("[email-sender] Error details:", {
+      message: emailErr.message,
+      stack: emailErr.stack
+    });
     logError("[email-sender] Exception while sending email", emailErr);
     return {
       success: false,
@@ -271,33 +314,56 @@ export async function sendBackupEmail(
   text: string
 ): Promise<{ success: boolean; data?: any; error?: any }> {
   try {
-    console.log("[email-sender] Attempting backup email method...");
+    console.log("[email-sender] === SENDING BACKUP EMAIL ===");
+    console.log("- To:", recipient);
+    console.log("- Subject: BACKUP:", subject);
+    console.log("- Text length:", text.length);
     
     const client = getResendClient();
     if (!client) {
-      throw new Error("Resend API key is not configured");
+      const error = new Error("Resend API key is not configured");
+      console.error("[email-sender] No Resend client available for backup");
+      throw error;
     }
     
     // Implement a simpler backup method with fewer headers and options
-    // Using Resend's default sender domain
-    const backupEmailResponse = await client.emails.send({
+    const backupPayload = {
       from: DEFAULT_BACKUP_SENDER,
       to: [recipient],
       subject: `BACKUP: ${subject}`,
       text: text,
+    };
+    
+    console.log("[email-sender] Backup payload prepared:", {
+      from: backupPayload.from,
+      to: backupPayload.to,
+      subject: backupPayload.subject
     });
     
-    console.log("[email-sender] Backup email response:", backupEmailResponse);
+    console.log("[email-sender] Calling Resend API for backup...");
+    const backupEmailResponse = await client.emails.send(backupPayload);
+    
+    console.log("[email-sender] Backup email response:", {
+      hasData: !!backupEmailResponse.data,
+      hasError: !!backupEmailResponse.error,
+      dataId: backupEmailResponse.data?.id,
+      errorMessage: backupEmailResponse.error?.message
+    });
     
     if (backupEmailResponse.error) {
+      console.error("[email-sender] Backup email failed:", backupEmailResponse.error);
       throw new Error(`Backup email also failed with error: ${JSON.stringify(backupEmailResponse.error)}`);
     }
     
+    console.log("[email-sender] ✅ Backup email sent successfully");
+    console.log("- Backup email ID:", backupEmailResponse.data?.id);
+    
     return {
       success: true,
-      data: backupEmailResponse
+      data: backupEmailResponse.data
     };
   } catch (backupErr) {
+    console.error("[email-sender] ❌ Backup email method failed:", backupErr);
     logError("[email-sender] Backup email method also failed", backupErr);
     return {
       success: false,
