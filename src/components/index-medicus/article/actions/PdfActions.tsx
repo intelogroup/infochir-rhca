@@ -1,157 +1,70 @@
-
-import React, { useEffect, useState } from "react";
-import { Download, ExternalLink, Loader2 } from "lucide-react";
+import React from 'react';
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { Article } from "@/components/index-medicus/types";
 import { downloadPDF } from "@/lib/analytics/download";
 import { createLogger } from "@/lib/error-logger";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { DocumentType } from "@/lib/analytics/download/statistics/types";
-import { validateFileExists } from "./utils/fileValidation";
-import { PdfButtonGroup } from "./components/PdfButtonGroup";
-import { PdfDropdownMenu } from "./components/PdfDropdownMenu";
 
 const logger = createLogger('PdfActions');
 
 interface PdfActionsProps {
-  title?: string;
-  pdfUrl?: string;
-  hideDownload?: boolean;
-  articleId?: string;
+  article: Article;
+  pdfUrl: string | null;
 }
 
-export const PdfActions: React.FC<PdfActionsProps> = ({
-  title = "",
-  pdfUrl,
-  hideDownload = false,
-  articleId,
-}) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [fileExists, setFileExists] = useState<boolean | null>(null);
-  const isMobile = useIsMobile();
-
-  useEffect(() => {
-    const checkFileExistence = async () => {
-      if (!pdfUrl) {
-        setFileExists(false);
-        return;
-      }
-
-      const exists = await validateFileExists(pdfUrl);
-      setFileExists(exists);
-    };
-
-    checkFileExistence();
-  }, [pdfUrl]);
-
-  const handleOpenPdf = (e: React.MouseEvent) => {
-    e.preventDefault();
+export const PdfActions: React.FC<PdfActionsProps> = ({ article, pdfUrl }) => {
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
     if (!pdfUrl) {
-      toast.error("PDF non disponible");
+      toast.error("Le PDF n'est pas disponible pour le moment");
       return;
     }
-    
-    if (fileExists === false) {
-      toast.error("Le fichier PDF n'existe pas dans notre stockage");
-      return;
-    }
-    
-    window.open(pdfUrl, '_blank');
-    
-    if (articleId) {
-      supabase.rpc('increment_count', {
-        table_name: 'articles',
-        column_name: 'views',
-        row_id: articleId
-      }).catch(err => logger.error("Failed to increment view count:", err));
-    }
-    
-    toast.success("PDF ouvert dans un nouvel onglet");
-  };
-  
-  const handleDownloadPdf = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (!pdfUrl) {
-      toast.error("PDF non disponible");
-      return;
-    }
-    
-    if (fileExists === false) {
-      toast.error("Le fichier PDF n'existe pas dans notre stockage");
-      return;
-    }
-    
-    setIsLoading(true);
     
     try {
-      const fileName = title ? `${title.slice(0, 30).replace(/[^a-zA-Z0-9]/g, '_')}.pdf` : 'article.pdf';
+      // Track download in database
+      const { error } = await supabase
+        .from('articles')
+        .update({ downloads: (article.downloads || 0) + 1 })
+        .eq('id', article.id);
+      
+      if (error) {
+        console.error('Error updating download count:', error);
+      }
+      
+      // Use the standardized downloadPDF function with tracking
+      const fileName = `${article.source}-${article.title.slice(0, 30)}.pdf`;
       
       const success = await downloadPDF({
         url: pdfUrl,
-        fileName: fileName,
-        documentId: articleId || 'unknown',
-        documentType: DocumentType.INDEX,
-        trackingEnabled: !!articleId
+        fileName,
+        documentId: article.id,
+        documentType: article.source === 'RHCA' ? DocumentType.RHCA : DocumentType.INDEX,
+        trackingEnabled: true
       });
       
       if (!success) {
         throw new Error('Download failed');
       }
-      
-      toast.success("Téléchargement du PDF réussi");
     } catch (error) {
       logger.error(error);
       toast.error("Une erreur est survenue lors du téléchargement");
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  if (hideDownload) {
-    return null;
-  }
-  
-  if (fileExists === null && pdfUrl) {
-    return (
-      <Button
-        variant="outline"
-        size="sm"
-        className="gap-2"
-        disabled
-      >
-        <Loader2 className="h-4 w-4 animate-spin" />
-        <span>Vérification...</span>
-      </Button>
-    );
-  }
-  
-  if (!pdfUrl || fileExists === false) {
-    return (
-      <Button
-        variant="outline"
-        size="sm"
-        className="gap-2 opacity-40 cursor-not-allowed"
-        disabled
-      >
-        <Download className="h-4 w-4" />
-        <span>PDF</span>
-      </Button>
-    );
-  }
-  
-  // Render mobile version or desktop version based on screen size
-  return isMobile ? (
-    <PdfButtonGroup 
-      isLoading={isLoading}
-      handleDownloadPdf={handleDownloadPdf}
-      handleOpenPdf={handleOpenPdf}
-    />
-  ) : (
-    <PdfDropdownMenu
-      isLoading={isLoading}
-      handleDownloadPdf={handleDownloadPdf}
-      handleOpenPdf={handleOpenPdf}
-    />
+  return (
+    <Button 
+      variant="outline" 
+      size="sm"
+      className="h-8 px-2"
+      onClick={handleDownload}
+      disabled={!pdfUrl}
+    >
+      <Download className="h-4 w-4 mr-1" />
+      PDF
+    </Button>
   );
 };

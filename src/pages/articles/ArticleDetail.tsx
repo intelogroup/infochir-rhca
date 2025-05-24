@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/layouts/MainLayout";
@@ -42,35 +41,30 @@ const ArticleDetail = () => {
           throw new Error("Article not found");
         }
 
-        // Map database article to our Article type
-        const mappedArticle: Article = {
+        // Map to Article type
+        const article: Article = {
           id: data.id,
           title: data.title,
-          authors: Array.isArray(data.authors) ? data.authors : [],
           abstract: data.abstract,
-          date: data.publication_date,
+          authors: Array.isArray(data.authors) ? data.authors : [],
           publicationDate: data.publication_date,
-          source: data.source as any, // This cast fixes the type error with ArticleSource
+          date: data.publication_date || new Date().toISOString(),
+          source: (data.source as ArticleSource) || "INDEX",
           tags: Array.isArray(data.tags) ? data.tags : [],
-          category: data.category,
-          specialty: data.specialty,
-          pdfUrl: data.pdf_url,
-          status: data.status === "published" ? "published" : 
-                 data.status === "pending" ? "pending" : "draft",
-          imageUrl: data.image_url,
-          coverImage: data.cover_image_filename || data.image_url, // Fixed the property name
           views: data.views || 0,
-          citations: data.citations || 0,
           downloads: data.downloads || 0,
           shares: data.shares || 0,
-          institution: data.institution,
+          citations: data.citations || 0,
+          pdfUrl: data.pdf_url,
+          imageUrl: data.image_url,
           volume: data.volume,
           issue: data.issue,
           pageNumber: data.page_number,
-          pdfFileName: data.pdf_filename
+          specialty: data.specialty,
+          category: data.category
         };
         
-        setArticle(mappedArticle);
+        setArticle(article);
         
         // Update view count
         await supabase

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/layouts/MainLayout";
@@ -73,7 +72,6 @@ const RhcaArticleDetail: React.FC = () => {
           issue: data.issue,
           pageNumber: data.page_number,
           category: data.category,
-          status: data.status === 'published' ? "published" : (data.status === 'pending' ? "pending" : "draft"),
           views: data.views || 0,
           downloads: data.downloads || 0,
           // Add the missing required properties

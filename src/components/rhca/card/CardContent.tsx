@@ -17,9 +17,9 @@ export const CardContent: React.FC<CardContentProps> = ({ article, pdfUrl }) => 
       if (!article.pageNumber) return "- Pages";
       
       // Convert pageNumber to string for processing
-      const pageNumber = typeof article.pageNumber === 'number' 
-        ? article.pageNumber.toString() 
-        : article.pageNumber.trim();
+      const pageNumber = typeof article.pageNumber === 'string' 
+        ? article.pageNumber.trim()
+        : String(article.pageNumber);
       
       // Handle page range format (e.g., "1-28")
       if (pageNumber.includes('-')) {

@@ -1,10 +1,10 @@
-
 import type { Article } from "../index-medicus/types";
 
 export interface RhcaArticle extends Article {
   pdfFileName?: string;
   coverImageFileName?: string;
-  image_url?: string; // Add this to fix the type errors in RhcaCard and RhcaTable
+  image_url?: string;
+  status?: "published" | "pending" | "draft"; // Add status property
 }
 
 export interface RhcaVolume {
