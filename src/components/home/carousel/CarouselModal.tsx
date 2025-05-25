@@ -1,4 +1,5 @@
 
+
 import { 
   Dialog, 
   DialogContent, 
@@ -7,7 +8,7 @@ import {
   DialogFooter 
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { X, ExternalLink, ChevronLeft, ChevronRight, FileText } from "lucide-react";
+import { X, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
 import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { createLogger } from "@/lib/error-logger";
@@ -49,18 +50,6 @@ export const CarouselModal = ({
       }, 50);
     }
   }, [isOpen, item]);
-
-  const handleViewArticle = () => {
-    if (item.pdfUrl) {
-      // Open PDF directly in new tab
-      window.open(item.pdfUrl, '_blank');
-    } else if (item.link) {
-      // If there's an external link, open it in new tab
-      window.open(item.link, '_blank');
-    } else {
-      toast.error("Article non disponible");
-    }
-  };
 
   const handleOpenPdf = () => {
     if (!item.pdfUrl) {
@@ -176,30 +165,21 @@ export const CarouselModal = ({
             )}
           </div>
           
-          {/* Action buttons */}
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2"
-              onClick={handleOpenPdf}
-              disabled={!item.pdfUrl}
-            >
-              <ExternalLink className="h-4 w-4" />
-              Ouvrir
-            </Button>
-            
-            <Button
-              className="flex items-center gap-2"
-              onClick={handleViewArticle}
-              aria-label={`View full article: ${item.title}`}
-            >
-              {item.pdfUrl ? <FileText className="h-4 w-4" /> : <ExternalLink className="h-4 w-4" />}
-              Consulter l'article
-            </Button>
-          </div>
+          {/* Action button */}
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            onClick={handleOpenPdf}
+            disabled={!item.pdfUrl}
+            aria-label={`Open PDF: ${item.title}`}
+          >
+            <ExternalLink className="h-4 w-4" />
+            Ouvrir
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 };
+
