@@ -1,7 +1,7 @@
 
 import * as React from "react";
 import { Button } from "@/components/ui/button";
-import { Download, Share2 } from "lucide-react";
+import { Download, Share2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { downloadPDF } from "@/lib/analytics/download";
@@ -92,6 +92,16 @@ export const IssueCardActions: React.FC<IssueCardActionsProps> = ({
     }
   };
 
+  const handleOpenPdf = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click event
+    
+    if (!pdfUrl) {
+      toast.error("Le PDF n'est pas disponible");
+      return;
+    }
+    window.open(pdfUrl, '_blank');
+  };
+
   return (
     <div className="flex gap-1 flex-wrap justify-end">
       <Button
@@ -107,6 +117,22 @@ export const IssueCardActions: React.FC<IssueCardActionsProps> = ({
           </>
         ) : (
           <Share2 className="h-3.5 w-3.5" />
+        )}
+      </Button>
+      <Button
+        variant="outline"
+        size={isMobile ? "sm" : "sm"}
+        className={isMobile ? "h-8 px-2 py-1 text-xs flex-grow sm:flex-grow-0" : "h-7 w-7 p-0"}
+        onClick={handleOpenPdf}
+        disabled={!pdfUrl}
+      >
+        {isMobile ? (
+          <>
+            <ExternalLink className="h-3 w-3 mr-1" />
+            <span className="text-xs">Ouvrir</span>
+          </>
+        ) : (
+          <ExternalLink className="h-3.5 w-3.5" />
         )}
       </Button>
       <Button
