@@ -34,8 +34,8 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] p-0 overflow-hidden bg-white">
-        <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-6">
+      <DialogContent className="max-w-3xl max-h-[90vh] p-0 overflow-hidden bg-white flex flex-col">
+        <div className="bg-gradient-to-r from-primary/10 to-secondary/10 p-6 flex-shrink-0">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-gray-900">
               {article.title}
@@ -46,7 +46,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
           </DialogHeader>
         </div>
 
-        <ScrollArea className="max-h-[calc(90vh-12rem)] px-6">
+        <ScrollArea className="flex-1 px-6">
           <div className="py-6 space-y-6">
             <div className="flex flex-wrap gap-2">
               {article.tags && article.tags.map((tag) => (
@@ -129,7 +129,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
         </ScrollArea>
         
         {/* Fixed footer with actions - ensure it's always visible */}
-        <div className="bg-white border-t border-gray-200 p-4 flex justify-end gap-3 shadow-sm">
+        <div className="bg-white border-t border-gray-200 p-4 flex justify-end gap-3 shadow-sm flex-shrink-0">
           <ShareAction 
             articleId={article.id} 
             articleTitle={article.title}
