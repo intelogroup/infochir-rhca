@@ -2,7 +2,6 @@
 import * as React from "react";
 import { PdfActions } from "./actions/PdfActions";
 import { ShareAction } from "./actions/ShareAction";
-import { ViewAction } from "./actions/ViewAction";
 import type { Article } from "../types";
 
 interface ArticleActionsProps {
@@ -21,8 +20,6 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({ article, pdfUrl 
         articleId={article.id} 
         articleTitle={article.title}
       />
-      
-      <ViewAction articleId={article.id} />
       
       <PdfActions 
         article={article}

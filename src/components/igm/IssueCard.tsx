@@ -66,10 +66,10 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue }) => {
           id: issue.id,
           title: issue.title,
           date: issue.date,
-          description: issue.description,
-          articleCount: issue.articleCount,
-          downloadCount: issue.downloadCount,
-          shareCount: issue.shareCount,
+          description: issue.description || issue.abstract,
+          articleCount: issue.articleCount || 0,
+          downloadCount: issue.downloadCount || 0,
+          shareCount: issue.shareCount || 0,
           coverImage: issue.coverImage,
           pdfUrl: issue.pdfUrl
         }}
