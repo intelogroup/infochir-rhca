@@ -51,9 +51,9 @@ export const CarouselModal = ({
   }, [isOpen, item]);
 
   const handleViewArticle = () => {
-    if (item.id) {
-      // Navigate to article detail page which will open PDF in new tab
-      navigate(`/articles/${item.id}`);
+    if (item.pdfUrl) {
+      // Open PDF directly in new tab
+      window.open(item.pdfUrl, '_blank');
     } else if (item.link) {
       // If there's an external link, open it in new tab
       window.open(item.link, '_blank');
@@ -117,12 +117,24 @@ export const CarouselModal = ({
               />
             </div>
             
-            {/* Article description */}
-            <div className="prose prose-sm max-w-none mb-4">
-              <p className="text-gray-700 whitespace-pre-line">
-                {item.description}
-              </p>
-            </div>
+            {/* Article abstract */}
+            {item.abstract && (
+              <div className="prose prose-sm max-w-none mb-4">
+                <h4 className="font-semibold mb-2 text-gray-800">Résumé</h4>
+                <p className="text-gray-700 whitespace-pre-line leading-relaxed">
+                  {item.abstract}
+                </p>
+              </div>
+            )}
+            
+            {/* Fallback to description if no abstract */}
+            {!item.abstract && item.description && (
+              <div className="prose prose-sm max-w-none mb-4">
+                <p className="text-gray-700 whitespace-pre-line">
+                  {item.description}
+                </p>
+              </div>
+            )}
           </div>
         </ScrollArea>
         
@@ -162,7 +174,7 @@ export const CarouselModal = ({
             onClick={handleViewArticle}
             aria-label={`View full article: ${item.title}`}
           >
-            {item.id ? <FileText className="h-4 w-4" /> : <ExternalLink className="h-4 w-4" />}
+            {item.pdfUrl ? <FileText className="h-4 w-4" /> : <ExternalLink className="h-4 w-4" />}
             Consulter l'article
           </Button>
         </DialogFooter>
