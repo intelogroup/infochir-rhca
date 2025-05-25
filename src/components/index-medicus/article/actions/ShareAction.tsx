@@ -20,43 +20,58 @@ interface ShareActionProps {
   onShare?: () => void;
   articleId?: string;
   articleTitle?: string;
+  pdfUrl?: string;
+  pdfFilename?: string;
 }
 
 export const ShareAction: React.FC<ShareActionProps> = ({ 
   onShare, 
   articleId,
-  articleTitle = "Article Index Medicus"
+  articleTitle = "Article Index Medicus",
+  pdfUrl,
+  pdfFilename
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const location = useLocation();
   
   const getShareUrl = () => {
+    // Prioritize direct PDF link if available
+    if (pdfUrl && pdfUrl.includes('supabase.co')) {
+      return pdfUrl;
+    }
+    
+    // Generate direct PDF URL using filename
+    if (pdfFilename) {
+      return `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/indexmedicuspdf/${pdfFilename}`;
+    }
+    
+    // Fallback to article page
     return window.location.origin + (articleId ? `/index-medicus/articles/${articleId}` : location.pathname);
   };
   
   const handleNativeShare = async () => {
     try {
+      const shareUrl = getShareUrl();
+      const isPdfLink = shareUrl.includes('.pdf');
+      
       if (navigator.share) {
         await navigator.share({
           title: articleTitle,
-          text: `Découvrez "${articleTitle}" sur InfoCHIR`,
-          url: getShareUrl(),
+          text: isPdfLink ? `PDF: "${articleTitle}"` : `Découvrez "${articleTitle}" sur InfoCHIR`,
+          url: shareUrl,
         });
         
         trackShare();
         toast.success("Contenu partagé avec succès");
-      } else {
-        // Fall back to dropdown menu which will stay open if no native sharing
-        return false;
+        return true;
       }
     } catch (error) {
       if (error instanceof Error && error.name !== 'AbortError') {
         logger.error("Share error:", error);
         toast.error("Erreur lors du partage");
       }
-      return false;
     }
-    return true;
+    return false;
   };
 
   const trackShare = async () => {
@@ -76,9 +91,12 @@ export const ShareAction: React.FC<ShareActionProps> = ({
   const copyToClipboard = async () => {
     try {
       setIsLoading(true);
-      await navigator.clipboard.writeText(getShareUrl());
+      const shareUrl = getShareUrl();
+      await navigator.clipboard.writeText(shareUrl);
       trackShare();
-      toast.success("Lien copié dans le presse-papier");
+      
+      const isPdfLink = shareUrl.includes('.pdf');
+      toast.success(isPdfLink ? "Lien PDF copié dans le presse-papier" : "Lien copié dans le presse-papier");
     } catch (error) {
       logger.error("Copy error:", error);
       toast.error("Erreur lors de la copie du lien");
@@ -91,6 +109,8 @@ export const ShareAction: React.FC<ShareActionProps> = ({
     const url = getShareUrl();
     const encodedUrl = encodeURIComponent(url);
     const encodedTitle = encodeURIComponent(articleTitle);
+    const isPdfLink = url.includes('.pdf');
+    const shareText = isPdfLink ? `PDF: ${articleTitle}` : articleTitle;
     
     let shareUrl = '';
     
@@ -99,7 +119,7 @@ export const ShareAction: React.FC<ShareActionProps> = ({
         shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
         break;
       case 'twitter':
-        shareUrl = `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`;
+        shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodedUrl}`;
         break;
       case 'linkedin':
         shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
@@ -151,7 +171,7 @@ export const ShareAction: React.FC<ShareActionProps> = ({
       <DropdownMenuContent align="end" className="w-56 bg-white border border-gray-200 shadow-lg z-50">
         <DropdownMenuItem onClick={copyToClipboard} className="cursor-pointer hover:bg-gray-100 focus:bg-gray-100">
           <Copy className="h-4 w-4 mr-2" />
-          Copier le lien
+          Copier le lien PDF
         </DropdownMenuItem>
         <DropdownMenuSeparator className="bg-gray-200" />
         <DropdownMenuItem onClick={() => shareToSocial('facebook')} className="cursor-pointer hover:bg-gray-100 focus:bg-gray-100">
