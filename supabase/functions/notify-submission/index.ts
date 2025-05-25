@@ -18,8 +18,8 @@ import {
   createSuccessResponse
 } from "../_shared/error-logger.ts";
 
-// Email notification recipient
-const NOTIFICATION_EMAIL = "jimkalinov@gmail.com";
+// Email notification recipients - multiple admin emails
+const ADMIN_EMAILS = ["jimkalinov@gmail.com", "jalouidor@hotmail.com"];
 
 // Retry configuration
 const MAX_RETRIES = 3;
@@ -139,34 +139,39 @@ serve(async (req) => {
 
     const emailResults = [];
 
-    // Send admin notification email with retry
-    console.log("[notify-submission] === SENDING ADMIN NOTIFICATION ===");
-    console.log("- To:", NOTIFICATION_EMAIL);
+    // Send admin notification emails to all admin recipients
+    console.log("[notify-submission] === SENDING ADMIN NOTIFICATIONS ===");
+    console.log("- Admin emails:", ADMIN_EMAILS);
     console.log("- Subject: Nouvelle soumission d'article:", submissionData.title);
     
-    const adminEmailResult = await retryEmailSend(async () => {
-      return await sendEmail(
-        NOTIFICATION_EMAIL,
-        `Nouvelle soumission d'article: ${submissionData.title}`,
-        adminHtmlContent,
-        adminTextContent,
-        submissionData.corresponding_author_email
-      );
-    });
-    
-    console.log("[notify-submission] Admin email result:", {
-      success: adminEmailResult.success,
-      retries: adminEmailResult.retries,
-      hasError: !!adminEmailResult.error
-    });
-    
-    emailResults.push({
-      type: 'admin',
-      success: adminEmailResult.success,
-      data: adminEmailResult.data,
-      error: adminEmailResult.error,
-      retries: adminEmailResult.retries
-    });
+    for (const adminEmail of ADMIN_EMAILS) {
+      console.log(`[notify-submission] Sending to admin: ${adminEmail}`);
+      
+      const adminEmailResult = await retryEmailSend(async () => {
+        return await sendEmail(
+          adminEmail,
+          `Nouvelle soumission d'article: ${submissionData.title}`,
+          adminHtmlContent,
+          adminTextContent,
+          submissionData.corresponding_author_email
+        );
+      });
+      
+      console.log(`[notify-submission] Admin email result for ${adminEmail}:`, {
+        success: adminEmailResult.success,
+        retries: adminEmailResult.retries,
+        hasError: !!adminEmailResult.error
+      });
+      
+      emailResults.push({
+        type: 'admin',
+        recipient: adminEmail,
+        success: adminEmailResult.success,
+        data: adminEmailResult.data,
+        error: adminEmailResult.error,
+        retries: adminEmailResult.retries
+      });
+    }
 
     // Send user confirmation email with retry
     console.log("[notify-submission] === SENDING USER CONFIRMATION ===");
@@ -197,46 +202,53 @@ serve(async (req) => {
     });
 
     // Check results and try backup methods if needed
-    const adminSuccess = emailResults.find(r => r.type === 'admin')?.success;
+    const adminSuccessCount = emailResults.filter(r => r.type === 'admin' && r.success).length;
     const userSuccess = emailResults.find(r => r.type === 'user')?.success;
 
     console.log("[notify-submission] === EMAIL RESULTS SUMMARY ===");
-    console.log("- Admin email success:", adminSuccess);
+    console.log("- Admin emails sent successfully:", `${adminSuccessCount}/${ADMIN_EMAILS.length}`);
     console.log("- User email success:", userSuccess);
 
-    if (adminSuccess && userSuccess) {
-      console.log("[notify-submission] ✅ Both emails sent successfully");
+    if (adminSuccessCount > 0 && userSuccess) {
+      console.log("[notify-submission] ✅ All critical emails sent successfully");
       return createSuccessResponse({ 
         success: true,
-        message: "Email notifications sent successfully to both admin and user",
+        message: "Email notifications sent successfully to admins and user",
         results: emailResults
       }, 200, corsHeaders);
     }
     
     // Try backup methods for failed emails
-    if (!adminSuccess) {
-      console.log("[notify-submission] 🔄 Admin email failed, trying backup method");
+    const failedAdminEmails = emailResults.filter(r => r.type === 'admin' && !r.success);
+    
+    for (const failedEmail of failedAdminEmails) {
+      console.log(`[notify-submission] 🔄 Admin email failed for ${failedEmail.recipient}, trying backup method`);
       const adminBackupResult = await retryEmailSend(async () => {
         return await sendBackupEmail(
-          NOTIFICATION_EMAIL,
+          failedEmail.recipient,
           `Nouvelle soumission - ${submissionData.title}`,
           adminTextContent
         );
       }, 2); // Fewer retries for backup method
       
-      console.log("[notify-submission] Admin backup result:", {
+      console.log(`[notify-submission] Admin backup result for ${failedEmail.recipient}:`, {
         success: adminBackupResult.success,
         retries: adminBackupResult.retries
       });
       
-      emailResults[0] = {
-        type: 'admin',
-        success: adminBackupResult.success,
-        data: adminBackupResult.data,
-        error: adminBackupResult.error,
-        backup: true,
-        retries: adminBackupResult.retries
-      };
+      // Update the result
+      const resultIndex = emailResults.findIndex(r => r.type === 'admin' && r.recipient === failedEmail.recipient);
+      if (resultIndex >= 0) {
+        emailResults[resultIndex] = {
+          type: 'admin',
+          recipient: failedEmail.recipient,
+          success: adminBackupResult.success,
+          data: adminBackupResult.data,
+          error: adminBackupResult.error,
+          backup: true,
+          retries: adminBackupResult.retries
+        };
+      }
     }
 
     if (!userSuccess) {
@@ -254,30 +266,39 @@ serve(async (req) => {
         retries: userBackupResult.retries
       });
       
-      emailResults[1] = {
-        type: 'user',
-        success: userBackupResult.success,
-        data: userBackupResult.data,
-        error: userBackupResult.error,
-        backup: true,
-        retries: userBackupResult.retries
-      };
+      const userResultIndex = emailResults.findIndex(r => r.type === 'user');
+      if (userResultIndex >= 0) {
+        emailResults[userResultIndex] = {
+          type: 'user',
+          success: userBackupResult.success,
+          data: userBackupResult.data,
+          error: userBackupResult.error,
+          backup: true,
+          retries: userBackupResult.retries
+        };
+      }
     }
 
     // Final check after backup attempts
-    const finalAdminSuccess = emailResults.find(r => r.type === 'admin')?.success;
+    const finalAdminSuccessCount = emailResults.filter(r => r.type === 'admin' && r.success).length;
     const finalUserSuccess = emailResults.find(r => r.type === 'user')?.success;
 
     console.log("[notify-submission] === FINAL RESULTS ===");
-    console.log("- Final admin success:", finalAdminSuccess);
+    console.log("- Final admin success count:", `${finalAdminSuccessCount}/${ADMIN_EMAILS.length}`);
     console.log("- Final user success:", finalUserSuccess);
     console.log("- Email results:", emailResults);
 
-    if (finalAdminSuccess || finalUserSuccess) {
-      const message = finalAdminSuccess && finalUserSuccess ? 
-        "Email notifications sent successfully to both admin and user" :
-        finalAdminSuccess ? "Admin notification sent, but user confirmation failed" :
-        "User confirmation sent, but admin notification failed";
+    if (finalAdminSuccessCount > 0 || finalUserSuccess) {
+      let message = "Email notifications partially sent";
+      if (finalAdminSuccessCount === ADMIN_EMAILS.length && finalUserSuccess) {
+        message = "Email notifications sent successfully to all admins and user";
+      } else if (finalAdminSuccessCount > 0 && finalUserSuccess) {
+        message = `Email notifications sent successfully (${finalAdminSuccessCount}/${ADMIN_EMAILS.length} admins, user confirmed)`;
+      } else if (finalAdminSuccessCount > 0) {
+        message = `Admin notifications sent (${finalAdminSuccessCount}/${ADMIN_EMAILS.length}), but user confirmation failed`;
+      } else if (finalUserSuccess) {
+        message = "User confirmation sent, but admin notifications failed";
+      }
       
       console.log(`[notify-submission] ✅ ${message}`);
       return createSuccessResponse({ 
