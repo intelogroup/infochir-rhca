@@ -6,7 +6,7 @@ import {
   generateSubmissionTextContent,
   generateUserConfirmationHtmlContent,
   generateUserConfirmationTextContent
-} from "../_shared/email-templates.ts";
+} from "../_shared/email-templates/index.ts";
 import { 
   sendEmail,
   sendBackupEmail,
