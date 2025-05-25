@@ -17,6 +17,14 @@ export const VolumeModalActions: React.FC<VolumeModalActionsProps> = ({ volume }
     toast.success("Lien copié dans le presse-papier");
   };
 
+  const handleOpenPdf = () => {
+    if (!volume.pdfUrl) {
+      toast.error("Le PDF n'est pas disponible");
+      return;
+    }
+    window.open(volume.pdfUrl, '_blank');
+  };
+
   const handleDownload = async () => {
     if (!volume.pdfUrl) {
       toast.error("Le PDF n'est pas disponible pour ce volume");
@@ -24,14 +32,6 @@ export const VolumeModalActions: React.FC<VolumeModalActionsProps> = ({ volume }
     }
     window.open(volume.pdfUrl, '_blank');
     toast.success("Téléchargement du PDF en cours...");
-  };
-
-  const handleOpenPdf = () => {
-    if (!volume.pdfUrl) {
-      toast.error("Le PDF n'est pas disponible");
-      return;
-    }
-    window.open(volume.pdfUrl, '_blank');
   };
 
   return (

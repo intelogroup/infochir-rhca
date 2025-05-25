@@ -46,6 +46,14 @@ export const IssueModalActions = ({ issue }: IssueModalActionsProps) => {
     }
   };
 
+  const handleOpenPdf = () => {
+    if (!issue.pdfUrl) {
+      toast.error("Le PDF n'est pas disponible");
+      return;
+    }
+    window.open(issue.pdfUrl, '_blank');
+  };
+
   const handleDownload = async () => {
     if (!issue.pdfUrl) {
       toast.error("Le PDF n'est pas encore disponible pour ce numéro");
@@ -74,14 +82,6 @@ export const IssueModalActions = ({ issue }: IssueModalActionsProps) => {
     } finally {
       setTimeout(() => setIsDownloading(false), 1000);
     }
-  };
-
-  const handleOpenPdf = () => {
-    if (!issue.pdfUrl) {
-      toast.error("Le PDF n'est pas disponible");
-      return;
-    }
-    window.open(issue.pdfUrl, '_blank');
   };
 
   return (
