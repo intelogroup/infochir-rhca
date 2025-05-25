@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Dialog,
@@ -147,8 +146,6 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
           <ShareAction 
             articleId={article.id} 
             articleTitle={article.title}
-            pdfUrl={article.pdfUrl}
-            pdfFilename={article.pdf_filename}
           />
           
           <Button
