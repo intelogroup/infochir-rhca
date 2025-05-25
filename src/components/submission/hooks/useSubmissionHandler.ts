@@ -26,9 +26,8 @@ export const useSubmissionHandler = () => {
       finalErrors.articleFiles = "Veuillez uploader au moins un fichier d'article";
     }
 
-    if (!values.ethicsApproval || !values.noConflict || !values.originalWork) {
-      finalErrors.declarations = "Toutes les déclarations doivent être acceptées";
-    }
+    // Remove mandatory declarations check since they are now optional
+    // Declarations are now optional - any unchecked box is interpreted as "no"
 
     if (Object.keys(finalErrors).length > 0) {
       return { success: false, errors: finalErrors };
@@ -52,7 +51,7 @@ export const useSubmissionHandler = () => {
         logger.info("Anonymous submission: user is not authenticated");
       }
       
-      // Prepare submission data
+      // Prepare submission data with proper declaration handling
       const submissionData = {
         publication_type: values.publicationType,
         title: values.title,
@@ -60,13 +59,15 @@ export const useSubmissionHandler = () => {
         institution: values.institution,
         keywords: values.keywords,
         abstract: values.abstract,
+        notes: values.notes || "", // Include notes field
         corresponding_author_name: values.correspondingAuthor.name,
         corresponding_author_email: values.correspondingAuthor.email,
         corresponding_author_phone: values.correspondingAuthor.phone,
         corresponding_author_address: values.correspondingAuthor.address,
-        ethics_approval: values.ethicsApproval,
-        no_conflict: values.noConflict,
-        original_work: values.originalWork,
+        // Handle optional declarations - default to false if not set
+        ethics_approval: values.ethicsApproval || false,
+        no_conflict: values.noConflict || false,
+        original_work: values.originalWork || false,
         article_files_urls: articleFiles,
         image_annexes_urls: imageAnnexes,
         status: 'pending',

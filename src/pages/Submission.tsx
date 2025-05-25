@@ -41,6 +41,9 @@ const Submission = () => {
     const isFormValid = form.formState.isValid && Object.keys(formErrors).length === 0;
     
     if (!isFormValid) {
+      // Show specific error message about which fields need attention
+      const errorCount = Object.keys({...formErrors, ...form.formState.errors}).length;
+      toast.error(`Veuillez corriger ${errorCount === 1 ? 'le champ manquant' : `les ${errorCount} champs manquants`} avant de soumettre`);
       scrollToFirstError();
       return;
     }
@@ -49,6 +52,11 @@ const Submission = () => {
     
     if (!result.success && result.errors) {
       setFormErrors(result.errors);
+      // Show specific error message
+      const errorFields = Object.keys(result.errors);
+      if (errorFields.includes('articleFiles')) {
+        toast.error("Veuillez uploader au moins un fichier d'article");
+      }
       scrollToFirstError();
     }
   };

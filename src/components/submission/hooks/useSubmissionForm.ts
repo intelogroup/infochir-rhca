@@ -93,8 +93,6 @@ export const useSubmissionForm = (articleFiles: string[]) => {
       
       if (firstErrorField === 'articleFiles') {
         selector = '[data-field="articleFiles"]';
-      } else if (firstErrorField === 'declarations') {
-        selector = '[data-field="declarations"]';
       } else if (firstErrorField === 'publicationType') {
         selector = '[data-field="publicationType"]';
       } else if (firstErrorField.startsWith('correspondingAuthor.')) {
