@@ -26,7 +26,7 @@ export const IssueCardActions: React.FC<IssueCardActionsProps> = ({
   const isMobile = useIsMobile();
 
   const handleDownload = async (e: React.MouseEvent) => {
-    e.stopPropagation();
+    e.stopPropagation(); // Prevent card click event
     
     if (!pdfUrl) {
       toast.error("Le PDF n'est pas disponible pour ce numéro");
@@ -58,7 +58,7 @@ export const IssueCardActions: React.FC<IssueCardActionsProps> = ({
   };
 
   const handleShare = async (e: React.MouseEvent) => {
-    e.stopPropagation();
+    e.stopPropagation(); // Prevent card click event
     
     try {
       // Generate share URL

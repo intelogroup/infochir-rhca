@@ -8,7 +8,6 @@ import { ArticleCategories } from "./article/ArticleCategories";
 import { ArticleMetadata } from "./article/ArticleMetadata";
 import { ArticleActions } from "./article/ArticleActions";
 import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
-import { toast } from "sonner";
 import { ArticleModal } from "./article/ArticleModal";
 import { motion } from "framer-motion";
 
@@ -22,19 +21,13 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick, s
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   const handleCardClick = (e: React.MouseEvent) => {
-    // Only open the PDF if clicking the card itself, not the buttons or tags
+    // Only open the modal if clicking the card itself, not the buttons or tags
     if ((e.target as HTMLElement).closest('button') || 
         (e.target as HTMLElement).closest('[data-tag]')) {
       return;
     }
     
-    if (!article.pdfUrl) {
-      toast.error("PDF non disponible pour cet article");
-      return;
-    }
-    
-    // Open the PDF in a new tab
-    window.open(article.pdfUrl, '_blank');
+    setIsModalOpen(true);
   };
 
   return (

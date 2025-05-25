@@ -99,7 +99,6 @@ export const ArticleTableRow: React.FC<ArticleTableRowProps> = ({ article }) => 
         </TableCell>
       </TableRowBase>
 
-      {/* Add modal component */}
       <ArticleModal
         article={article}
         open={isModalOpen}
