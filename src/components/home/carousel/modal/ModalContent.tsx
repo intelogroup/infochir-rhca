@@ -84,14 +84,10 @@ export const ModalContent = ({
                     </div>
                   )}
                   
-                  <div className="prose prose-sm max-w-none break-words">
-                    <p className="text-gray-600 whitespace-pre-line">{articleDetails.abstract}</p>
-                  </div>
-                  
-                  {articleDetails.authors && articleDetails.authors.length > 0 && (
-                    <div className="border-t pt-4">
-                      <h4 className="font-semibold mb-2">Auteurs</h4>
-                      <p className="text-gray-600 break-words">{Array.isArray(articleDetails.authors) ? articleDetails.authors.join(", ") : articleDetails.authors}</p>
+                  {articleDetails.abstract && (
+                    <div className="prose prose-sm max-w-none break-words">
+                      <h4 className="font-semibold mb-2">Résumé</h4>
+                      <p className="text-gray-600 whitespace-pre-line">{articleDetails.abstract}</p>
                     </div>
                   )}
                   
