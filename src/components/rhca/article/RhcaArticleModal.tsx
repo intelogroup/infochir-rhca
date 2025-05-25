@@ -122,31 +122,25 @@ export const RhcaArticleModal: React.FC<RhcaArticleModalProps> = ({
               </div>
             </div>
 
-            {article.specialty && (
-              <div className="border-t pt-4">
-                <h4 className="font-semibold mb-2">Spécialité</h4>
-                <Badge variant="outline" className="bg-primary/5 hover:bg-primary/10">
-                  {article.specialty}
-                </Badge>
+            <div className="border-t pt-4">
+              <h4 className="font-semibold mb-4">Actions</h4>
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={handleOpenPdf}
+                  disabled={!pdfUrl}
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Ouvrir
+                </Button>
+                
+                <CardActions article={article} pdfUrl={pdfUrl} />
               </div>
-            )}
+            </div>
           </div>
         </ScrollArea>
-        
-        <div className="bg-white border-t border-gray-200 p-4 flex justify-end gap-3 shadow-sm">
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2"
-            onClick={handleOpenPdf}
-            disabled={!pdfUrl}
-          >
-            <ExternalLink className="h-4 w-4" />
-            Ouvrir
-          </Button>
-          
-          <CardActions article={article} pdfUrl={pdfUrl} />
-        </div>
       </DialogContent>
     </Dialog>
   );
