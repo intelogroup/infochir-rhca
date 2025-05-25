@@ -18,15 +18,15 @@ export const FormErrors = ({ errors }: FormErrorsProps) => {
         animate={{ opacity: 1, height: "auto" }}
         exit={{ opacity: 0, height: 0 }}
         transition={{ duration: 0.3 }}
-        className="bg-destructive/15 p-4 rounded-lg mb-6 border border-destructive/30"
+        className="bg-red-50 border-2 border-red-200 p-4 rounded-lg mb-6"
       >
-        <div className="flex items-center gap-2 text-destructive mb-2">
+        <div className="flex items-center gap-2 text-red-700 mb-2">
           <AlertCircle className="h-5 w-5" />
-          <h3 className="font-semibold">
+          <h3 className="font-semibold text-red-800">
             Instructions de soumission
           </h3>
         </div>
-        <ul className="list-disc list-inside text-sm text-destructive space-y-1.5">
+        <ul className="list-disc list-inside text-sm text-red-700 space-y-1.5">
           {Object.values(errors).map((error, index) => (
             <li key={index} className="animate-pulse-once">
               {error}

@@ -1,7 +1,8 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Save, Send } from "lucide-react";
+import { Send, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface SubmissionFormActionsProps {
   isSubmitting: boolean;
@@ -13,9 +14,14 @@ interface SubmissionFormActionsProps {
 export const SubmissionFormActions: React.FC<SubmissionFormActionsProps> = ({
   isSubmitting,
   isValid,
-  hasErrors,
-  onSaveDraft
+  hasErrors
 }) => {
+  const navigate = useNavigate();
+
+  const handleCancel = () => {
+    navigate(-1); // Go back to previous page
+  };
+
   return (
     <div className="flex justify-end space-x-4">
       <Button 
@@ -23,10 +29,10 @@ export const SubmissionFormActions: React.FC<SubmissionFormActionsProps> = ({
         variant="outline"
         className="gap-2"
         disabled={isSubmitting}
-        onClick={onSaveDraft}
+        onClick={handleCancel}
       >
-        <Save className="h-4 w-4" />
-        Sauvegarder comme brouillon
+        <X className="h-4 w-4" />
+        Annuler
       </Button>
       <Button 
         type="submit"
