@@ -72,7 +72,7 @@ export const CardActions: React.FC<CardActionsProps> = ({ article, pdfUrl }) => 
   };
 
   return (
-    <div className="flex items-center justify-end gap-1.5">
+    <div className="flex items-center justify-end gap-1">
       <ShareAction 
         articleId={article.id} 
         articleTitle={article.title}
@@ -82,10 +82,10 @@ export const CardActions: React.FC<CardActionsProps> = ({ article, pdfUrl }) => 
         <Button 
           variant="outline" 
           size="sm"
-          className="h-7 px-2.5 text-xs font-medium border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-200"
+          className="h-6 px-1.5 text-xs font-medium border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-200"
           onClick={handleOpenPdf}
         >
-          <ExternalLink className="h-3.5 w-3.5 mr-1" />
+          <ExternalLink className="h-3 w-3 mr-0.5" />
           Ouvrir
         </Button>
       )}
@@ -94,10 +94,10 @@ export const CardActions: React.FC<CardActionsProps> = ({ article, pdfUrl }) => 
         <Button 
           variant="outline" 
           size="sm"
-          className="h-7 px-2.5 text-xs font-medium border-primary/20 text-primary hover:border-primary/30 hover:bg-primary/5 transition-all duration-200"
+          className="h-6 px-1.5 text-xs font-medium border-primary/20 text-primary hover:border-primary/30 hover:bg-primary/5 transition-all duration-200"
           onClick={handleDownload}
         >
-          <Download className="h-3.5 w-3.5 mr-1" />
+          <Download className="h-3 w-3 mr-0.5" />
           PDF
         </Button>
       )}
