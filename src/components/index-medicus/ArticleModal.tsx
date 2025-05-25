@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Dialog,
@@ -47,6 +46,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
         </div>
 
         <ScrollArea className="flex-1 px-4 sm:px-6 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+          
           <div className="py-4 sm:py-6 space-y-4 sm:space-y-6">
             <div className="flex flex-wrap gap-2">
               {article.tags && article.tags.map((tag) => (
@@ -131,7 +131,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
           </div>
         </ScrollArea>
         
-        {/* Fixed footer with actions - responsive */}
+        
         <div className="bg-white border-t border-gray-200 p-3 sm:p-4 flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 shadow-sm flex-shrink-0">
           <ShareAction 
             articleId={article.id} 

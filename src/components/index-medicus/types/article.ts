@@ -10,6 +10,8 @@ export interface Article {
   date?: string; // Legacy field
   source: ArticleSource;
   pdfUrl?: string;
+  pdf_url?: string; // Legacy field for backwards compatibility
+  pdf_filename?: string; // Add missing property
   imageUrl?: string;
   volume?: string;
   issue?: string;
@@ -22,7 +24,7 @@ export interface Article {
   shares?: number;
   downloads?: number;
   citations?: number;
-  status?: "published" | "pending" | "draft"; // Add missing status property
+  status?: "published" | "pending" | "draft";
 }
 
 // Add the missing mapping function
@@ -36,6 +38,8 @@ export const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
     date: dbArticle.date || dbArticle.publication_date,
     source: dbArticle.source as ArticleSource,
     pdfUrl: dbArticle.pdf_url,
+    pdf_url: dbArticle.pdf_url, // Keep legacy field
+    pdf_filename: dbArticle.pdf_filename,
     imageUrl: dbArticle.image_url,
     volume: dbArticle.volume,
     issue: dbArticle.issue,
