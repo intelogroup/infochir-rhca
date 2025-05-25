@@ -52,10 +52,13 @@ export const CarouselModal = ({
 
   const handleViewArticle = () => {
     if (item.id) {
+      // Navigate to article detail page which will open PDF in new tab
       navigate(`/articles/${item.id}`);
-    } else {
-      // If there's no ID but there's an external link, open that instead
+    } else if (item.link) {
+      // If there's an external link, open it in new tab
       window.open(item.link, '_blank');
+    } else {
+      toast.error("Article non disponible");
     }
   };
 
