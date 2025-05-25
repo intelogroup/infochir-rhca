@@ -10,14 +10,16 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Article } from "../types";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { 
   Calendar, User, BookOpen, Building, 
-  FileText, Download, Quote, Eye 
+  FileText, Download, Quote, Eye, ExternalLink 
 } from "lucide-react";
 import { PdfActions } from "./actions/PdfActions";
 import { ShareAction } from "./actions/ShareAction";
+import { toast } from "sonner";
 
 interface ArticleModalProps {
   article: Article;
@@ -31,6 +33,14 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
   onClose,
 }) => {
   const formattedDate = format(new Date(article.publicationDate), "PPP", { locale: fr });
+
+  const handleOpenPdf = () => {
+    if (!article.pdfUrl) {
+      toast.error("Le PDF n'est pas disponible");
+      return;
+    }
+    window.open(article.pdfUrl, '_blank');
+  };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -128,12 +138,22 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
           </div>
         </ScrollArea>
         
-        {/* Fixed footer with actions - ensure it's always visible */}
         <div className="bg-white border-t border-gray-200 p-4 flex justify-end gap-3 shadow-sm flex-shrink-0">
           <ShareAction 
             articleId={article.id} 
             articleTitle={article.title}
           />
+          
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            onClick={handleOpenPdf}
+            disabled={!article.pdfUrl}
+          >
+            <ExternalLink className="h-4 w-4" />
+            Ouvrir
+          </Button>
           
           <PdfActions 
             article={article}

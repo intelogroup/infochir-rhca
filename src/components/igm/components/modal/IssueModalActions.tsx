@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Download, Share2, Loader2 } from "lucide-react";
+import { Download, Share2, Loader2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
@@ -26,7 +26,6 @@ export const IssueModalActions = ({ issue }: IssueModalActionsProps) => {
     try {
       await navigator.clipboard.writeText(shareUrl);
       
-      // Get current shares count safely
       const currentShares = issue.shares || issue.shareCount || 0;
       
       const { error } = await supabase
@@ -55,7 +54,6 @@ export const IssueModalActions = ({ issue }: IssueModalActionsProps) => {
 
     setIsDownloading(true);
     try {
-      // Use the enhanced download function with DocumentType
       const success = await downloadPDF({
         url: issue.pdfUrl,
         fileName: `IGM_${issue.title.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`,
@@ -78,6 +76,14 @@ export const IssueModalActions = ({ issue }: IssueModalActionsProps) => {
     }
   };
 
+  const handleOpenPdf = () => {
+    if (!issue.pdfUrl) {
+      toast.error("Le PDF n'est pas disponible");
+      return;
+    }
+    window.open(issue.pdfUrl, '_blank');
+  };
+
   return (
     <div className="flex gap-2">
       <Button
@@ -93,6 +99,16 @@ export const IssueModalActions = ({ issue }: IssueModalActionsProps) => {
           <Share2 className="h-4 w-4" />
         )}
         Partager
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        className="gap-2 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] hover:bg-secondary/10 hover:text-secondary transition-colors"
+        onClick={handleOpenPdf}
+        disabled={!issue.pdfUrl}
+      >
+        <ExternalLink className="h-4 w-4" />
+        Ouvrir
       </Button>
       <Button
         variant="default"

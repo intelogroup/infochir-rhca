@@ -3,13 +3,15 @@ import React from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { 
   Calendar, User, BookOpen, Building, 
-  FileText, Download, Quote, Eye 
+  FileText, Download, Quote, Eye, ExternalLink 
 } from "lucide-react";
 import { CardActions } from "../card/CardActions";
+import { toast } from "sonner";
 import type { RhcaArticle } from "../types";
 
 interface RhcaArticleModalProps {
@@ -28,6 +30,14 @@ export const RhcaArticleModal: React.FC<RhcaArticleModalProps> = ({
   const formattedDate = article.publicationDate 
     ? format(new Date(article.publicationDate), "PPP", { locale: fr })
     : "Date non disponible";
+
+  const handleOpenPdf = () => {
+    if (!pdfUrl) {
+      toast.error("Le PDF n'est pas disponible");
+      return;
+    }
+    window.open(pdfUrl, '_blank');
+  };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -123,8 +133,18 @@ export const RhcaArticleModal: React.FC<RhcaArticleModalProps> = ({
           </div>
         </ScrollArea>
         
-        {/* Fixed footer with actions */}
         <div className="bg-white border-t border-gray-200 p-4 flex justify-end gap-3 shadow-sm">
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            onClick={handleOpenPdf}
+            disabled={!pdfUrl}
+          >
+            <ExternalLink className="h-4 w-4" />
+            Ouvrir
+          </Button>
+          
           <CardActions article={article} pdfUrl={pdfUrl} />
         </div>
       </DialogContent>

@@ -52,13 +52,12 @@ export const DocumentModal = <T extends DocumentMetadata>({
     toast.success("Téléchargement du PDF en cours...");
   };
 
-  const handleViewArticle = () => {
-    if (document.pdfUrl) {
-      // Open PDF directly in new tab
-      window.open(document.pdfUrl, '_blank');
-    } else {
-      toast.error("Article non disponible");
+  const handleOpenPdf = () => {
+    if (!document.pdfUrl) {
+      toast.error("Le PDF n'est pas disponible");
+      return;
     }
+    window.open(document.pdfUrl, '_blank');
   };
 
   return (
@@ -130,19 +129,20 @@ export const DocumentModal = <T extends DocumentMetadata>({
                     variant="outline"
                     size="sm"
                     className="gap-2 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)]"
+                    onClick={handleOpenPdf}
+                    disabled={!document.pdfUrl}
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    Ouvrir
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-2 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)]"
                     onClick={handleDownload}
                   >
                     <Download className="h-4 w-4" />
                     Télécharger PDF
-                  </Button>
-                  <Button
-                    variant="default"
-                    size="sm"
-                    className="gap-2 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)]"
-                    onClick={handleViewArticle}
-                  >
-                    <FileText className="h-4 w-4" />
-                    Consulter l'article
                   </Button>
                 </div>
               )}

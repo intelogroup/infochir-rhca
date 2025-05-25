@@ -24,14 +24,20 @@ export const ModalContent = ({
 }: ModalContentProps) => {
   const handleViewArticle = () => {
     if (highlight.pdfUrl) {
-      // Open PDF directly in new tab
       window.open(highlight.pdfUrl, '_blank');
     } else if (highlight.link) {
-      // If there's an external link, open it in new tab
       window.open(highlight.link, '_blank');
     } else {
       toast.error("Article non disponible");
     }
+  };
+
+  const handleOpenPdf = () => {
+    if (!highlight.pdfUrl) {
+      toast.error("Le PDF n'est pas disponible");
+      return;
+    }
+    window.open(highlight.pdfUrl, '_blank');
   };
 
   return (
@@ -134,6 +140,17 @@ export const ModalContent = ({
       
       {/* Bottom actions */}
       <div className="p-4 border-t bg-gray-50 flex justify-end gap-2">
+        {highlight.pdfUrl && (
+          <Button 
+            className="gap-2"
+            variant="outline"
+            onClick={handleOpenPdf}
+          >
+            <ExternalLink className="h-4 w-4" />
+            Ouvrir
+          </Button>
+        )}
+        
         {articleDetails && articleDetails.pdf_url && (
           <Button 
             className="gap-2"

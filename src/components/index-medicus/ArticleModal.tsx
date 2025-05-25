@@ -1,3 +1,4 @@
+
 import React from "react";
 import {
   Dialog,
@@ -13,10 +14,12 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { 
   Calendar, User, BookOpen, Building, 
-  FileText, Download, Quote, Eye 
+  FileText, Download, Quote, Eye, ExternalLink 
 } from "lucide-react";
 import { PdfActions } from "./article/actions/PdfActions";
 import { ShareAction } from "./article/actions/ShareAction";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface ArticleModalProps {
   article: Article;
@@ -30,6 +33,14 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
   onClose,
 }) => {
   const formattedDate = format(new Date(article.publicationDate), "PPP", { locale: fr });
+
+  const handleOpenPdf = () => {
+    if (!article.pdfUrl) {
+      toast.error("Le PDF n'est pas disponible");
+      return;
+    }
+    window.open(article.pdfUrl, '_blank');
+  };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -139,6 +150,17 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
             pdfUrl={article.pdfUrl}
             pdfFilename={article.pdf_filename}
           />
+          
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            onClick={handleOpenPdf}
+            disabled={!article.pdfUrl}
+          >
+            <ExternalLink className="h-4 w-4" />
+            Ouvrir
+          </Button>
           
           <PdfActions 
             article={article}

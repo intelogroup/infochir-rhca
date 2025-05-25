@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Share2, Download, ArrowUpRight } from "lucide-react";
+import { Share2, Download, ArrowUpRight, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { downloadPDF } from "@/lib/analytics/download";
 import { AtlasChapter } from "../types";
@@ -23,7 +23,6 @@ export const ModalActions = ({ chapter }: ModalActionsProps) => {
     const shareUrl = `${window.location.origin}/adc/chapters/${chapter.id}`;
     await navigator.clipboard.writeText(shareUrl);
     
-    // Track the share event
     try {
       await trackShare(chapter.id, DocumentType.ADC, 'clipboard');
     } catch (error) {
@@ -42,7 +41,6 @@ export const ModalActions = ({ chapter }: ModalActionsProps) => {
     try {
       setIsDownloading(true);
       
-      // Use our enhanced download function with tracking
       const fileName = `ADC-${chapter.title.slice(0, 30)}.pdf`;
       
       const success = await downloadPDF({
@@ -64,6 +62,14 @@ export const ModalActions = ({ chapter }: ModalActionsProps) => {
     }
   };
 
+  const handleOpenPdf = () => {
+    if (!chapter.pdfUrl) {
+      toast.error("Le PDF n'est pas disponible");
+      return;
+    }
+    window.open(chapter.pdfUrl, '_blank');
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -79,6 +85,16 @@ export const ModalActions = ({ chapter }: ModalActionsProps) => {
       >
         <Share2 className="w-3 h-3" />
         Partager
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        className="h-8 text-xs gap-1.5 hover:bg-gray-100/80 transition-colors"
+        onClick={handleOpenPdf}
+        disabled={!chapter.pdfUrl}
+      >
+        <ExternalLink className="w-3 h-3" />
+        Ouvrir
       </Button>
       <Button
         variant="outline"
