@@ -35,9 +35,10 @@ export const submissionFormSchema = z.object({
       },
       "Le résumé ne doit pas dépasser 3000 mots"
     ),
-  ethicsApproval: z.boolean(),
-  noConflict: z.boolean(),
-  originalWork: z.boolean(),
+  notes: z.string().optional(),
+  ethicsApproval: z.boolean().optional(),
+  noConflict: z.boolean().optional(),
+  originalWork: z.boolean().optional(),
 });
 
 export type SubmissionFormValues = z.infer<typeof submissionFormSchema>;

@@ -25,6 +25,7 @@ export const useSubmissionForm = (articleFiles: string[]) => {
         address: "",
       },
       abstract: "",
+      notes: "",
       ethicsApproval: false,
       noConflict: false,
       originalWork: false,
@@ -45,7 +46,7 @@ export const useSubmissionForm = (articleFiles: string[]) => {
     return () => subscription.unsubscribe();
   }, [form]);
 
-  // Effect to validate files and declarations
+  // Effect to validate files and clear previous validation errors
   useEffect(() => {
     const newErrors = {...formErrors};
     
@@ -56,12 +57,8 @@ export const useSubmissionForm = (articleFiles: string[]) => {
       delete newErrors.articleFiles;
     }
 
-    // Validate declarations
-    if (!formValues.ethicsApproval || !formValues.noConflict || !formValues.originalWork) {
-      newErrors.declarations = "Toutes les déclarations doivent être acceptées";
-    } else {
-      delete newErrors.declarations;
-    }
+    // Remove declarations validation since it's now optional
+    delete newErrors.declarations;
 
     // Validate publication type
     if (!formValues.publicationType) {

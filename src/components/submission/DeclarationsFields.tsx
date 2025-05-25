@@ -2,7 +2,7 @@
 import { FormControl, FormField, FormItem, FormLabel, FormDescription } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { motion } from "framer-motion";
-import { ShieldCheck, UserCheck, FileCheck } from "lucide-react";
+import { ShieldCheck, UserCheck, FileCheck, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface DeclarationsFieldsProps {
@@ -21,13 +21,17 @@ export const DeclarationsFields = ({ form, hasSubmissionAttempt = false, hasErro
     >
       <h3 className="text-lg font-semibold flex items-center gap-2">
         <ShieldCheck className="h-5 w-5" />
-        Déclarations *
+        Déclarations (optionnel)
       </h3>
       
-      <div className={cn(
-        "space-y-4 p-4 rounded-lg border",
-        hasSubmissionAttempt && hasError && "border-destructive bg-destructive/5"
-      )}>
+      <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+        <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+        <p className="text-sm text-blue-800">
+          Toute déclaration non cochée sera interprétée comme "non". Ces déclarations sont facultatives mais recommandées pour maintenir les standards éthiques et scientifiques.
+        </p>
+      </div>
+      
+      <div className="space-y-4">
         <FormField
           control={form.control}
           name="ethicsApproval"
@@ -36,7 +40,7 @@ export const DeclarationsFields = ({ form, hasSubmissionAttempt = false, hasErro
               <FormControl>
                 <Checkbox
                   id="ethicsApproval"
-                  checked={field.value}
+                  checked={field.value || false}
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
@@ -60,7 +64,7 @@ export const DeclarationsFields = ({ form, hasSubmissionAttempt = false, hasErro
               <FormControl>
                 <Checkbox
                   id="noConflict"
-                  checked={field.value}
+                  checked={field.value || false}
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
@@ -85,7 +89,7 @@ export const DeclarationsFields = ({ form, hasSubmissionAttempt = false, hasErro
               <FormControl>
                 <Checkbox
                   id="originalWork"
-                  checked={field.value}
+                  checked={field.value || false}
                   onCheckedChange={field.onChange}
                 />
               </FormControl>

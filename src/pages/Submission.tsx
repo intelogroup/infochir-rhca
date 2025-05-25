@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { Form } from "@/components/ui/form";
@@ -19,6 +18,7 @@ import { DeclarationsFields } from "@/components/submission/DeclarationsFields";
 import { FileUploadsSection } from "@/components/submission/FileUploadsSection";
 import { SubmissionFormActions } from "@/components/submission/SubmissionFormActions";
 import { ErrorSummarySection } from "@/components/submission/ErrorSummarySection";
+import { NotesField } from "@/components/submission/NotesField";
 
 const Submission = () => {
   const [articleFiles, setArticleFiles] = useState<string[]>([]);
@@ -134,14 +134,13 @@ const Submission = () => {
                     hasSubmissionAttempt={hasSubmissionAttempt}
                   />
 
+                  <NotesField form={form} />
+
                   <DeclarationsFields 
                     form={form} 
                     hasSubmissionAttempt={hasSubmissionAttempt}
-                    hasError={!!formErrors.declarations}
+                    hasError={false}
                   />
-                  {formErrors.declarations && (
-                    <p className="text-sm text-destructive">{formErrors.declarations}</p>
-                  )}
                 </motion.div>
 
                 <SubmissionFormActions 
