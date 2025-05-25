@@ -176,21 +176,26 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error(`Database error: ${searchError.message}`);
     }
 
-    let notificationResult = { sent: false };
+    let adminNotificationResult = { sent: false };
+    let userConfirmationResult = { sent: false };
 
     // If email already exists, return success but indicate it's a duplicate
     if (existingData) {
       console.log("Existing subscription found for email:", email);
       
-      // Still send a notification for the duplicate subscription attempt
-      notificationResult = await sendNotification(name, email, phone, true);
+      // Send notifications for the duplicate subscription attempt
+      adminNotificationResult = await sendAdminNotification(name, email, phone, true);
+      userConfirmationResult = await sendUserConfirmation(name, email, true);
       
       return new Response(
         JSON.stringify({ 
           success: true, 
           message: "Already subscribed", 
           existingSubscription: true,
-          notification: notificationResult
+          notification: {
+            admin: adminNotificationResult,
+            user: userConfirmationResult
+          }
         }),
         { 
           status: 200,
@@ -223,15 +228,19 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Subscription successful:", insertData);
     
-    // Send notification email
-    notificationResult = await sendNotification(name, email, phone, false);
+    // Send both admin notification and user confirmation emails
+    adminNotificationResult = await sendAdminNotification(name, email, phone, false);
+    userConfirmationResult = await sendUserConfirmation(name, email, false);
     
     // Return success response
     return new Response(
       JSON.stringify({ 
         success: true, 
         message: "Successfully subscribed to newsletter",
-        notification: notificationResult
+        notification: {
+          admin: adminNotificationResult,
+          user: userConfirmationResult
+        }
       }),
       { 
         status: 200,
@@ -281,7 +290,7 @@ function isDebugMode() {
 /**
  * Send notification email to admin about a new subscription
  */
-async function sendNotification(
+async function sendAdminNotification(
   name: string, 
   email: string, 
   phone?: string, 
@@ -335,17 +344,151 @@ async function sendNotification(
     );
     
     if (emailResult.success) {
-      console.log("Newsletter notification email sent successfully");
+      console.log("Admin newsletter notification email sent successfully");
       return { sent: true };
     } else {
-      console.error("Failed to send newsletter notification email:", emailResult.error);
+      console.error("Failed to send admin newsletter notification email:", emailResult.error);
       return { 
         sent: false, 
         message: emailResult.error instanceof Error ? emailResult.error.message : String(emailResult.error)
       };
     }
   } catch (error) {
-    console.error("Error sending newsletter notification:", error);
+    console.error("Error sending admin newsletter notification:", error);
+    return { 
+      sent: false, 
+      message: error instanceof Error ? error.message : String(error)
+    };
+  }
+}
+
+/**
+ * Send welcome confirmation email to the user
+ */
+async function sendUserConfirmation(
+  name: string, 
+  email: string, 
+  isDuplicate: boolean = false
+): Promise<{sent: boolean; message?: string}> {
+  try {
+    console.log(`Sending user confirmation email to ${email}`);
+    
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>${isDuplicate ? 'Déjà abonné' : 'Bienvenue dans notre newsletter'}</title>
+          <style>
+              body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 650px; margin: 0 auto; padding: 20px; background-color: #f8f9fa; }
+              .email-container { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+              .header { background: linear-gradient(135deg, #1E40AF, #41b06e); color: white; padding: 40px 30px; text-align: center; }
+              .content { padding: 40px 30px; }
+              .success-icon { font-size: 64px; margin-bottom: 20px; }
+              .info-box { background: linear-gradient(135deg, #e8f4f8, #f0f8ff); padding: 25px; margin: 25px 0; border-radius: 10px; border-left: 5px solid #41b06e; }
+              .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; color: #666; font-size: 14px; }
+              .team-message { background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-radius: 10px; padding: 25px; margin: 25px 0; text-align: center; border: 2px solid #41b06e; }
+          </style>
+      </head>
+      <body>
+          <div class="email-container">
+              <div class="header">
+                  <div class="success-icon">${isDuplicate ? '📧' : '🎉'}</div>
+                  <h1 style="margin: 0; font-size: 28px;">${isDuplicate ? 'Déjà Abonné !' : 'Bienvenue dans la Newsletter Info-Chir !'}</h1>
+                  <p style="margin: 15px 0 0 0; opacity: 0.95; font-size: 16px;">${isDuplicate ? 'Vous êtes déjà membre de notre communauté' : 'Merci de rejoindre notre communauté médicale'}</p>
+              </div>
+              
+              <div class="content">
+                  <div class="team-message">
+                      <h2 style="color: #1E40AF; margin-top: 0;">🌟 L'équipe Info-Chir vous remercie !</h2>
+                      <p style="font-size: 16px; margin: 15px 0;">${isDuplicate ? 
+                        'Nous avons bien reçu votre demande d\'abonnement, mais vous êtes déjà inscrit à notre newsletter !' : 
+                        'Nous sommes ravis de vous compter parmi nos abonnés. Vous recevrez désormais nos dernières actualités et avancées en chirurgie.'
+                      }</p>
+                  </div>
+                  
+                  <p style="font-size: 16px;">Bonjour <strong>${name}</strong>,</p>
+                  
+                  <p>${isDuplicate ? 
+                    'Bonne nouvelle : vous êtes déjà abonné(e) à notre newsletter Info-Chir ! Pas besoin de vous réinscrire.' :
+                    'Votre abonnement à la newsletter Info-Chir a été confirmé avec succès.'
+                  }</p>
+                  
+                  <div class="info-box">
+                      <h3 style="margin-top: 0; color: #1E40AF;">📬 Ce que vous recevrez</h3>
+                      <ul style="margin: 15px 0; padding-left: 20px;">
+                          <li>Les dernières actualités en chirurgie</li>
+                          <li>Les nouveaux articles et publications</li>
+                          <li>Les événements et formations à venir</li>
+                          <li>Les innovations et avancées technologiques</li>
+                      </ul>
+                  </div>
+                  
+                  <p style="margin-top: 30px;">Nous nous engageons à respecter votre vie privée et à ne jamais partager vos informations avec des tiers.</p>
+                  
+                  <p style="margin-top: 25px;">
+                      Cordialement,<br>
+                      <strong>L'équipe Info-Chir</strong><br>
+                      <span style="color: #666; font-style: italic;">Votre source d'excellence chirurgicale</span>
+                  </p>
+              </div>
+              
+              <div class="footer">
+                  <p><strong>Info-Chir</strong> - Plateforme de Publication Scientifique</p>
+                  <p>Si vous souhaitez vous désabonner, répondez simplement à cet email.</p>
+              </div>
+          </div>
+      </body>
+      </html>
+    `;
+    
+    const text = `
+${isDuplicate ? 'DÉJÀ ABONNÉ !' : 'BIENVENUE DANS LA NEWSLETTER INFO-CHIR !'}
+
+Bonjour ${name},
+
+${isDuplicate ? 
+  'Nous avons bien reçu votre demande d\'abonnement, mais vous êtes déjà inscrit à notre newsletter Info-Chir ! Pas besoin de vous réinscrire.' :
+  'Votre abonnement à la newsletter Info-Chir a été confirmé avec succès.'
+}
+
+📬 CE QUE VOUS RECEVREZ :
+• Les dernières actualités en chirurgie
+• Les nouveaux articles et publications
+• Les événements et formations à venir
+• Les innovations et avancées technologiques
+
+Nous nous engageons à respecter votre vie privée et à ne jamais partager vos informations avec des tiers.
+
+Cordialement,
+L'équipe Info-Chir
+"Votre source d'excellence chirurgicale"
+
+─────────────────────────────────────
+Info-Chir - Plateforme de Publication Scientifique
+Si vous souhaitez vous désabonner, répondez simplement à cet email.
+    `.trim();
+    
+    const emailResult = await sendEmail(
+      email,
+      `${isDuplicate ? 'Info-Chir : Déjà abonné à notre newsletter' : 'Bienvenue dans la newsletter Info-Chir !'}`,
+      html,
+      text
+    );
+    
+    if (emailResult.success) {
+      console.log("User confirmation email sent successfully");
+      return { sent: true };
+    } else {
+      console.error("Failed to send user confirmation email:", emailResult.error);
+      return { 
+        sent: false, 
+        message: emailResult.error instanceof Error ? emailResult.error.message : String(emailResult.error)
+      };
+    }
+  } catch (error) {
+    console.error("Error sending user confirmation email:", error);
     return { 
       sent: false, 
       message: error instanceof Error ? error.message : String(error)

@@ -47,7 +47,78 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Prepare email content
+    // Send both admin notification and user acknowledgment emails
+    const adminNotificationResult = await sendAdminNotification(data);
+    const userAcknowledgmentResult = await sendUserAcknowledgment(data);
+    
+    // Determine response based on email results
+    const overallSuccess = adminNotificationResult.success || userAcknowledgmentResult.success;
+    
+    if (overallSuccess) {
+      console.log("[send-contact-email] Contact form processed successfully");
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          message: "Contact message sent successfully",
+          notification: {
+            admin: adminNotificationResult,
+            user: userAcknowledgmentResult
+          }
+        }),
+        { 
+          status: 200,
+          headers: { 
+            "Content-Type": "application/json",
+            ...corsHeaders
+          }
+        }
+      );
+    } else {
+      console.error("[send-contact-email] Both email notifications failed");
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          message: "Failed to send notifications",
+          notification: {
+            admin: adminNotificationResult,
+            user: userAcknowledgmentResult
+          }
+        }),
+        { 
+          status: 500,
+          headers: { 
+            "Content-Type": "application/json",
+            ...corsHeaders
+          }
+        }
+      );
+    }
+  } catch (error) {
+    console.error("[send-contact-email] Unhandled error:", error);
+    return new Response(
+      JSON.stringify({ 
+        success: false, 
+        error: error instanceof Error ? error.message : "Unknown error occurred",
+        notification: { admin: { sent: false }, user: { sent: false } }
+      }),
+      { 
+        status: 500,
+        headers: { 
+          "Content-Type": "application/json",
+          ...corsHeaders
+        }
+      }
+    );
+  }
+};
+
+/**
+ * Send notification email to admin about the contact form submission
+ */
+async function sendAdminNotification(data: ContactRequest): Promise<{success: boolean; sent: boolean; message?: string}> {
+  try {
+    console.log("[send-contact-email] Sending admin notification");
+    
     const contactTime = new Date().toLocaleString('fr-FR', {
       dateStyle: 'full',
       timeStyle: 'medium'
@@ -88,7 +159,6 @@ const handler = async (req: Request): Promise<Response> => {
       Ceci est une notification automatique de votre site InfoChir.
     `;
     
-    // Send email notification
     const emailResult = await sendEmail(
       NOTIFICATION_EMAIL,
       `Contact InfoChir de: ${data.name}`,
@@ -98,58 +168,178 @@ const handler = async (req: Request): Promise<Response> => {
     );
     
     if (emailResult.success) {
-      console.log("[send-contact-email] Contact notification email sent successfully");
-      return new Response(
-        JSON.stringify({ 
-          success: true, 
-          message: "Contact message sent successfully",
-          notification: { sent: true } 
-        }),
-        { 
-          status: 200,
-          headers: { 
-            "Content-Type": "application/json",
-            ...corsHeaders
-          }
-        }
-      );
+      console.log("[send-contact-email] Admin notification email sent successfully");
+      return { success: true, sent: true };
     } else {
-      console.error("[send-contact-email] Failed to send contact notification email:", emailResult.error);
-      return new Response(
-        JSON.stringify({ 
-          success: true, // Still mark as success since the form data was saved
-          message: "Contact message received but notification failed to send",
-          notification: { 
-            sent: false, 
-            message: emailResult.error instanceof Error ? emailResult.error.message : String(emailResult.error)
-          } 
-        }),
-        { 
-          status: 200,
-          headers: { 
-            "Content-Type": "application/json",
-            ...corsHeaders
-          }
-        }
-      );
+      console.error("[send-contact-email] Failed to send admin notification email:", emailResult.error);
+      return { 
+        success: false, 
+        sent: false, 
+        message: emailResult.error instanceof Error ? emailResult.error.message : String(emailResult.error)
+      };
     }
   } catch (error) {
-    console.error("[send-contact-email] Unhandled error:", error);
-    return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: error instanceof Error ? error.message : "Unknown error occurred",
-        notification: { sent: false }
-      }),
-      { 
-        status: 500,
-        headers: { 
-          "Content-Type": "application/json",
-          ...corsHeaders
-        }
-      }
-    );
+    console.error("[send-contact-email] Error sending admin notification:", error);
+    return { 
+      success: false, 
+      sent: false, 
+      message: error instanceof Error ? error.message : String(error)
+    };
   }
-};
+}
+
+/**
+ * Send acknowledgment email to the user who submitted the contact form
+ */
+async function sendUserAcknowledgment(data: ContactRequest): Promise<{success: boolean; sent: boolean; message?: string}> {
+  try {
+    console.log("[send-contact-email] Sending user acknowledgment email");
+    
+    const contactTime = new Date().toLocaleString('fr-FR', {
+      dateStyle: 'full',
+      timeStyle: 'medium'
+    });
+    
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Message reçu - Info-Chir</title>
+          <style>
+              body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 650px; margin: 0 auto; padding: 20px; background-color: #f8f9fa; }
+              .email-container { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+              .header { background: linear-gradient(135deg, #1E40AF, #41b06e); color: white; padding: 40px 30px; text-align: center; }
+              .content { padding: 40px 30px; }
+              .success-icon { font-size: 64px; margin-bottom: 20px; }
+              .info-box { background: linear-gradient(135deg, #e8f4f8, #f0f8ff); padding: 25px; margin: 25px 0; border-radius: 10px; border-left: 5px solid #41b06e; }
+              .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; color: #666; font-size: 14px; }
+              .team-message { background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-radius: 10px; padding: 25px; margin: 25px 0; text-align: center; border: 2px solid #41b06e; }
+              .contact-info { background: #f8f9ff; border-radius: 8px; padding: 20px; margin: 20px 0; }
+          </style>
+      </head>
+      <body>
+          <div class="email-container">
+              <div class="header">
+                  <div class="success-icon">✉️</div>
+                  <h1 style="margin: 0; font-size: 28px;">Message Reçu !</h1>
+                  <p style="margin: 15px 0 0 0; opacity: 0.95; font-size: 16px;">Merci de nous avoir contactés</p>
+              </div>
+              
+              <div class="content">
+                  <div class="team-message">
+                      <h2 style="color: #1E40AF; margin-top: 0;">🌟 L'équipe Info-Chir vous remercie !</h2>
+                      <p style="font-size: 16px; margin: 15px 0;">Nous avons bien reçu votre message et nous vous en remercions. Notre équipe prendra le temps nécessaire pour vous fournir une réponse complète et utile.</p>
+                      <p style="font-size: 16px; margin: 15px 0; font-weight: 500; color: #1E40AF;">Nous vous répondrons dans les plus brefs délais.</p>
+                  </div>
+                  
+                  <p style="font-size: 16px;">Bonjour <strong>${data.name}</strong>,</p>
+                  
+                  <p>Nous avons bien reçu votre message envoyé le ${contactTime}.</p>
+                  
+                  <div class="info-box">
+                      <h3 style="margin-top: 0; color: #1E40AF;">📋 Récapitulatif de votre message</h3>
+                      <p><strong>Nom :</strong> ${data.name}</p>
+                      <p><strong>Email :</strong> ${data.email}</p>
+                      ${data.phone ? `<p><strong>Téléphone :</strong> ${data.phone}</p>` : ''}
+                      <p><strong>Message :</strong></p>
+                      <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 10px;">
+                          <p style="margin: 0; white-space: pre-line; font-style: italic;">${data.message}</p>
+                      </div>
+                  </div>
+                  
+                  <div class="contact-info">
+                      <h3 style="margin-top: 0; color: #1E40AF;">📞 Prochaines étapes</h3>
+                      <p>Notre équipe examine votre message et vous contactera directement par email pour vous apporter une réponse personnalisée. En général, nous répondons dans un délai de 24 à 48 heures.</p>
+                      <p>Si votre demande est urgente, n'hésitez pas à nous le préciser en répondant à cet email.</p>
+                  </div>
+                  
+                  <p style="margin-top: 30px;">Nous vous remercions pour votre intérêt envers Info-Chir et restons à votre disposition.</p>
+                  
+                  <p style="margin-top: 25px;">
+                      Cordialement,<br>
+                      <strong>L'équipe Info-Chir</strong><br>
+                      <span style="color: #666; font-style: italic;">Votre partenaire dans l'excellence chirurgicale</span>
+                  </p>
+              </div>
+              
+              <div class="footer">
+                  <p><strong>Info-Chir</strong> - Plateforme de Publication Scientifique</p>
+                  <p>Cet email de confirmation a été envoyé automatiquement. Pour toute question, répondez directement à cet email.</p>
+              </div>
+          </div>
+      </body>
+      </html>
+    `;
+    
+    const text = `
+✉️ MESSAGE REÇU !
+
+🌟 L'ÉQUIPE INFO-CHIR VOUS REMERCIE !
+═══════════════════════════════════════
+
+Bonjour ${data.name},
+
+Nous avons bien reçu votre message et nous vous en remercions. Notre équipe prendra le temps nécessaire pour vous fournir une réponse complète et utile.
+
+🗓️ NOUS VOUS RÉPONDRONS DANS LES PLUS BREFS DÉLAIS.
+
+📋 RÉCAPITULATIF DE VOTRE MESSAGE
+═══════════════════════════════════════
+Message reçu le : ${contactTime}
+
+• Nom : ${data.name}
+• Email : ${data.email}
+${data.phone ? `• Téléphone : ${data.phone}` : ''}
+
+Message :
+${data.message}
+
+📞 PROCHAINES ÉTAPES
+═══════════════════════════════════════
+Notre équipe examine votre message et vous contactera directement par email pour vous apporter une réponse personnalisée. En général, nous répondons dans un délai de 24 à 48 heures.
+
+Si votre demande est urgente, n'hésitez pas à nous le préciser en répondant à cet email.
+
+Nous vous remercions pour votre intérêt envers Info-Chir et restons à votre disposition.
+
+Cordialement,
+L'équipe Info-Chir
+"Votre partenaire dans l'excellence chirurgicale"
+
+───────────────────────────────────────
+Info-Chir - Plateforme de Publication Scientifique
+Cet email de confirmation a été envoyé automatiquement.
+Pour toute question, répondez directement à cet email.
+    `.trim();
+    
+    const emailResult = await sendEmail(
+      data.email,
+      "Info-Chir : Votre message a été reçu",
+      html,
+      text
+    );
+    
+    if (emailResult.success) {
+      console.log("[send-contact-email] User acknowledgment email sent successfully");
+      return { success: true, sent: true };
+    } else {
+      console.error("[send-contact-email] Failed to send user acknowledgment email:", emailResult.error);
+      return { 
+        success: false, 
+        sent: false, 
+        message: emailResult.error instanceof Error ? emailResult.error.message : String(emailResult.error)
+      };
+    }
+  } catch (error) {
+    console.error("[send-contact-email] Error sending user acknowledgment email:", error);
+    return { 
+      success: false, 
+      sent: false, 
+      message: error instanceof Error ? error.message : String(error)
+    };
+  }
+}
 
 serve(handler);
