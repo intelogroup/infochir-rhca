@@ -1,32 +1,9 @@
 
 # Redirects for Netlify
 
-# Serve all routes from index.html for SPA routing
-/*    /index.html   200
-
 # HTTP to HTTPS redirect
 http://info-chir.org/*    https://info-chir.org/:splat    301!
 http://www.info-chir.org/*    https://info-chir.org/:splat    301!
 
-# Cache static assets
-/assets/*    200!    max-age=31536000
-/lovable-uploads/*    200!    max-age=31536000
-/*.js    200!    max-age=31536000
-/*.css    200!    max-age=31536000
-/*.png    200!    max-age=31536000
-/*.jpg    200!    max-age=31536000
-/*.svg    200!    max-age=31536000
-/*.webp    200!    max-age=31536000
-/*.woff2    200!    max-age=31536000
-
-# Cache service worker
-/sw.js    200!    max-age=0
-
-# Add security headers
-/*    200
-  X-Frame-Options: SAMEORIGIN
-  X-XSS-Protection: 1; mode=block
-  X-Content-Type-Options: nosniff
-  Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: camera=(), microphone=(), geolocation=()
-  Content-Security-Policy: default-src 'self'; connect-src 'self' wss://*.lovable.ai https://*.lovable.ai https://*.supabase.co https://*.stripe.com https://*.netlify.app vitals.vercel-insights.com https://ingesteer.services-prod.nsvcs.net wss://*.supabase.co; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.stripe.com https://m.stripe.network https://cdn.gpteng.co https://vitals.vercel-insights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; frame-src 'self' https://*.stripe.com https://*.supabase.co; media-src 'self' data:; object-src 'none'; worker-src 'self' blob:; manifest-src 'self';
+# Serve all routes from index.html for SPA routing
+/*    /index.html   200
