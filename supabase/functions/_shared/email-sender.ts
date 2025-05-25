@@ -1,4 +1,3 @@
-
 /**
  * Email sending functionality using Resend API
  */
@@ -17,9 +16,9 @@ let apiKeyValidationCache = {
 };
 const CACHE_TTL = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
 
-// Default sender configuration to use Resend's onboarding domain
-const DEFAULT_SENDER = "InfoChir <onboarding@resend.dev>";
-const DEFAULT_BACKUP_SENDER = "InfoChir Backup <onboarding@resend.dev>";
+// Updated sender configuration to use verified domain
+const DEFAULT_SENDER = "InfoChir <noreply@info-chir.org>";
+const DEFAULT_BACKUP_SENDER = "InfoChir Backup <noreply@info-chir.org>";
 
 // Lazy initialization of Resend client to avoid unnecessary instantiation
 const getResendClient = () => {
