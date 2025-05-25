@@ -13,21 +13,11 @@ export const CarouselItemContent = ({ item, index, onSelect }: CarouselItemConte
   return (
     <motion.div 
       className="h-full" 
-      onClick={() => onSelect(item, index)}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onSelect(item, index);
-        }
-      }}
-      aria-label={`View details of ${item.title}`}
     >
-      <CarouselCard highlight={item} index={index} />
+      <CarouselCard highlight={item} index={index} onSelect={onSelect} />
     </motion.div>
   );
 };

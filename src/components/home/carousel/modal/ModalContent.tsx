@@ -23,9 +23,7 @@ export const ModalContent = ({
   renderContent 
 }: ModalContentProps) => {
   const handleViewArticle = () => {
-    if (highlight.pdfUrl) {
-      window.open(highlight.pdfUrl, '_blank');
-    } else if (highlight.link) {
+    if (highlight.link) {
       window.open(highlight.link, '_blank');
     } else {
       toast.error("Article non disponible");
@@ -157,19 +155,21 @@ export const ModalContent = ({
             variant="outline"
             onClick={() => window.open(articleDetails.pdf_url, '_blank')}
           >
-            <Download className="h-4 w-4" />
-            Télécharger
+            <ExternalLink className="h-4 w-4" />
+            Ouvrir PDF
           </Button>
         )}
         
-        <Button
-          className="gap-2"
-          onClick={handleViewArticle}
-          aria-label={`View full article: ${highlight.title}`}
-        >
-          {highlight.pdfUrl ? <FileText className="h-4 w-4" /> : <ExternalLink className="h-4 w-4" />}
-          Consulter l'article
-        </Button>
+        {highlight.link && (
+          <Button
+            className="gap-2"
+            onClick={handleViewArticle}
+            aria-label={`View full article: ${highlight.title}`}
+          >
+            <ExternalLink className="h-4 w-4" />
+            Consulter l'article
+          </Button>
+        )}
       </div>
     </div>
   );

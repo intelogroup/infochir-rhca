@@ -1,6 +1,5 @@
 
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { CarouselItem } from "./types";
 import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
@@ -12,9 +11,10 @@ const logger = createLogger('CarouselCard');
 interface CarouselCardProps {
   highlight: CarouselItem;
   index: number;
+  onSelect?: (item: CarouselItem, index: number) => void;
 }
 
-export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
+export const CarouselCard = ({ highlight, index, onSelect }: CarouselCardProps) => {
   const [imageError, setImageError] = useState(false);
   
   const getCategoryColor = (category?: string) => {
@@ -34,6 +34,14 @@ export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
   const handleImageError = () => {
     logger.error(`Image failed to load for highlight: ${highlight.title}, URL: ${highlight.image}`);
     setImageError(true);
+  };
+
+  const handleReadMore = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onSelect) {
+      onSelect(highlight, index);
+    }
   };
 
   return (
@@ -87,16 +95,15 @@ export const CarouselCard = ({ highlight, index }: CarouselCardProps) => {
             </p>
           )}
           
-          <Link 
-            to={highlight.link} 
+          <button 
+            onClick={handleReadMore}
             className="text-primary font-medium text-sm inline-flex items-center hover:underline"
-            onClick={(e) => e.stopPropagation()}
           >
             Lire la suite
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
-          </Link>
+          </button>
         </div>
       </div>
     </motion.div>
