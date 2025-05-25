@@ -46,7 +46,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
           </DialogHeader>
         </div>
 
-        <ScrollArea className="flex-1 px-6">
+        <ScrollArea className="flex-1 px-6 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
           <div className="py-6 space-y-6">
             <div className="flex flex-wrap gap-2">
               {article.tags && article.tags.map((tag) => (
