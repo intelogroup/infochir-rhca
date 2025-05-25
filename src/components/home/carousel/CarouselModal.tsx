@@ -1,3 +1,4 @@
+
 import { 
   Dialog, 
   DialogContent, 
@@ -59,6 +60,14 @@ export const CarouselModal = ({
     } else {
       toast.error("Article non disponible");
     }
+  };
+
+  const handleOpenPdf = () => {
+    if (!item.pdfUrl) {
+      toast.error("Le PDF n'est pas disponible");
+      return;
+    }
+    window.open(item.pdfUrl, '_blank');
   };
 
   return (
@@ -167,15 +176,28 @@ export const CarouselModal = ({
             )}
           </div>
           
-          {/* Link to article */}
-          <Button
-            className="flex items-center gap-2"
-            onClick={handleViewArticle}
-            aria-label={`View full article: ${item.title}`}
-          >
-            {item.pdfUrl ? <FileText className="h-4 w-4" /> : <ExternalLink className="h-4 w-4" />}
-            Consulter l'article
-          </Button>
+          {/* Action buttons */}
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={handleOpenPdf}
+              disabled={!item.pdfUrl}
+            >
+              <ExternalLink className="h-4 w-4" />
+              Ouvrir
+            </Button>
+            
+            <Button
+              className="flex items-center gap-2"
+              onClick={handleViewArticle}
+              aria-label={`View full article: ${item.title}`}
+            >
+              {item.pdfUrl ? <FileText className="h-4 w-4" /> : <ExternalLink className="h-4 w-4" />}
+              Consulter l'article
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
