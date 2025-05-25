@@ -23,9 +23,7 @@ export const FormErrors = ({ errors }: FormErrorsProps) => {
         <div className="flex items-center gap-2 text-destructive mb-2">
           <AlertCircle className="h-5 w-5" />
           <h3 className="font-semibold">
-            {errorCount === 1 
-              ? "Veuillez corriger l'erreur suivante:" 
-              : `Veuillez corriger les ${errorCount} erreurs suivantes:`}
+            Instructions de soumission
           </h3>
         </div>
         <ul className="list-disc list-inside text-sm text-destructive space-y-1.5">
