@@ -1,3 +1,4 @@
+
 import { Tag } from "lucide-react";
 import { motion } from "framer-motion";
 import type { Issue } from "../../types";
@@ -7,10 +8,24 @@ interface IssueModalArticlesProps {
 }
 
 export const IssueModalArticles = ({ issue }: IssueModalArticlesProps) => {
+  // Handle cases where articles might not be available
+  const articles = issue.articles || [];
+
+  if (articles.length === 0) {
+    return (
+      <div className="space-y-4">
+        <h3 className="text-[clamp(1.125rem,1.075rem+0.25vw,1.25rem)] font-semibold text-primary">Table des matières</h3>
+        <div className="p-4 rounded-lg bg-white shadow-sm">
+          <p className="text-gray-500 text-center">Aucun article disponible pour ce numéro.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       <h3 className="text-[clamp(1.125rem,1.075rem+0.25vw,1.25rem)] font-semibold text-primary">Table des matières</h3>
-      {issue.articles.map((article, index) => (
+      {articles.map((article, index) => (
         <motion.div
           key={article.id}
           initial={{ opacity: 0, y: 20 }}
@@ -22,12 +37,16 @@ export const IssueModalArticles = ({ issue }: IssueModalArticlesProps) => {
             {article.title}
           </h4>
           <div className="flex flex-wrap gap-4 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] text-gray-500">
-            <div className="flex items-center gap-2">
-              <span>Page {article.pageNumber}</span>
-            </div>
-            <div>
-              {article.authors.join(", ")}
-            </div>
+            {article.pageNumber && (
+              <div className="flex items-center gap-2">
+                <span>Page {article.pageNumber}</span>
+              </div>
+            )}
+            {article.authors && article.authors.length > 0 && (
+              <div>
+                {article.authors.join(", ")}
+              </div>
+            )}
           </div>
           {article.abstract && (
             <p className="mt-2 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] text-gray-600 leading-relaxed">

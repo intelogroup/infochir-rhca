@@ -31,16 +31,18 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
     }
   })();
 
-  // Extract tags from articles
+  // Extract tags from articles if available
   const getTags = (() => {
     try {
-      // Collect all tags from articles
+      // Collect all tags from articles if they exist
       const allTags: string[] = [];
-      issue.articles?.forEach(article => {
-        if (article.tags && Array.isArray(article.tags)) {
-          allTags.push(...article.tags);
-        }
-      });
+      if (issue.articles && Array.isArray(issue.articles)) {
+        issue.articles.forEach(article => {
+          if (article.tags && Array.isArray(article.tags)) {
+            allTags.push(...article.tags);
+          }
+        });
+      }
       // Return unique tags (up to 5)
       return [...new Set(allTags)].slice(0, 5);
     } catch (error) {
@@ -127,8 +129,8 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
         <span className="bg-secondary/10 px-2 py-0.5 rounded-full font-medium">
           {getTotalPages}
         </span>
-        <span>{issue.downloads || 0} téléchargements</span>
-        <span>{issue.shares || 0} partages</span>
+        <span>{(issue.downloads || issue.downloadCount) || 0} téléchargements</span>
+        <span>{(issue.shares || issue.shareCount) || 0} partages</span>
       </div>
     </div>
   );

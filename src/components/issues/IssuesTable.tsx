@@ -49,9 +49,9 @@ export const IssuesTable = ({ issues }: IssuesTableProps) => {
             <TableCell>{issue.volume}</TableCell>
             <TableCell>{issue.issue}</TableCell>
             <TableCell>{formatDate(issue.date)}</TableCell>
-            <TableCell>{issue.articles.length}</TableCell>
-            <TableCell>{issue.downloads || 0}</TableCell>
-            <TableCell>{issue.shares || 0}</TableCell>
+            <TableCell>{issue.articleCount || (issue.articles?.length) || 0}</TableCell>
+            <TableCell>{(issue.downloads || issue.downloadCount) || 0}</TableCell>
+            <TableCell>{(issue.shares || issue.shareCount) || 0}</TableCell>
           </TableRow>
         ))}
       </TableBody>

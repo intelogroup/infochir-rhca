@@ -111,8 +111,8 @@ export const UnifiedArticleList: React.FC<UnifiedArticleListProps> = ({
                 imageUrl: "", // Don't include cover images
                 views: 0,
                 citations: 0,
-                downloads: issue.downloads || 0,
-                shares: issue.shares || 0,
+                downloads: (issue.downloads || issue.downloadCount) || 0,
+                shares: (issue.shares || issue.shareCount) || 0,
               } as Article))}
               onTagClick={onTagClick}
               selectedTags={selectedTags}

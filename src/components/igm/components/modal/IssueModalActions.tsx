@@ -26,9 +26,12 @@ export const IssueModalActions = ({ issue }: IssueModalActionsProps) => {
     try {
       await navigator.clipboard.writeText(shareUrl);
       
+      // Get current shares count safely
+      const currentShares = issue.shares || issue.shareCount || 0;
+      
       const { error } = await supabase
         .from('articles')
-        .update({ shares: issue.shares + 1 })
+        .update({ shares: currentShares + 1 })
         .eq('id', issue.id);
 
       if (error) throw error;

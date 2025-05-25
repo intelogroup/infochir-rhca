@@ -1,3 +1,4 @@
+
 import { Calendar, BookOpen, Download, Share } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -16,15 +17,15 @@ export const IssueModalMetadata = ({ issue }: IssueModalMetadataProps) => {
       </div>
       <div className="flex items-center gap-2 bg-secondary/5 px-3 py-1 rounded-full">
         <BookOpen className="h-4 w-4" />
-        {issue.articleCount} articles
+        {issue.articleCount || (issue.articles?.length) || 0} articles
       </div>
       <div className="flex items-center gap-2">
         <Download className="h-4 w-4" />
-        {issue.downloads} téléchargements
+        {(issue.downloads || issue.downloadCount) || 0} téléchargements
       </div>
       <div className="flex items-center gap-2">
         <Share className="h-4 w-4" />
-        {issue.shares} partages
+        {(issue.shares || issue.shareCount) || 0} partages
       </div>
     </div>
   );
