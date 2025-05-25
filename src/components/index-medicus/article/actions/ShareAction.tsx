@@ -148,25 +148,25 @@ export const ShareAction: React.FC<ShareActionProps> = ({
           <span>Partager</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={copyToClipboard}>
+      <DropdownMenuContent align="end" className="w-56 bg-white border border-gray-200 shadow-lg z-50">
+        <DropdownMenuItem onClick={copyToClipboard} className="cursor-pointer hover:bg-gray-100 focus:bg-gray-100">
           <Copy className="h-4 w-4 mr-2" />
           Copier le lien
         </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => shareToSocial('facebook')}>
+        <DropdownMenuSeparator className="bg-gray-200" />
+        <DropdownMenuItem onClick={() => shareToSocial('facebook')} className="cursor-pointer hover:bg-gray-100 focus:bg-gray-100">
           <Facebook className="h-4 w-4 mr-2" />
           Facebook
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => shareToSocial('twitter')}>
+        <DropdownMenuItem onClick={() => shareToSocial('twitter')} className="cursor-pointer hover:bg-gray-100 focus:bg-gray-100">
           <Twitter className="h-4 w-4 mr-2" />
           Twitter
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => shareToSocial('linkedin')}>
+        <DropdownMenuItem onClick={() => shareToSocial('linkedin')} className="cursor-pointer hover:bg-gray-100 focus:bg-gray-100">
           <Linkedin className="h-4 w-4 mr-2" />
           LinkedIn
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => shareToSocial('email')}>
+        <DropdownMenuItem onClick={() => shareToSocial('email')} className="cursor-pointer hover:bg-gray-100 focus:bg-gray-100">
           <Mail className="h-4 w-4 mr-2" />
           Email
         </DropdownMenuItem>
