@@ -8,6 +8,8 @@ export interface CarouselItem {
   category?: string;
   author?: string;
   link: string;
+  pdfUrl?: string;
+  abstract?: string;
 }
 
 export type Highlight = CarouselItem;

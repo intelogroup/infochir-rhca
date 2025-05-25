@@ -1,10 +1,11 @@
 
-import { X, Calendar, Users, Download, ArrowRight } from "lucide-react";
+import { X, Calendar, Users, Download, ArrowRight, FileText, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { CardHeader } from "../content/CardHeader";
 import { CarouselItem } from "../types";
+import { toast } from "sonner";
 
 interface ModalContentProps {
   highlight: CarouselItem;
@@ -21,6 +22,18 @@ export const ModalContent = ({
   onClose,
   renderContent 
 }: ModalContentProps) => {
+  const handleViewArticle = () => {
+    if (highlight.pdfUrl) {
+      // Open PDF directly in new tab
+      window.open(highlight.pdfUrl, '_blank');
+    } else if (highlight.link) {
+      // If there's an external link, open it in new tab
+      window.open(highlight.link, '_blank');
+    } else {
+      toast.error("Article non disponible");
+    }
+  };
+
   return (
     <div className="relative">
       <Button
@@ -46,9 +59,22 @@ export const ModalContent = ({
               {highlight.title}
             </h2>
             
-            <p className="text-gray-600 whitespace-pre-line break-words">
-              {highlight.description}
-            </p>
+            {/* Article abstract */}
+            {highlight.abstract && (
+              <div className="prose prose-sm max-w-none mb-4">
+                <h4 className="font-semibold mb-2 text-gray-800">Résumé</h4>
+                <p className="text-gray-600 whitespace-pre-line leading-relaxed">
+                  {highlight.abstract}
+                </p>
+              </div>
+            )}
+            
+            {/* Fallback to description if no abstract */}
+            {!highlight.abstract && highlight.description && (
+              <p className="text-gray-600 whitespace-pre-line break-words">
+                {highlight.description}
+              </p>
+            )}
           </div>
 
           <div className="flex items-center justify-between text-sm text-gray-500 border-y border-gray-100 py-4">
@@ -106,31 +132,28 @@ export const ModalContent = ({
         </div>
       </ScrollArea>
       
-      {articleDetails && articleDetails.pdf_url && (
-        <div className="p-4 border-t bg-gray-50 flex justify-end">
+      {/* Bottom actions */}
+      <div className="p-4 border-t bg-gray-50 flex justify-end gap-2">
+        {articleDetails && articleDetails.pdf_url && (
           <Button 
             className="gap-2"
-            variant="default"
+            variant="outline"
             onClick={() => window.open(articleDetails.pdf_url, '_blank')}
           >
             <Download className="h-4 w-4" />
             Télécharger
           </Button>
-        </div>
-      )}
-      
-      {highlight.link && (
-        <div className="p-4 border-t bg-gray-50 flex justify-end">
-          <Button 
-            className="gap-2"
-            variant="default"
-            onClick={() => window.open(highlight.link, '_blank')}
-          >
-            Voir plus
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        </div>
-      )}
+        )}
+        
+        <Button
+          className="gap-2"
+          onClick={handleViewArticle}
+          aria-label={`View full article: ${highlight.title}`}
+        >
+          {highlight.pdfUrl ? <FileText className="h-4 w-4" /> : <ExternalLink className="h-4 w-4" />}
+          Consulter l'article
+        </Button>
+      </div>
     </div>
   );
 };

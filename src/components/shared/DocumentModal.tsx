@@ -1,7 +1,8 @@
+
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { Download, Share2, Tag, Calendar, BookOpen, Share } from "lucide-react";
+import { Download, Share2, Tag, Calendar, BookOpen, Share, FileText, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { toast } from "sonner";
@@ -49,6 +50,15 @@ export const DocumentModal = <T extends DocumentMetadata>({
     }
     window.open(document.pdfUrl, '_blank');
     toast.success("Téléchargement du PDF en cours...");
+  };
+
+  const handleViewArticle = () => {
+    if (document.pdfUrl) {
+      // Open PDF directly in new tab
+      window.open(document.pdfUrl, '_blank');
+    } else {
+      toast.error("Article non disponible");
+    }
   };
 
   return (
@@ -117,13 +127,22 @@ export const DocumentModal = <T extends DocumentMetadata>({
                     Partager
                   </Button>
                   <Button
-                    variant="default"
+                    variant="outline"
                     size="sm"
                     className="gap-2 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)]"
                     onClick={handleDownload}
                   >
                     <Download className="h-4 w-4" />
                     Télécharger PDF
+                  </Button>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="gap-2 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)]"
+                    onClick={handleViewArticle}
+                  >
+                    <FileText className="h-4 w-4" />
+                    Consulter l'article
                   </Button>
                 </div>
               )}
