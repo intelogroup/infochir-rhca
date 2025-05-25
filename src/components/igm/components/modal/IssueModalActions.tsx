@@ -69,13 +69,13 @@ export const IssueModalActions = ({ issue }: IssueModalActionsProps) => {
         documentType: DocumentType.IGM
       });
       
-      if (!success) {
-        throw new Error('Download failed');
+      if (success) {
+        toast.success("Téléchargement du PDF en cours...", {
+          className: "bg-secondary text-white",
+        });
+      } else {
+        toast.error("Erreur lors du téléchargement");
       }
-      
-      toast.success("Téléchargement du PDF en cours...", {
-        className: "bg-secondary text-white",
-      });
     } catch (error) {
       logger.error('Error downloading:', error);
       toast.error("Erreur lors du téléchargement");

@@ -3,7 +3,8 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Share2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { downloadPDF } from "@/lib/analytics/download";
+import { DocumentType } from "@/lib/analytics/download/statistics/types";
 import type { RhcaVolume } from "../types";
 
 interface VolumeModalActionsProps {
@@ -30,8 +31,27 @@ export const VolumeModalActions: React.FC<VolumeModalActionsProps> = ({ volume }
       toast.error("Le PDF n'est pas disponible pour ce volume");
       return;
     }
-    window.open(volume.pdfUrl, '_blank');
-    toast.success("Téléchargement du PDF en cours...");
+
+    try {
+      const fileName = `RHCA_Volume_${volume.volume || volume.title.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+      
+      const success = await downloadPDF({
+        url: volume.pdfUrl,
+        fileName,
+        documentId: volume.id,
+        documentType: DocumentType.RHCA,
+        trackingEnabled: true
+      });
+      
+      if (success) {
+        toast.success("Téléchargement du PDF en cours...");
+      } else {
+        toast.error("Erreur lors du téléchargement");
+      }
+    } catch (error) {
+      console.error('Download error:', error);
+      toast.error("Erreur lors du téléchargement");
+    }
   };
 
   return (

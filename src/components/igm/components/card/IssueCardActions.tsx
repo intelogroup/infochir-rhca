@@ -44,8 +44,10 @@ export const IssueCardActions: React.FC<IssueCardActionsProps> = ({
         documentType: DocumentType.IGM
       });
       
-      if (!success) {
-        logger.error(new Error('Download failed'));
+      if (success) {
+        toast.success("Téléchargement du PDF en cours...");
+      } else {
+        toast.error("Erreur lors du téléchargement");
       }
     } catch (error) {
       logger.error(error);

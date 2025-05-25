@@ -40,30 +40,20 @@ export const CardActions: React.FC<CardActionsProps> = ({ article, pdfUrl }) => 
         trackingEnabled: true
       });
       
-      if (!success) {
-        // Fallback: direct download
-        console.log('Standard download failed, trying direct download...');
-        const link = document.createElement('a');
-        link.href = pdfUrl;
-        link.download = fileName;
-        link.target = '_blank';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+      if (success) {
+        toast.success("Téléchargement du PDF en cours...");
         
-        toast.success("Téléchargement du PDF en cours...");
+        // Update download count in articles table
+        const { error } = await supabase
+          .from('articles')
+          .update({ downloads: (article.downloads || 0) + 1 })
+          .eq('id', article.id);
+        
+        if (error) {
+          console.error('Error updating download count:', error);
+        }
       } else {
-        toast.success("Téléchargement du PDF en cours...");
-      }
-      
-      // Update download count in articles table
-      const { error } = await supabase
-        .from('articles')
-        .update({ downloads: (article.downloads || 0) + 1 })
-        .eq('id', article.id);
-      
-      if (error) {
-        console.error('Error updating download count:', error);
+        toast.error("Une erreur est survenue lors du téléchargement");
       }
     } catch (error) {
       console.error('Download error:', error);
