@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
@@ -19,13 +20,15 @@ export const PdfActions: React.FC<PdfActionsProps> = ({ article, pdfUrl }) => {
   const handleDownload = async (e: React.MouseEvent) => {
     e.stopPropagation();
     
+    console.log('Download initiated for article:', article.id, 'URL:', pdfUrl);
+    
     if (!pdfUrl) {
       toast.error("Le PDF n'est pas disponible pour le moment");
       return;
     }
     
     try {
-      // Track download in database
+      // Track download in database first
       const { error } = await supabase
         .from('articles')
         .update({ downloads: (article.downloads || 0) + 1 })
@@ -35,23 +38,53 @@ export const PdfActions: React.FC<PdfActionsProps> = ({ article, pdfUrl }) => {
         console.error('Error updating download count:', error);
       }
       
-      // Use the standardized downloadPDF function with tracking
-      const fileName = `${article.source}-${article.title.slice(0, 30)}.pdf`;
+      // Generate a proper filename
+      const fileName = `${article.source}-${article.title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 30)}.pdf`;
       
+      console.log('Attempting download with filename:', fileName);
+      
+      // For Index Medicus articles, use INDEX document type
+      const documentType = article.source === 'INDEX' ? DocumentType.INDEX : 
+                          article.source === 'RHCA' ? DocumentType.RHCA : 
+                          article.source === 'IGM' ? DocumentType.IGM : 
+                          DocumentType.Article;
+      
+      // Use the standardized downloadPDF function with tracking
       const success = await downloadPDF({
         url: pdfUrl,
         fileName,
         documentId: article.id,
-        documentType: article.source === 'RHCA' ? DocumentType.RHCA : DocumentType.INDEX,
+        documentType,
         trackingEnabled: true
       });
       
       if (!success) {
-        throw new Error('Download failed');
+        // Fallback: direct download
+        console.log('Standard download failed, trying direct download...');
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.download = fileName;
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        toast.success("Téléchargement du PDF en cours...");
+      } else {
+        toast.success("Téléchargement du PDF en cours...");
       }
     } catch (error) {
-      logger.error(error);
-      toast.error("Une erreur est survenue lors du téléchargement");
+      logger.error('Download error:', error);
+      console.error('Full download error:', error);
+      
+      // Fallback: try direct link opening
+      try {
+        window.open(pdfUrl, '_blank');
+        toast.success("Ouverture du PDF dans un nouvel onglet...");
+      } catch (fallbackError) {
+        console.error('Fallback error:', fallbackError);
+        toast.error("Une erreur est survenue lors du téléchargement");
+      }
     }
   };
 
