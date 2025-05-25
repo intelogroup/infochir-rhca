@@ -1,3 +1,4 @@
+
 // Service Worker for InfoChir application
 const CACHE_NAME = 'infochir-cache-v9';  // Increased cache version
 
@@ -106,7 +107,8 @@ self.addEventListener('fetch', event => {
   if (url.includes('/api/') || 
       url.includes('/_supabase/') || 
       url.includes('/rest/') ||
-      url.includes('/functions/')) {
+      url.includes('/functions/') ||
+      url.includes('/storage/v1/object/')) {
     return;
   }
 
@@ -115,11 +117,11 @@ self.addEventListener('fetch', event => {
     event.respondWith(
       safeFetch(event.request)
         .then(response => {
-          // Cache successful responses
+          // Cache successful responses - clone before using
           if (response.status === 200) {
-            const clonedResponse = response.clone();
+            const responseToCache = response.clone();
             caches.open(CACHE_NAME).then(cache => {
-              cache.put(event.request, clonedResponse);
+              cache.put(event.request, responseToCache);
             });
           }
           return response;
@@ -149,8 +151,9 @@ self.addEventListener('fetch', event => {
             safeFetch(event.request)
               .then(networkResponse => {
                 if (networkResponse.status === 200) {
+                  const responseToCache = networkResponse.clone();
                   caches.open(CACHE_NAME)
-                    .then(cache => cache.put(event.request, networkResponse));
+                    .then(cache => cache.put(event.request, responseToCache));
                 }
               })
               .catch(() => {});
@@ -180,10 +183,11 @@ self.addEventListener('fetch', event => {
         // Return cached response immediately if available
         const fetchPromise = safeFetch(event.request)
           .then(networkResponse => {
-            // Update cache with new response
+            // Update cache with new response - clone before using
             if (networkResponse.status === 200) {
+              const responseToCache = networkResponse.clone();
               caches.open(CACHE_NAME)
-                .then(cache => cache.put(event.request, networkResponse.clone()));
+                .then(cache => cache.put(event.request, responseToCache));
             }
             return networkResponse;
           })
@@ -203,6 +207,3 @@ self.addEventListener('message', event => {
     self.skipWaiting();
   }
 });
-
-// The rest of the service worker remains unchanged
-// ... keep existing code

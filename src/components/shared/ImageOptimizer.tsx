@@ -58,6 +58,9 @@ export const ImageOptimizer = ({
     );
   }
 
+  // Clean up the source URL - remove double slashes
+  const cleanSrc = src.replace(/([^:]\/)\/+/g, '$1');
+
   // Try to load an alternative URL if the current one fails
   const tryAlternativeUrl = () => {
     if (retryCount >= MAX_RETRIES) {
@@ -67,12 +70,38 @@ export const ImageOptimizer = ({
       return;
     }
 
+    // Check if this is an IGM cover
+    const isIgmCover = currentSrc.includes('IGM_vol_') || 
+                       currentSrc.includes('igm_covers') || 
+                       currentSrc.includes('igm-covers');
+
     // Check if this is an RHCA cover by the URL pattern
     const isRhcaCover = currentSrc.includes('RHCA_vol_') || 
                          currentSrc.includes('rhca_covers') || 
                          currentSrc.includes('rhca-covers');
                          
-    // Try alternate bucket first
+    // Try alternate bucket first for IGM covers
+    if (isIgmCover && currentSrc.includes('igm_covers')) {
+      const filename = extractFilename(currentSrc);
+      if (filename) {
+        const alternateUrl = `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/igm-covers/${filename}`;
+        logger.log(`[ImageOptimizer] Trying alternate IGM bucket 'igm-covers': ${alternateUrl}`);
+        setRetryCount(prev => prev + 1);
+        setCurrentSrc(alternateUrl);
+        return;
+      }
+    } else if (isIgmCover && currentSrc.includes('igm-covers')) {
+      const filename = extractFilename(currentSrc);
+      if (filename) {
+        const alternateUrl = `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/igm_covers/${filename}`;
+        logger.log(`[ImageOptimizer] Trying alternate IGM bucket 'igm_covers': ${alternateUrl}`);
+        setRetryCount(prev => prev + 1);
+        setCurrentSrc(alternateUrl);
+        return;
+      }
+    }
+
+    // Try alternate bucket first for RHCA covers
     if (isRhcaCover && currentSrc.includes('rhca_covers')) {
       const filename = extractFilename(currentSrc);
       if (filename) {
@@ -102,15 +131,17 @@ export const ImageOptimizer = ({
       logger.log(`[ImageOptimizer] Trying alternative URL (${retryCount + 1}/${MAX_RETRIES}): ${alternativeUrl}`);
       setRetryCount(prev => prev + 1);
       setCurrentSrc(alternativeUrl);
-    } else if (isRhcaCover && retryCount < 1) {
-      // For RHCA covers, try a simplified filename approach
+    } else if ((isRhcaCover || isIgmCover) && retryCount < 1) {
+      // For covers, try a simplified filename approach
       const filename = extractFilename(currentSrc);
       if (filename) {
         // Try to extract volume and issue from filename
-        const match = filename.match(/RHCA_vol_(\d+)_no_(\d+)/i);
-        if (match) {
-          const vol = match[1].padStart(2, '0');
-          const issue = match[2].padStart(2, '0');
+        const rhcaMatch = filename.match(/RHCA_vol_(\d+)_no_(\d+)/i);
+        const igmMatch = filename.match(/IGM_vol_(\d+)_no_(\d+)/i);
+        
+        if (rhcaMatch) {
+          const vol = rhcaMatch[1].padStart(2, '0');
+          const issue = rhcaMatch[2].padStart(2, '0');
           
           // Try additional formats - now try other extension types too
           const alternativeFormats = [
@@ -118,27 +149,29 @@ export const ImageOptimizer = ({
             `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/rhca_covers/RHCA_vol_${vol}_no_${issue}.jpg`,
             `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/rhca-covers/RHCA_vol_${vol}_no_${issue}.png`,
             `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/rhca-covers/RHCA_vol_${vol}_no_${issue}.jpg`,
-            // Try alternatives without leading zeros
-            `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/rhca_covers/RHCA_vol_${parseInt(vol)}_no_${parseInt(issue)}.png`,
-            `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/rhca-covers/RHCA_vol_${parseInt(vol)}_no_${parseInt(issue)}.png`
           ];
           
-          logger.log(`[ImageOptimizer] Trying ${alternativeFormats.length} alternative formats for vol ${vol} no ${issue}`);
-          
-          // Use a static URL for now (best attempt), but set up for future sequential tries
           const simplifiedUrl = alternativeFormats[0];
-          logger.log(`[ImageOptimizer] Trying simplified format: ${simplifiedUrl}`);
+          logger.log(`[ImageOptimizer] Trying simplified RHCA format: ${simplifiedUrl}`);
           setRetryCount(prev => prev + 1);
           setCurrentSrc(simplifiedUrl);
           return;
-        }
-        
-        // As a last resort, try direct bucket access with filename only
-        const directUrl = `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/rhca_covers/${filename}`;
-        if (directUrl !== currentSrc) {
-          logger.log(`[ImageOptimizer] Trying direct bucket URL: ${directUrl}`);
+        } else if (igmMatch) {
+          const vol = igmMatch[1].padStart(2, '0');
+          const issue = igmMatch[2].padStart(2, '0');
+          
+          // Try additional formats for IGM
+          const alternativeFormats = [
+            `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/igm_covers/IGM_vol_${vol}_no_${issue}.png`,
+            `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/igm_covers/IGM_vol_${vol}_no_${issue}.jpg`,
+            `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/igm-covers/IGM_vol_${vol}_no_${issue}.png`,
+            `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/igm-covers/IGM_vol_${vol}_no_${issue}.jpg`,
+          ];
+          
+          const simplifiedUrl = alternativeFormats[0];
+          logger.log(`[ImageOptimizer] Trying simplified IGM format: ${simplifiedUrl}`);
           setRetryCount(prev => prev + 1);
-          setCurrentSrc(directUrl);
+          setCurrentSrc(simplifiedUrl);
           return;
         }
       }
@@ -185,10 +218,10 @@ export const ImageOptimizer = ({
     );
   }
 
-  // Get optimized image URL
-  const optimizedSrc = getOptimizedImageUrl(currentSrc, width, height);
+  // Get optimized image URL from the cleaned source
+  const optimizedSrc = getOptimizedImageUrl(cleanSrc, width, height);
 
-  // Return standard img tag for web environments
+  // Return standard img tag for web environments with crossOrigin attribute for CORS
   return (
     <img
       src={optimizedSrc}
@@ -199,6 +232,7 @@ export const ImageOptimizer = ({
       loading={loading || (priority ? 'eager' : 'lazy')}
       onLoad={handleLoad}
       onError={handleError}
+      crossOrigin="anonymous"
       style={{ opacity: isLoaded ? 1 : 0, transition: 'opacity 0.3s' }}
     />
   );

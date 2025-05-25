@@ -90,6 +90,7 @@ export type Database = {
           institution: string
           keywords: string
           no_conflict: boolean
+          notes: string | null
           original_work: boolean
           publication_type: string
           reviewer_comments: string | null
@@ -113,6 +114,7 @@ export type Database = {
           institution: string
           keywords: string
           no_conflict?: boolean
+          notes?: string | null
           original_work?: boolean
           publication_type: string
           reviewer_comments?: string | null
@@ -136,6 +138,7 @@ export type Database = {
           institution?: string
           keywords?: string
           no_conflict?: boolean
+          notes?: string | null
           original_work?: boolean
           publication_type?: string
           reviewer_comments?: string | null

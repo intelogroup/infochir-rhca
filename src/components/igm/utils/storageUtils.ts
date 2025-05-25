@@ -12,9 +12,12 @@ export const getIGMCoverUrl = (filename: string): string => {
   // If it's already a full URL, return it
   if (filename.startsWith('http')) return filename;
   
+  // Clean up filename - remove any leading slashes
+  const cleanFilename = filename.replace(/^\/+/, '');
+  
   const { data } = supabase.storage
     .from('igm_covers')
-    .getPublicUrl(filename);
+    .getPublicUrl(cleanFilename);
     
   return data.publicUrl;
 };
@@ -30,9 +33,12 @@ export const getIGMPdfUrl = (filename: string): string => {
   // If it's already a full URL, return it
   if (filename.startsWith('http')) return filename;
   
+  // Clean up filename - remove any leading slashes
+  const cleanFilename = filename.replace(/^\/+/, '');
+  
   const { data } = supabase.storage
     .from('igm-pdfs')
-    .getPublicUrl(filename);
+    .getPublicUrl(cleanFilename);
     
   return data.publicUrl;
 };
