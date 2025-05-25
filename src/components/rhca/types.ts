@@ -1,3 +1,4 @@
+
 import type { Article } from "../index-medicus/types";
 
 export interface RhcaArticle extends Article {
@@ -16,6 +17,7 @@ export interface RhcaVolume {
   year: string;
   coverImage?: string;
   pdfUrl?: string;
+  pdfFileName?: string; // Add this for backward compatibility
   articles?: RhcaArticle[];
   specialty?: string;
   category?: string;

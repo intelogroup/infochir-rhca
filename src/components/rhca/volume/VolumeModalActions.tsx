@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Download, Share2 } from "lucide-react";
+import { Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { downloadPDF } from "@/lib/analytics/download";
@@ -19,15 +19,12 @@ export const VolumeModalActions: React.FC<VolumeModalActionsProps> = ({ volume }
     
     console.log('Download initiated for RHCA volume:', volume.id);
     
-    if (!volume.pdfFileName) {
+    if (!volume.pdfUrl) {
       toast.error("Le PDF n'est pas disponible pour le moment");
       return;
     }
     
     try {
-      // Generate PDF URL for RHCA volumes
-      const pdfUrl = `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/rhca-pdfs/${volume.pdfFileName}`;
-      
       // Generate a proper filename
       const fileName = `RHCA-Vol${volume.volume}-Issue${volume.issue}-${volume.title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 30)}.pdf`;
       
@@ -35,7 +32,7 @@ export const VolumeModalActions: React.FC<VolumeModalActionsProps> = ({ volume }
       
       // Use the standardized downloadPDF function with RHCA document type
       const success = await downloadPDF({
-        url: pdfUrl,
+        url: volume.pdfUrl,
         fileName,
         documentId: volume.id,
         documentType: DocumentType.RHCA,
@@ -46,7 +43,7 @@ export const VolumeModalActions: React.FC<VolumeModalActionsProps> = ({ volume }
         // Fallback: direct download
         console.log('Standard download failed, trying direct download...');
         const link = document.createElement('a');
-        link.href = pdfUrl;
+        link.href = volume.pdfUrl;
         link.download = fileName;
         link.target = '_blank';
         document.body.appendChild(link);
@@ -58,10 +55,10 @@ export const VolumeModalActions: React.FC<VolumeModalActionsProps> = ({ volume }
         toast.success("Téléchargement du PDF en cours...");
       }
       
-      // Update download count
+      // Update download count in unified_collections table if this volume exists there
       const { error } = await supabase
-        .from('rhca_volumes')
-        .update({ downloadCount: (volume.downloadCount || 0) + 1 })
+        .from('unified_collections')
+        .update({ download_count: (volume.downloadCount || 0) + 1 })
         .eq('id', volume.id);
       
       if (error) {
@@ -80,7 +77,7 @@ export const VolumeModalActions: React.FC<VolumeModalActionsProps> = ({ volume }
         articleTitle={volume.title}
       />
       
-      {volume.pdfFileName && (
+      {volume.pdfUrl && (
         <Button 
           variant="outline" 
           size="sm"
