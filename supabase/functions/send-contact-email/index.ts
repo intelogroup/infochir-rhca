@@ -1,10 +1,9 @@
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { corsHeaders, handleCors } from "../_shared/cors.ts";
 import { sendEmail } from "../_shared/email-sender.ts";
 
-// Email notification recipient - updated to the specified email
-const NOTIFICATION_EMAIL = "jimkalinov@gmail.com";
+// Email notification recipients - multiple admin emails
+const ADMIN_EMAILS = ["jimkalinov@gmail.com", "jalouidor@hotmail.com"];
 
 interface ContactRequest {
   name: string;
@@ -47,12 +46,13 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Send both admin notification and user acknowledgment emails
-    const adminNotificationResult = await sendAdminNotification(data);
+    // Send admin notifications to all admin emails and user acknowledgment
+    const adminNotificationResults = await sendAdminNotifications(data);
     const userAcknowledgmentResult = await sendUserAcknowledgment(data);
     
     // Determine response based on email results
-    const overallSuccess = adminNotificationResult.success || userAcknowledgmentResult.success;
+    const adminSuccessCount = adminNotificationResults.filter(result => result.success).length;
+    const overallSuccess = adminSuccessCount > 0 || userAcknowledgmentResult.success;
     
     if (overallSuccess) {
       console.log("[send-contact-email] Contact form processed successfully");
@@ -61,7 +61,7 @@ const handler = async (req: Request): Promise<Response> => {
           success: true, 
           message: "Contact message sent successfully",
           notification: {
-            admin: adminNotificationResult,
+            admin: adminNotificationResults,
             user: userAcknowledgmentResult
           }
         }),
@@ -74,13 +74,13 @@ const handler = async (req: Request): Promise<Response> => {
         }
       );
     } else {
-      console.error("[send-contact-email] Both email notifications failed");
+      console.error("[send-contact-email] All email notifications failed");
       return new Response(
         JSON.stringify({ 
           success: false, 
           message: "Failed to send notifications",
           notification: {
-            admin: adminNotificationResult,
+            admin: adminNotificationResults,
             user: userAcknowledgmentResult
           }
         }),
@@ -99,7 +99,7 @@ const handler = async (req: Request): Promise<Response> => {
       JSON.stringify({ 
         success: false, 
         error: error instanceof Error ? error.message : "Unknown error occurred",
-        notification: { admin: { sent: false }, user: { sent: false } }
+        notification: { admin: [], user: { sent: false } }
       }),
       { 
         status: 500,
@@ -113,79 +113,87 @@ const handler = async (req: Request): Promise<Response> => {
 };
 
 /**
- * Send notification email to admin about the contact form submission
+ * Send notification emails to all admin addresses about the contact form submission
  */
-async function sendAdminNotification(data: ContactRequest): Promise<{success: boolean; sent: boolean; message?: string}> {
-  try {
-    console.log("[send-contact-email] Sending admin notification");
-    
-    const contactTime = new Date().toLocaleString('fr-FR', {
-      dateStyle: 'full',
-      timeStyle: 'medium'
-    });
-    
-    const html = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #333;">Nouveau message de contact</h2>
-        <p>Un nouveau message a été envoyé via le formulaire de contact à ${contactTime}.</p>
-        
-        <div style="background-color: #f4f4f4; padding: 15px; border-radius: 5px; margin: 20px 0;">
-          <h3 style="margin-top: 0;">Informations de contact:</h3>
-          <p><strong>Nom:</strong> ${data.name}</p>
-          <p><strong>Email:</strong> ${data.email}</p>
-          ${data.phone ? `<p><strong>Téléphone:</strong> ${data.phone}</p>` : ''}
+async function sendAdminNotifications(data: ContactRequest): Promise<{success: boolean; sent: boolean; message?: string; recipient: string}[]> {
+  const results = [];
+  
+  for (const adminEmail of ADMIN_EMAILS) {
+    try {
+      console.log(`[send-contact-email] Sending admin notification to ${adminEmail}`);
+      
+      const contactTime = new Date().toLocaleString('fr-FR', {
+        dateStyle: 'full',
+        timeStyle: 'medium'
+      });
+      
+      const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #333;">Nouveau message de contact</h2>
+          <p>Un nouveau message a été envoyé via le formulaire de contact à ${contactTime}.</p>
           
-          <h3>Message:</h3>
-          <p style="white-space: pre-line;">${data.message}</p>
+          <div style="background-color: #f4f4f4; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <h3 style="margin-top: 0;">Informations de contact:</h3>
+            <p><strong>Nom:</strong> ${data.name}</p>
+            <p><strong>Email:</strong> ${data.email}</p>
+            ${data.phone ? `<p><strong>Téléphone:</strong> ${data.phone}</p>` : ''}
+            
+            <h3>Message:</h3>
+            <p style="white-space: pre-line;">${data.message}</p>
+          </div>
+          
+          <p style="color: #666; font-size: 12px;">Ceci est une notification automatique de votre site InfoChir.</p>
         </div>
+      `;
+      
+      const text = `
+        NOUVEAU MESSAGE DE CONTACT
         
-        <p style="color: #666; font-size: 12px;">Ceci est une notification automatique de votre site InfoChir.</p>
-      </div>
-    `;
-    
-    const text = `
-      NOUVEAU MESSAGE DE CONTACT
+        Un nouveau message a été envoyé via le formulaire de contact à ${contactTime}.
+        
+        Informations de contact:
+        Nom: ${data.name}
+        Email: ${data.email}
+        ${data.phone ? `Téléphone: ${data.phone}` : ''}
+        
+        Message:
+        ${data.message}
+        
+        Ceci est une notification automatique de votre site InfoChir.
+      `;
       
-      Un nouveau message a été envoyé via le formulaire de contact à ${contactTime}.
+      const emailResult = await sendEmail(
+        adminEmail,
+        `Contact InfoChir de: ${data.name}`,
+        html,
+        text,
+        data.email // set reply-to as the sender's email
+      );
       
-      Informations de contact:
-      Nom: ${data.name}
-      Email: ${data.email}
-      ${data.phone ? `Téléphone: ${data.phone}` : ''}
-      
-      Message:
-      ${data.message}
-      
-      Ceci est une notification automatique de votre site InfoChir.
-    `;
-    
-    const emailResult = await sendEmail(
-      NOTIFICATION_EMAIL,
-      `Contact InfoChir de: ${data.name}`,
-      html,
-      text,
-      data.email // set reply-to as the sender's email
-    );
-    
-    if (emailResult.success) {
-      console.log("[send-contact-email] Admin notification email sent successfully");
-      return { success: true, sent: true };
-    } else {
-      console.error("[send-contact-email] Failed to send admin notification email:", emailResult.error);
-      return { 
+      if (emailResult.success) {
+        console.log(`[send-contact-email] Admin notification email sent successfully to ${adminEmail}`);
+        results.push({ success: true, sent: true, recipient: adminEmail });
+      } else {
+        console.error(`[send-contact-email] Failed to send admin notification email to ${adminEmail}:`, emailResult.error);
+        results.push({ 
+          success: false, 
+          sent: false, 
+          recipient: adminEmail,
+          message: emailResult.error instanceof Error ? emailResult.error.message : String(emailResult.error)
+        });
+      }
+    } catch (error) {
+      console.error(`[send-contact-email] Error sending admin notification to ${adminEmail}:`, error);
+      results.push({ 
         success: false, 
         sent: false, 
-        message: emailResult.error instanceof Error ? emailResult.error.message : String(emailResult.error)
-      };
+        recipient: adminEmail,
+        message: error instanceof Error ? error.message : String(error)
+      });
     }
-  } catch (error) {
-    console.error("[send-contact-email] Error sending admin notification:", error);
-    return { 
-      success: false, 
-      sent: false, 
-      message: error instanceof Error ? error.message : String(error)
-    };
   }
+  
+  return results;
 }
 
 /**
