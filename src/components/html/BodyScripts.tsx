@@ -30,7 +30,7 @@ export const BodyScripts = () => {
       setTimeout(monitorPerformance, 0);
       
       // Remove initial loader
-      const loader = document.getElementById('initial-loader');
+      const loader = document.getElementById('initial-loader') as HTMLElement;
       if (loader) {
         loader.style.opacity = '0';
         setTimeout(() => {
@@ -40,7 +40,7 @@ export const BodyScripts = () => {
       
       // Remove nav placeholder when real nav is loaded
       setTimeout(() => {
-        const navPlaceholder = document.querySelector('.nav-placeholder');
+        const navPlaceholder = document.querySelector('.nav-placeholder') as HTMLElement;
         if (navPlaceholder) {
           navPlaceholder.style.display = 'none';
         }
