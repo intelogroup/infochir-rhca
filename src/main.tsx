@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
@@ -7,6 +8,13 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "sonner";
+import { MetaTags } from "@/components/html/MetaTags";
+import { ResourceHints } from "@/components/html/ResourceHints";
+import { FaviconLinks } from "@/components/html/FaviconLinks";
+import { CriticalCSS } from "@/components/html/CriticalCSS";
+import { InitScripts } from "@/components/html/InitScripts";
+import { BodyScripts } from "@/components/html/BodyScripts";
+import { LoadingScreen } from "@/components/html/LoadingScreen";
 
 // Set up in production mode or preview mode
 const isDebugMode = process.env.NODE_ENV === 'development' || 
@@ -83,10 +91,17 @@ const initApp = async () => {
   // Render the core app with a single router
   root.render(
     <React.StrictMode>
+      <MetaTags />
+      <ResourceHints />
+      <FaviconLinks />
+      <CriticalCSS />
+      <InitScripts />
+      <LoadingScreen />
       <ErrorBoundary name="AppRoot">
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>
             <App />
+            <BodyScripts />
           </BrowserRouter>
         </QueryClientProvider>
       </ErrorBoundary>
