@@ -1,3 +1,4 @@
+
 export interface Sponsor {
   name: string;
   logo: string;
@@ -52,12 +53,6 @@ export const sponsors: Sponsor[] = [
     logo: "/lovable-uploads/c4ecbe61-7269-4a2c-9db6-e4f656279bde.png",
     type: "sponsor",
     url: "https://www.charitynavigator.org/ein/823647332"
-  },
-  {
-    name: "MSPP",
-    logo: "/lovable-uploads/bfa827b4-f38b-4634-a67e-c3260715b3b3.png",
-    type: "partner",
-    url: "https://www.mspp.gouv.ht/"
   },
   {
     name: "CESPA",
