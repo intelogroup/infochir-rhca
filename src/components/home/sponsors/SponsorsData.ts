@@ -1,5 +1,3 @@
-
-
 export interface Sponsor {
   name: string;
   logo: string;
@@ -63,7 +61,7 @@ export const sponsors: Sponsor[] = [
   },
   {
     name: "CESPA",
-    logo: "/lovable-uploads/9c3b3a70-ba95-43a2-b61c-9d6c40364593.png",
+    logo: "/lovable-uploads/bf15ddab-ab6b-4b3a-b94e-1b935b8026ab.png",
     type: "partner"
   },
   {
@@ -79,4 +77,3 @@ export const sponsors: Sponsor[] = [
     url: "https://www.facebook.com/p/SurgiMed-61551703082395/"
   }
 ];
-
