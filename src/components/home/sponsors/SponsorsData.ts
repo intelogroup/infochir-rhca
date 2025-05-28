@@ -1,4 +1,5 @@
 
+
 export interface Sponsor {
   name: string;
   logo: string;
@@ -55,6 +56,12 @@ export const sponsors: Sponsor[] = [
     url: "https://www.charitynavigator.org/ein/823647332"
   },
   {
+    name: "MSPP",
+    logo: "/lovable-uploads/fe976826-422d-438c-bc21-354485ccd812.png",
+    type: "partner",
+    url: "https://www.mspp.gouv.ht/"
+  },
+  {
     name: "CESPA",
     logo: "/lovable-uploads/9c3b3a70-ba95-43a2-b61c-9d6c40364593.png",
     type: "partner"
@@ -72,3 +79,4 @@ export const sponsors: Sponsor[] = [
     url: "https://www.facebook.com/p/SurgiMed-61551703082395/"
   }
 ];
+
