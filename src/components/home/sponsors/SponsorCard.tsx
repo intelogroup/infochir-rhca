@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import type { Sponsor } from "./SponsorsData";
 
@@ -20,7 +21,7 @@ export const SponsorCard = ({ sponsor, index }: SponsorCardProps) => {
       className={`relative group ${sponsor.url ? 'cursor-pointer' : ''}`}
       onClick={handleClick}
     >
-      <div className="relative aspect-[3/2] w-full flex items-center justify-center p-6">
+      <div className="relative aspect-[3/2] w-[60%] mx-auto flex items-center justify-center p-4">
         <img
           src={sponsor.logo}
           alt={`${sponsor.name} logo`}
