@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { corsHeaders, handleCors } from "../_shared/cors.ts";
 import { sendEmail } from "../_shared/email-sender.ts";
@@ -13,7 +12,7 @@ import {
 const ADMIN_EMAILS = ["jimkalinov@gmail.com", "jalouidor@hotmail.com"];
 
 // Helper function to add delay between emails
-const delay = (ms: number) => New Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const handler = async (req: Request): Promise<Response> => {
   console.log("[notify-submission] Function called");
