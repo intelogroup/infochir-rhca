@@ -401,6 +401,78 @@ export type Database = {
         }
         Relationships: []
       }
+      email_queue: {
+        Row: {
+          created_at: string | null
+          email_type: string
+          html: string
+          id: string
+          priority: string | null
+          recipient: string
+          reply_to: string | null
+          retry_count: number | null
+          scheduled_for: string
+          subject: string
+          submission_id: string | null
+          text: string
+        }
+        Insert: {
+          created_at?: string | null
+          email_type: string
+          html: string
+          id?: string
+          priority?: string | null
+          recipient: string
+          reply_to?: string | null
+          retry_count?: number | null
+          scheduled_for: string
+          subject: string
+          submission_id?: string | null
+          text: string
+        }
+        Update: {
+          created_at?: string | null
+          email_type?: string
+          html?: string
+          id?: string
+          priority?: string | null
+          recipient?: string
+          reply_to?: string | null
+          retry_count?: number | null
+          scheduled_for?: string
+          subject?: string
+          submission_id?: string | null
+          text?: string
+        }
+        Relationships: []
+      }
+      email_usage_tracking: {
+        Row: {
+          created_at: string | null
+          date: string
+          emails_sent: number | null
+          failed_sends: number | null
+          successful_sends: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          date: string
+          emails_sent?: number | null
+          failed_sends?: number | null
+          successful_sends?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          emails_sent?: number | null
+          failed_sends?: number | null
+          successful_sends?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       error_events: {
         Row: {
           component: string | null
@@ -1298,6 +1370,18 @@ export type Database = {
       }
     }
     Functions: {
+      check_email_limit_and_notify: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      cleanup_failed_emails: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      cleanup_old_email_usage: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       create_payment_intent: {
         Args: { amount: number; currency: string }
         Returns: Json
