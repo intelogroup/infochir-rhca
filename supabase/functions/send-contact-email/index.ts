@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { corsHeaders, handleCors } from "../_shared/cors.ts";
 import { sendEmail } from "../_shared/email-sender.ts";
@@ -11,6 +12,9 @@ interface ContactRequest {
   phone?: string;
   message: string;
 }
+
+// Helper function to add delay between emails
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const handler = async (req: Request): Promise<Response> => {
   console.log("[send-contact-email] Function called");
@@ -46,8 +50,13 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Send admin notifications to all admin emails and user acknowledgment
+    // Send admin notifications to all admin emails with delays
     const adminNotificationResults = await sendAdminNotifications(data);
+    
+    // Add delay before sending user acknowledgment to respect rate limits
+    console.log("[send-contact-email] Waiting 600ms before sending user acknowledgment to respect rate limits");
+    await delay(600); // 600ms delay to ensure we stay under 2 emails/second
+    
     const userAcknowledgmentResult = await sendUserAcknowledgment(data);
     
     // Determine response based on email results
@@ -118,7 +127,15 @@ const handler = async (req: Request): Promise<Response> => {
 async function sendAdminNotifications(data: ContactRequest): Promise<{success: boolean; sent: boolean; message?: string; recipient: string}[]> {
   const results = [];
   
-  for (const adminEmail of ADMIN_EMAILS) {
+  for (let i = 0; i < ADMIN_EMAILS.length; i++) {
+    const adminEmail = ADMIN_EMAILS[i];
+    
+    // Add delay between admin emails to respect rate limits (except for first email)
+    if (i > 0) {
+      console.log(`[send-contact-email] Waiting 600ms before sending to ${adminEmail} to respect rate limits`);
+      await delay(600); // 600ms delay between admin emails
+    }
+    
     try {
       console.log(`[send-contact-email] Sending admin notification to ${adminEmail}`);
       

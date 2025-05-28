@@ -29,6 +29,9 @@ const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 // Notification recipient email - updated to the specified email
 const NOTIFICATION_EMAIL = "jimkalinov@gmail.com";
 
+// Helper function to add delay between emails
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 // Main handler function
 const handler = async (req: Request): Promise<Response> => {
   console.log("Newsletter subscription function called");
@@ -183,8 +186,13 @@ const handler = async (req: Request): Promise<Response> => {
     if (existingData) {
       console.log("Existing subscription found for email:", email);
       
-      // Send notifications for the duplicate subscription attempt
+      // Send notifications for the duplicate subscription attempt with delay
       adminNotificationResult = await sendAdminNotification(name, email, phone, true);
+      
+      // Add delay before sending user confirmation to respect rate limits
+      console.log("Waiting 600ms before sending user confirmation to respect rate limits");
+      await delay(600);
+      
       userConfirmationResult = await sendUserConfirmation(name, email, true);
       
       return new Response(
@@ -228,8 +236,13 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Subscription successful:", insertData);
     
-    // Send both admin notification and user confirmation emails
+    // Send both admin notification and user confirmation emails with delay
     adminNotificationResult = await sendAdminNotification(name, email, phone, false);
+    
+    // Add delay before sending user confirmation to respect rate limits
+    console.log("Waiting 600ms before sending user confirmation to respect rate limits");
+    await delay(600);
+    
     userConfirmationResult = await sendUserConfirmation(name, email, false);
     
     // Return success response
