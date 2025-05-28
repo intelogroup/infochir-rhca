@@ -1,3 +1,4 @@
+
 export interface Sponsor {
   name: string;
   logo: string;
@@ -75,5 +76,15 @@ export const sponsors: Sponsor[] = [
     logo: "/lovable-uploads/113fbe65-07c2-4e94-b069-5c7d6e063317.png",
     type: "partner",
     url: "https://www.facebook.com/p/SurgiMed-61551703082395/"
+  },
+  {
+    name: "HHN",
+    logo: "/lovable-uploads/c2e2d9e4-a71c-422f-b7d1-e6fa80c04a22.png",
+    type: "partner"
+  },
+  {
+    name: "FMP_EBO",
+    logo: "/lovable-uploads/5319f234-4c0d-48e2-85eb-f267dc21d813.png",
+    type: "partner"
   }
 ];
