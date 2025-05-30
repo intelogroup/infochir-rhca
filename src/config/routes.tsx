@@ -123,26 +123,37 @@ export const routes = [
       },
     ],
   },
-  // New parent admin route with AdminLayout
+  // Admin routes with proper nesting
   {
     path: "/admin",
     element: <AdminRouteWrapper component={() => <AdminLayout><Dashboard /></AdminLayout>} />,
-    name: "admin",
-  },
-  // Admin sub-routes
-  {
-    path: "/admin/uploads",
-    element: <AdminRouteWrapper component={() => <AdminLayout><TriggerUploads /></AdminLayout>} />,
-    name: "admin-uploads",
-  },
-  {
-    path: "/admin/analytics",
-    element: <AdminRouteWrapper component={() => <AdminLayout><Analytics /></AdminLayout>} />,
-    name: "admin-analytics",
-  },
-  {
-    path: "/admin/*",
-    element: <AdminRouteWrapper component={() => <AdminLayout><AdminNotFound /></AdminLayout>} />,
-    name: "admin-not-found",
+    name: "admin-root",
+    children: [
+      {
+        path: "",
+        element: <AdminRouteWrapper component={() => <AdminLayout><Dashboard /></AdminLayout>} />,
+        name: "admin-dashboard",
+      },
+      {
+        path: "dashboard",
+        element: <AdminRouteWrapper component={() => <AdminLayout><Dashboard /></AdminLayout>} />,
+        name: "admin-dashboard-explicit",
+      },
+      {
+        path: "uploads",
+        element: <AdminRouteWrapper component={() => <AdminLayout><TriggerUploads /></AdminLayout>} />,
+        name: "admin-uploads",
+      },
+      {
+        path: "analytics",
+        element: <AdminRouteWrapper component={() => <AdminLayout><Analytics /></AdminLayout>} />,
+        name: "admin-analytics",
+      },
+      {
+        path: "*",
+        element: <AdminRouteWrapper component={() => <AdminLayout><AdminNotFound /></AdminLayout>} />,
+        name: "admin-not-found",
+      },
+    ],
   },
 ];

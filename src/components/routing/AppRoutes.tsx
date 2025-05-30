@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { Routes, Route, useLocation, Navigate, BrowserRouter as Router } from "react-router-dom";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";

@@ -21,7 +21,7 @@ export const AdminRouteWrapper = ({ component: Component }: AdminRouteWrapperPro
       toast.error("Erreur d'authentification", {
         description: "Veuillez vous reconnecter",
       });
-      navigate("/", { replace: true });
+      navigate("/login", { replace: true });
     }
   }, [error, navigate]);
 
@@ -37,7 +37,7 @@ export const AdminRouteWrapper = ({ component: Component }: AdminRouteWrapperPro
     toast.error("Accès refusé", {
       description: "Vous n'avez pas les droits d'accès à cette page"
     });
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   return (
