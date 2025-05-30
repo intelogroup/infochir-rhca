@@ -3,6 +3,7 @@
  * Optimized email sender with queue support and rate limiting
  */
 import { sendEmail } from "./email-sender.ts";
+import { downloadMultipleFilesAsAttachments, validateFileForAttachment, type FileAttachment } from "./file-retrieval.ts";
 import { 
   getTodayEmailUsage, 
   updateEmailUsage, 
@@ -24,7 +25,7 @@ interface OptimizedEmailResult {
 }
 
 /**
- * Send email with optimization and fallback to queue
+ * Send email with optimization and fallback to queue, with optional file attachments
  */
 export async function sendOptimizedEmail(
   recipient: string,
@@ -34,7 +35,8 @@ export async function sendOptimizedEmail(
   priority: 'high' | 'medium' | 'low' = 'medium',
   emailType: 'user_confirmation' | 'admin_notification' | 'admin_secondary' = 'admin_notification',
   submissionId?: string,
-  replyTo?: string
+  replyTo?: string,
+  fileUrls?: string[]
 ): Promise<OptimizedEmailResult> {
   console.log(`[optimized-email] Attempting to send ${emailType} email to ${recipient}`);
   
@@ -72,20 +74,42 @@ export async function sendOptimizedEmail(
       };
     }
     
+    // Process file attachments if provided
+    let attachments: FileAttachment[] = [];
+    if (fileUrls && fileUrls.length > 0) {
+      console.log(`[optimized-email] Processing ${fileUrls.length} file attachments for ${recipient}`);
+      
+      try {
+        const allAttachments = await downloadMultipleFilesAsAttachments(fileUrls);
+        // Filter out invalid attachments
+        attachments = allAttachments.filter(validateFileForAttachment);
+        
+        console.log(`[optimized-email] Successfully prepared ${attachments.length}/${allAttachments.length} attachments`);
+        
+        if (attachments.length !== allAttachments.length) {
+          console.warn(`[optimized-email] Some attachments were filtered out due to validation failures`);
+        }
+      } catch (attachmentError) {
+        console.error(`[optimized-email] Error processing attachments:`, attachmentError);
+        // Continue without attachments rather than failing completely
+        console.log(`[optimized-email] Continuing without attachments due to processing error`);
+      }
+    }
+    
     // Attempt to send the email
     console.log(`[optimized-email] Sending email to ${recipient}. ${remaining} emails remaining today.`);
-    const emailResult = await sendEmail(recipient, subject, html, text, replyTo);
+    const emailResult = await sendEmail(recipient, subject, html, text, replyTo, attachments);
     
     // Update usage statistics
     await updateEmailUsage(emailResult.success);
     
     if (emailResult.success) {
-      console.log(`[optimized-email] Email sent successfully to ${recipient}`);
+      console.log(`[optimized-email] Email sent successfully to ${recipient} with ${attachments.length} attachments`);
       return {
         success: true,
         sent: true,
         queued: false,
-        message: "Email sent successfully",
+        message: `Email sent successfully with ${attachments.length} attachments`,
         recipient
       };
     } else {
@@ -157,7 +181,7 @@ export async function sendOptimizedEmail(
 }
 
 /**
- * Send multiple emails with smart strategy and rate limiting
+ * Send multiple emails with smart strategy and rate limiting, with file attachments
  */
 export async function sendOptimizedBatch(
   userEmail: string,
@@ -169,14 +193,16 @@ export async function sendOptimizedBatch(
   adminHtml: string,
   adminText: string,
   submissionId?: string,
-  replyTo?: string
+  replyTo?: string,
+  articleFiles?: string[],
+  imageAnnexes?: string[]
 ): Promise<{
   userResult: OptimizedEmailResult;
   adminResults: OptimizedEmailResult[];
   strategy: string;
   usage: any;
 }> {
-  console.log("[optimized-email] Starting optimized batch email send");
+  console.log("[optimized-email] Starting optimized batch email send with attachments");
   
   // Get optimal strategy based on current usage
   const strategy = await getOptimalEmailStrategy();
@@ -189,7 +215,10 @@ export async function sendOptimizedBatch(
     usage: strategy
   };
   
-  // Send user confirmation (highest priority)
+  // Prepare file attachments for admin emails (combine article files and annexes)
+  const adminAttachments = [...(articleFiles || []), ...(imageAnnexes || [])];
+  
+  // Send user confirmation (highest priority) - no attachments for user
   if (strategy.sendUserConfirmation) {
     results.userResult = await sendOptimizedEmail(
       userEmail,
@@ -216,7 +245,7 @@ export async function sendOptimizedBatch(
     );
   }
   
-  // Send primary admin notification
+  // Send primary admin notification with attachments
   if (strategy.sendPrimaryAdmin && adminEmails.length > 0) {
     await delay(600); // Rate limiting delay
     
@@ -228,7 +257,8 @@ export async function sendOptimizedBatch(
       'medium',
       'admin_notification',
       submissionId,
-      replyTo
+      replyTo,
+      adminAttachments // Include attachments for admin
     );
     results.adminResults.push(primaryAdminResult);
   } else if (adminEmails.length > 0) {
@@ -241,12 +271,13 @@ export async function sendOptimizedBatch(
       'medium',
       'admin_notification',
       submissionId,
-      replyTo
+      replyTo,
+      adminAttachments // Include attachments for admin
     );
     results.adminResults.push(primaryAdminResult);
   }
   
-  // Send secondary admin notification
+  // Send secondary admin notification with attachments
   if (strategy.sendSecondaryAdmin && adminEmails.length > 1) {
     await delay(600); // Rate limiting delay
     
@@ -258,7 +289,8 @@ export async function sendOptimizedBatch(
       'low',
       'admin_secondary',
       submissionId,
-      replyTo
+      replyTo,
+      adminAttachments // Include attachments for admin
     );
     results.adminResults.push(secondaryAdminResult);
   } else if (adminEmails.length > 1) {
@@ -271,12 +303,13 @@ export async function sendOptimizedBatch(
       'low',
       'admin_secondary',
       submissionId,
-      replyTo
+      replyTo,
+      adminAttachments // Include attachments for admin
     );
     results.adminResults.push(secondaryAdminResult);
   }
   
-  console.log(`[optimized-email] Batch complete. Strategy: ${strategy.strategy}`);
+  console.log(`[optimized-email] Batch complete. Strategy: ${strategy.strategy}, attachments: ${adminAttachments.length} files`);
   
   return {
     userResult: results.userResult!,
@@ -285,3 +318,6 @@ export async function sendOptimizedBatch(
     usage: strategy
   };
 }
+
+// Export the original function with a note about deprecation
+export { getTodayEmailUsage };
