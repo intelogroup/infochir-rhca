@@ -5,6 +5,7 @@ export interface AtlasChapter {
   description?: string;
   category?: string;
   chapterNumber?: number;
+  pageNumber?: string; // Added missing pageNumber property
   authors?: string[];
   author?: string; // Adding for backwards compatibility
   pdfUrl?: string;
@@ -22,6 +23,8 @@ export interface AtlasChapter {
     downloads?: number;
   };
   source?: string;
+  primary_author?: string; // Added missing property
+  co_authors?: string[]; // Added missing property
 }
 
 export interface AtlasTableOfContentsProps {

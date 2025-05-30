@@ -17,7 +17,7 @@ export const useAtlasArticles = () => {
           .from('articles')
           .select('*')
           .eq('source', 'ADC')
-          .order('page_number', { ascending: true, nullsLast: true })
+          .order('page_number', { ascending: true })
           .order('created_at', { ascending: true });
         
         if (error) {
