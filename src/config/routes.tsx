@@ -1,3 +1,4 @@
+
 import Home from "@/pages/Home";
 import NotFound from "@/pages/NotFound";
 import TriggerUploads from "@/pages/TriggerUploads";
@@ -6,8 +7,10 @@ import { MainLayout } from "@/components/layouts/MainLayout";
 import About from "@/pages/About";
 import RHCA from "@/pages/RHCA";
 import RhcaArticleDetail from "@/pages/rhca/RhcaArticleDetail";
+import RHCADirectives from "@/pages/rhca/Directives";
 import ADC from "@/pages/ADC";
 import IGM from "@/pages/IGM";
+import IGMDirectives from "@/pages/igm/Directives";
 import Submission from "@/pages/Submission";
 import Directives from "@/pages/Directives";
 import Annuaire from "@/pages/Annuaire";
@@ -49,6 +52,11 @@ export const routes = [
         name: "rhca-article-detail",
       },
       {
+        path: "rhca/directives",
+        element: <RHCADirectives />,
+        name: "rhca-directives",
+      },
+      {
         path: "adc",
         element: <ADC />,
         name: "adc",
@@ -57,6 +65,11 @@ export const routes = [
         path: "igm",
         element: <IGM />,
         name: "igm",
+      },
+      {
+        path: "igm/directives",
+        element: <IGMDirectives />,
+        name: "igm-directives",
       },
       {
         path: "submission",
