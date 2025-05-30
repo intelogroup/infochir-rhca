@@ -17,14 +17,16 @@ export const AdminRouteWrapper = ({ component: Component }: AdminRouteWrapperPro
 
   // Handle authentication errors
   React.useEffect(() => {
-    if (error) {
+    if (error && !isLoading) {
+      console.error('[AdminRouteWrapper] Authentication error:', error);
       toast.error("Erreur d'authentification", {
         description: "Veuillez vous reconnecter",
       });
       navigate("/admin/login", { replace: true });
     }
-  }, [error, navigate]);
+  }, [error, isLoading, navigate]);
 
+  // Show loading spinner while checking authentication
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -35,16 +37,20 @@ export const AdminRouteWrapper = ({ component: Component }: AdminRouteWrapperPro
 
   // If not authenticated, redirect to login
   if (!isAuthenticated || !user) {
+    console.log('[AdminRouteWrapper] User not authenticated, redirecting to login');
     return <Navigate to="/admin/login" replace />;
   }
 
   // If authenticated but not admin, show access denied
   if (!isAdmin) {
+    console.log('[AdminRouteWrapper] User not admin, access denied');
     toast.error("Accès refusé", {
       description: "Vous n'avez pas les droits d'accès à cette page"
     });
     return <Navigate to="/admin/login" replace />;
   }
+
+  console.log('[AdminRouteWrapper] Admin access granted for user:', user.email);
 
   return (
     <Suspense fallback={

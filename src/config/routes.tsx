@@ -1,3 +1,4 @@
+
 import { RouteWrapper } from "@/components/routing/RouteWrapper";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import Home from "@/pages/Home";
@@ -11,20 +12,20 @@ import EditorialCommittee from "@/pages/EditorialCommittee";
 import Directives from "@/pages/Directives";
 import Submission from "@/pages/Submission";
 import Donate from "@/pages/Donate";
-import DonateSuccess from "@/pages/DonateSuccess";
+import DonateSuccess from "@/pages/donate/DonateSuccess";
 import Opportunities from "@/pages/Opportunities";
 import TriggerUploads from "@/pages/TriggerUploads";
-import ArticleDetail from "@/pages/ArticleDetail";
+import ArticleDetail from "@/pages/articles/ArticleDetail";
 import NotFound from "@/pages/NotFound";
-import RhcaDirectives from "@/pages/rhca/RhcaDirectives";
+import RhcaDirectives from "@/pages/rhca/Directives";
 import RhcaArticleDetail from "@/pages/rhca/RhcaArticleDetail";
-import IGMDirectives from "@/pages/igm/IGMDirectives";
-import IGMEditorialCommittee from "@/pages/igm/IGMEditorialCommittee";
+import IGMDirectives from "@/pages/igm/Directives";
+import IGMEditorialCommittee from "@/pages/igm/EditorialCommittee";
 import Dashboard from "@/pages/admin/Dashboard";
 import Content from "@/pages/admin/Content";
 import Users from "@/pages/admin/Users";
 import Analytics from "@/pages/admin/Analytics";
-import IndexMedicusAdmin from "@/pages/admin/IndexMedicus";
+import IndexMedicusAdmin from "@/pages/admin/IndexMedicusAdmin";
 import Settings from "@/pages/admin/Settings";
 import EmailSettings from "@/pages/admin/EmailSettings";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
@@ -32,7 +33,6 @@ import { Navigate } from "react-router-dom";
 import { AdminRouteWrapper } from "@/components/routing/AdminRouteWrapper";
 import AdminLogin from "@/pages/admin/Login";
 
-// Update the routes array to include the admin login route
 export const routes = [
   {
     path: "/",
@@ -237,11 +237,7 @@ export const routes = [
   {
     path: "/admin",
     element: (
-      <AdminRouteWrapper component={() => (
-        <AdminLayout>
-          <Navigate to="/admin/dashboard" replace />
-        </AdminLayout>
-      )} />
+      <AdminRouteWrapper component={() => <Navigate to="/admin/dashboard" replace />} />
     ),
   },
   {
