@@ -3,7 +3,7 @@ import * as React from "react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, UserPlus, Shield, Settings } from "lucide-react";
+import { Users as UsersIcon, UserPlus, Shield, Settings } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 const Users = () => {
