@@ -13,7 +13,7 @@ import {
 const ADMIN_EMAILS = ["jimkalinov@gmail.com", "jalouidor@hotmail.com"];
 
 const handler = async (req: Request): Promise<Response> => {
-  console.log("[notify-submission] Function called with file attachment support");
+  console.log("[notify-submission] Function called with enhanced file attachment support");
 
   // Handle CORS preflight request
   const corsResponse = handleCors(req);
@@ -27,7 +27,8 @@ const handler = async (req: Request): Promise<Response> => {
       userEmail: submissionData.corresponding_author_email,
       publicationType: submissionData.publication_type,
       articleFiles: submissionData.article_files_urls?.length || 0,
-      imageAnnexes: submissionData.image_annexes_urls?.length || 0
+      imageAnnexes: submissionData.image_annexes_urls?.length || 0,
+      submissionId: submissionData.id
     });
 
     // Get current email usage for logging
@@ -50,17 +51,22 @@ const handler = async (req: Request): Promise<Response> => {
     const userText = generateUserConfirmationTextContent(submissionData, submissionTime);
     const userSubject = "Confirmation de réception - Votre soumission d'article";
 
-    // Extract file URLs for attachments
-    const articleFiles = submissionData.article_files_urls || [];
-    const imageAnnexes = submissionData.image_annexes_urls || [];
+    // Extract and validate file URLs for attachments
+    const articleFiles = Array.isArray(submissionData.article_files_urls) 
+      ? submissionData.article_files_urls.filter(url => url && typeof url === 'string')
+      : [];
+    const imageAnnexes = Array.isArray(submissionData.image_annexes_urls)
+      ? submissionData.image_annexes_urls.filter(url => url && typeof url === 'string')
+      : [];
 
-    console.log("[notify-submission] Preparing to send emails with attachments:", {
+    console.log("[notify-submission] Preparing to send emails with validated attachments:", {
       articleFiles: articleFiles.length,
-      imageAnnexes: imageAnnexes.length
+      imageAnnexes: imageAnnexes.length,
+      totalFiles: articleFiles.length + imageAnnexes.length
     });
 
-    // Send optimized batch emails with file attachments
-    console.log("[notify-submission] Sending optimized batch emails with file attachments");
+    // Send optimized batch emails with enhanced file attachment handling
+    console.log("[notify-submission] Sending optimized batch emails with enhanced file attachment support");
     const emailResults = await sendOptimizedBatch(
       submissionData.corresponding_author_email,
       userSubject,
@@ -81,26 +87,45 @@ const handler = async (req: Request): Promise<Response> => {
     const adminSuccessCount = emailResults.adminResults.filter(result => result.success).length;
     const overallSuccess = userSuccess || adminSuccessCount > 0;
 
-    console.log("[notify-submission] Email batch completed with attachments:", {
+    // Calculate attachment statistics
+    const totalAttachmentsRequested = articleFiles.length + imageAnnexes.length;
+    const adminAttachmentsSummary = emailResults.adminResults.reduce((acc, result) => {
+      if (result.attachmentsSummary) {
+        acc.sent += result.attachmentsSummary.count;
+        acc.skipped += result.attachmentsSummary.skipped;
+        acc.totalSize += result.attachmentsSummary.totalSize;
+      }
+      return acc;
+    }, { sent: 0, skipped: 0, totalSize: 0 });
+
+    console.log("[notify-submission] Email batch completed with enhanced attachments:", {
       strategy: emailResults.strategy,
       userSent: emailResults.userResult.sent,
       userQueued: emailResults.userResult.queued,
       adminResultsCount: emailResults.adminResults.length,
       remainingEmails: emailResults.usage.remaining,
-      attachmentsSent: (articleFiles.length + imageAnnexes.length) > 0
+      attachments: {
+        requested: totalAttachmentsRequested,
+        sent: adminAttachmentsSummary.sent,
+        skipped: adminAttachmentsSummary.skipped,
+        totalSize: adminAttachmentsSummary.totalSize
+      }
     });
 
     if (overallSuccess) {
       return new Response(
         JSON.stringify({
           success: true,
-          message: "Submission notifications processed successfully with attachments",
+          message: "Submission notifications processed successfully with enhanced attachment handling",
           emailStrategy: emailResults.strategy,
           usage: emailResults.usage,
           attachments: {
             articleFiles: articleFiles.length,
             imageAnnexes: imageAnnexes.length,
-            total: articleFiles.length + imageAnnexes.length
+            total: totalAttachmentsRequested,
+            sent: adminAttachmentsSummary.sent,
+            skipped: adminAttachmentsSummary.skipped,
+            totalSizeBytes: adminAttachmentsSummary.totalSize
           },
           results: {
             user: emailResults.userResult,
@@ -123,7 +148,10 @@ const handler = async (req: Request): Promise<Response> => {
           attachments: {
             articleFiles: articleFiles.length,
             imageAnnexes: imageAnnexes.length,
-            total: articleFiles.length + imageAnnexes.length
+            total: totalAttachmentsRequested,
+            sent: adminAttachmentsSummary.sent,
+            skipped: adminAttachmentsSummary.skipped,
+            totalSizeBytes: adminAttachmentsSummary.totalSize
           },
           results: {
             user: emailResults.userResult,
@@ -141,7 +169,15 @@ const handler = async (req: Request): Promise<Response> => {
     return new Response(
       JSON.stringify({
         success: false,
-        error: error instanceof Error ? error.message : "Unknown error occurred"
+        error: error instanceof Error ? error.message : "Unknown error occurred",
+        attachments: {
+          articleFiles: 0,
+          imageAnnexes: 0,
+          total: 0,
+          sent: 0,
+          skipped: 0,
+          totalSizeBytes: 0
+        }
       }),
       {
         status: 500,

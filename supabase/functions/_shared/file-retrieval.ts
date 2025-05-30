@@ -18,6 +18,12 @@ export interface FileAttachment {
   size: number;
 }
 
+// Safety limits aligned with email provider constraints
+const MAX_FILE_SIZE = 40 * 1024 * 1024; // 40MB per file (Resend limit)
+const MAX_TOTAL_SIZE = 45 * 1024 * 1024; // 45MB total including email content
+const MAX_FILES_PER_EMAIL = 10; // Reasonable attachment limit
+const DOWNLOAD_TIMEOUT = 30000; // 30 seconds timeout per file
+
 /**
  * Download a file from Supabase Storage and convert to base64
  * @param bucket Storage bucket name
@@ -41,44 +47,64 @@ export async function downloadFileAsAttachment(
     
     console.log(`[file-retrieval] Clean path: ${cleanPath}`);
     
-    // Download file from storage
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .download(cleanPath);
+    // Add timeout to prevent hanging downloads
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), DOWNLOAD_TIMEOUT);
     
-    if (error) {
-      console.error(`[file-retrieval] Storage download error:`, error);
-      logError(`[file-retrieval] Failed to download ${bucket}/${cleanPath}`, error);
-      return null;
+    try {
+      // Download file from storage with timeout
+      const { data, error } = await supabase.storage
+        .from(bucket)
+        .download(cleanPath, {
+          signal: controller.signal
+        });
+      
+      clearTimeout(timeoutId);
+      
+      if (error) {
+        console.error(`[file-retrieval] Storage download error:`, error);
+        logError(`[file-retrieval] Failed to download ${bucket}/${cleanPath}`, error);
+        return null;
+      }
+      
+      if (!data) {
+        console.error(`[file-retrieval] No data received for ${bucket}/${cleanPath}`);
+        return null;
+      }
+      
+      // Check file size before processing
+      const fileSize = data.size;
+      if (fileSize > MAX_FILE_SIZE) {
+        console.warn(`[file-retrieval] File ${cleanPath} too large: ${fileSize} bytes (max: ${MAX_FILE_SIZE})`);
+        return null;
+      }
+      
+      // Convert blob to array buffer, then to base64
+      const arrayBuffer = await data.arrayBuffer();
+      const uint8Array = new Uint8Array(arrayBuffer);
+      
+      // Convert to base64
+      const base64Content = btoa(String.fromCharCode(...uint8Array));
+      
+      // Determine content type from file extension
+      const extension = cleanPath.split('.').pop()?.toLowerCase() || '';
+      const contentType = getContentTypeFromExtension(extension);
+      
+      // Extract filename from path
+      const filename = cleanPath.split('/').pop() || cleanPath;
+      
+      console.log(`[file-retrieval] Successfully processed file: ${filename}, size: ${arrayBuffer.byteLength} bytes`);
+      
+      return {
+        filename,
+        content: base64Content,
+        content_type: contentType,
+        size: arrayBuffer.byteLength
+      };
+    } catch (downloadError) {
+      clearTimeout(timeoutId);
+      throw downloadError;
     }
-    
-    if (!data) {
-      console.error(`[file-retrieval] No data received for ${bucket}/${cleanPath}`);
-      return null;
-    }
-    
-    // Convert blob to array buffer, then to base64
-    const arrayBuffer = await data.arrayBuffer();
-    const uint8Array = new Uint8Array(arrayBuffer);
-    
-    // Convert to base64
-    const base64Content = btoa(String.fromCharCode(...uint8Array));
-    
-    // Determine content type from file extension
-    const extension = cleanPath.split('.').pop()?.toLowerCase() || '';
-    const contentType = getContentTypeFromExtension(extension);
-    
-    // Extract filename from path
-    const filename = cleanPath.split('/').pop() || cleanPath;
-    
-    console.log(`[file-retrieval] Successfully processed file: ${filename}, size: ${arrayBuffer.byteLength} bytes`);
-    
-    return {
-      filename,
-      content: base64Content,
-      content_type: contentType,
-      size: arrayBuffer.byteLength
-    };
   } catch (error) {
     console.error(`[file-retrieval] Exception downloading file ${bucket}/${filePath}:`, error);
     logError(`[file-retrieval] Exception downloading file`, error);
@@ -87,24 +113,54 @@ export async function downloadFileAsAttachment(
 }
 
 /**
- * Download multiple files as attachments
+ * Download multiple files as attachments with safety checks
  * @param fileUrls Array of file URLs from the database
+ * @param maxFiles Maximum number of files to process (default: 10)
+ * @param maxTotalSize Maximum total size in bytes (default: 45MB)
  * @returns Array of FileAttachment objects
  */
 export async function downloadMultipleFilesAsAttachments(
-  fileUrls: string[]
+  fileUrls: string[],
+  maxFiles: number = MAX_FILES_PER_EMAIL,
+  maxTotalSize: number = MAX_TOTAL_SIZE
 ): Promise<FileAttachment[]> {
-  console.log(`[file-retrieval] Processing ${fileUrls.length} files for attachments`);
+  console.log(`[file-retrieval] Processing ${fileUrls.length} files for attachments (max: ${maxFiles})`);
+  
+  // Limit number of files to process
+  const filesToProcess = fileUrls.slice(0, maxFiles);
+  if (filesToProcess.length < fileUrls.length) {
+    console.warn(`[file-retrieval] Limiting to ${maxFiles} files out of ${fileUrls.length} total`);
+  }
   
   const attachments: FileAttachment[] = [];
+  let totalSize = 0;
   
-  for (const fileUrl of fileUrls) {
+  for (const fileUrl of filesToProcess) {
     try {
+      // Check if we're approaching size limit
+      if (totalSize >= maxTotalSize) {
+        console.warn(`[file-retrieval] Stopping processing: total size limit reached (${totalSize}/${maxTotalSize} bytes)`);
+        break;
+      }
+      
       const { bucket, path } = parseStorageUrl(fileUrl);
       if (bucket && path) {
         const attachment = await downloadFileAsAttachment(bucket, path);
         if (attachment) {
-          attachments.push(attachment);
+          // Check if adding this file would exceed total size limit
+          if (totalSize + attachment.size > maxTotalSize) {
+            console.warn(`[file-retrieval] Skipping file ${attachment.filename}: would exceed total size limit`);
+            continue;
+          }
+          
+          // Validate the attachment
+          if (validateFileForAttachment(attachment)) {
+            attachments.push(attachment);
+            totalSize += attachment.size;
+            console.log(`[file-retrieval] Added attachment: ${attachment.filename} (${attachment.size} bytes)`);
+          } else {
+            console.warn(`[file-retrieval] File ${attachment.filename} failed validation`);
+          }
         } else {
           console.warn(`[file-retrieval] Failed to process file: ${fileUrl}`);
         }
@@ -114,10 +170,11 @@ export async function downloadMultipleFilesAsAttachments(
     } catch (error) {
       console.error(`[file-retrieval] Error processing file ${fileUrl}:`, error);
       logError(`[file-retrieval] Error processing file URL`, error);
+      // Continue with next file instead of failing completely
     }
   }
   
-  console.log(`[file-retrieval] Successfully processed ${attachments.length}/${fileUrls.length} files`);
+  console.log(`[file-retrieval] Successfully processed ${attachments.length}/${filesToProcess.length} files, total size: ${totalSize} bytes`);
   return attachments;
 }
 
@@ -164,7 +221,7 @@ function parseStorageUrl(url: string): { bucket: string; path: string } | null {
 }
 
 /**
- * Get MIME type from file extension
+ * Get MIME type from file extension with comprehensive mapping
  * @param extension File extension (without dot)
  * @returns MIME type string
  */
@@ -175,6 +232,7 @@ function getContentTypeFromExtension(extension: string): string {
     'doc': 'application/msword',
     'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     'txt': 'text/plain',
+    'rtf': 'application/rtf',
     
     // Images
     'jpg': 'image/jpeg',
@@ -183,8 +241,15 @@ function getContentTypeFromExtension(extension: string): string {
     'gif': 'image/gif',
     'webp': 'image/webp',
     'svg': 'image/svg+xml',
+    'bmp': 'image/bmp',
+    'tiff': 'image/tiff',
+    'tif': 'image/tiff',
     
-    // Default
+    // Archives (if needed)
+    'zip': 'application/zip',
+    'rar': 'application/x-rar-compressed',
+    
+    // Default fallback
     'default': 'application/octet-stream'
   };
   
@@ -192,15 +257,26 @@ function getContentTypeFromExtension(extension: string): string {
 }
 
 /**
- * Validate file for attachment (size and type)
+ * Validate file for attachment with comprehensive checks
  * @param attachment FileAttachment object
  * @returns Boolean indicating if file is valid
  */
 export function validateFileForAttachment(attachment: FileAttachment): boolean {
-  const maxSize = 40 * 1024 * 1024; // 40MB
+  // Check for required fields
+  if (!attachment.filename || !attachment.content || !attachment.content_type) {
+    console.warn(`[file-retrieval] File missing required fields: ${attachment.filename}`);
+    return false;
+  }
   
-  if (attachment.size > maxSize) {
-    console.warn(`[file-retrieval] File ${attachment.filename} too large: ${attachment.size} bytes`);
+  // Check file size
+  if (attachment.size > MAX_FILE_SIZE) {
+    console.warn(`[file-retrieval] File ${attachment.filename} too large: ${attachment.size} bytes (max: ${MAX_FILE_SIZE})`);
+    return false;
+  }
+  
+  // Check minimum size (avoid empty files)
+  if (attachment.size < 10) {
+    console.warn(`[file-retrieval] File ${attachment.filename} too small: ${attachment.size} bytes`);
     return false;
   }
   
@@ -209,10 +285,14 @@ export function validateFileForAttachment(attachment: FileAttachment): boolean {
     'application/pdf',
     'application/msword',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/rtf',
+    'text/plain',
     'image/jpeg',
     'image/png',
     'image/gif',
-    'image/webp'
+    'image/webp',
+    'image/bmp',
+    'image/tiff'
   ];
   
   if (!allowedTypes.includes(attachment.content_type)) {
@@ -220,5 +300,49 @@ export function validateFileForAttachment(attachment: FileAttachment): boolean {
     return false;
   }
   
+  // Basic base64 validation
+  try {
+    // Check if content is valid base64
+    atob(attachment.content.substring(0, 100)); // Test first 100 chars
+  } catch (error) {
+    console.warn(`[file-retrieval] File ${attachment.filename} has invalid base64 content`);
+    return false;
+  }
+  
   return true;
+}
+
+/**
+ * Get file size summary for logging and monitoring
+ * @param attachments Array of file attachments
+ * @returns Summary object with size information
+ */
+export function getAttachmentsSummary(attachments: FileAttachment[]): {
+  count: number;
+  totalSize: number;
+  averageSize: number;
+  largestFile: string;
+  smallestFile: string;
+} {
+  if (attachments.length === 0) {
+    return {
+      count: 0,
+      totalSize: 0,
+      averageSize: 0,
+      largestFile: '',
+      smallestFile: ''
+    };
+  }
+  
+  const totalSize = attachments.reduce((sum, att) => sum + att.size, 0);
+  const sizes = attachments.map(att => ({ name: att.filename, size: att.size }));
+  sizes.sort((a, b) => b.size - a.size);
+  
+  return {
+    count: attachments.length,
+    totalSize,
+    averageSize: Math.round(totalSize / attachments.length),
+    largestFile: sizes[0]?.name || '',
+    smallestFile: sizes[sizes.length - 1]?.name || ''
+  };
 }

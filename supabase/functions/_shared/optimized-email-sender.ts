@@ -3,7 +3,7 @@
  * Optimized email sender with queue support and rate limiting
  */
 import { sendEmail } from "./email-sender.ts";
-import { downloadMultipleFilesAsAttachments, validateFileForAttachment, type FileAttachment } from "./file-retrieval.ts";
+import { downloadMultipleFilesAsAttachments, validateFileForAttachment, getAttachmentsSummary, type FileAttachment } from "./file-retrieval.ts";
 import { 
   getTodayEmailUsage, 
   updateEmailUsage, 
@@ -22,6 +22,11 @@ interface OptimizedEmailResult {
   queued: boolean;
   message: string;
   recipient?: string;
+  attachmentsSummary?: {
+    count: number;
+    totalSize: number;
+    skipped: number;
+  };
 }
 
 /**
@@ -74,25 +79,46 @@ export async function sendOptimizedEmail(
       };
     }
     
-    // Process file attachments if provided
+    // Process file attachments if provided with enhanced safety
     let attachments: FileAttachment[] = [];
+    let skippedFiles = 0;
+    
     if (fileUrls && fileUrls.length > 0) {
       console.log(`[optimized-email] Processing ${fileUrls.length} file attachments for ${recipient}`);
       
       try {
-        const allAttachments = await downloadMultipleFilesAsAttachments(fileUrls);
-        // Filter out invalid attachments
-        attachments = allAttachments.filter(validateFileForAttachment);
+        // Download files with safety limits
+        const allAttachments = await downloadMultipleFilesAsAttachments(
+          fileUrls,
+          10, // Max 10 files per email
+          40 * 1024 * 1024 // Max 40MB total for attachments
+        );
         
-        console.log(`[optimized-email] Successfully prepared ${attachments.length}/${allAttachments.length} attachments`);
+        // Filter out invalid attachments and count skipped files
+        attachments = allAttachments.filter(att => {
+          const isValid = validateFileForAttachment(att);
+          if (!isValid) skippedFiles++;
+          return isValid;
+        });
         
-        if (attachments.length !== allAttachments.length) {
-          console.warn(`[optimized-email] Some attachments were filtered out due to validation failures`);
+        // Get summary for logging
+        const summary = getAttachmentsSummary(attachments);
+        console.log(`[optimized-email] Attachment summary:`, {
+          processed: attachments.length,
+          skipped: skippedFiles,
+          totalRequested: fileUrls.length,
+          totalSize: summary.totalSize,
+          largestFile: summary.largestFile
+        });
+        
+        if (skippedFiles > 0) {
+          console.warn(`[optimized-email] ${skippedFiles} attachments were skipped due to validation failures`);
         }
       } catch (attachmentError) {
         console.error(`[optimized-email] Error processing attachments:`, attachmentError);
         // Continue without attachments rather than failing completely
         console.log(`[optimized-email] Continuing without attachments due to processing error`);
+        skippedFiles = fileUrls.length; // All files were skipped
       }
     }
     
@@ -110,7 +136,12 @@ export async function sendOptimizedEmail(
         sent: true,
         queued: false,
         message: `Email sent successfully with ${attachments.length} attachments`,
-        recipient
+        recipient,
+        attachmentsSummary: {
+          count: attachments.length,
+          totalSize: attachments.reduce((sum, att) => sum + att.size, 0),
+          skipped: skippedFiles
+        }
       };
     } else {
       console.error(`[optimized-email] Failed to send email to ${recipient}:`, emailResult.error);
@@ -142,7 +173,12 @@ export async function sendOptimizedEmail(
         sent: false,
         queued: true,
         message: `Email send failed, queued for retry. Error: ${emailResult.error?.message || 'Unknown error'}`,
-        recipient
+        recipient,
+        attachmentsSummary: {
+          count: attachments.length,
+          totalSize: attachments.reduce((sum, att) => sum + att.size, 0),
+          skipped: skippedFiles
+        }
       };
     }
   } catch (error) {
