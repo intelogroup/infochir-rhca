@@ -18,7 +18,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     const path = location.pathname;
     
     const breadcrumbs = [
-      { label: "Administration", href: "/admin" }
+      { label: "Administration", href: "/admin/dashboard" }
     ];
     
     if (path === "/admin/dashboard") {
@@ -33,6 +33,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       breadcrumbs.push({ label: "Index Medicus", href: "/admin/index-medicus" });
     } else if (path === "/admin/settings") {
       breadcrumbs.push({ label: "Paramètres", href: "/admin/settings" });
+    } else if (path === "/admin/email-settings") {
+      breadcrumbs.push({ label: "Paramètres Email", href: "/admin/email-settings" });
     }
     
     return breadcrumbs;
@@ -40,17 +42,19 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full">
+      <div className="min-h-screen flex w-full bg-gray-50">
         <AppSidebar />
-        <SidebarInset>
-          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+        <SidebarInset className="flex-1">
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-white px-4 shadow-sm">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumbs items={getBreadcrumbs()} />
           </header>
-          <div className="flex flex-1 flex-col gap-4 p-4">
-            {children}
-          </div>
+          <main className="flex-1 p-6">
+            <div className="max-w-7xl mx-auto">
+              {children}
+            </div>
+          </main>
         </SidebarInset>
       </div>
     </SidebarProvider>

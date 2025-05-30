@@ -2,13 +2,15 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  BarChart,
+  BarChart3,
   Settings,
   Users,
   FileText,
   BookOpen,
   LogOut,
-  Home
+  Home,
+  MailSettings,
+  TrendingUp
 } from 'lucide-react';
 import {
   Sidebar,
@@ -24,47 +26,63 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAdminAuth } from '@/hooks/use-admin-auth';
 
-const menuItems = [
+const mainMenuItems = [
   {
     title: "Dashboard",
-    icon: BarChart,
+    icon: BarChart3,
     href: "/admin/dashboard",
+    description: "Vue d'ensemble"
   },
   {
     title: "Contenu",
     icon: FileText,
     href: "/admin/content",
+    description: "Gérer les articles"
   },
   {
     title: "Utilisateurs",
     icon: Users,
     href: "/admin/users",
+    description: "Gestion des rôles"
   },
   {
     title: "Analytics",
-    icon: BarChart,
+    icon: TrendingUp,
     href: "/admin/analytics",
+    description: "Statistiques"
   },
   {
     title: "Index Medicus",
     icon: BookOpen,
     href: "/admin/index-medicus",
-  },
+    description: "Base de données"
+  }
+];
+
+const settingsMenuItems = [
   {
     title: "Paramètres",
     icon: Settings,
     href: "/admin/settings",
+    description: "Configuration"
+  },
+  {
+    title: "Email",
+    icon: MailSettings,
+    href: "/admin/email-settings",
+    description: "Configuration email"
   }
 ];
 
 export const AppSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAdminAuth();
+  const { user, isAdmin } = useAdminAuth();
 
   const handleSignOut = async () => {
     try {
@@ -78,38 +96,81 @@ export const AppSidebar = () => {
   };
 
   return (
-    <Sidebar>
-      <SidebarHeader className="border-b border-sidebar-border">
-        <div className="flex items-center gap-2 px-2 py-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Home className="h-4 w-4" />
+    <Sidebar className="border-r bg-white">
+      <SidebarHeader className="border-b border-gray-100 p-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+            <Home className="h-5 w-5" />
           </div>
-          <div className="flex flex-col gap-0.5">
-            <span className="text-sm font-semibold">Administration</span>
-            <span className="text-xs text-sidebar-foreground/70">Infochir-RHCA</span>
+          <div className="flex flex-col gap-0.5 min-w-0">
+            <span className="text-sm font-semibold text-gray-900 truncate">Administration</span>
+            <span className="text-xs text-gray-500 truncate">Infochir-RHCA</span>
             {user && (
-              <span className="text-xs text-sidebar-foreground/50 truncate">
-                {user.email}
-              </span>
+              <div className="flex items-center gap-1 mt-1">
+                <Badge variant="default" className="text-xs px-1.5 py-0.5">
+                  Admin
+                </Badge>
+              </div>
             )}
           </div>
         </div>
+        {user && (
+          <div className="mt-3 pt-3 border-t border-gray-100">
+            <p className="text-xs text-gray-600 truncate" title={user.email}>
+              {user.email}
+            </p>
+          </div>
+        )}
       </SidebarHeader>
       
-      <SidebarContent>
+      <SidebarContent className="p-2">
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="px-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Navigation
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
+              {mainMenuItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton 
+                    asChild 
+                    isActive={location.pathname === item.href}
+                    className="group relative"
+                  >
+                    <Link to={item.href} className="flex items-center gap-3 p-2">
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-sm font-medium truncate">{item.title}</span>
+                        <span className="text-xs text-gray-500 truncate">{item.description}</span>
+                      </div>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarSeparator className="my-2" />
+
+        <SidebarGroup>
+          <SidebarGroupLabel className="px-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Configuration
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {settingsMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild 
                     isActive={location.pathname === item.href}
                   >
-                    <Link to={item.href}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
+                    <Link to={item.href} className="flex items-center gap-3 p-2">
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-sm font-medium truncate">{item.title}</span>
+                        <span className="text-xs text-gray-500 truncate">{item.description}</span>
+                      </div>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -119,16 +180,16 @@ export const AppSidebar = () => {
         </SidebarGroup>
       </SidebarContent>
       
-      <SidebarFooter className="border-t border-sidebar-border">
+      <SidebarFooter className="border-t border-gray-100 p-2">
         <SidebarMenu>
           <SidebarMenuItem>
             <Button 
               variant="ghost" 
               onClick={handleSignOut} 
-              className="w-full justify-start gap-2 h-8"
+              className="w-full justify-start gap-3 h-10 hover:bg-red-50 hover:text-red-600"
             >
               <LogOut className="h-4 w-4" />
-              <span>Se déconnecter</span>
+              <span className="text-sm">Se déconnecter</span>
             </Button>
           </SidebarMenuItem>
         </SidebarMenu>

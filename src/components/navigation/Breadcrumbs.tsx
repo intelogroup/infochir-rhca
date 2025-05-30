@@ -1,5 +1,6 @@
 
 import { ChevronRight, Home } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface BreadcrumbsProps {
   items: Array<{
@@ -9,34 +10,28 @@ interface BreadcrumbsProps {
 }
 
 export const Breadcrumbs = ({ items }: BreadcrumbsProps) => {
-  const handleNavigation = (href?: string) => {
-    if (href) {
-      window.location.href = href;
-    }
-  };
-
   return (
     <nav aria-label="Fil d'ariane" className="flex items-center space-x-1 text-sm text-gray-500">
-      <button
-        onClick={() => handleNavigation('/')}
-        className="flex items-center hover:text-primary transition-colors"
+      <Link
+        to="/"
+        className="flex items-center hover:text-primary transition-colors p-1 rounded"
         aria-label="Accueil"
       >
         <Home className="h-4 w-4" />
-      </button>
+      </Link>
       
       {items.map((item, index) => (
         <div key={index} className="flex items-center">
-          <ChevronRight className="h-4 w-4 mx-1" />
-          {item.href ? (
-            <button
-              onClick={() => handleNavigation(item.href)}
-              className="hover:text-primary transition-colors"
+          <ChevronRight className="h-4 w-4 mx-1 text-gray-400" />
+          {item.href && index < items.length - 1 ? (
+            <Link
+              to={item.href}
+              className="hover:text-primary transition-colors px-1 py-0.5 rounded text-gray-600 hover:bg-gray-100"
             >
               {item.label}
-            </button>
+            </Link>
           ) : (
-            <span className="text-gray-900 font-medium">{item.label}</span>
+            <span className="text-gray-900 font-medium px-1">{item.label}</span>
           )}
         </div>
       ))}

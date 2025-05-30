@@ -1,4 +1,3 @@
-
 import { RouteWrapper } from "@/components/routing/RouteWrapper";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import Home from "@/pages/Home";
