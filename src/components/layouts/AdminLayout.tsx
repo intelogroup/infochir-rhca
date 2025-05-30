@@ -22,17 +22,17 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
     ];
     
     if (path === "/admin/dashboard") {
-      breadcrumbs.push({ label: "Dashboard" });
+      breadcrumbs.push({ label: "Dashboard", href: "/admin/dashboard" });
     } else if (path === "/admin/content") {
-      breadcrumbs.push({ label: "Contenu" });
+      breadcrumbs.push({ label: "Contenu", href: "/admin/content" });
     } else if (path === "/admin/users") {
-      breadcrumbs.push({ label: "Utilisateurs" });
+      breadcrumbs.push({ label: "Utilisateurs", href: "/admin/users" });
     } else if (path === "/admin/analytics") {
-      breadcrumbs.push({ label: "Analytics" });
+      breadcrumbs.push({ label: "Analytics", href: "/admin/analytics" });
     } else if (path === "/admin/index-medicus") {
-      breadcrumbs.push({ label: "Index Medicus" });
+      breadcrumbs.push({ label: "Index Medicus", href: "/admin/index-medicus" });
     } else if (path === "/admin/settings") {
-      breadcrumbs.push({ label: "Paramètres" });
+      breadcrumbs.push({ label: "Paramètres", href: "/admin/settings" });
     }
     
     return breadcrumbs;
