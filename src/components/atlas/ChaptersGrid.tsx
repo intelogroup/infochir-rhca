@@ -14,17 +14,28 @@ export const ChaptersGrid = () => {
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [searchTerm, setSearchTerm] = useState("");
   
+  // Sort chapters by issue number for both the main grid and filtering
+  const sortedChapters = React.useMemo(() => {
+    if (!chapters) return chapters;
+    
+    return [...chapters].sort((a, b) => {
+      const aNum = a.chapterNumber || parseInt(a.pageNumber || '999', 10) || 999;
+      const bNum = b.chapterNumber || parseInt(b.pageNumber || '999', 10) || 999;
+      return aNum - bNum;
+    });
+  }, [chapters]);
+  
   const filteredChapters = React.useMemo(() => {
-    if (!chapters || !searchTerm.trim()) return chapters;
+    if (!sortedChapters || !searchTerm.trim()) return sortedChapters;
     
     const query = searchTerm.toLowerCase().trim();
-    return chapters.filter(chapter => 
+    return sortedChapters.filter(chapter => 
       chapter.title.toLowerCase().includes(query) ||
       (chapter.description && chapter.description.toLowerCase().includes(query)) ||
       (chapter.category && chapter.category.toLowerCase().includes(query)) ||
       (chapter.tags && chapter.tags.some(tag => tag.toLowerCase().includes(query)))
     );
-  }, [chapters, searchTerm]);
+  }, [sortedChapters, searchTerm]);
 
   const toggleViewMode = () => {
     setViewMode(prev => prev === "grid" ? "table" : "grid");
@@ -115,7 +126,7 @@ export const ChaptersGrid = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredChapters.map((chapter) => (
+          {filteredChapters?.map((chapter) => (
             <AtlasCard key={chapter.id} chapter={chapter} />
           ))}
         </div>

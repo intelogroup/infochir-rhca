@@ -4,7 +4,7 @@ import { useAtlasArticles } from "./hooks/useAtlasArticles";
 import { Link } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Clock, AlertCircle, FileText, Users } from "lucide-react";
+import { CheckCircle2, Clock, AlertCircle, FileText } from "lucide-react";
 
 export const AtlasTableOfContents = () => {
   const { data: chapters, isLoading } = useAtlasArticles();
@@ -69,24 +69,6 @@ export const AtlasTableOfContents = () => {
     return `Atlas de Diagnostic Chirurgicale (ADC) - ${chapterName}`;
   };
 
-  const formatAuthors = (chapter: any) => {
-    const authors = chapter.authors || [];
-    const primaryAuthor = chapter.primary_author;
-    const coAuthors = chapter.co_authors || [];
-    
-    // Combine all author sources
-    let allAuthors = [...authors];
-    if (primaryAuthor && !allAuthors.includes(primaryAuthor)) {
-      allAuthors.unshift(primaryAuthor);
-    }
-    allAuthors = [...allAuthors, ...coAuthors];
-    
-    // Remove duplicates and filter out empty strings
-    const uniqueAuthors = [...new Set(allAuthors.filter(author => author && author.trim()))];
-    
-    return uniqueAuthors.length > 0 ? uniqueAuthors.join(', ') : 'Auteurs non spécifiés';
-  };
-
   return (
     <div className="w-full">
       <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
@@ -121,13 +103,6 @@ export const AtlasTableOfContents = () => {
                       {formatTitle(chapter.title, chapter.chapterNumber)}
                     </h5>
                   </Link>
-                  
-                  <div className="flex items-center gap-1 text-xs text-gray-600 mb-2">
-                    <Users className="w-3 h-3 flex-shrink-0" />
-                    <span className="leading-tight">
-                      {formatAuthors(chapter)}
-                    </span>
-                  </div>
                   
                   <div className="flex items-center justify-between">
                     {getStatusBadge(chapter.status)}
