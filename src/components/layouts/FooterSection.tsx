@@ -18,7 +18,7 @@ interface SocialLink extends FooterLink {
 const quickLinks: FooterLink[] = [
   { name: "Soumettre un manuscrit", href: "#submit" },
   { name: "Comité éditorial", href: "#editorial" },
-  { name: "Directives pour les auteurs", href: "#guidelines" },
+  { name: "Directives pour les auteurs", href: "/guidelines" },
   { name: "Nous contacter", href: "#contact" },
   { name: "Annuaire", href: "/annuaire" },
   { name: "À propos", href: "/about" },

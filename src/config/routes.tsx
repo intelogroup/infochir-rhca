@@ -1,4 +1,3 @@
-
 import Home from "@/pages/Home";
 import NotFound from "@/pages/NotFound";
 import TriggerUploads from "@/pages/TriggerUploads";
@@ -10,6 +9,7 @@ import RhcaArticleDetail from "@/pages/rhca/RhcaArticleDetail";
 import ADC from "@/pages/ADC";
 import IGM from "@/pages/IGM";
 import Submission from "@/pages/Submission";
+import Directives from "@/pages/Directives";
 import Annuaire from "@/pages/Annuaire";
 import IndexMedicus from "@/pages/IndexMedicus";
 import Donate from "@/pages/Donate";
@@ -62,6 +62,11 @@ export const routes = [
         path: "submission",
         element: <Submission />,
         name: "submission",
+      },
+      {
+        path: "guidelines",
+        element: <Directives />,
+        name: "guidelines",
       },
       {
         path: "annuaire",
