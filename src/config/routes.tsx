@@ -1,4 +1,3 @@
-
 import Home from "@/pages/Home";
 import NotFound from "@/pages/NotFound";
 import TriggerUploads from "@/pages/TriggerUploads";
@@ -21,6 +20,10 @@ import EditorialCommittee from "@/pages/EditorialCommittee";
 import DonateSuccess from "@/pages/donate/DonateSuccess";
 import Analytics from "@/pages/admin/Analytics";
 import Dashboard from "@/pages/admin/Dashboard";
+import Content from "@/pages/admin/Content";
+import Users from "@/pages/admin/Users";
+import Settings from "@/pages/admin/Settings";
+import IndexMedicusAdmin from "@/pages/admin/IndexMedicusAdmin";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import AdminNotFound from "@/pages/admin/NotFound";
 import { AdminRouteWrapper } from "@/components/routing/AdminRouteWrapper";
@@ -140,6 +143,16 @@ export const routes = [
         name: "admin-dashboard-explicit",
       },
       {
+        path: "content",
+        element: <AdminRouteWrapper component={() => <AdminLayout><Content /></AdminLayout>} />,
+        name: "admin-content",
+      },
+      {
+        path: "users",
+        element: <AdminRouteWrapper component={() => <AdminLayout><Users /></AdminLayout>} />,
+        name: "admin-users",
+      },
+      {
         path: "uploads",
         element: <AdminRouteWrapper component={() => <AdminLayout><TriggerUploads /></AdminLayout>} />,
         name: "admin-uploads",
@@ -148,6 +161,16 @@ export const routes = [
         path: "analytics",
         element: <AdminRouteWrapper component={() => <AdminLayout><Analytics /></AdminLayout>} />,
         name: "admin-analytics",
+      },
+      {
+        path: "index-medicus",
+        element: <AdminRouteWrapper component={() => <AdminLayout><IndexMedicusAdmin /></AdminLayout>} />,
+        name: "admin-index-medicus",
+      },
+      {
+        path: "settings",
+        element: <AdminRouteWrapper component={() => <AdminLayout><Settings /></AdminLayout>} />,
+        name: "admin-settings",
       },
       {
         path: "*",
