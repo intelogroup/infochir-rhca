@@ -13,7 +13,7 @@ import {
 const ADMIN_EMAILS = ["jimkalinov@gmail.com", "jalouidor@hotmail.com"];
 
 const handler = async (req: Request): Promise<Response> => {
-  console.log("[notify-submission] Function called with optimized email system");
+  console.log("[notify-submission] Function called with file attachment support");
 
   // Handle CORS preflight request
   const corsResponse = handleCors(req);
@@ -25,7 +25,9 @@ const handler = async (req: Request): Promise<Response> => {
     console.log("[notify-submission] Received submission data:", {
       title: submissionData.title,
       userEmail: submissionData.corresponding_author_email,
-      publicationType: submissionData.publication_type
+      publicationType: submissionData.publication_type,
+      articleFiles: submissionData.article_files_urls?.length || 0,
+      imageAnnexes: submissionData.image_annexes_urls?.length || 0
     });
 
     // Get current email usage for logging
@@ -48,8 +50,17 @@ const handler = async (req: Request): Promise<Response> => {
     const userText = generateUserConfirmationTextContent(submissionData, submissionTime);
     const userSubject = "Confirmation de réception - Votre soumission d'article";
 
-    // Send optimized batch emails
-    console.log("[notify-submission] Sending optimized batch emails");
+    // Extract file URLs for attachments
+    const articleFiles = submissionData.article_files_urls || [];
+    const imageAnnexes = submissionData.image_annexes_urls || [];
+
+    console.log("[notify-submission] Preparing to send emails with attachments:", {
+      articleFiles: articleFiles.length,
+      imageAnnexes: imageAnnexes.length
+    });
+
+    // Send optimized batch emails with file attachments
+    console.log("[notify-submission] Sending optimized batch emails with file attachments");
     const emailResults = await sendOptimizedBatch(
       submissionData.corresponding_author_email,
       userSubject,
@@ -60,7 +71,9 @@ const handler = async (req: Request): Promise<Response> => {
       adminHtml,
       adminText,
       submissionData.id,
-      submissionData.corresponding_author_email
+      submissionData.corresponding_author_email,
+      articleFiles, // Pass article files for admin attachments
+      imageAnnexes  // Pass image annexes for admin attachments
     );
 
     // Determine overall success
@@ -68,21 +81,27 @@ const handler = async (req: Request): Promise<Response> => {
     const adminSuccessCount = emailResults.adminResults.filter(result => result.success).length;
     const overallSuccess = userSuccess || adminSuccessCount > 0;
 
-    console.log("[notify-submission] Email batch completed:", {
+    console.log("[notify-submission] Email batch completed with attachments:", {
       strategy: emailResults.strategy,
       userSent: emailResults.userResult.sent,
       userQueued: emailResults.userResult.queued,
       adminResultsCount: emailResults.adminResults.length,
-      remainingEmails: emailResults.usage.remaining
+      remainingEmails: emailResults.usage.remaining,
+      attachmentsSent: (articleFiles.length + imageAnnexes.length) > 0
     });
 
     if (overallSuccess) {
       return new Response(
         JSON.stringify({
           success: true,
-          message: "Submission notifications processed successfully",
+          message: "Submission notifications processed successfully with attachments",
           emailStrategy: emailResults.strategy,
           usage: emailResults.usage,
+          attachments: {
+            articleFiles: articleFiles.length,
+            imageAnnexes: imageAnnexes.length,
+            total: articleFiles.length + imageAnnexes.length
+          },
           results: {
             user: emailResults.userResult,
             admin: emailResults.adminResults
@@ -101,6 +120,11 @@ const handler = async (req: Request): Promise<Response> => {
           message: "Failed to process notifications",
           emailStrategy: emailResults.strategy,
           usage: emailResults.usage,
+          attachments: {
+            articleFiles: articleFiles.length,
+            imageAnnexes: imageAnnexes.length,
+            total: articleFiles.length + imageAnnexes.length
+          },
           results: {
             user: emailResults.userResult,
             admin: emailResults.adminResults
