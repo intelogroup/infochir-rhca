@@ -26,6 +26,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { useAdminAuth } from '@/hooks/use-admin-auth';
 
 const menuItems = [
   {
@@ -63,11 +64,12 @@ const menuItems = [
 export const AppSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAdminAuth();
 
   const handleSignOut = async () => {
     try {
       await supabase.auth.signOut();
-      navigate('/login');
+      navigate('/admin/login');
       toast.success("Déconnexion réussie");
     } catch (error) {
       console.error("Erreur lors de la déconnexion :", error);
@@ -85,6 +87,11 @@ export const AppSidebar = () => {
           <div className="flex flex-col gap-0.5">
             <span className="text-sm font-semibold">Administration</span>
             <span className="text-xs text-sidebar-foreground/70">Infochir-RHCA</span>
+            {user && (
+              <span className="text-xs text-sidebar-foreground/50 truncate">
+                {user.email}
+              </span>
+            )}
           </div>
         </div>
       </SidebarHeader>

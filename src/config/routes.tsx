@@ -1,182 +1,337 @@
-import Home from "@/pages/Home";
-import NotFound from "@/pages/NotFound";
-import TriggerUploads from "@/pages/TriggerUploads";
-import ArticleDetail from "@/pages/articles/ArticleDetail";
+import { RouteWrapper } from "@/components/routing/RouteWrapper";
 import { MainLayout } from "@/components/layouts/MainLayout";
+import Home from "@/pages/Home";
 import About from "@/pages/About";
 import RHCA from "@/pages/RHCA";
-import RhcaArticleDetail from "@/pages/rhca/RhcaArticleDetail";
-import RHCADirectives from "@/pages/rhca/Directives";
-import ADC from "@/pages/ADC";
 import IGM from "@/pages/IGM";
-import IGMDirectives from "@/pages/igm/Directives";
-import Submission from "@/pages/Submission";
-import Directives from "@/pages/Directives";
-import Annuaire from "@/pages/Annuaire";
+import ADC from "@/pages/ADC";
 import IndexMedicus from "@/pages/IndexMedicus";
-import Donate from "@/pages/Donate";
-import Opportunities from "@/pages/Opportunities";
+import Annuaire from "@/pages/Annuaire";
 import EditorialCommittee from "@/pages/EditorialCommittee";
-import DonateSuccess from "@/pages/donate/DonateSuccess";
-import Analytics from "@/pages/admin/Analytics";
+import Directives from "@/pages/Directives";
+import Submission from "@/pages/Submission";
+import Donate from "@/pages/Donate";
+import DonateSuccess from "@/pages/DonateSuccess";
+import Opportunities from "@/pages/Opportunities";
+import TriggerUploads from "@/pages/TriggerUploads";
+import ArticleDetail from "@/pages/ArticleDetail";
+import NotFound from "@/pages/NotFound";
+import RhcaDirectives from "@/pages/rhca/RhcaDirectives";
+import RhcaArticleDetail from "@/pages/rhca/RhcaArticleDetail";
+import IGMDirectives from "@/pages/igm/IGMDirectives";
+import IGMEditorialCommittee from "@/pages/igm/IGMEditorialCommittee";
 import Dashboard from "@/pages/admin/Dashboard";
 import Content from "@/pages/admin/Content";
 import Users from "@/pages/admin/Users";
+import Analytics from "@/pages/admin/Analytics";
+import IndexMedicusAdmin from "@/pages/admin/IndexMedicus";
 import Settings from "@/pages/admin/Settings";
-import IndexMedicusAdmin from "@/pages/admin/IndexMedicusAdmin";
+import EmailSettings from "@/pages/admin/EmailSettings";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
-import AdminNotFound from "@/pages/admin/NotFound";
+import { Navigate } from "react-router-dom";
 import { AdminRouteWrapper } from "@/components/routing/AdminRouteWrapper";
+import AdminLogin from "@/pages/admin/Login";
 
+// Update the routes array to include the admin login route
 export const routes = [
   {
     path: "/",
-    element: <MainLayout>{null}</MainLayout>,
-    name: "main",
+    element: (
+      <RouteWrapper>
+        <MainLayout>
+          <Home />
+        </MainLayout>
+      </RouteWrapper>
+    ),
+  },
+  {
+    path: "/about",
+    element: (
+      <RouteWrapper>
+        <MainLayout>
+          <About />
+        </MainLayout>
+      </RouteWrapper>
+    ),
+  },
+  {
+    path: "/rhca",
     children: [
       {
-        path: "",
-        element: <Home />,
-        name: "home",
+        index: true,
+        element: (
+          <RouteWrapper>
+            <MainLayout>
+              <RHCA />
+            </MainLayout>
+          </RouteWrapper>
+        ),
       },
       {
-        path: "about",
-        element: <About />,
-        name: "about",
+        path: "directives",
+        element: (
+          <RouteWrapper>
+            <MainLayout>
+              <RhcaDirectives />
+            </MainLayout>
+          </RouteWrapper>
+        ),
       },
       {
-        path: "rhca",
-        element: <RHCA />,
-        name: "rhca",
-      },
-      {
-        path: "rhca/article/:id",
-        element: <RhcaArticleDetail />,
-        name: "rhca-article-detail",
-      },
-      {
-        path: "rhca/directives",
-        element: <RHCADirectives />,
-        name: "rhca-directives",
-      },
-      {
-        path: "adc",
-        element: <ADC />,
-        name: "adc",
-      },
-      {
-        path: "igm",
-        element: <IGM />,
-        name: "igm",
-      },
-      {
-        path: "igm/directives",
-        element: <IGMDirectives />,
-        name: "igm-directives",
-      },
-      {
-        path: "submission",
-        element: <Submission />,
-        name: "submission",
-      },
-      {
-        path: "guidelines",
-        element: <Directives />,
-        name: "guidelines",
-      },
-      {
-        path: "annuaire",
-        element: <Annuaire />,
-        name: "annuaire",
-      },
-      {
-        path: "index-medicus",
-        element: <IndexMedicus />,
-        name: "index-medicus",
-      },
-      {
-        path: "donate",
-        element: <Donate />,
-        name: "donate",
-      },
-      {
-        path: "donate/success",
-        element: <DonateSuccess />,
-        name: "donate-success",
-      },
-      {
-        path: "opportunities",
-        element: <Opportunities />,
-        name: "opportunities",
-      },
-      {
-        path: "editorial",
-        element: <EditorialCommittee />,
-        name: "editorial",
-      },
-      {
-        path: "articles/:id",
-        element: <ArticleDetail />,
-        name: "article-detail",
-      },
-      {
-        path: "*",
-        element: <NotFound />,
-        name: "notFound",
+        path: "article/:id",
+        element: (
+          <RouteWrapper>
+            <MainLayout>
+              <RhcaArticleDetail />
+            </MainLayout>
+          </RouteWrapper>
+        ),
       },
     ],
   },
-  // Admin routes with proper nesting
   {
-    path: "/admin",
-    element: <AdminRouteWrapper component={() => <AdminLayout><Dashboard /></AdminLayout>} />,
-    name: "admin-root",
+    path: "/igm",
     children: [
       {
-        path: "",
-        element: <AdminRouteWrapper component={() => <AdminLayout><Dashboard /></AdminLayout>} />,
-        name: "admin-dashboard",
+        index: true,
+        element: (
+          <RouteWrapper>
+            <MainLayout>
+              <IGM />
+            </MainLayout>
+          </RouteWrapper>
+        ),
       },
       {
-        path: "dashboard",
-        element: <AdminRouteWrapper component={() => <AdminLayout><Dashboard /></AdminLayout>} />,
-        name: "admin-dashboard-explicit",
+        path: "directives",
+        element: (
+          <RouteWrapper>
+            <MainLayout>
+              <IGMDirectives />
+            </MainLayout>
+          </RouteWrapper>
+        ),
       },
       {
-        path: "content",
-        element: <AdminRouteWrapper component={() => <AdminLayout><Content /></AdminLayout>} />,
-        name: "admin-content",
-      },
-      {
-        path: "users",
-        element: <AdminRouteWrapper component={() => <AdminLayout><Users /></AdminLayout>} />,
-        name: "admin-users",
-      },
-      {
-        path: "uploads",
-        element: <AdminRouteWrapper component={() => <AdminLayout><TriggerUploads /></AdminLayout>} />,
-        name: "admin-uploads",
-      },
-      {
-        path: "analytics",
-        element: <AdminRouteWrapper component={() => <AdminLayout><Analytics /></AdminLayout>} />,
-        name: "admin-analytics",
-      },
-      {
-        path: "index-medicus",
-        element: <AdminRouteWrapper component={() => <AdminLayout><IndexMedicusAdmin /></AdminLayout>} />,
-        name: "admin-index-medicus",
-      },
-      {
-        path: "settings",
-        element: <AdminRouteWrapper component={() => <AdminLayout><Settings /></AdminLayout>} />,
-        name: "admin-settings",
-      },
-      {
-        path: "*",
-        element: <AdminRouteWrapper component={() => <AdminLayout><AdminNotFound /></AdminLayout>} />,
-        name: "admin-not-found",
+        path: "editorial-committee",
+        element: (
+          <RouteWrapper>
+            <MainLayout>
+              <IGMEditorialCommittee />
+            </MainLayout>
+          </RouteWrapper>
+        ),
       },
     ],
+  },
+  {
+    path: "/adc",
+    element: (
+      <RouteWrapper>
+        <MainLayout>
+          <ADC />
+        </MainLayout>
+      </RouteWrapper>
+    ),
+  },
+  {
+    path: "/index-medicus",
+    element: (
+      <RouteWrapper>
+        <MainLayout>
+          <IndexMedicus />
+        </MainLayout>
+      </RouteWrapper>
+    ),
+  },
+  {
+    path: "/annuaire",
+    element: (
+      <RouteWrapper>
+        <MainLayout>
+          <Annuaire />
+        </MainLayout>
+      </RouteWrapper>
+    ),
+  },
+  {
+    path: "/editorial-committee",
+    element: (
+      <RouteWrapper>
+        <MainLayout>
+          <EditorialCommittee />
+        </MainLayout>
+      </RouteWrapper>
+    ),
+  },
+  {
+    path: "/directives",
+    element: (
+      <RouteWrapper>
+        <MainLayout>
+          <Directives />
+        </MainLayout>
+      </RouteWrapper>
+    ),
+  },
+  {
+    path: "/submission",
+    element: (
+      <RouteWrapper>
+        <MainLayout>
+          <Submission />
+        </MainLayout>
+      </RouteWrapper>
+    ),
+  },
+  {
+    path: "/donate",
+    children: [
+      {
+        index: true,
+        element: (
+          <RouteWrapper>
+            <MainLayout>
+              <Donate />
+            </MainLayout>
+          </RouteWrapper>
+        ),
+      },
+      {
+        path: "success",
+        element: (
+          <RouteWrapper>
+            <MainLayout>
+              <DonateSuccess />
+            </MainLayout>
+          </RouteWrapper>
+        ),
+      },
+    ],
+  },
+  {
+    path: "/opportunities",
+    element: (
+      <RouteWrapper>
+        <MainLayout>
+          <Opportunities />
+        </MainLayout>
+      </RouteWrapper>
+    ),
+  },
+  {
+    path: "/trigger-uploads",
+    element: (
+      <RouteWrapper>
+        <MainLayout>
+          <TriggerUploads />
+        </MainLayout>
+      </RouteWrapper>
+    ),
+  },
+  // Admin routes
+  {
+    path: "/admin/login",
+    element: <AdminLogin />,
+  },
+  {
+    path: "/admin",
+    element: (
+      <AdminRouteWrapper component={() => (
+        <AdminLayout>
+          <Navigate to="/admin/dashboard" replace />
+        </AdminLayout>
+      )} />
+    ),
+  },
+  {
+    path: "/admin/dashboard",
+    element: (
+      <AdminRouteWrapper component={() => (
+        <AdminLayout>
+          <Dashboard />
+        </AdminLayout>
+      )} />
+    ),
+  },
+  {
+    path: "/admin/content",
+    element: (
+      <AdminRouteWrapper component={() => (
+        <AdminLayout>
+          <Content />
+        </AdminLayout>
+      )} />
+    ),
+  },
+  {
+    path: "/admin/users",
+    element: (
+      <AdminRouteWrapper component={() => (
+        <AdminLayout>
+          <Users />
+        </AdminLayout>
+      )} />
+    ),
+  },
+  {
+    path: "/admin/analytics",
+    element: (
+      <AdminRouteWrapper component={() => (
+        <AdminLayout>
+          <Analytics />
+        </AdminLayout>
+      )} />
+    ),
+  },
+  {
+    path: "/admin/index-medicus",
+    element: (
+      <AdminRouteWrapper component={() => (
+        <AdminLayout>
+          <IndexMedicusAdmin />
+        </AdminLayout>
+      )} />
+    ),
+  },
+  {
+    path: "/admin/settings",
+    element: (
+      <AdminRouteWrapper component={() => (
+        <AdminLayout>
+          <Settings />
+        </AdminLayout>
+      )} />
+    ),
+  },
+  {
+    path: "/admin/email-settings",
+    element: (
+      <AdminRouteWrapper component={() => (
+        <AdminLayout>
+          <EmailSettings />
+        </AdminLayout>
+      )} />
+    ),
+  },
+  {
+    path: "/articles/:id",
+    element: (
+      <RouteWrapper>
+        <MainLayout>
+          <ArticleDetail />
+        </MainLayout>
+      </RouteWrapper>
+    ),
+  },
+  {
+    path: "*",
+    element: (
+      <RouteWrapper>
+        <MainLayout>
+          <NotFound />
+        </MainLayout>
+      </RouteWrapper>
+    ),
   },
 ];

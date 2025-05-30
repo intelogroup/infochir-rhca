@@ -1370,6 +1370,10 @@ export type Database = {
       }
     }
     Functions: {
+      assign_admin_role_by_email: {
+        Args: { _email: string }
+        Returns: boolean
+      }
       check_email_limit_and_notify: {
         Args: Record<PropertyKey, never>
         Returns: undefined

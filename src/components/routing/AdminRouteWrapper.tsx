@@ -12,7 +12,7 @@ interface AdminRouteWrapperProps {
 }
 
 export const AdminRouteWrapper = ({ component: Component }: AdminRouteWrapperProps) => {
-  const { isAdmin, isLoading, error } = useAdminAuth();
+  const { user, isAdmin, isLoading, error, isAuthenticated } = useAdminAuth();
   const navigate = useNavigate();
 
   // Handle authentication errors
@@ -21,7 +21,7 @@ export const AdminRouteWrapper = ({ component: Component }: AdminRouteWrapperPro
       toast.error("Erreur d'authentification", {
         description: "Veuillez vous reconnecter",
       });
-      navigate("/login", { replace: true });
+      navigate("/admin/login", { replace: true });
     }
   }, [error, navigate]);
 
@@ -33,11 +33,17 @@ export const AdminRouteWrapper = ({ component: Component }: AdminRouteWrapperPro
     );
   }
 
+  // If not authenticated, redirect to login
+  if (!isAuthenticated || !user) {
+    return <Navigate to="/admin/login" replace />;
+  }
+
+  // If authenticated but not admin, show access denied
   if (!isAdmin) {
     toast.error("Accès refusé", {
       description: "Vous n'avez pas les droits d'accès à cette page"
     });
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/admin/login" replace />;
   }
 
   return (

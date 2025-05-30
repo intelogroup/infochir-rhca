@@ -2,67 +2,82 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
+import type { User, Session } from '@supabase/supabase-js';
 
 export const useAdminAuth = () => {
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
+  // Set up auth state listener
+  useEffect(() => {
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log('[AdminAuth] Auth state changed:', event, session?.user?.email);
+        setSession(session);
+        setUser(session?.user ?? null);
+        setIsLoading(false);
+      }
+    );
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('[AdminAuth] Initial session check:', session?.user?.email);
+      setSession(session);
+      setUser(session?.user ?? null);
+      setIsLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Check if user has admin role
   const { data: isAdmin = false, isLoading: isRoleLoading, error: queryError } = useQuery({
-    queryKey: ['admin-role'],
+    queryKey: ['admin-role', user?.id],
     queryFn: async () => {
+      if (!user) {
+        console.log('[AdminAuth] No user found, not checking role');
+        return false;
+      }
+
+      console.log('[AdminAuth] Checking admin role for user ID:', user.id);
+      
       try {
-        // First check if the user is logged in
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        
-        if (userError) {
-          console.error('[AdminAuth] Error getting user:', userError);
-          throw userError;
-        }
-        
-        if (!user) {
-          console.log('[AdminAuth] No user found, not authenticated');
-          return false;
+        const { data, error } = await supabase.rpc('has_role', { _role: 'admin' });
+
+        if (error) {
+          console.error('[AdminAuth] Error checking admin role:', error);
+          throw error;
         }
 
-        console.log('[AdminAuth] Checking admin role for user ID:', user.id);
-        
-        // Check if user has admin role
-        const { data, error: roleError } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', user.id)
-          .eq('role', 'admin')
-          .single();
-
-        if (roleError && roleError.code !== 'PGRST116') { // PGRST116 is "not found" which is expected if user isn't admin
-          console.error('[AdminAuth] Error checking admin role:', roleError);
-          throw roleError;
-        }
-
-        console.log('[AdminAuth] Admin role check result:', !!data);
-        return !!data;
+        console.log('[AdminAuth] Admin role check result:', data);
+        return data as boolean;
       } catch (err) {
         console.error('[AdminAuth] Error checking admin role:', err);
         throw err;
       }
     },
+    enabled: !!user,
     retry: 1,
     retryDelay: 1000,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
-    enabled: !!supabase.auth.getSession()
   });
 
   useEffect(() => {
     if (queryError) {
       setError(queryError instanceof Error ? queryError : new Error(String(queryError)));
     }
-    setIsLoading(isRoleLoading);
-  }, [isRoleLoading, queryError]);
+  }, [queryError]);
 
   return {
+    user,
+    session,
     isAdmin,
-    isLoading,
-    error
+    isLoading: isLoading || isRoleLoading,
+    error,
+    isAuthenticated: !!session
   };
 };
