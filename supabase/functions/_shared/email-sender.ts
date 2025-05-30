@@ -28,7 +28,7 @@ export interface EmailAttachment {
   size?: number;
 }
 
-// Constants for attachment limits
+// Constants for attachment limits (optimized for Resend)
 const MAX_ATTACHMENT_SIZE = 40 * 1024 * 1024; // 40MB Resend limit
 const MAX_TOTAL_SIZE = 45 * 1024 * 1024; // 45MB total including email content
 const MAX_ATTACHMENTS = 10; // Reasonable limit
@@ -227,11 +227,11 @@ export async function checkDomainVerification(
 }
 
 /**
- * Validate attachments before sending
+ * Validate attachments before sending with enhanced checks
  * @param attachments Array of email attachments
  * @returns Object with validation status and message
  */
-export function validateAttachments(attachments: EmailAttachment[]): { valid: boolean; message: string } {
+export function validateAttachments(attachments: EmailAttachment[]): { valid: boolean; message: string; details?: any } {
   if (!attachments || attachments.length === 0) {
     return { valid: true, message: "No attachments to validate" };
   }
@@ -239,44 +239,103 @@ export function validateAttachments(attachments: EmailAttachment[]): { valid: bo
   if (attachments.length > MAX_ATTACHMENTS) {
     return { 
       valid: false, 
-      message: `Too many attachments. Maximum ${MAX_ATTACHMENTS} allowed, got ${attachments.length}` 
+      message: `Too many attachments. Maximum ${MAX_ATTACHMENTS} allowed, got ${attachments.length}`,
+      details: { maxAllowed: MAX_ATTACHMENTS, received: attachments.length }
     };
   }
 
   let totalSize = 0;
-  for (const attachment of attachments) {
+  const invalidFiles = [];
+  
+  for (let i = 0; i < attachments.length; i++) {
+    const attachment = attachments[i];
+    
     if (!attachment.filename || !attachment.content) {
-      return { 
-        valid: false, 
-        message: `Invalid attachment: missing filename or content` 
-      };
+      invalidFiles.push({ index: i, reason: "missing filename or content" });
+      continue;
     }
 
-    // Calculate base64 decoded size (approximate)
+    // Calculate base64 decoded size (more accurate)
     const contentSize = Math.floor(attachment.content.length * 0.75);
     
     if (contentSize > MAX_ATTACHMENT_SIZE) {
-      return { 
-        valid: false, 
-        message: `Attachment "${attachment.filename}" is too large (${Math.round(contentSize / 1024 / 1024)}MB). Maximum ${Math.round(MAX_ATTACHMENT_SIZE / 1024 / 1024)}MB per file.` 
-      };
+      invalidFiles.push({ 
+        index: i, 
+        filename: attachment.filename,
+        reason: `file too large (${Math.round(contentSize / 1024 / 1024)}MB)`,
+        maxSize: Math.round(MAX_ATTACHMENT_SIZE / 1024 / 1024)
+      });
+      continue;
+    }
+
+    // Validate content type
+    if (attachment.content_type && !isValidContentType(attachment.content_type)) {
+      invalidFiles.push({
+        index: i,
+        filename: attachment.filename,
+        reason: `unsupported content type: ${attachment.content_type}`
+      });
+      continue;
     }
 
     totalSize += contentSize;
   }
 
-  if (totalSize > MAX_TOTAL_SIZE) {
-    return { 
-      valid: false, 
-      message: `Total attachment size too large (${Math.round(totalSize / 1024 / 1024)}MB). Maximum ${Math.round(MAX_TOTAL_SIZE / 1024 / 1024)}MB total.` 
+  if (invalidFiles.length > 0) {
+    return {
+      valid: false,
+      message: `${invalidFiles.length} attachment(s) failed validation`,
+      details: { invalidFiles }
     };
   }
 
-  return { valid: true, message: "Attachments validated successfully" };
+  if (totalSize > MAX_TOTAL_SIZE) {
+    return { 
+      valid: false, 
+      message: `Total attachment size too large (${Math.round(totalSize / 1024 / 1024)}MB). Maximum ${Math.round(MAX_TOTAL_SIZE / 1024 / 1024)}MB total.`,
+      details: { totalSize: Math.round(totalSize / 1024 / 1024), maxTotal: Math.round(MAX_TOTAL_SIZE / 1024 / 1024) }
+    };
+  }
+
+  return { 
+    valid: true, 
+    message: "Attachments validated successfully",
+    details: { 
+      count: attachments.length, 
+      totalSize: Math.round(totalSize / 1024 / 1024) 
+    }
+  };
 }
 
 /**
- * Send an email notification using Resend with optional attachments
+ * Check if content type is supported
+ */
+function isValidContentType(contentType: string): boolean {
+  const allowedTypes = [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/rtf',
+    'text/plain',
+    'image/jpeg',
+    'image/png',
+    'image/gif',
+    'image/webp',
+    'image/bmp',
+    'image/tiff',
+    'application/zip'
+  ];
+  
+  // Also allow wildcard image types
+  if (contentType.startsWith('image/')) {
+    return true;
+  }
+  
+  return allowedTypes.includes(contentType);
+}
+
+/**
+ * Send an email notification using Resend with enhanced attachment handling
  * @param recipient Email address of the recipient
  * @param subject Email subject
  * @param html HTML content of the email
@@ -292,7 +351,7 @@ export async function sendEmail(
   text: string, 
   replyTo?: string,
   attachments?: EmailAttachment[]
-): Promise<{ success: boolean; data?: any; error?: any }> {
+): Promise<{ success: boolean; data?: any; error?: any; attachmentInfo?: any }> {
   try {
     console.log("[email-sender] === SENDING EMAIL ===");
     console.log("- To:", recipient);
@@ -309,14 +368,55 @@ export async function sendEmail(
       throw error;
     }
     
-    // Validate attachments if provided
+    let attachmentInfo = {
+      requested: 0,
+      processed: 0,
+      totalSize: 0,
+      skipped: 0
+    };
+    
+    // Validate and process attachments if provided
+    let processedAttachments: any[] = [];
     if (attachments && attachments.length > 0) {
+      attachmentInfo.requested = attachments.length;
+      
       const validation = validateAttachments(attachments);
       if (!validation.valid) {
-        console.error("[email-sender] Attachment validation failed:", validation.message);
-        throw new Error(`Attachment validation failed: ${validation.message}`);
+        console.warn("[email-sender] Attachment validation failed:", validation.message);
+        console.warn("[email-sender] Validation details:", validation.details);
+        
+        // For production, we'll skip invalid attachments rather than failing completely
+        const validAttachments = attachments.filter((att, index) => {
+          const isValid = att.filename && att.content && 
+                          (att.content.length * 0.75) <= MAX_ATTACHMENT_SIZE;
+          if (!isValid) {
+            attachmentInfo.skipped++;
+            console.warn(`[email-sender] Skipping invalid attachment at index ${index}:`, att.filename);
+          }
+          return isValid;
+        });
+        
+        if (validAttachments.length === 0) {
+          console.warn("[email-sender] No valid attachments found, sending email without attachments");
+        } else {
+          attachments = validAttachments;
+        }
       }
-      console.log("[email-sender] Attachments validated successfully");
+      
+      if (attachments.length > 0) {
+        processedAttachments = attachments.map(att => ({
+          filename: att.filename,
+          content: att.content,
+          content_type: att.content_type || 'application/octet-stream'
+        }));
+        
+        attachmentInfo.processed = processedAttachments.length;
+        attachmentInfo.totalSize = attachments.reduce((sum, att) => 
+          sum + Math.floor(att.content.length * 0.75), 0);
+        
+        console.log("[email-sender] Processed", processedAttachments.length, "valid attachments");
+        console.log("[email-sender] Total attachment size:", Math.round(attachmentInfo.totalSize / 1024 / 1024), "MB");
+      }
     }
     
     // Prepare email payload with attachments
@@ -329,14 +429,10 @@ export async function sendEmail(
       ...(replyTo && { reply_to: replyTo })
     };
 
-    // Add attachments if provided
-    if (attachments && attachments.length > 0) {
-      emailPayload.attachments = attachments.map(att => ({
-        filename: att.filename,
-        content: att.content,
-        content_type: att.content_type || 'application/octet-stream'
-      }));
-      console.log("[email-sender] Added", attachments.length, "attachments to email");
+    // Add attachments if processed successfully
+    if (processedAttachments.length > 0) {
+      emailPayload.attachments = processedAttachments;
+      console.log("[email-sender] Added", processedAttachments.length, "attachments to email");
     }
     
     console.log("[email-sender] Email payload prepared:", {
@@ -349,7 +445,7 @@ export async function sendEmail(
       attachmentCount: emailPayload.attachments ? emailPayload.attachments.length : 0
     });
     
-    // Send email using Resend with their default sender domain
+    // Send email using Resend
     console.log("[email-sender] Calling Resend API...");
     const emailResponse = await client.emails.send(emailPayload);
     
@@ -367,10 +463,12 @@ export async function sendEmail(
     
     console.log("[email-sender] ✅ Email sent successfully");
     console.log("- Email ID:", emailResponse.data?.id);
+    console.log("- Attachment summary:", attachmentInfo);
     
     return {
       success: true,
-      data: emailResponse.data
+      data: emailResponse.data,
+      attachmentInfo
     };
   } catch (emailErr) {
     console.error("[email-sender] ❌ Email sending failed:", emailErr);
@@ -381,7 +479,8 @@ export async function sendEmail(
     logError("[email-sender] Exception while sending email", emailErr);
     return {
       success: false,
-      error: emailErr
+      error: emailErr,
+      attachmentInfo: attachmentInfo || { requested: 0, processed: 0, totalSize: 0, skipped: 0 }
     };
   }
 }

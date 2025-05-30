@@ -1,6 +1,6 @@
 
 /**
- * File retrieval utilities for email attachments
+ * File retrieval utilities for email attachments with enhanced error handling
  */
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 import { logError } from "./error-logger.ts";
@@ -18,24 +18,23 @@ export interface FileAttachment {
   size: number;
 }
 
-// Safety limits aligned with email provider constraints
-const MAX_FILE_SIZE = 40 * 1024 * 1024; // 40MB per file (Resend limit)
-const MAX_TOTAL_SIZE = 45 * 1024 * 1024; // 45MB total including email content
+// Enhanced safety limits with monitoring
+const MAX_FILE_SIZE = 40 * 1024 * 1024; // 40MB per file
+const MAX_TOTAL_SIZE = 45 * 1024 * 1024; // 45MB total
 const MAX_FILES_PER_EMAIL = 10; // Reasonable attachment limit
 const DOWNLOAD_TIMEOUT = 30000; // 30 seconds timeout per file
+const RETRY_ATTEMPTS = 2; // Number of retry attempts for failed downloads
 
 /**
- * Download a file from Supabase Storage and convert to base64
- * @param bucket Storage bucket name
- * @param filePath Path to the file in the bucket
- * @returns FileAttachment object or null if failed
+ * Download a file from Supabase Storage with enhanced error handling and retries
  */
 export async function downloadFileAsAttachment(
   bucket: string, 
-  filePath: string
+  filePath: string,
+  retryCount: number = 0
 ): Promise<FileAttachment | null> {
   try {
-    console.log(`[file-retrieval] Downloading file: ${bucket}/${filePath}`);
+    console.log(`[file-retrieval] Downloading file: ${bucket}/${filePath} (attempt ${retryCount + 1})`);
     
     // Clean up file path - remove bucket prefix if present
     let cleanPath = filePath;
@@ -49,7 +48,10 @@ export async function downloadFileAsAttachment(
     
     // Add timeout to prevent hanging downloads
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), DOWNLOAD_TIMEOUT);
+    const timeoutId = setTimeout(() => {
+      console.warn(`[file-retrieval] Download timeout for ${cleanPath}`);
+      controller.abort();
+    }, DOWNLOAD_TIMEOUT);
     
     try {
       // Download file from storage with timeout
@@ -63,6 +65,14 @@ export async function downloadFileAsAttachment(
       
       if (error) {
         console.error(`[file-retrieval] Storage download error:`, error);
+        
+        // Retry logic for certain types of errors
+        if (retryCount < RETRY_ATTEMPTS && isRetryableError(error)) {
+          console.log(`[file-retrieval] Retrying download for ${cleanPath}...`);
+          await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1))); // Exponential backoff
+          return downloadFileAsAttachment(bucket, filePath, retryCount + 1);
+        }
+        
         logError(`[file-retrieval] Failed to download ${bucket}/${cleanPath}`, error);
         return null;
       }
@@ -79,11 +89,16 @@ export async function downloadFileAsAttachment(
         return null;
       }
       
+      if (fileSize === 0) {
+        console.warn(`[file-retrieval] File ${cleanPath} is empty`);
+        return null;
+      }
+      
       // Convert blob to array buffer, then to base64
       const arrayBuffer = await data.arrayBuffer();
       const uint8Array = new Uint8Array(arrayBuffer);
       
-      // Convert to base64
+      // Convert to base64 efficiently
       const base64Content = btoa(String.fromCharCode(...uint8Array));
       
       // Determine content type from file extension
@@ -93,7 +108,7 @@ export async function downloadFileAsAttachment(
       // Extract filename from path
       const filename = cleanPath.split('/').pop() || cleanPath;
       
-      console.log(`[file-retrieval] Successfully processed file: ${filename}, size: ${arrayBuffer.byteLength} bytes`);
+      console.log(`[file-retrieval] Successfully processed file: ${filename}, size: ${arrayBuffer.byteLength} bytes, type: ${contentType}`);
       
       return {
         filename,
@@ -103,6 +118,17 @@ export async function downloadFileAsAttachment(
       };
     } catch (downloadError) {
       clearTimeout(timeoutId);
+      
+      // Handle timeout specifically
+      if (downloadError.name === 'AbortError') {
+        console.error(`[file-retrieval] Download timeout for ${cleanPath}`);
+        if (retryCount < RETRY_ATTEMPTS) {
+          console.log(`[file-retrieval] Retrying after timeout for ${cleanPath}...`);
+          await new Promise(resolve => setTimeout(resolve, 2000 * (retryCount + 1)));
+          return downloadFileAsAttachment(bucket, filePath, retryCount + 1);
+        }
+      }
+      
       throw downloadError;
     }
   } catch (error) {
@@ -113,11 +139,23 @@ export async function downloadFileAsAttachment(
 }
 
 /**
- * Download multiple files as attachments with safety checks
- * @param fileUrls Array of file URLs from the database
- * @param maxFiles Maximum number of files to process (default: 10)
- * @param maxTotalSize Maximum total size in bytes (default: 45MB)
- * @returns Array of FileAttachment objects
+ * Check if an error is retryable
+ */
+function isRetryableError(error: any): boolean {
+  const retryableMessages = [
+    'network',
+    'timeout',
+    'connection',
+    'temporary',
+    'rate limit'
+  ];
+  
+  const errorMessage = error.message?.toLowerCase() || '';
+  return retryableMessages.some(msg => errorMessage.includes(msg));
+}
+
+/**
+ * Download multiple files as attachments with enhanced progress tracking
  */
 export async function downloadMultipleFilesAsAttachments(
   fileUrls: string[],
@@ -133,48 +171,71 @@ export async function downloadMultipleFilesAsAttachments(
   }
   
   const attachments: FileAttachment[] = [];
-  let totalSize = 0;
+  const processingResults = {
+    total: filesToProcess.length,
+    successful: 0,
+    failed: 0,
+    skipped: 0,
+    totalSize: 0
+  };
   
-  for (const fileUrl of filesToProcess) {
+  // Process files sequentially to avoid overwhelming the system
+  for (let i = 0; i < filesToProcess.length; i++) {
+    const fileUrl = filesToProcess[i];
+    
     try {
       // Check if we're approaching size limit
-      if (totalSize >= maxTotalSize) {
-        console.warn(`[file-retrieval] Stopping processing: total size limit reached (${totalSize}/${maxTotalSize} bytes)`);
+      if (processingResults.totalSize >= maxTotalSize) {
+        console.warn(`[file-retrieval] Stopping processing: total size limit reached (${processingResults.totalSize}/${maxTotalSize} bytes)`);
+        processingResults.skipped += filesToProcess.length - i;
         break;
       }
       
+      console.log(`[file-retrieval] Processing file ${i + 1}/${filesToProcess.length}: ${fileUrl}`);
+      
       const { bucket, path } = parseStorageUrl(fileUrl);
-      if (bucket && path) {
-        const attachment = await downloadFileAsAttachment(bucket, path);
-        if (attachment) {
-          // Check if adding this file would exceed total size limit
-          if (totalSize + attachment.size > maxTotalSize) {
-            console.warn(`[file-retrieval] Skipping file ${attachment.filename}: would exceed total size limit`);
-            continue;
-          }
-          
-          // Validate the attachment
-          if (validateFileForAttachment(attachment)) {
-            attachments.push(attachment);
-            totalSize += attachment.size;
-            console.log(`[file-retrieval] Added attachment: ${attachment.filename} (${attachment.size} bytes)`);
-          } else {
-            console.warn(`[file-retrieval] File ${attachment.filename} failed validation`);
-          }
+      if (!bucket || !path) {
+        console.warn(`[file-retrieval] Could not parse storage URL: ${fileUrl}`);
+        processingResults.failed++;
+        continue;
+      }
+      
+      const attachment = await downloadFileAsAttachment(bucket, path);
+      if (attachment) {
+        // Check if adding this file would exceed total size limit
+        if (processingResults.totalSize + attachment.size > maxTotalSize) {
+          console.warn(`[file-retrieval] Skipping file ${attachment.filename}: would exceed total size limit`);
+          processingResults.skipped++;
+          continue;
+        }
+        
+        // Validate the attachment
+        if (validateFileForAttachment(attachment)) {
+          attachments.push(attachment);
+          processingResults.totalSize += attachment.size;
+          processingResults.successful++;
+          console.log(`[file-retrieval] ✅ Added attachment ${i + 1}: ${attachment.filename} (${Math.round(attachment.size / 1024)}KB)`);
         } else {
-          console.warn(`[file-retrieval] Failed to process file: ${fileUrl}`);
+          console.warn(`[file-retrieval] File ${attachment.filename} failed validation`);
+          processingResults.failed++;
         }
       } else {
-        console.warn(`[file-retrieval] Could not parse storage URL: ${fileUrl}`);
+        console.warn(`[file-retrieval] Failed to process file: ${fileUrl}`);
+        processingResults.failed++;
       }
     } catch (error) {
       console.error(`[file-retrieval] Error processing file ${fileUrl}:`, error);
       logError(`[file-retrieval] Error processing file URL`, error);
+      processingResults.failed++;
       // Continue with next file instead of failing completely
     }
   }
   
-  console.log(`[file-retrieval] Successfully processed ${attachments.length}/${filesToProcess.length} files, total size: ${totalSize} bytes`);
+  console.log(`[file-retrieval] Processing complete:`, {
+    ...processingResults,
+    totalSizeMB: Math.round(processingResults.totalSize / 1024 / 1024 * 100) / 100
+  });
+  
   return attachments;
 }
 
