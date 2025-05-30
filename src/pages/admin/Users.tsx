@@ -1,279 +1,307 @@
 
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Users as UsersIcon, UserPlus, Shield, Settings, Check, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  Users as UsersIcon, 
+  Shield, 
+  Search, 
+  Filter,
+  UserPlus,
+  Edit,
+  Trash2,
+  Eye,
+  Mail,
+  Calendar
+} from "lucide-react";
 import { toast } from "sonner";
 import { assignAdminRole } from "@/lib/admin-utils";
 
-interface AuthUser {
-  id: string;
-  email: string;
-  created_at: string;
-  last_sign_in_at: string | null;
-  role?: string;
-}
+const UserRow = ({ user }: { user: any }) => (
+  <div className="flex items-center justify-between p-4 border-b hover:bg-gray-50">
+    <div className="flex items-center gap-4">
+      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+        <UsersIcon className="h-5 w-5 text-blue-600" />
+      </div>
+      <div className="flex-1">
+        <h3 className="font-semibold text-gray-900">{user.email}</h3>
+        <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
+          <span className="flex items-center gap-1">
+            <Calendar className="h-3 w-3" />
+            Inscrit le {user.created_at}
+          </span>
+          <Badge variant={user.role === 'admin' ? 'default' : 'secondary'} className="text-xs">
+            {user.role}
+          </Badge>
+          <Badge variant={user.status === 'active' ? 'default' : 'secondary'} className="text-xs bg-green-600">
+            {user.status}
+          </Badge>
+        </div>
+      </div>
+    </div>
+    <div className="flex items-center gap-2">
+      <Button variant="ghost" size="sm">
+        <Eye className="h-4 w-4" />
+      </Button>
+      <Button variant="ghost" size="sm">
+        <Edit className="h-4 w-4" />
+      </Button>
+      <Button variant="ghost" size="sm">
+        <Mail className="h-4 w-4" />
+      </Button>
+      <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
+        <Trash2 className="h-4 w-4" />
+      </Button>
+    </div>
+  </div>
+);
+
+const mockUsers = [
+  {
+    id: 1,
+    email: "jimkalinov@gmail.com",
+    role: "admin",
+    status: "active",
+    created_at: "15 Jan 2024"
+  },
+  {
+    id: 2,
+    email: "user@exemple.com",
+    role: "user",
+    status: "active",
+    created_at: "12 Jan 2024"
+  },
+  {
+    id: 3,
+    email: "editor@exemple.com",
+    role: "editor",
+    status: "active",
+    created_at: "10 Jan 2024"
+  }
+];
 
 const Users = () => {
-  const [users, setUsers] = useState<AuthUser[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [assigningRole, setAssigningRole] = useState(false);
-  const [emailToPromote, setEmailToPromote] = useState("");
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
-      
-      // This would typically require admin privileges to access auth.users
-      // For now, we'll show a placeholder and instructions
-      const { data: userRoles, error: rolesError } = await supabase
-        .from('user_roles')
-        .select('user_id, role');
-
-      if (rolesError) {
-        console.error('Error fetching user roles:', rolesError);
-        toast.error("Erreur lors du chargement des rôles utilisateurs");
-        return;
-      }
-
-      // For demonstration, we'll show the roles we can access
-      setUsers(userRoles?.map(role => ({
-        id: role.user_id,
-        email: 'utilisateur@example.com', // We can't access auth.users directly
-        created_at: new Date().toISOString(),
-        last_sign_in_at: null,
-        role: role.role
-      })) || []);
-
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      toast.error("Erreur lors du chargement des utilisateurs");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedTab, setSelectedTab] = useState("all");
+  const [adminEmail, setAdminEmail] = useState("");
+  const [isAssigning, setIsAssigning] = useState(false);
 
   const handleAssignAdminRole = async () => {
-    if (!emailToPromote) {
-      toast.error("Veuillez saisir un email");
+    if (!adminEmail) {
+      toast.error("Veuillez saisir une adresse email");
       return;
     }
 
+    setIsAssigning(true);
     try {
-      setAssigningRole(true);
-      const success = await assignAdminRole(emailToPromote);
-      
+      const success = await assignAdminRole(adminEmail);
       if (success) {
-        toast.success(`Rôle administrateur assigné à ${emailToPromote}`);
-        setEmailToPromote("");
-        fetchUsers(); // Refresh the users list
+        toast.success(`Rôle administrateur attribué à ${adminEmail}`);
+        setAdminEmail("");
       } else {
-        toast.error("Échec de l'attribution du rôle administrateur. L'utilisateur existe-t-il ?");
+        toast.error("Erreur lors de l'attribution du rôle");
       }
     } catch (error) {
-      console.error('Error assigning admin role:', error);
-      toast.error("Erreur lors de l'attribution du rôle administrateur");
+      console.error("Erreur:", error);
+      toast.error("Erreur lors de l'attribution du rôle");
     } finally {
-      setAssigningRole(false);
+      setIsAssigning(false);
     }
   };
 
-  const adminCount = users.filter(user => user.role === 'admin').length;
-  const totalUsers = users.length;
-
   return (
     <div className="space-y-6">
-      <PageHeader 
-        title="Gestion des utilisateurs" 
-        description="Gérez les utilisateurs, leurs rôles et leurs permissions"
-      />
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="flex items-center justify-between">
+        <PageHeader 
+          title="Gestion des utilisateurs" 
+          description="Gérez les utilisateurs et leurs rôles"
+        />
+        <Button>
+          <UserPlus className="h-4 w-4 mr-2" />
+          Nouvel utilisateur
+        </Button>
+      </div>
+
+      {/* Stats Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-2xl">{totalUsers}</CardTitle>
+            <CardTitle className="text-2xl">1,234</CardTitle>
             <CardDescription>Utilisateurs totaux</CardDescription>
           </CardHeader>
           <CardContent>
-            <Badge variant="secondary">
-              {loading ? "Chargement..." : "Actif"}
-            </Badge>
+            <Badge variant="default">+12 ce mois</Badge>
           </CardContent>
         </Card>
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-2xl">{adminCount}</CardTitle>
+            <CardTitle className="text-2xl">5</CardTitle>
             <CardDescription>Administrateurs</CardDescription>
           </CardHeader>
           <CardContent>
-            <Badge variant="default">
-              {adminCount > 0 ? "Configuré" : "Aucun"}
-            </Badge>
+            <Badge variant="secondary">Actifs</Badge>
           </CardContent>
         </Card>
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-2xl">{totalUsers - adminCount}</CardTitle>
-            <CardDescription>Utilisateurs standards</CardDescription>
+            <CardTitle className="text-2xl">89</CardTitle>
+            <CardDescription>Nouveaux ce mois</CardDescription>
           </CardHeader>
           <CardContent>
-            <Badge variant="secondary">
-              {loading ? "Chargement..." : "Actif"}
-            </Badge>
+            <Badge variant="default">+15%</Badge>
           </CardContent>
         </Card>
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-2xl">0</CardTitle>
-            <CardDescription>Actifs ce mois</CardDescription>
+            <CardTitle className="text-2xl">98.5%</CardTitle>
+            <CardDescription>Comptes actifs</CardDescription>
           </CardHeader>
           <CardContent>
-            <Badge variant="secondary">À venir</Badge>
+            <Badge variant="default" className="bg-green-600">Excellent</Badge>
           </CardContent>
         </Card>
       </div>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
-              Attribuer un rôle administrateur
-            </CardTitle>
-            <CardDescription>
-              Donnez les droits d'administrateur à un utilisateur existant
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email de l'utilisateur</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="utilisateur@exemple.com"
-                value={emailToPromote}
-                onChange={(e) => setEmailToPromote(e.target.value)}
-                disabled={assigningRole}
-              />
-            </div>
-            
-            <Button 
-              onClick={handleAssignAdminRole}
-              disabled={assigningRole || !emailToPromote}
-              className="w-full"
-            >
-              <Shield className="h-4 w-4 mr-2" />
-              {assigningRole ? "Attribution en cours..." : "Attribuer le rôle admin"}
-            </Button>
 
-            <div className="text-sm text-gray-500 bg-blue-50 p-3 rounded-md">
-              <strong>Instructions :</strong>
-              <br />
-              1. L'utilisateur doit d'abord créer un compte via la page de connexion
-              <br />
-              2. Saisissez son email ci-dessus et cliquez sur "Attribuer le rôle admin"
-              <br />
-              3. L'utilisateur pourra ensuite accéder au dashboard administrateur
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <UsersIcon className="h-5 w-5" />
-              Utilisateurs avec rôles
-            </CardTitle>
-            <CardDescription>
-              Liste des utilisateurs avec leurs rôles assignés
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {loading ? (
-              <div className="text-center py-4">
-                <p className="text-gray-500">Chargement des utilisateurs...</p>
-              </div>
-            ) : users.length === 0 ? (
-              <div className="text-center py-4">
-                <p className="text-gray-500">Aucun utilisateur avec rôle assigné</p>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {users.map((user) => (
-                  <div key={user.id} className="flex items-center justify-between p-2 border rounded">
-                    <div className="flex-1">
-                      <span className="text-sm font-medium truncate block">
-                        ID: {user.id.substring(0, 8)}...
-                      </span>
-                    </div>
-                    <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
-                      {user.role}
-                    </Badge>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle>Liste des utilisateurs</CardTitle>
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <Search className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <Input
+                      placeholder="Rechercher un utilisateur..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10 w-64"
+                    />
                   </div>
-                ))}
+                  <Button variant="outline" size="sm">
+                    <Filter className="h-4 w-4 mr-2" />
+                    Filtres
+                  </Button>
+                </div>
               </div>
-            )}
+            </CardHeader>
+            <CardContent className="p-0">
+              <Tabs value={selectedTab} onValueChange={setSelectedTab}>
+                <div className="px-6 pb-4">
+                  <TabsList className="grid w-full grid-cols-4">
+                    <TabsTrigger value="all">Tous</TabsTrigger>
+                    <TabsTrigger value="admin">Admins</TabsTrigger>
+                    <TabsTrigger value="active">Actifs</TabsTrigger>
+                    <TabsTrigger value="inactive">Inactifs</TabsTrigger>
+                  </TabsList>
+                </div>
 
-            <div className="mt-4 text-xs text-gray-500 bg-yellow-50 p-3 rounded-md">
-              <strong>Note :</strong> Pour des raisons de sécurité, les emails des utilisateurs 
-              ne sont pas affichés ici. Utilisez l'outil d'attribution de rôle ci-contre.
-            </div>
-          </CardContent>
-        </Card>
+                <TabsContent value="all" className="mt-0">
+                  <div className="divide-y">
+                    {mockUsers.map((user) => (
+                      <UserRow key={user.id} user={user} />
+                    ))}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="admin" className="mt-0">
+                  <div className="divide-y">
+                    {mockUsers.filter(u => u.role === "admin").map((user) => (
+                      <UserRow key={user.id} user={user} />
+                    ))}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="active" className="mt-0">
+                  <div className="divide-y">
+                    {mockUsers.filter(u => u.status === "active").map((user) => (
+                      <UserRow key={user.id} user={user} />
+                    ))}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="inactive" className="mt-0">
+                  <div className="p-6 text-center">
+                    <UsersIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Aucun utilisateur inactif</h3>
+                    <p className="text-gray-600">
+                      Tous les utilisateurs sont actuellement actifs.
+                    </p>
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                Attribuer un rôle administrateur
+              </CardTitle>
+              <CardDescription>
+                Donner les droits d'administration à un utilisateur
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="adminEmail">Email de l'utilisateur</Label>
+                <Input
+                  id="adminEmail"
+                  type="email"
+                  value={adminEmail}
+                  onChange={(e) => setAdminEmail(e.target.value)}
+                  placeholder="user@exemple.com"
+                />
+              </div>
+              <Button 
+                onClick={handleAssignAdminRole} 
+                disabled={isAssigning}
+                className="w-full"
+              >
+                {isAssigning ? "Attribution en cours..." : "Attribuer le rôle admin"}
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Activité récente</CardTitle>
+              <CardDescription>Dernières actions des utilisateurs</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 text-sm">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span className="text-gray-600">Nouvel utilisateur inscrit</span>
+                  <span className="text-gray-400 text-xs">Il y a 2h</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <span className="text-gray-600">Rôle admin attribué</span>
+                  <span className="text-gray-400 text-xs">Il y a 4h</span>
+                </div>
+                <div className="flex items-center gap-3 text-sm">
+                  <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                  <span className="text-gray-600">Utilisateur mis à jour</span>
+                  <span className="text-gray-400 text-xs">Il y a 1j</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Instructions pour le premier administrateur</CardTitle>
-          <CardDescription>
-            Voici comment configurer le premier compte administrateur
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <h4 className="font-semibold flex items-center gap-2">
-                <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">1</span>
-                Créer un compte
-              </h4>
-              <p className="text-sm text-gray-600">
-                Allez sur <code>/admin/login</code> et créez un nouveau compte avec vos identifiants.
-              </p>
-            </div>
-            
-            <div className="space-y-2">
-              <h4 className="font-semibold flex items-center gap-2">
-                <span className="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm">2</span>
-                Attribuer le rôle admin
-              </h4>
-              <p className="text-sm text-gray-600">
-                Utilisez l'outil ci-dessus pour vous attribuer le rôle d'administrateur.
-              </p>
-            </div>
-          </div>
-          
-          <div className="bg-green-50 p-4 rounded-md">
-            <p className="text-sm">
-              <strong>Email suggéré :</strong> jimkalinov@gmail.com
-              <br />
-              <strong>Mot de passe suggéré :</strong> Jimkali90#
-            </p>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };
