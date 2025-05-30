@@ -87,10 +87,6 @@ export const AtlasTableOfContents = () => {
             <li key={chapter.id} className="group">
               <div className="flex items-start gap-3 py-3 px-3 rounded-md hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0">
                 <div className="flex items-center gap-2 flex-shrink-0 mt-0.5">
-                  <span className="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded min-w-[2rem] text-center">
-                    {chapter.chapterNumber !== undefined ? chapter.chapterNumber : 
-                     chapter.pageNumber ? parseInt(chapter.pageNumber, 10) : '—'}
-                  </span>
                   {getStatusIcon(chapter.status)}
                 </div>
                 
