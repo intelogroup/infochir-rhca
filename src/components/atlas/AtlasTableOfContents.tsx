@@ -1,7 +1,6 @@
 
 import { useState } from "react";
 import { useAtlasArticles } from "./hooks/useAtlasArticles";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Link } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -28,26 +27,12 @@ export const AtlasTableOfContents = () => {
     );
   }
 
-  // Group chapters by category and sort by chapter number
-  const chaptersByCategory = chapters.reduce((acc, chapter) => {
-    const category = chapter.category || 'Autres';
-    if (!acc[category]) {
-      acc[category] = [];
-    }
-    acc[category].push(chapter);
-    return acc;
-  }, {} as Record<string, typeof chapters>);
-
-  // Sort chapters within each category by chapter number
-  Object.keys(chaptersByCategory).forEach(category => {
-    chaptersByCategory[category].sort((a, b) => {
-      const aNum = a.chapterNumber || 999;
-      const bNum = b.chapterNumber || 999;
-      return aNum - bNum;
-    });
+  // Sort chapters by issue/chapter number
+  const sortedChapters = [...chapters].sort((a, b) => {
+    const aNum = a.chapterNumber || parseInt(a.pageNumber || '999', 10) || 999;
+    const bNum = b.chapterNumber || parseInt(b.pageNumber || '999', 10) || 999;
+    return aNum - bNum;
   });
-
-  const categories = Object.keys(chaptersByCategory).sort();
 
   const getStatusIcon = (status?: string) => {
     switch (status) {
@@ -64,13 +49,42 @@ export const AtlasTableOfContents = () => {
   const getStatusBadge = (status?: string) => {
     switch (status) {
       case 'available':
-        return <Badge variant="secondary" className="text-xs bg-green-100 text-green-700 hover:bg-green-100">Disponible</Badge>;
+        return <Badge variant="success" className="text-xs">Disponible</Badge>;
       case 'coming-soon':
       case 'coming':
         return <Badge variant="secondary" className="text-xs bg-yellow-100 text-yellow-700 hover:bg-yellow-100">Bientôt</Badge>;
       default:
         return <Badge variant="secondary" className="text-xs bg-red-100 text-red-700 hover:bg-red-100">Indisponible</Badge>;
     }
+  };
+
+  const formatTitle = (title: string, issueNumber?: number) => {
+    // Check if title already includes "Atlas de Diagnostic Chirurgicale (ADC)"
+    if (title.includes("Atlas de Diagnostic Chirurgicale")) {
+      return title;
+    }
+    
+    // Add the full ADC prefix if not present
+    const chapterName = title;
+    return `Atlas de Diagnostic Chirurgicale (ADC) - ${chapterName}`;
+  };
+
+  const formatAuthors = (chapter: any) => {
+    const authors = chapter.authors || [];
+    const primaryAuthor = chapter.primary_author;
+    const coAuthors = chapter.co_authors || [];
+    
+    // Combine all author sources
+    let allAuthors = [...authors];
+    if (primaryAuthor && !allAuthors.includes(primaryAuthor)) {
+      allAuthors.unshift(primaryAuthor);
+    }
+    allAuthors = [...allAuthors, ...coAuthors];
+    
+    // Remove duplicates and filter out empty strings
+    const uniqueAuthors = [...new Set(allAuthors.filter(author => author && author.trim()))];
+    
+    return uniqueAuthors.length > 0 ? uniqueAuthors.join(', ') : 'Auteurs non spécifiés';
   };
 
   return (
@@ -81,72 +95,49 @@ export const AtlasTableOfContents = () => {
           <h4 className="text-sm font-medium text-blue-900">Atlas des Décisions Cliniques</h4>
         </div>
         <p className="text-xs text-blue-700">
-          {chapters.length} chapitre{chapters.length > 1 ? 's' : ''} • {categories.length} catégorie{categories.length > 1 ? 's' : ''}
+          {chapters.length} chapitre{chapters.length > 1 ? 's' : ''} disponible{chapters.length > 1 ? 's' : ''}
         </p>
       </div>
 
-      <Accordion type="multiple" className="w-full">
-        {categories.map((category, categoryIndex) => {
-          const categoryChapters = chaptersByCategory[category];
-          const availableCount = categoryChapters.filter(ch => ch.status === 'available').length;
-          
-          return (
-            <AccordionItem key={category} value={category} className="border-b border-gray-200">
-              <AccordionTrigger className="text-sm font-medium hover:text-secondary py-3 px-2 hover:bg-gray-50 rounded transition-colors">
-                <div className="flex items-center justify-between w-full mr-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                      {String.fromCharCode(65 + categoryIndex)}
+      <div className="w-full">
+        <ul className="space-y-1">
+          {sortedChapters.map((chapter) => (
+            <li key={chapter.id} className="group">
+              <div className="flex items-start gap-3 py-3 px-3 rounded-md hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0">
+                <div className="flex items-center gap-2 flex-shrink-0 mt-0.5">
+                  <span className="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded min-w-[2rem] text-center">
+                    {chapter.chapterNumber !== undefined ? chapter.chapterNumber : 
+                     chapter.pageNumber ? parseInt(chapter.pageNumber, 10) : '—'}
+                  </span>
+                  {getStatusIcon(chapter.status)}
+                </div>
+                
+                <div className="flex-1 min-w-0">
+                  <Link 
+                    to={`/adc/chapters/${chapter.id}`}
+                    className="block group-hover:text-secondary transition-colors"
+                  >
+                    <h5 className="text-sm font-medium text-gray-900 group-hover:text-secondary mb-1 leading-tight">
+                      {formatTitle(chapter.title, chapter.chapterNumber)}
+                    </h5>
+                  </Link>
+                  
+                  <div className="flex items-center gap-1 text-xs text-gray-600 mb-2">
+                    <Users className="w-3 h-3 flex-shrink-0" />
+                    <span className="leading-tight">
+                      {formatAuthors(chapter)}
                     </span>
-                    <span>{category}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs">
-                      {availableCount}/{categoryChapters.length}
-                    </Badge>
+                  
+                  <div className="flex items-center justify-between">
+                    {getStatusBadge(chapter.status)}
                   </div>
                 </div>
-              </AccordionTrigger>
-              <AccordionContent className="pb-2">
-                <ul className="space-y-1 pl-2">
-                  {categoryChapters.map((chapter) => (
-                    <li key={chapter.id} className="group">
-                      <div className="flex items-center gap-2 py-2 px-3 rounded-md hover:bg-gray-50 transition-colors">
-                        <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <span className="text-xs font-mono text-gray-400 flex-shrink-0 w-8">
-                            {chapter.chapterNumber ? `${chapter.chapterNumber}.` : '—'}
-                          </span>
-                          {getStatusIcon(chapter.status)}
-                          <Link 
-                            to={`/adc/chapters/${chapter.id}`}
-                            className="text-sm text-gray-700 hover:text-secondary transition-colors flex-1 min-w-0 truncate group-hover:text-secondary"
-                            title={chapter.title}
-                          >
-                            {chapter.title}
-                          </Link>
-                        </div>
-                        <div className="flex items-center gap-2 flex-shrink-0">
-                          {getStatusBadge(chapter.status)}
-                        </div>
-                      </div>
-                      
-                      {/* Optional metadata row */}
-                      {(chapter.authors || chapter.author) && (
-                        <div className="ml-12 pb-1">
-                          <div className="flex items-center gap-1 text-xs text-gray-500">
-                            <Users className="w-3 h-3" />
-                            <span>{chapter.authors?.join(', ') || chapter.author}</span>
-                          </div>
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </AccordionContent>
-            </AccordionItem>
-          );
-        })}
-      </Accordion>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       {/* Legend */}
       <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">

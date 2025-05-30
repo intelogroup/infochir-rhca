@@ -12,12 +12,13 @@ export const useAtlasArticles = () => {
     queryKey: ['atlas-articles'],
     queryFn: async () => {
       try {
-        // Fetch atlas chapters from the articles table
+        // Fetch atlas chapters from the articles table, ordered by issue/page number
         const { data, error } = await supabase
           .from('articles')
           .select('*')
           .eq('source', 'ADC')
-          .order('created_at', { ascending: false });
+          .order('page_number', { ascending: true, nullsLast: true })
+          .order('created_at', { ascending: true });
         
         if (error) {
           throw new Error(error.message);
@@ -29,7 +30,8 @@ export const useAtlasArticles = () => {
           title: item.title,
           description: item.abstract,
           category: item.category || undefined,
-          chapterNumber: parseInt(item.page_number || '0', 10) || undefined,
+          chapterNumber: item.page_number ? parseInt(item.page_number, 10) : undefined,
+          pageNumber: item.page_number || undefined,
           authors: item.authors || [],
           author: item.primary_author || undefined,
           pdfUrl: item.pdf_url || undefined,
@@ -47,10 +49,12 @@ export const useAtlasArticles = () => {
             shares: item.shares || 0,
             downloads: item.downloads || 0
           },
-          source: item.source
+          source: item.source,
+          primary_author: item.primary_author,
+          co_authors: item.co_authors || []
         }));
         
-        logger.log(`Fetched ${chapters.length} atlas chapters from Supabase`);
+        logger.log(`Fetched ${chapters.length} atlas chapters from Supabase, ordered by issue number`);
         return chapters;
       } catch (error) {
         logger.error('Error fetching Atlas articles:', error);
