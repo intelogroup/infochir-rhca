@@ -1,18 +1,15 @@
 
 import * as React from "react";
-import { Routes, Route, useLocation, Navigate, BrowserRouter as Router } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { routes } from "@/config/routes";
 import { createLogger } from "@/lib/error-logger";
-import { Auth } from '@supabase/auth-ui-react';
-import { ThemeSupa } from '@supabase/auth-ui-shared';
-import { supabase } from '@/integrations/supabase/client';
 
 // Create a logger for routes
 const logger = createLogger('AppRoutes');
 
-export const AppRoutes = ({ session }) => {
+export const AppRoutes = () => {
   const location = useLocation();
   useScrollToTop();
 
@@ -96,34 +93,10 @@ export const AppRoutes = ({ session }) => {
     });
   };
 
-  // Add the Login route
-  const loginRoute = (
-    <Route
-      path="/login"
-      element={
-        !session ? (
-          <div className="flex justify-center items-center min-h-screen">
-            <div className="w-full max-w-md">
-              <Auth
-                supabaseClient={supabase}
-                appearance={{ theme: ThemeSupa }}
-                providers={['google', 'github']}
-                redirectTo={`${window.location.origin}/admin/dashboard`}
-              />
-            </div>
-          </div>
-        ) : (
-          <Navigate to="/admin/dashboard" replace />
-        )
-      }
-    />
-  );
-
   return (
     <ErrorBoundary>
       <Routes location={location}>
         {renderRoutes(routes)}
-        {loginRoute}
       </Routes>
     </ErrorBoundary>
   );

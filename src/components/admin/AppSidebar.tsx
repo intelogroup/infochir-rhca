@@ -9,7 +9,7 @@ import {
   BookOpen,
   LogOut,
   Home,
-  MailSettings,
+  Mail,
   TrendingUp
 } from 'lucide-react';
 import {
@@ -73,7 +73,7 @@ const settingsMenuItems = [
   },
   {
     title: "Email",
-    icon: MailSettings,
+    icon: Mail,
     href: "/admin/email-settings",
     description: "Configuration email"
   }
