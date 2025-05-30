@@ -20,6 +20,19 @@ const CACHE_TTL = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
 const DEFAULT_SENDER = "InfoChir <noreply@info-chir.org>";
 const DEFAULT_BACKUP_SENDER = "InfoChir Backup <noreply@info-chir.org>";
 
+// Email attachment interface
+export interface EmailAttachment {
+  filename: string;
+  content: string; // base64 encoded content
+  content_type?: string;
+  size?: number;
+}
+
+// Constants for attachment limits
+const MAX_ATTACHMENT_SIZE = 40 * 1024 * 1024; // 40MB Resend limit
+const MAX_TOTAL_SIZE = 45 * 1024 * 1024; // 45MB total including email content
+const MAX_ATTACHMENTS = 10; // Reasonable limit
+
 // Lazy initialization of Resend client to avoid unnecessary instantiation
 const getResendClient = () => {
   if (!resend && RESEND_API_KEY) {
@@ -214,12 +227,62 @@ export async function checkDomainVerification(
 }
 
 /**
- * Send an email notification using Resend
+ * Validate attachments before sending
+ * @param attachments Array of email attachments
+ * @returns Object with validation status and message
+ */
+export function validateAttachments(attachments: EmailAttachment[]): { valid: boolean; message: string } {
+  if (!attachments || attachments.length === 0) {
+    return { valid: true, message: "No attachments to validate" };
+  }
+
+  if (attachments.length > MAX_ATTACHMENTS) {
+    return { 
+      valid: false, 
+      message: `Too many attachments. Maximum ${MAX_ATTACHMENTS} allowed, got ${attachments.length}` 
+    };
+  }
+
+  let totalSize = 0;
+  for (const attachment of attachments) {
+    if (!attachment.filename || !attachment.content) {
+      return { 
+        valid: false, 
+        message: `Invalid attachment: missing filename or content` 
+      };
+    }
+
+    // Calculate base64 decoded size (approximate)
+    const contentSize = Math.floor(attachment.content.length * 0.75);
+    
+    if (contentSize > MAX_ATTACHMENT_SIZE) {
+      return { 
+        valid: false, 
+        message: `Attachment "${attachment.filename}" is too large (${Math.round(contentSize / 1024 / 1024)}MB). Maximum ${Math.round(MAX_ATTACHMENT_SIZE / 1024 / 1024)}MB per file.` 
+      };
+    }
+
+    totalSize += contentSize;
+  }
+
+  if (totalSize > MAX_TOTAL_SIZE) {
+    return { 
+      valid: false, 
+      message: `Total attachment size too large (${Math.round(totalSize / 1024 / 1024)}MB). Maximum ${Math.round(MAX_TOTAL_SIZE / 1024 / 1024)}MB total.` 
+    };
+  }
+
+  return { valid: true, message: "Attachments validated successfully" };
+}
+
+/**
+ * Send an email notification using Resend with optional attachments
  * @param recipient Email address of the recipient
  * @param subject Email subject
  * @param html HTML content of the email
  * @param text Plain text content of the email
  * @param replyTo Optional reply-to email address
+ * @param attachments Optional array of email attachments
  * @returns Object with success status and response data
  */
 export async function sendEmail(
@@ -227,7 +290,8 @@ export async function sendEmail(
   subject: string, 
   html: string, 
   text: string, 
-  replyTo?: string
+  replyTo?: string,
+  attachments?: EmailAttachment[]
 ): Promise<{ success: boolean; data?: any; error?: any }> {
   try {
     console.log("[email-sender] === SENDING EMAIL ===");
@@ -236,6 +300,7 @@ export async function sendEmail(
     console.log("- HTML length:", html.length);
     console.log("- Text length:", text.length);
     console.log("- Reply-to:", replyTo || "none");
+    console.log("- Attachments:", attachments ? attachments.length : 0);
     
     const client = getResendClient();
     if (!client) {
@@ -244,8 +309,18 @@ export async function sendEmail(
       throw error;
     }
     
-    // Prepare email payload
-    const emailPayload = {
+    // Validate attachments if provided
+    if (attachments && attachments.length > 0) {
+      const validation = validateAttachments(attachments);
+      if (!validation.valid) {
+        console.error("[email-sender] Attachment validation failed:", validation.message);
+        throw new Error(`Attachment validation failed: ${validation.message}`);
+      }
+      console.log("[email-sender] Attachments validated successfully");
+    }
+    
+    // Prepare email payload with attachments
+    const emailPayload: any = {
       from: DEFAULT_SENDER,
       to: [recipient],
       subject: subject,
@@ -253,6 +328,16 @@ export async function sendEmail(
       text: text,
       ...(replyTo && { reply_to: replyTo })
     };
+
+    // Add attachments if provided
+    if (attachments && attachments.length > 0) {
+      emailPayload.attachments = attachments.map(att => ({
+        filename: att.filename,
+        content: att.content,
+        content_type: att.content_type || 'application/octet-stream'
+      }));
+      console.log("[email-sender] Added", attachments.length, "attachments to email");
+    }
     
     console.log("[email-sender] Email payload prepared:", {
       from: emailPayload.from,
@@ -260,7 +345,8 @@ export async function sendEmail(
       subject: emailPayload.subject,
       hasHtml: !!emailPayload.html,
       hasText: !!emailPayload.text,
-      hasReplyTo: !!emailPayload.reply_to
+      hasReplyTo: !!emailPayload.reply_to,
+      attachmentCount: emailPayload.attachments ? emailPayload.attachments.length : 0
     });
     
     // Send email using Resend with their default sender domain
@@ -302,6 +388,7 @@ export async function sendEmail(
 
 /**
  * Attempt to send a simplified backup email when the main email fails
+ * Note: Backup emails do not support attachments
  * @param recipient Email address of the recipient
  * @param subject Email subject (will be prefixed with "BACKUP:")
  * @param text Plain text content of the email
@@ -317,6 +404,7 @@ export async function sendBackupEmail(
     console.log("- To:", recipient);
     console.log("- Subject: BACKUP:", subject);
     console.log("- Text length:", text.length);
+    console.log("- Note: Backup emails do not support attachments");
     
     const client = getResendClient();
     if (!client) {
