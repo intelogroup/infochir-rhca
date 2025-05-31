@@ -131,19 +131,21 @@ export const ArticleTable: React.FC<ArticleTableProps> = ({
               </div>
               
               <div className="flex flex-wrap gap-1 mb-2">
-                {article.tags?.slice(0, 2).map((tag) => (
+                {article.tags?.slice(0, 3).map((tag) => (
                   <Badge 
                     key={tag} 
                     variant="outline" 
-                    className="text-xs bg-muted truncate max-w-[100px] cursor-pointer"
+                    className={`text-xs truncate max-w-[100px] cursor-pointer ${
+                      selectedTags?.includes(tag) ? "bg-primary/20" : "bg-muted hover:bg-primary/10"
+                    }`}
                     onClick={() => onTagClick && onTagClick(tag)}
                   >
                     {tag}
                   </Badge>
                 ))}
-                {(article.tags?.length || 0) > 2 && (
+                {(article.tags?.length || 0) > 3 && (
                   <Badge variant="outline" className="text-xs bg-muted">
-                    +{(article.tags?.length || 0) - 2}
+                    +{(article.tags?.length || 0) - 3}
                   </Badge>
                 )}
               </div>

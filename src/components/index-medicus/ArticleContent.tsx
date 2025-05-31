@@ -72,13 +72,13 @@ export const ArticleContent: React.FC<ArticleContentProps> = ({
       case 'grid':
         return <ArticleCompactList articles={articles} onTagClick={onTagClick} selectedTags={selectedTags} />;
       case 'table':
-        return isMobile ? <ArticleCompactList articles={articles} onTagClick={onTagClick} selectedTags={selectedTags} /> : <ArticleTable articles={articles} />;
+        return <ArticleTable articles={articles} onTagClick={onTagClick} selectedTags={selectedTags} />;
       case 'list':
         return <ArticleCompactList articles={articles} onTagClick={onTagClick} selectedTags={selectedTags} />;
       case 'virtual':
         return <VirtualizedArticleList articles={articles} onTagClick={onTagClick} selectedTags={selectedTags} />;
       default:
-        return <ArticleTable articles={articles} />;
+        return <ArticleTable articles={articles} onTagClick={onTagClick} selectedTags={selectedTags} />;
     }
   };
 
