@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { MainLayout } from '@/components/layouts/MainLayout';
 import Home from '@/pages/Home';
 import About from '@/pages/About';
 import RHCA from '@/pages/RHCA';
@@ -33,20 +34,22 @@ import Debug from '@/pages/admin/Debug';
 export const AppRoutes = () => {
   return (
     <Routes>
-      {/* Public Routes */}
-      <Route path="/" element={<Home />} />
-      <Route path="/about" element={<About />} />
-      <Route path="/rhca" element={<RHCA />} />
-      <Route path="/igm" element={<IGM />} />
-      <Route path="/adc" element={<ADC />} />
-      <Route path="/index-medicus" element={<IndexMedicus />} />
-      <Route path="/annuaire" element={<Annuaire />} />
-      <Route path="/directives" element={<Directives />} />
-      <Route path="/editorial-committee" element={<EditorialCommittee />} />
-      <Route path="/submission" element={<Submission />} />
-      <Route path="/donate" element={<Donate />} />
-      <Route path="/opportunities" element={<Opportunities />} />
-      <Route path="/trigger-uploads" element={<TriggerUploads />} />
+      {/* Public Routes wrapped in MainLayout */}
+      <Route path="/" element={<MainLayout />}>
+        <Route index element={<Home />} />
+        <Route path="about" element={<About />} />
+        <Route path="rhca" element={<RHCA />} />
+        <Route path="igm" element={<IGM />} />
+        <Route path="adc" element={<ADC />} />
+        <Route path="index-medicus" element={<IndexMedicus />} />
+        <Route path="annuaire" element={<Annuaire />} />
+        <Route path="directives" element={<Directives />} />
+        <Route path="editorial-committee" element={<EditorialCommittee />} />
+        <Route path="submission" element={<Submission />} />
+        <Route path="donate" element={<Donate />} />
+        <Route path="opportunities" element={<Opportunities />} />
+        <Route path="trigger-uploads" element={<TriggerUploads />} />
+      </Route>
 
       {/* Admin Routes */}
       <Route path="/admin/login" element={<AdminLogin />} />
