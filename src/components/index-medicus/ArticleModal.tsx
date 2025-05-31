@@ -50,6 +50,29 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
     return 'Journal';
   };
 
+  // Format publication information
+  const getPublicationInfo = (article: Article) => {
+    const parts = [];
+    
+    if (article.source) {
+      parts.push(article.source);
+    }
+    
+    if (article.volume && article.issue) {
+      parts.push(`Volume ${article.volume}, Issue ${article.issue}`);
+    } else if (article.volume) {
+      parts.push(`Volume ${article.volume}`);
+    } else if (article.issue) {
+      parts.push(`Issue ${article.issue}`);
+    }
+    
+    if (article.pageNumber) {
+      parts.push(`Page ${article.pageNumber}`);
+    }
+    
+    return parts.join('\n');
+  };
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl max-h-[90vh] p-0 overflow-hidden bg-white flex flex-col">
@@ -80,6 +103,13 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
               >
                 {article.source}
               </Badge>
+            </div>
+
+            {/* Publication Information - replaces where tags used to be */}
+            <div className="bg-gray-50 p-3 sm:p-4 rounded-lg">
+              <div className="text-sm text-gray-700 whitespace-pre-line font-medium">
+                {getPublicationInfo(article)}
+              </div>
             </div>
 
             <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-6 text-sm text-gray-600">
@@ -142,12 +172,36 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
               </div>
             </div>
 
-            {article.specialty && (
+            {/* Specialty and Tags section - combined */}
+            {(article.specialty || (article.tags && article.tags.length > 0)) && (
               <div className="border-t pt-4">
-                <h4 className="font-semibold mb-2 text-sm sm:text-base">Spécialité</h4>
-                <Badge variant="outline" className="bg-primary/5 hover:bg-primary/10">
-                  {article.specialty}
-                </Badge>
+                <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-6">
+                  {article.specialty && (
+                    <div>
+                      <h4 className="font-semibold mb-2 text-sm sm:text-base">Spécialité</h4>
+                      <Badge variant="outline" className="bg-primary/5 hover:bg-primary/10">
+                        {article.specialty}
+                      </Badge>
+                    </div>
+                  )}
+                  
+                  {article.tags && article.tags.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold mb-2 text-sm sm:text-base">Mots-clés</h4>
+                      <div className="flex flex-wrap gap-1">
+                        {article.tags.map((tag) => (
+                          <Badge 
+                            key={tag} 
+                            variant="outline" 
+                            className="bg-gray-50 text-gray-600 border-gray-200 px-2 py-0.5 text-xs font-normal"
+                          >
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
