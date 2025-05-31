@@ -2,13 +2,11 @@
 import React from "react";
 import { RhcaGrid } from "./RhcaGrid";
 import { RhcaTable } from "./RhcaTable";
-import { useArticlesState } from "./hooks/useArticlesState";
 import { useRHCAArticles } from "./hooks/useRHCAArticles";
 import { MobileOptimizedContainer } from "@/components/mobile/MobileOptimizedContainer";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export const RhcaContent: React.FC = () => {
-  const { articlesByYear, years } = useArticlesState();
   const isMobile = useIsMobile();
 
   const {

@@ -218,6 +218,10 @@ const ArticleGrid: FC<ArticleGridProps> = ({
     );
   }
 
+  const handleRefresh = async () => {
+    await refetch();
+  };
+
   return (
     <div className="space-y-3 sm:space-y-4">
       <SearchBar
@@ -270,7 +274,7 @@ const ArticleGrid: FC<ArticleGridProps> = ({
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
-        onRefresh={refetch}
+        onRefresh={handleRefresh}
       />
     </div>
   );
