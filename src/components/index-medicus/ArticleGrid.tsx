@@ -107,22 +107,44 @@ const ArticleGrid: FC<ArticleGridProps> = ({
     articleStats
   } = useArticlesState(articles);
 
-  // Sort articles based on sortBy prop
+  // Enhanced sorting with special Atlas (ADC) logic
   const sortedFilteredArticles = useMemo(() => {
     const sorted = [...filteredArticles];
     
-    if (sortBy === "title") {
-      return sorted.sort((a, b) => a.title.localeCompare(b.title, 'fr', { sensitivity: 'base' }));
-    } else if (sortBy === "author") {
-      return sorted.sort((a, b) => {
-        const aFirstAuthor = a.authors && a.authors.length > 0 ? a.authors[0] : '';
-        const bFirstAuthor = b.authors && b.authors.length > 0 ? b.authors[0] : '';
-        return aFirstAuthor.localeCompare(bFirstAuthor, 'fr', { sensitivity: 'base' });
-      });
+    // Check if we're viewing Atlas (ADC) content
+    const isAtlasView = sourceFilter === 'ADC' || querySource === 'ADC';
+    
+    if (isAtlasView) {
+      if (sortBy === "title") {
+        // For Atlas, sort by issue number when sorting by title
+        return sorted.sort((a, b) => {
+          const aIssue = a.issue ? parseInt(a.issue) : 0;
+          const bIssue = b.issue ? parseInt(b.issue) : 0;
+          return aIssue - bIssue;
+        });
+      } else if (sortBy === "author") {
+        // For Atlas, sort alphabetically by author name
+        return sorted.sort((a, b) => {
+          const aFirstAuthor = a.authors && a.authors.length > 0 ? a.authors[0] : '';
+          const bFirstAuthor = b.authors && b.authors.length > 0 ? b.authors[0] : '';
+          return aFirstAuthor.localeCompare(bFirstAuthor, 'fr', { sensitivity: 'base' });
+        });
+      }
+    } else {
+      // Regular sorting for non-Atlas content
+      if (sortBy === "title") {
+        return sorted.sort((a, b) => a.title.localeCompare(b.title, 'fr', { sensitivity: 'base' }));
+      } else if (sortBy === "author") {
+        return sorted.sort((a, b) => {
+          const aFirstAuthor = a.authors && a.authors.length > 0 ? a.authors[0] : '';
+          const bFirstAuthor = b.authors && b.authors.length > 0 ? b.authors[0] : '';
+          return aFirstAuthor.localeCompare(bFirstAuthor, 'fr', { sensitivity: 'base' });
+        });
+      }
     }
     
     return sorted;
-  }, [filteredArticles, sortBy]);
+  }, [filteredArticles, sortBy, sourceFilter, querySource]);
 
   // Calculate article counts for the SourceFilter component using the separate queries
   const articleCounts = {
