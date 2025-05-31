@@ -2,6 +2,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { MainLayout } from '@/components/layouts/MainLayout';
+import { AdminLayout } from '@/components/layouts/AdminLayout';
 import Home from '@/pages/Home';
 import About from '@/pages/About';
 import RHCA from '@/pages/RHCA';
@@ -51,56 +52,26 @@ export const AppRoutes = () => {
         <Route path="trigger-uploads" element={<TriggerUploads />} />
       </Route>
 
-      {/* Admin Routes */}
+      {/* Admin Login Route (no sidebar) */}
       <Route path="/admin/login" element={<AdminLogin />} />
-      <Route path="/admin/dashboard" element={
-        <AdminRouteWrapper component={AdminDashboard}>
-          <AdminDashboard />
-        </AdminRouteWrapper>
-      } />
-      <Route path="/admin/content" element={
-        <AdminRouteWrapper component={Content}>
-          <Content />
-        </AdminRouteWrapper>
-      } />
-      <Route path="/admin/articles/new" element={
-        <AdminRouteWrapper component={ArticleCreate}>
-          <ArticleCreate />
-        </AdminRouteWrapper>
-      } />
-      <Route path="/admin/files" element={
-        <AdminRouteWrapper component={FileManagement}>
-          <FileManagement />
-        </AdminRouteWrapper>
-      } />
-      <Route path="/admin/users" element={
-        <AdminRouteWrapper component={AdminUsers}>
-          <AdminUsers />
-        </AdminRouteWrapper>
-      } />
-      <Route path="/admin/analytics" element={
-        <AdminRouteWrapper component={AdminAnalytics}>
-          <AdminAnalytics />
-        </AdminRouteWrapper>
-      } />
-      <Route path="/admin/index-medicus" element={
-        <AdminRouteWrapper component={IndexMedicusAdmin}>
-          <IndexMedicusAdmin />
-        </AdminRouteWrapper>
-      } />
-      <Route path="/admin/settings" element={
-        <AdminRouteWrapper component={AdminSettings}>
-          <AdminSettings />
-        </AdminRouteWrapper>
-      } />
-      <Route path="/admin/email-settings" element={
-        <AdminRouteWrapper component={AdminEmailSettings}>
-          <AdminEmailSettings />
-        </AdminRouteWrapper>
-      } />
-      <Route path="/admin/debug" element={
-        <AdminRouteWrapper component={Debug}>
-          <Debug />
+
+      {/* Admin Routes with AdminLayout (includes sidebar) */}
+      <Route path="/admin" element={
+        <AdminRouteWrapper component={AdminLayout}>
+          <AdminLayout>
+            <Routes>
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="content" element={<Content />} />
+              <Route path="articles/new" element={<ArticleCreate />} />
+              <Route path="files" element={<FileManagement />} />
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="analytics" element={<AdminAnalytics />} />
+              <Route path="index-medicus" element={<IndexMedicusAdmin />} />
+              <Route path="settings" element={<AdminSettings />} />
+              <Route path="email-settings" element={<AdminEmailSettings />} />
+              <Route path="debug" element={<Debug />} />
+            </Routes>
+          </AdminLayout>
         </AdminRouteWrapper>
       } />
 
