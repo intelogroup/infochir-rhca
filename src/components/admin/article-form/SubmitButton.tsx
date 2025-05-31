@@ -1,33 +1,30 @@
+
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { Loader2, Save } from "lucide-react";
 
 interface SubmitButtonProps {
   isLoading: boolean;
-  isEditing: boolean;
+  isEditing?: boolean;
 }
 
-export const SubmitButton = ({ isLoading, isEditing }: SubmitButtonProps) => {
+export const SubmitButton = ({ isLoading, isEditing = false }: SubmitButtonProps) => {
   return (
     <Button 
       type="submit" 
+      size="lg" 
       disabled={isLoading}
-      className="min-w-[200px] relative overflow-hidden group"
+      className="w-full sm:w-auto min-w-[200px]"
     >
-      <motion.span
-        initial={false}
-        animate={{ x: isLoading ? 20 : 0, opacity: isLoading ? 0 : 1 }}
-        className="inline-block"
-      >
-        {isEditing ? "Mettre à jour" : "Enregistrer"}
-      </motion.span>
-      {isLoading && (
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="absolute inset-0 flex items-center justify-center"
-        >
-          <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-        </motion.div>
+      {isLoading ? (
+        <>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          {isEditing ? "Mise à jour..." : "Création..."}
+        </>
+      ) : (
+        <>
+          <Save className="mr-2 h-4 w-4" />
+          {isEditing ? "Mettre à jour l'article" : "Créer l'article"}
+        </>
       )}
     </Button>
   );

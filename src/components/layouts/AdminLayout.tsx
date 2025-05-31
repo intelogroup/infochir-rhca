@@ -25,6 +25,12 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       breadcrumbs.push({ label: "Dashboard", href: "/admin/dashboard" });
     } else if (path === "/admin/content") {
       breadcrumbs.push({ label: "Contenu", href: "/admin/content" });
+    } else if (path === "/admin/articles/new") {
+      breadcrumbs.push({ label: "Contenu", href: "/admin/content" });
+      breadcrumbs.push({ label: "Nouvel Article", href: "/admin/articles/new" });
+    } else if (path === "/admin/files") {
+      breadcrumbs.push({ label: "Contenu", href: "/admin/content" });
+      breadcrumbs.push({ label: "Gestion des Fichiers", href: "/admin/files" });
     } else if (path === "/admin/users") {
       breadcrumbs.push({ label: "Utilisateurs", href: "/admin/users" });
     } else if (path === "/admin/analytics") {

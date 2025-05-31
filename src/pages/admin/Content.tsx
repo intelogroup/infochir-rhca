@@ -14,7 +14,8 @@ import {
   Upload,
   FolderOpen,
   Edit,
-  Eye
+  Eye,
+  Download
 } from "lucide-react";
 
 const ContentStats = () => (
