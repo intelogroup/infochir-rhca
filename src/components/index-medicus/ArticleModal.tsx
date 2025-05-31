@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Dialog,
@@ -172,38 +171,34 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
               </div>
             </div>
 
-            {/* Specialty and Tags section - combined */}
-            {(article.specialty || (article.tags && article.tags.length > 0)) && (
-              <div className="border-t pt-4">
-                <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-6">
-                  {article.specialty && (
-                    <div>
-                      <h4 className="font-semibold mb-2 text-sm sm:text-base">Spécialité</h4>
-                      <Badge variant="outline" className="bg-primary/5 hover:bg-primary/10">
-                        {article.specialty}
-                      </Badge>
-                    </div>
-                  )}
-                  
-                  {article.tags && article.tags.length > 0 && (
-                    <div>
-                      <h4 className="font-semibold mb-2 text-sm sm:text-base">Mots-clés</h4>
-                      <div className="flex flex-wrap gap-1">
-                        {article.tags.map((tag) => (
-                          <Badge 
-                            key={tag} 
-                            variant="outline" 
-                            className="bg-gray-50 text-gray-600 border-gray-200 px-2 py-0.5 text-xs font-normal"
-                          >
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+            {/* Specialty and Tags section - always visible and properly spaced */}
+            <div className="border-t pt-4 space-y-4">
+              {article.specialty && (
+                <div>
+                  <h4 className="font-semibold mb-2 text-sm sm:text-base">Spécialité</h4>
+                  <Badge variant="outline" className="bg-primary/5 hover:bg-primary/10 text-sm">
+                    {article.specialty}
+                  </Badge>
                 </div>
-              </div>
-            )}
+              )}
+              
+              {article.tags && article.tags.length > 0 && (
+                <div>
+                  <h4 className="font-semibold mb-2 text-sm sm:text-base">Mots-clés</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {article.tags.map((tag) => (
+                      <Badge 
+                        key={tag} 
+                        variant="outline" 
+                        className="bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 px-2 py-1 text-xs"
+                      >
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </ScrollArea>
         
