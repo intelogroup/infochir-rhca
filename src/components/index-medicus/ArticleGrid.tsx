@@ -50,6 +50,13 @@ const ArticleGrid: FC<ArticleGridProps> = ({
   const categoryFilter = getCategoryFilter(sourceFilter);
   const { data, isLoading, error, refetch } = useArticlesQuery(currentPage, querySource, categoryFilter);
   
+  // Fetch counts for all sources separately
+  const { data: allData } = useArticlesQuery(0, undefined, undefined);
+  const { data: adcData } = useArticlesQuery(0, 'ADC', undefined);
+  const { data: igmData } = useArticlesQuery(0, 'IGM', undefined);
+  const { data: rhcaData } = useArticlesQuery(0, 'RHCA', undefined);
+  const { data: indexArticlesData } = useArticlesQuery(0, 'INDEX', 'article');
+  
   // Mark component as mounted
   useEffect(() => {
     mountedRef.current = true;
@@ -100,18 +107,13 @@ const ArticleGrid: FC<ArticleGridProps> = ({
   // Filter articles for INDEX_ARTICLES (articles with category containing "Article")
   const finalFilteredArticles = filteredArticles;
 
-  // Calculate article counts for the SourceFilter component
+  // Calculate article counts for the SourceFilter component using the separate queries
   const articleCounts = {
-    total: articleStats.total,
-    ADC: articleStats.sources['ADC'] || 0,
-    IGM: articleStats.sources['IGM'] || 0,
-    RHCA: articleStats.sources['RHCA'] || 0,
-    INDEX_ARTICLES: articles.filter(article => 
-      article.source === 'INDEX' && (
-        article.category.toLowerCase().includes('article') || 
-        article.category.toLowerCase().includes('index')
-      )
-    ).length
+    total: allData?.articles?.length || 0,
+    ADC: adcData?.articles?.length || 0,
+    IGM: igmData?.articles?.length || 0,
+    RHCA: rhcaData?.articles?.length || 0,
+    INDEX_ARTICLES: indexArticlesData?.articles?.length || 0
   };
 
   const handleSearch = useCallback(async () => {
