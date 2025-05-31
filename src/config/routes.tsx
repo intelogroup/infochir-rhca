@@ -56,24 +56,22 @@ export const AppRoutes = () => {
       <Route path="/admin/login" element={<AdminLogin />} />
 
       {/* Admin Routes with AdminLayout (includes sidebar) */}
-      <Route path="/admin" element={
+      <Route path="/admin/*" element={
         <AdminRouteWrapper component={AdminLayout}>
-          <AdminLayout>
-            <Routes>
-              <Route path="dashboard" element={<AdminDashboard />} />
-              <Route path="content" element={<Content />} />
-              <Route path="articles/new" element={<ArticleCreate />} />
-              <Route path="files" element={<FileManagement />} />
-              <Route path="users" element={<AdminUsers />} />
-              <Route path="analytics" element={<AdminAnalytics />} />
-              <Route path="index-medicus" element={<IndexMedicusAdmin />} />
-              <Route path="settings" element={<AdminSettings />} />
-              <Route path="email-settings" element={<AdminEmailSettings />} />
-              <Route path="debug" element={<Debug />} />
-            </Routes>
-          </AdminLayout>
+          <AdminLayout />
         </AdminRouteWrapper>
-      } />
+      }>
+        <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="content" element={<Content />} />
+        <Route path="articles/new" element={<ArticleCreate />} />
+        <Route path="files" element={<FileManagement />} />
+        <Route path="users" element={<AdminUsers />} />
+        <Route path="analytics" element={<AdminAnalytics />} />
+        <Route path="index-medicus" element={<IndexMedicusAdmin />} />
+        <Route path="settings" element={<AdminSettings />} />
+        <Route path="email-settings" element={<AdminEmailSettings />} />
+        <Route path="debug" element={<Debug />} />
+      </Route>
 
       {/* Catch all route */}
       <Route path="*" element={<NotFound />} />

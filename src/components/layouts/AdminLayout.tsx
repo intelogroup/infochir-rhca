@@ -4,13 +4,9 @@ import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/s
 import { AppSidebar } from "@/components/admin/AppSidebar";
 import { Separator } from "@/components/ui/separator";
 import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
-import { useLocation } from "react-router-dom";
+import { useLocation, Outlet } from "react-router-dom";
 
-interface AdminLayoutProps {
-  children: React.ReactNode;
-}
-
-export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
+export const AdminLayout: React.FC = () => {
   const location = useLocation();
   
   // Generate breadcrumbs based on current location
@@ -60,7 +56,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           </header>
           <main className="flex-1 p-6">
             <div className="max-w-7xl mx-auto">
-              {children}
+              <Outlet />
             </div>
           </main>
         </SidebarInset>
