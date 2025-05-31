@@ -5,10 +5,17 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen, Info } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { SourceFilterType } from "@/components/index-medicus/SourceFilter";
 
 const IndexMedicus = () => {
+  const [sourceFilter, setSourceFilter] = useState<SourceFilterType>('all');
+
+  const handleSourceFilterChange = (source: SourceFilterType) => {
+    setSourceFilter(source);
+  };
+
   return (
     <MainLayout>
       <div className="min-h-screen bg-gradient-to-b from-[#F1F0FB] to-white">
@@ -42,19 +49,13 @@ const IndexMedicus = () => {
             </div>
 
             <div className="order-1 mb-4 sm:mb-6">
-              <Tabs defaultValue="articles" className="mb-4 sm:mb-6">
+              <Tabs defaultValue="all-articles" className="mb-4 sm:mb-6">
                 <TabsList className="w-full justify-start border-b rounded-none p-0 h-auto overflow-x-auto scrollbar-hide bg-transparent">
                   <TabsTrigger 
-                    value="articles" 
+                    value="all-articles" 
                     className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary font-medium px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm whitespace-nowrap transition-colors"
                   >
-                    Articles
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="index-medicus" 
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary font-medium px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm whitespace-nowrap transition-colors"
-                  >
-                    Index Medicus
+                    Tous les Articles
                   </TabsTrigger>
                   <TabsTrigger 
                     value="titre" 
@@ -68,26 +69,16 @@ const IndexMedicus = () => {
                   >
                     Auteurs
                   </TabsTrigger>
-                  <TabsTrigger 
-                    value="institutions" 
-                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary font-medium px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm whitespace-nowrap transition-colors"
-                  >
-                    Institutions
-                  </TabsTrigger>
                 </TabsList>
                 
-                <TabsContent value="articles" className="mt-4 sm:mt-6">
+                <TabsContent value="all-articles" className="mt-4 sm:mt-6">
                   <div className="bg-white rounded-lg p-2 sm:p-4 lg:p-6 shadow-md border border-gray-100">
                     <Suspense fallback={<LoadingSpinner variant="primary" text="Chargement des articles..." />}>
-                      <ArticleGrid viewMode="table" />
-                    </Suspense>
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="index-medicus" className="mt-4 sm:mt-6">
-                  <div className="bg-white rounded-lg p-2 sm:p-4 lg:p-6 shadow-md border border-gray-100">
-                    <Suspense fallback={<LoadingSpinner variant="primary" text="Chargement des articles Index Medicus..." />}>
-                      <ArticleGrid viewMode="table" source="INDEX" />
+                      <ArticleGrid 
+                        viewMode="table" 
+                        sourceFilter={sourceFilter}
+                        onSourceFilterChange={handleSourceFilterChange}
+                      />
                     </Suspense>
                   </div>
                 </TabsContent>
@@ -106,15 +97,6 @@ const IndexMedicus = () => {
                     <div className="flex flex-col items-center justify-center py-6 sm:py-8">
                       <BookOpen className="h-10 w-10 sm:h-12 sm:w-12 text-primary/20 mb-4" />
                       <p className="text-gray-600 text-base sm:text-lg font-medium">Liste des auteurs à venir...</p>
-                    </div>
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="institutions" className="mt-4 sm:mt-6">
-                  <div className="bg-white rounded-lg p-4 sm:p-6 shadow-md border border-gray-100">
-                    <div className="flex flex-col items-center justify-center py-6 sm:py-8">
-                      <BookOpen className="h-10 w-10 sm:h-12 sm:w-12 text-primary/20 mb-4" />
-                      <p className="text-gray-600 text-base sm:text-lg font-medium">Liste des institutions à venir...</p>
                     </div>
                   </div>
                 </TabsContent>
