@@ -1,6 +1,7 @@
 
 import * as React from "react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,8 +12,9 @@ import {
   Plus, 
   Search, 
   Upload,
-  BookOpen,
-  Download
+  FolderOpen,
+  Edit,
+  Eye
 } from "lucide-react";
 
 const ContentStats = () => (
@@ -89,18 +91,51 @@ const QuickActions = () => (
       <CardTitle>Actions rapides</CardTitle>
     </CardHeader>
     <CardContent className="space-y-3">
-      <Button variant="outline" className="w-full justify-start">
-        <Plus className="h-4 w-4 mr-2" />
-        Créer un article
-      </Button>
+      <Link to="/admin/articles/new">
+        <Button variant="outline" className="w-full justify-start">
+          <Plus className="h-4 w-4 mr-2" />
+          Créer un article
+        </Button>
+      </Link>
+      <Link to="/admin/files">
+        <Button variant="outline" className="w-full justify-start">
+          <FolderOpen className="h-4 w-4 mr-2" />
+          Gérer les fichiers
+        </Button>
+      </Link>
       <Button variant="outline" className="w-full justify-start">
         <Upload className="h-4 w-4 mr-2" />
-        Importer des PDFs
+        Import en lot
       </Button>
-      <Button variant="outline" className="w-full justify-start">
-        <BookOpen className="h-4 w-4 mr-2" />
-        Gérer Index Medicus
-      </Button>
+    </CardContent>
+  </Card>
+);
+
+const ContentActions = () => (
+  <Card>
+    <CardHeader>
+      <CardTitle>Gestion du contenu</CardTitle>
+      <CardDescription>Actions de gestion des publications</CardDescription>
+    </CardHeader>
+    <CardContent className="space-y-3">
+      <Link to="/admin/articles/new">
+        <Button className="w-full">
+          <Plus className="h-4 w-4 mr-2" />
+          Nouvel article
+        </Button>
+      </Link>
+      <div className="grid grid-cols-2 gap-2">
+        <Link to="/admin/files">
+          <Button variant="secondary" className="w-full text-sm">
+            <FolderOpen className="h-4 w-4 mr-1" />
+            Fichiers
+          </Button>
+        </Link>
+        <Button variant="secondary" className="w-full text-sm">
+          <Edit className="h-4 w-4 mr-1" />
+          Modifier
+        </Button>
+      </div>
     </CardContent>
   </Card>
 );
@@ -115,10 +150,20 @@ const Content = () => {
           title="Gestion du contenu" 
           description="Gérez les articles et publications"
         />
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Nouvel article
-        </Button>
+        <div className="flex gap-2">
+          <Link to="/admin/files">
+            <Button variant="outline">
+              <FolderOpen className="h-4 w-4 mr-2" />
+              Fichiers
+            </Button>
+          </Link>
+          <Link to="/admin/articles/new">
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              Nouvel article
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <ContentStats />
@@ -140,9 +185,14 @@ const Content = () => {
         </CardHeader>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <RecentArticles />
-        <QuickActions />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <RecentArticles />
+        </div>
+        <div className="space-y-6">
+          <ContentActions />
+          <QuickActions />
+        </div>
       </div>
     </div>
   );

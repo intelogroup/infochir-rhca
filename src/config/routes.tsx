@@ -27,6 +27,8 @@ import Analytics from "@/pages/admin/Analytics";
 import IndexMedicusAdmin from "@/pages/admin/IndexMedicusAdmin";
 import Settings from "@/pages/admin/Settings";
 import EmailSettings from "@/pages/admin/EmailSettings";
+import ArticleCreate from "@/pages/admin/ArticleCreate";
+import FileManagement from "@/pages/admin/FileManagement";
 import { AdminLayout } from "@/components/layouts/AdminLayout";
 import { Navigate } from "react-router-dom";
 import { AdminRouteWrapper } from "@/components/routing/AdminRouteWrapper";
@@ -255,6 +257,26 @@ export const routes = [
       <AdminRouteWrapper component={() => (
         <AdminLayout>
           <Content />
+        </AdminLayout>
+      )} />
+    ),
+  },
+  {
+    path: "/admin/articles/new",
+    element: (
+      <AdminRouteWrapper component={() => (
+        <AdminLayout>
+          <ArticleCreate />
+        </AdminLayout>
+      )} />
+    ),
+  },
+  {
+    path: "/admin/files",
+    element: (
+      <AdminRouteWrapper component={() => (
+        <AdminLayout>
+          <FileManagement />
         </AdminLayout>
       )} />
     ),

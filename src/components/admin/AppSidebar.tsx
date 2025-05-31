@@ -10,7 +10,9 @@ import {
   LogOut,
   Home,
   Mail,
-  TrendingUp
+  TrendingUp,
+  Plus,
+  FolderOpen
 } from 'lucide-react';
 import {
   Sidebar,
@@ -61,6 +63,21 @@ const mainMenuItems = [
     icon: BookOpen,
     href: "/admin/index-medicus",
     description: "Base de données"
+  }
+];
+
+const contentMenuItems = [
+  {
+    title: "Nouvel article",
+    icon: Plus,
+    href: "/admin/articles/new",
+    description: "Créer un article"
+  },
+  {
+    title: "Fichiers",
+    icon: FolderOpen,
+    href: "/admin/files",
+    description: "Gérer les uploads"
   }
 ];
 
@@ -136,6 +153,34 @@ export const AppSidebar = () => {
                     asChild 
                     isActive={location.pathname === item.href}
                     className="group relative"
+                  >
+                    <Link to={item.href} className="flex items-center gap-3 p-2">
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-sm font-medium truncate">{item.title}</span>
+                        <span className="text-xs text-gray-500 truncate">{item.description}</span>
+                      </div>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarSeparator className="my-2" />
+
+        <SidebarGroup>
+          <SidebarGroupLabel className="px-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Création de contenu
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {contentMenuItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton 
+                    asChild 
+                    isActive={location.pathname === item.href}
                   >
                     <Link to={item.href} className="flex items-center gap-3 p-2">
                       <item.icon className="h-4 w-4 flex-shrink-0" />
