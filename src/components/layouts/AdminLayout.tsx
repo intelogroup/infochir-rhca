@@ -41,6 +41,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       breadcrumbs.push({ label: "Paramètres", href: "/admin/settings" });
     } else if (path === "/admin/email-settings") {
       breadcrumbs.push({ label: "Paramètres Email", href: "/admin/email-settings" });
+    } else if (path === "/admin/debug") {
+      breadcrumbs.push({ label: "Debug Console", href: "/admin/debug" });
     }
     
     return breadcrumbs;

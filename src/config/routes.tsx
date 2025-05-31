@@ -28,6 +28,7 @@ import AdminLogin from '@/pages/admin/Login';
 import Content from '@/pages/admin/Content';
 import ArticleCreate from '@/pages/admin/ArticleCreate';
 import FileManagement from '@/pages/admin/FileManagement';
+import Debug from '@/pages/admin/Debug';
 
 export const AppRoutes = () => {
   return (
@@ -92,6 +93,11 @@ export const AppRoutes = () => {
       <Route path="/admin/email-settings" element={
         <AdminRouteWrapper component={AdminEmailSettings}>
           <AdminEmailSettings />
+        </AdminRouteWrapper>
+      } />
+      <Route path="/admin/debug" element={
+        <AdminRouteWrapper component={Debug}>
+          <Debug />
         </AdminRouteWrapper>
       } />
 

@@ -12,7 +12,8 @@ import {
   Mail,
   TrendingUp,
   Plus,
-  FolderOpen
+  FolderOpen,
+  Bug
 } from 'lucide-react';
 import {
   Sidebar,
@@ -93,6 +94,15 @@ const settingsMenuItems = [
     icon: Mail,
     href: "/admin/email-settings",
     description: "Configuration email"
+  }
+];
+
+const debugMenuItems = [
+  {
+    title: "Debug Console",
+    icon: Bug,
+    href: "/admin/debug",
+    description: "Outils de débogage"
   }
 ];
 
@@ -205,6 +215,34 @@ export const AppSidebar = () => {
           <SidebarGroupContent>
             <SidebarMenu>
               {settingsMenuItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton 
+                    asChild 
+                    isActive={location.pathname === item.href}
+                  >
+                    <Link to={item.href} className="flex items-center gap-3 p-2">
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-sm font-medium truncate">{item.title}</span>
+                        <span className="text-xs text-gray-500 truncate">{item.description}</span>
+                      </div>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarSeparator className="my-2" />
+
+        <SidebarGroup>
+          <SidebarGroupLabel className="px-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Développement
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {debugMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild 
