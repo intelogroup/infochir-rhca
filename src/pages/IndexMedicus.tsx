@@ -5,16 +5,31 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen, Info } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { SourceFilterType } from "@/components/index-medicus/SourceFilter";
 
 const IndexMedicus = () => {
   const [sourceFilter, setSourceFilter] = useState<SourceFilterType>('all');
+  const [activeTab, setActiveTab] = useState('titre');
 
   const handleSourceFilterChange = (source: SourceFilterType) => {
     setSourceFilter(source);
   };
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    // Reset to show all articles when clicking on Titre tab
+    if (tab === 'titre') {
+      setSourceFilter('all');
+    }
+  };
+
+  // Reset to all articles on page refresh/mount
+  useEffect(() => {
+    setSourceFilter('all');
+    setActiveTab('titre');
+  }, []);
 
   return (
     <MainLayout>
@@ -49,7 +64,7 @@ const IndexMedicus = () => {
             </div>
 
             <div className="order-1 mb-4 sm:mb-6">
-              <Tabs defaultValue="titre" className="mb-4 sm:mb-6">
+              <Tabs value={activeTab} onValueChange={handleTabChange} className="mb-4 sm:mb-6">
                 <TabsList className="w-full justify-start border-b rounded-none p-0 h-auto overflow-x-auto scrollbar-hide bg-transparent">
                   <TabsTrigger 
                     value="titre" 

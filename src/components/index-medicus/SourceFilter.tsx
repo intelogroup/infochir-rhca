@@ -23,7 +23,6 @@ export const SourceFilter: React.FC<SourceFilterProps> = ({
   articleCounts
 }) => {
   const sources = [
-    { key: 'all' as const, label: 'Tous', count: articleCounts?.total },
     { key: 'ADC' as const, label: 'Atlas', count: articleCounts?.ADC },
     { key: 'IGM' as const, label: 'IGM', count: articleCounts?.IGM },
     { key: 'RHCA' as const, label: 'RHCA', count: articleCounts?.RHCA },
