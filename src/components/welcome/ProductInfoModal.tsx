@@ -60,9 +60,9 @@ export const ProductInfoModal = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="w-[95vw] max-w-lg h-auto max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl text-center font-bold text-primary">
+          <DialogTitle className="text-lg sm:text-xl text-center font-bold text-primary">
             Bienvenue sur Infochir-RHCA
           </DialogTitle>
           <DialogDescription className="text-center text-gray-600">
@@ -70,7 +70,7 @@ export const ProductInfoModal = () => {
           </DialogDescription>
         </DialogHeader>
         
-        <div className="mt-4 space-y-4 text-gray-700">
+        <div className="mt-4 space-y-4 text-gray-700 text-sm sm:text-base">
           <p className="leading-relaxed">
             Chères visiteuses, chers visiteurs, INFOCHIR/RHCA vous salue très cordialement et vous annonce le changement de présentation de notre site web.
           </p>
@@ -86,7 +86,7 @@ export const ProductInfoModal = () => {
         </div>
         
         <DialogFooter className="mt-6">
-          <Button onClick={handleClose} className="w-full">
+          <Button onClick={handleClose} className="w-full h-10 sm:h-9">
             Continuer
           </Button>
         </DialogFooter>

@@ -62,52 +62,52 @@ export const DocumentModal = <T extends DocumentMetadata>({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[800px] p-0 overflow-hidden bg-white/95 backdrop-blur-sm">
+      <DialogContent className="w-[95vw] max-w-4xl h-[95vh] max-h-[95vh] p-0 overflow-hidden bg-white/95 backdrop-blur-sm flex flex-col">
         {renderHeader ? (
           renderHeader(document)
         ) : (
-          <DialogHeader className="p-6 pb-0">
+          <DialogHeader className="p-3 sm:p-6 pb-0 flex-shrink-0">
             <div className="flex items-center justify-between">
-              <DialogTitle className="text-[clamp(1.5rem,1.35rem+0.75vw,2rem)] font-bold text-primary">
+              <DialogTitle className="text-lg sm:text-xl md:text-2xl font-bold text-primary line-clamp-2 leading-tight">
                 {document.title}
               </DialogTitle>
             </div>
             {document.description && (
-              <DialogDescription className="text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] text-gray-600 mt-2">
+              <DialogDescription className="text-sm sm:text-base text-gray-600 mt-2 break-words">
                 {document.description}
               </DialogDescription>
             )}
           </DialogHeader>
         )}
         
-        <ScrollArea className="max-h-[80vh]">
+        <ScrollArea className="flex-1 overflow-y-auto">
           <motion.div 
-            className="p-6 space-y-6"
+            className="p-3 sm:p-6 space-y-4 sm:space-y-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
             <div className="flex items-center justify-between flex-wrap gap-4">
-              <div className="flex items-center gap-4 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] text-gray-500">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500">
                 <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
+                  <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
                   {format(new Date(document.date), 'dd MMMM yyyy', { locale: fr })}
                 </div>
                 {document.articleCount && (
                   <div className="flex items-center gap-2">
-                    <BookOpen className="h-4 w-4" />
+                    <BookOpen className="h-3 w-3 sm:h-4 sm:w-4" />
                     {document.articleCount} articles
                   </div>
                 )}
                 {document.downloadCount && (
                   <div className="flex items-center gap-2">
-                    <Download className="h-4 w-4" />
+                    <Download className="h-3 w-3 sm:h-4 sm:w-4" />
                     {document.downloadCount} téléchargements
                   </div>
                 )}
                 {document.shareCount && (
                   <div className="flex items-center gap-2">
-                    <Share className="h-4 w-4" />
+                    <Share className="h-3 w-3 sm:h-4 sm:w-4" />
                     {document.shareCount} partages
                   </div>
                 )}
@@ -115,33 +115,33 @@ export const DocumentModal = <T extends DocumentMetadata>({
               {renderActions ? (
                 renderActions(document)
               ) : (
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-2 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)]"
+                    className="h-10 sm:h-9 gap-2 text-xs sm:text-sm"
                     onClick={handleShare}
                   >
-                    <Share2 className="h-4 w-4" />
+                    <Share2 className="h-3 w-3 sm:h-4 sm:w-4" />
                     Partager
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-2 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)]"
+                    className="h-10 sm:h-9 gap-2 text-xs sm:text-sm"
                     onClick={handleOpenPdf}
                     disabled={!document.pdfUrl}
                   >
-                    <ExternalLink className="h-4 w-4" />
+                    <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
                     Ouvrir
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-2 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)]"
+                    className="h-10 sm:h-9 gap-2 text-xs sm:text-sm"
                     onClick={handleDownload}
                   >
-                    <Download className="h-4 w-4" />
+                    <Download className="h-3 w-3 sm:h-4 sm:w-4" />
                     Télécharger PDF
                   </Button>
                 </div>

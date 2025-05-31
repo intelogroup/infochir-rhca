@@ -41,18 +41,18 @@ export const WelcomeModal = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="sm:max-w-[650px] max-h-[85vh] overflow-auto">
+      <DialogContent className="w-[95vw] max-w-2xl h-auto max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl text-center font-bold text-primary">
+          <DialogTitle className="text-lg sm:text-xl text-center font-bold text-primary">
             NOTE SPÉCIALE AUX AUTEURS ET LECTEURS
           </DialogTitle>
-          <DialogDescription className="text-center text-gray-800 font-semibold">
+          <DialogDescription className="text-center text-gray-800 font-semibold text-sm sm:text-base">
             DE LA REVUE HAÏTIENNE DE CHIRURGIE ET D'ANESTHÉSIOLOGIE ET DE L'INFO GAZETTE MÉDICALE D'INFOCHIR/RHCA
           </DialogDescription>
-          <div className="text-center text-gray-600 mt-1">Mai 2025</div>
+          <div className="text-center text-gray-600 mt-1 text-sm">Mai 2025</div>
         </DialogHeader>
         
-        <div className="mt-4 space-y-4 text-gray-700">
+        <div className="mt-4 space-y-4 text-gray-700 text-sm sm:text-base">
           <p className="leading-relaxed">
             En l'année 2025, la situation d'insécurité en Haïti prend de plus en plus d'ampleur et la population est grandement affectée. L'aire métropolitaine et d'autres régions du pays subissent les assauts répétés de bandes armées. La désolation, la disparition brutale d'institutions publiques et privées de renom, l'exode massive interne des habitants chassés de leur logis vandalisés ou détruits, l'aggravation des carences nutritionnelles, les maladies infectieuses, les traumatismes par balle, le stress chronique sont le lot quotidien de toute la population qui ne sait à quel saint se vouer.
           </p>
@@ -72,7 +72,7 @@ export const WelcomeModal = () => {
         </div>
         
         <DialogFooter className="mt-6">
-          <Button onClick={handleClose} className="w-full">
+          <Button onClick={handleClose} className="w-full h-10 sm:h-9">
             Continuer
           </Button>
         </DialogFooter>
