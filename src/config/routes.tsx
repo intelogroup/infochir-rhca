@@ -50,47 +50,47 @@ export const AppRoutes = () => {
       {/* Admin Routes */}
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/admin/dashboard" element={
-        <AdminRouteWrapper component="AdminDashboard">
+        <AdminRouteWrapper component={AdminDashboard}>
           <AdminDashboard />
         </AdminRouteWrapper>
       } />
       <Route path="/admin/content" element={
-        <AdminRouteWrapper component="Content">
+        <AdminRouteWrapper component={Content}>
           <Content />
         </AdminRouteWrapper>
       } />
       <Route path="/admin/articles/new" element={
-        <AdminRouteWrapper component="ArticleCreate">
+        <AdminRouteWrapper component={ArticleCreate}>
           <ArticleCreate />
         </AdminRouteWrapper>
       } />
       <Route path="/admin/files" element={
-        <AdminRouteWrapper component="FileManagement">
+        <AdminRouteWrapper component={FileManagement}>
           <FileManagement />
         </AdminRouteWrapper>
       } />
       <Route path="/admin/users" element={
-        <AdminRouteWrapper component="AdminUsers">
+        <AdminRouteWrapper component={AdminUsers}>
           <AdminUsers />
         </AdminRouteWrapper>
       } />
       <Route path="/admin/analytics" element={
-        <AdminRouteWrapper component="AdminAnalytics">
+        <AdminRouteWrapper component={AdminAnalytics}>
           <AdminAnalytics />
         </AdminRouteWrapper>
       } />
       <Route path="/admin/index-medicus" element={
-        <AdminRouteWrapper component="IndexMedicusAdmin">
+        <AdminRouteWrapper component={IndexMedicusAdmin}>
           <IndexMedicusAdmin />
         </AdminRouteWrapper>
       } />
       <Route path="/admin/settings" element={
-        <AdminRouteWrapper component="AdminSettings">
+        <AdminRouteWrapper component={AdminSettings}>
           <AdminSettings />
         </AdminRouteWrapper>
       } />
       <Route path="/admin/email-settings" element={
-        <AdminRouteWrapper component="AdminEmailSettings">
+        <AdminRouteWrapper component={AdminEmailSettings}>
           <AdminEmailSettings />
         </AdminRouteWrapper>
       } />

@@ -9,9 +9,10 @@ import { toast } from "sonner";
 
 interface AdminRouteWrapperProps {
   component: React.ComponentType;
+  children: React.ReactNode;
 }
 
-export const AdminRouteWrapper = ({ component: Component }: AdminRouteWrapperProps) => {
+export const AdminRouteWrapper = ({ component: Component, children }: AdminRouteWrapperProps) => {
   const { user, isAdmin, isLoading, error, isAuthenticated } = useAdminAuth();
   const navigate = useNavigate();
 
@@ -59,7 +60,7 @@ export const AdminRouteWrapper = ({ component: Component }: AdminRouteWrapperPro
       </div>
     }>
       <ErrorBoundary>
-        <Component />
+        {children}
       </ErrorBoundary>
     </Suspense>
   );
