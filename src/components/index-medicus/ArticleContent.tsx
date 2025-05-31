@@ -70,11 +70,11 @@ export const ArticleContent: React.FC<ArticleContentProps> = ({
 
     switch (viewMode) {
       case 'grid':
-        return <ArticleGrid articles={articles} />;
+        return <ArticleCompactList articles={articles} onTagClick={onTagClick} selectedTags={selectedTags} />;
       case 'table':
-        return isMobile ? <ArticleCompactList articles={articles} /> : <ArticleTable articles={articles} />;
+        return isMobile ? <ArticleCompactList articles={articles} onTagClick={onTagClick} selectedTags={selectedTags} /> : <ArticleTable articles={articles} />;
       case 'list':
-        return <ArticleCompactList articles={articles} />;
+        return <ArticleCompactList articles={articles} onTagClick={onTagClick} selectedTags={selectedTags} />;
       case 'virtual':
         return <VirtualizedArticleList articles={articles} onTagClick={onTagClick} selectedTags={selectedTags} />;
       default:
