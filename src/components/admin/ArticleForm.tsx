@@ -43,17 +43,14 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
       title: initialData?.title || "",
       abstract: initialData?.abstract || "",
     },
-    mode: "onChange" // This enables validation as the user types
+    mode: "onChange"
   });
   
-  // Watch for form changes to update validation state
   const formValues = form.watch();
   const publicationType = form.watch("publicationType");
   
-  // Watch for form errors
   useEffect(() => {
     const subscription = form.watch(() => {
-      // Clear custom form errors when user makes changes
       if (Object.keys(formErrors).length > 0) {
         setFormErrors({});
       }
@@ -61,7 +58,6 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
     return () => subscription.unsubscribe();
   }, [form, formErrors]);
 
-  // Check file uploads when they change
   useEffect(() => {
     if (articleFilesUrls.length > 0 && formErrors.files) {
       setFormErrors(prev => {
@@ -73,10 +69,8 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
   }, [articleFilesUrls, formErrors]);
 
   const handleSubmit = async (values: ArticleFormData) => {
-    // Reset form errors
     setFormErrors({});
     
-    // Validate file uploads
     if (articleFilesUrls.length === 0) {
       setFormErrors((prev) => ({...prev, files: "Veuillez uploader au moins un fichier d'article"}));
       toast.error("Veuillez uploader au moins un fichier d'article");
@@ -133,8 +127,7 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
       console.error('Submission error:', error);
       toast.dismiss();
       
-      // Handle specific database errors
-      if (error.code === '23505') { // Unique violation
+      if (error.code === '23505') {
         toast.error("Un article avec ce titre existe déjà");
         setFormErrors((prev) => ({...prev, title: "Un article avec ce titre existe déjà"}));
       } else {
@@ -145,7 +138,6 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
     }
   };
 
-  // Calculate if form is valid for submit button
   const isFormValid = form.formState.isValid && 
                      articleFilesUrls.length > 0 && 
                      !!coverImageUrl && 
@@ -155,7 +147,6 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
         <div className="space-y-8 bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-gray-100">
-          {/* Show validation errors at the top */}
           <FormErrors errors={{
             ...formErrors,
             ...Object.entries(form.formState.errors).reduce((acc, [key, error]) => {
