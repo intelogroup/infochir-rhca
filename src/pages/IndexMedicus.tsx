@@ -11,7 +11,7 @@ import { SourceFilterType } from "@/components/index-medicus/SourceFilter";
 
 const IndexMedicus = () => {
   const [sourceFilter, setSourceFilter] = useState<SourceFilterType>('all');
-  const [activeTab, setActiveTab] = useState('titre');
+  const [activeTab, setActiveTab] = useState('titres');
 
   const handleSourceFilterChange = (source: SourceFilterType) => {
     setSourceFilter(source);
@@ -19,8 +19,8 @@ const IndexMedicus = () => {
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
-    // Reset to show all articles when clicking on Titre tab
-    if (tab === 'titre') {
+    // Reset to show all articles when clicking on Titres tab
+    if (tab === 'titres') {
       setSourceFilter('all');
     }
   };
@@ -28,7 +28,7 @@ const IndexMedicus = () => {
   // Reset to all articles on page refresh/mount
   useEffect(() => {
     setSourceFilter('all');
-    setActiveTab('titre');
+    setActiveTab('titres');
   }, []);
 
   return (
@@ -67,37 +67,42 @@ const IndexMedicus = () => {
               <Tabs value={activeTab} onValueChange={handleTabChange} className="mb-4 sm:mb-6">
                 <TabsList className="w-full justify-start border-b rounded-none p-0 h-auto overflow-x-auto scrollbar-hide bg-transparent">
                   <TabsTrigger 
-                    value="titre" 
+                    value="titres" 
                     className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary font-medium px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm whitespace-nowrap transition-colors"
                   >
-                    Titre
+                    Titres
                   </TabsTrigger>
                   <TabsTrigger 
-                    value="authors" 
+                    value="auteurs" 
                     className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:text-primary font-medium px-3 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm whitespace-nowrap transition-colors"
                   >
                     Auteurs
                   </TabsTrigger>
                 </TabsList>
                 
-                <TabsContent value="titre" className="mt-4 sm:mt-6">
+                <TabsContent value="titres" className="mt-4 sm:mt-6">
                   <div className="bg-white rounded-lg p-2 sm:p-4 lg:p-6 shadow-md border border-gray-100">
                     <Suspense fallback={<LoadingSpinner variant="primary" text="Chargement des articles..." />}>
                       <ArticleGrid 
                         viewMode="table" 
                         sourceFilter={sourceFilter}
                         onSourceFilterChange={handleSourceFilterChange}
+                        sortBy="title"
                       />
                     </Suspense>
                   </div>
                 </TabsContent>
                 
-                <TabsContent value="authors" className="mt-4 sm:mt-6">
-                  <div className="bg-white rounded-lg p-4 sm:p-6 shadow-md border border-gray-100">
-                    <div className="flex flex-col items-center justify-center py-6 sm:py-8">
-                      <BookOpen className="h-10 w-10 sm:h-12 sm:w-12 text-primary/20 mb-4" />
-                      <p className="text-gray-600 text-base sm:text-lg font-medium">Liste des auteurs à venir...</p>
-                    </div>
+                <TabsContent value="auteurs" className="mt-4 sm:mt-6">
+                  <div className="bg-white rounded-lg p-2 sm:p-4 lg:p-6 shadow-md border border-gray-100">
+                    <Suspense fallback={<LoadingSpinner variant="primary" text="Chargement des articles..." />}>
+                      <ArticleGrid 
+                        viewMode="table" 
+                        sourceFilter={sourceFilter}
+                        onSourceFilterChange={handleSourceFilterChange}
+                        sortBy="author"
+                      />
+                    </Suspense>
                   </div>
                 </TabsContent>
               </Tabs>

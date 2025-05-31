@@ -1,3 +1,4 @@
+
 import React from "react";
 import {
   Dialog,
@@ -41,6 +42,14 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
     window.open(article.pdfUrl, '_blank');
   };
 
+  // Determine the type of publication for display
+  const getPublicationType = (article: Article) => {
+    if (article.source === 'INDEX' && article.category?.toLowerCase().includes('article')) {
+      return 'Article';
+    }
+    return 'Journal';
+  };
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl max-h-[90vh] p-0 overflow-hidden bg-white flex flex-col">
@@ -59,15 +68,18 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
           
           <div className="py-4 sm:py-6 space-y-4 sm:space-y-6">
             <div className="flex flex-wrap gap-2">
-              {article.tags && article.tags.map((tag) => (
-                <Badge 
-                  key={tag} 
-                  variant="default" 
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 px-2 sm:px-3 py-1 text-xs sm:text-sm font-medium"
-                >
-                  {tag}
-                </Badge>
-              ))}
+              <Badge 
+                variant="default" 
+                className="bg-primary text-primary-foreground hover:bg-primary/90 px-2 sm:px-3 py-1 text-xs sm:text-sm font-medium"
+              >
+                {getPublicationType(article)}
+              </Badge>
+              <Badge 
+                variant="outline" 
+                className="bg-secondary/10 text-secondary border-secondary/20 px-2 sm:px-3 py-1 text-xs sm:text-sm font-medium"
+              >
+                {article.source}
+              </Badge>
             </div>
 
             <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-6 text-sm text-gray-600">

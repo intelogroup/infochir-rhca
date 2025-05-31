@@ -1,9 +1,10 @@
+
 import { SearchBar } from "./SearchBar";
 import { ArticleContent } from "./ArticleContent";
 import { useArticlesState } from "./hooks/useArticlesState";
 import { useArticlesQuery } from "./hooks/useArticlesQuery";
 import { VirtualizedArticleList } from "./VirtualizedArticleList";
-import React, { FC, useState, useCallback, useEffect, useRef } from "react";
+import React, { FC, useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ErrorDisplay } from "./components/ErrorDisplay";
 import { Pagination } from "./components/Pagination";
@@ -17,13 +18,15 @@ interface ArticleGridProps {
   source?: ArticleSource;
   sourceFilter?: SourceFilterType;
   onSourceFilterChange?: (source: SourceFilterType) => void;
+  sortBy?: "title" | "author";
 }
 
 const ArticleGrid: FC<ArticleGridProps> = ({ 
   viewMode: initialViewMode = "table",
   source,
   sourceFilter = 'all',
-  onSourceFilterChange
+  onSourceFilterChange,
+  sortBy = "title"
 }) => {
   const isMobile = useIsMobile();
   const [viewMode, setViewMode] = useState<"grid" | "table" | "list">("table");
@@ -76,7 +79,7 @@ const ArticleGrid: FC<ArticleGridProps> = ({
     }
   }, [error, refetch]);
   
-  console.log('ArticleGrid rendering with viewMode:', viewMode, 'isMobile:', isMobile, 'sourceFilter:', sourceFilter);
+  console.log('ArticleGrid rendering with viewMode:', viewMode, 'isMobile:', isMobile, 'sourceFilter:', sourceFilter, 'sortBy:', sortBy);
   
   const articles = data?.articles || [];
   const totalPages = data?.totalPages || 0;
@@ -104,8 +107,22 @@ const ArticleGrid: FC<ArticleGridProps> = ({
     articleStats
   } = useArticlesState(articles);
 
-  // Filter articles for INDEX_ARTICLES (articles with category containing "Article")
-  const finalFilteredArticles = filteredArticles;
+  // Sort articles based on sortBy prop
+  const sortedFilteredArticles = useMemo(() => {
+    const sorted = [...filteredArticles];
+    
+    if (sortBy === "title") {
+      return sorted.sort((a, b) => a.title.localeCompare(b.title, 'fr', { sensitivity: 'base' }));
+    } else if (sortBy === "author") {
+      return sorted.sort((a, b) => {
+        const aFirstAuthor = a.authors && a.authors.length > 0 ? a.authors[0] : '';
+        const bFirstAuthor = b.authors && b.authors.length > 0 ? b.authors[0] : '';
+        return aFirstAuthor.localeCompare(bFirstAuthor, 'fr', { sensitivity: 'base' });
+      });
+    }
+    
+    return sorted;
+  }, [filteredArticles, sortBy]);
 
   // Calculate article counts for the SourceFilter component using the separate queries
   const articleCounts = {
@@ -223,14 +240,14 @@ const ArticleGrid: FC<ArticleGridProps> = ({
       
       {viewMode === "grid" ? (
         <VirtualizedArticleList
-          articles={finalFilteredArticles}
+          articles={sortedFilteredArticles}
           onTagClick={handleTagClick}
           selectedTags={selectedTags}
         />
       ) : viewMode === "list" ? (
         <ArticleContent
           viewMode="list"
-          articles={finalFilteredArticles}
+          articles={sortedFilteredArticles}
           isLoading={isLoading}
           onTagClick={handleTagClick}
           selectedTags={selectedTags}
@@ -238,7 +255,7 @@ const ArticleGrid: FC<ArticleGridProps> = ({
       ) : (
         <ArticleContent
           viewMode="table"
-          articles={finalFilteredArticles}
+          articles={sortedFilteredArticles}
           isLoading={isLoading}
           onTagClick={handleTagClick}
           selectedTags={selectedTags}
