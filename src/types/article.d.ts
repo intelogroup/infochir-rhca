@@ -54,4 +54,5 @@ export interface ArticleFormData {
   authorAffiliations: string[];
   fundingSource: string;
   doi: string;
+  status: "draft" | "published";
 }

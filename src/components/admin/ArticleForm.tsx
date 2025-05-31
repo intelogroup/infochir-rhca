@@ -13,7 +13,8 @@ import { CoverImageUploader } from "./article-form/CoverImageUploader";
 import { supabase } from "@/integrations/supabase/client";
 import { Article, ArticleFormData } from "@/types/article";
 import { FormErrors } from "./article-form/FormErrors";
-import { SubmitButton } from "./article-form/SubmitButton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 
 const formSchema = z.object({
   title: z.string().min(3, "Le titre doit contenir au moins 3 caractères").max(200, "Le titre ne doit pas dépasser 200 caractères"),
@@ -35,6 +36,9 @@ const formSchema = z.object({
   authorAffiliations: z.array(z.string()).optional(),
   fundingSource: z.string().optional(),
   doi: z.string().optional(),
+  status: z.enum(["draft", "published"], {
+    required_error: "Veuillez sélectionner un statut",
+  }),
 });
 
 interface ArticleFormProps {
@@ -70,6 +74,7 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
       authorAffiliations: initialData?.author_affiliations || [],
       fundingSource: initialData?.funding_source || "",
       doi: initialData?.doi || "",
+      status: (initialData?.status as "draft" | "published") || "draft",
     },
     mode: "onChange"
   });
@@ -152,7 +157,7 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
           doi: values.doi,
           article_files: articleFilesUrls,
           image_url: coverImageUrl,
-          status: 'draft'
+          status: values.status
         })
         .select()
         .single();
@@ -200,6 +205,32 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
           }} />
           
           <PublicationTypeSelector form={form} />
+          
+          <div className="space-y-2">
+            <h3 className="text-lg font-semibold">Statut de publication</h3>
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Statut *</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionnez un statut" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="draft">Brouillon</SelectItem>
+                      <SelectItem value="published">Publié</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
           <ArticleDetails form={form} />
           
           <div className="space-y-2">
@@ -223,10 +254,18 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
         </div>
 
         <div className="flex justify-end">
-          <SubmitButton 
-            isLoading={isSubmitting || isLoading} 
-            isEditing={!!initialData}
-          />
+          <Button 
+            type="submit" 
+            disabled={!isFormValid || isSubmitting || isLoading}
+            className="min-w-[200px]"
+          >
+            {isSubmitting || isLoading 
+              ? "Création en cours..." 
+              : initialData 
+                ? "Mettre à jour l'article"
+                : "Créer l'article"
+            }
+          </Button>
         </div>
       </form>
     </Form>

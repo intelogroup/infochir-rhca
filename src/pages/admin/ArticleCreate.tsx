@@ -5,15 +5,14 @@ import { PageHeader } from "@/components/ui/page-header";
 import { ArticleForm } from "@/components/admin/ArticleForm";
 import { ArticleFormData } from "@/types/article";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 
 const ArticleCreate = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (data: ArticleFormData) => {
     try {
-      // The ArticleForm component already handles the submission
-      // This will be called after successful creation
+      // The ArticleForm component handles the submission directly to Supabase
+      // This success callback will be called after successful creation
       toast.success("Article créé avec succès!");
       navigate("/admin/content");
     } catch (error) {
