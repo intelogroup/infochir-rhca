@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Dialog,
@@ -185,7 +184,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
         </ScrollArea>
         
         
-        <div className="bg-white border-t border-gray-200 p-3 sm:p-4 flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 shadow-sm flex-shrink-0">
+        <div className="bg-white border-t border-gray-200 p-4 flex justify-end gap-3 shadow-sm flex-shrink-0">
           <ShareAction 
             articleId={article.id} 
             articleTitle={article.title}
@@ -194,11 +193,11 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
           <Button
             variant="outline"
             size="sm"
-            className="gap-2"
+            className="h-9 px-4 font-medium hover:bg-gray-50 transition-colors duration-200"
             onClick={handleOpenPdf}
             disabled={!article.pdfUrl}
           >
-            <ExternalLink className="h-4 w-4" />
+            <ExternalLink className="h-4 w-4 mr-2" />
             Ouvrir
           </Button>
           

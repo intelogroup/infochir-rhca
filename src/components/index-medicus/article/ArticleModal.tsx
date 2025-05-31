@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   Dialog,
@@ -137,11 +136,11 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
           <Button
             variant="outline"
             size="sm"
-            className="gap-2"
+            className="h-9 px-4 font-medium hover:bg-gray-50 transition-colors duration-200"
             onClick={handleOpenPdf}
             disabled={!article.pdfUrl}
           >
-            <ExternalLink className="h-4 w-4" />
+            <ExternalLink className="h-4 w-4 mr-2" />
             Ouvrir
           </Button>
           

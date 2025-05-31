@@ -5,9 +5,7 @@ import { Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Article } from "@/components/index-medicus/types";
-import { downloadPDF } from "@/lib/analytics/download";
 import { createLogger } from "@/lib/error-logger";
-import { DocumentType } from "@/lib/analytics/download/statistics/types";
 
 const logger = createLogger('PdfActions');
 
@@ -43,60 +41,57 @@ export const PdfActions: React.FC<PdfActionsProps> = ({ article, pdfUrl }) => {
       
       console.log('Attempting download with filename:', fileName);
       
-      // For Index Medicus articles, use INDEX document type
-      const documentType = article.source === 'INDEX' ? DocumentType.INDEX : 
-                          article.source === 'RHCA' ? DocumentType.RHCA : 
-                          article.source === 'IGM' ? DocumentType.IGM : 
-                          DocumentType.Article;
-      
-      // Use the standardized downloadPDF function with tracking
-      const success = await downloadPDF({
-        url: pdfUrl,
-        fileName,
-        documentId: article.id,
-        documentType,
-        trackingEnabled: true
-      });
-      
-      if (!success) {
-        // Fallback: direct download
-        console.log('Standard download failed, trying direct download...');
+      // Force actual download without fallback to opening in new tab
+      try {
+        const response = await fetch(pdfUrl);
+        if (!response.ok) throw new Error('Download failed');
+        
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.style.display = 'none';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        window.URL.revokeObjectURL(url);
+        
+        toast.success("Téléchargement du PDF en cours...");
+      } catch (downloadError) {
+        console.error('Blob download failed:', downloadError);
+        
+        // Direct download fallback
         const link = document.createElement('a');
         link.href = pdfUrl;
         link.download = fileName;
-        link.target = '_blank';
+        link.style.display = 'none';
+        
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         
         toast.success("Téléchargement du PDF en cours...");
-      } else {
-        toast.success("Téléchargement du PDF en cours...");
       }
     } catch (error) {
       logger.error('Download error:', error);
       console.error('Full download error:', error);
-      
-      // Fallback: try direct link opening
-      try {
-        window.open(pdfUrl, '_blank');
-        toast.success("Ouverture du PDF dans un nouvel onglet...");
-      } catch (fallbackError) {
-        console.error('Fallback error:', fallbackError);
-        toast.error("Une erreur est survenue lors du téléchargement");
-      }
+      toast.error("Une erreur est survenue lors du téléchargement");
     }
   };
 
   return (
     <Button 
-      variant="outline" 
+      variant="default" 
       size="sm"
-      className="h-8 px-2"
+      className="h-9 px-4 bg-green-500 hover:bg-green-600 text-white font-medium transition-colors duration-200"
       onClick={handleDownload}
       disabled={!pdfUrl}
     >
-      <Download className="h-4 w-4 mr-1" />
+      <Download className="h-4 w-4 mr-2" />
       PDF
     </Button>
   );
