@@ -11,22 +11,38 @@ import { Pagination } from "./components/Pagination";
 import { ViewToggle } from "./ViewToggle";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ArticleSource } from "./types";
+import { SourceFilter, SourceFilterType } from "./SourceFilter";
 
 interface ArticleGridProps {
   viewMode?: "grid" | "table" | "list";
-  source?: ArticleSource; // Added source prop
+  source?: ArticleSource;
+  sourceFilter?: SourceFilterType;
+  onSourceFilterChange?: (source: SourceFilterType) => void;
 }
 
 const ArticleGrid: FC<ArticleGridProps> = ({ 
   viewMode: initialViewMode = "table",
-  source 
+  source,
+  sourceFilter = 'all',
+  onSourceFilterChange
 }) => {
   const isMobile = useIsMobile();
-  // Always default to table view for better article title visibility
   const [viewMode, setViewMode] = useState<"grid" | "table" | "list">("table");
   const [currentPage, setCurrentPage] = useState(0);
   const mountedRef = useRef(false);
-  const { data, isLoading, error, refetch } = useArticlesQuery(currentPage, source);
+  
+  // Convert SourceFilterType to ArticleSource for the query
+  const getQuerySource = (filter: SourceFilterType): ArticleSource | undefined => {
+    if (filter === 'all') return undefined;
+    if (filter === 'ADC') return 'ADC';
+    if (filter === 'IGM') return 'IGM';
+    if (filter === 'RHCA') return 'RHCA';
+    if (filter === 'INDEX_ARTICLES') return 'INDEX';
+    return undefined;
+  };
+
+  const querySource = source || getQuerySource(sourceFilter);
+  const { data, isLoading, error, refetch } = useArticlesQuery(currentPage, querySource);
   
   // Mark component as mounted
   useEffect(() => {
@@ -37,7 +53,6 @@ const ArticleGrid: FC<ArticleGridProps> = ({
   // Add retry mechanism for failed initial load
   useEffect(() => {
     if (error && mountedRef.current) {
-      // Retry loading data after a short delay
       const timer = setTimeout(() => {
         if (mountedRef.current) {
           refetch();
@@ -48,7 +63,7 @@ const ArticleGrid: FC<ArticleGridProps> = ({
     }
   }, [error, refetch]);
   
-  console.log('ArticleGrid rendering with viewMode:', viewMode, 'isMobile:', isMobile, 'source:', source);
+  console.log('ArticleGrid rendering with viewMode:', viewMode, 'isMobile:', isMobile, 'sourceFilter:', sourceFilter);
   
   const articles = data?.articles || [];
   const totalPages = data?.totalPages || 0;
@@ -75,6 +90,28 @@ const ArticleGrid: FC<ArticleGridProps> = ({
     availableAuthors,
     articleStats
   } = useArticlesState(articles);
+
+  // Filter articles for INDEX_ARTICLES (articles with category containing "Article")
+  const finalFilteredArticles = sourceFilter === 'INDEX_ARTICLES' 
+    ? filteredArticles.filter(article => 
+        article.category.toLowerCase().includes('article') || 
+        article.category.toLowerCase().includes('index')
+      )
+    : filteredArticles;
+
+  // Calculate article counts for the SourceFilter component
+  const articleCounts = {
+    total: articleStats.total,
+    ADC: articleStats.sources['ADC'] || 0,
+    IGM: articleStats.sources['IGM'] || 0,
+    RHCA: articleStats.sources['RHCA'] || 0,
+    INDEX_ARTICLES: articles.filter(article => 
+      article.source === 'INDEX' && (
+        article.category.toLowerCase().includes('article') || 
+        article.category.toLowerCase().includes('index')
+      )
+    ).length
+  };
 
   const handleSearch = useCallback(async () => {
     try {
@@ -123,7 +160,6 @@ const ArticleGrid: FC<ArticleGridProps> = ({
     });
   }, []);
 
-  // We'll maintain table view regardless of device for better title visibility
   useEffect(() => {
     setViewMode("table");
   }, []);
@@ -132,7 +168,6 @@ const ArticleGrid: FC<ArticleGridProps> = ({
     return <ErrorDisplay error={error as Error} onRetry={handleRetry} />;
   }
 
-  // Using a simplified loading state to prevent flashing
   if (isLoading && articles.length === 0) {
     return (
       <div className="min-h-[50vh] flex flex-col items-center justify-center py-8">
@@ -148,7 +183,7 @@ const ArticleGrid: FC<ArticleGridProps> = ({
         setSearchTerm={setSearchTerm}
         selectedCategory={selectedCategory}
         setSelectedCategory={setSelectedCategory}
-        selectedSource={source ? undefined : selectedSource} // Don't allow source filter if source is specified via props
+        selectedSource={source ? undefined : selectedSource}
         setSelectedSource={setSelectedSource}
         selectedTags={selectedTags}
         setSelectedTags={setSelectedTags}
@@ -164,8 +199,16 @@ const ArticleGrid: FC<ArticleGridProps> = ({
         availableTags={availableTags}
         availableAuthors={availableAuthors}
         articleStats={articleStats}
-        disableSourceFilter={!!source} // Disable source filter if source is specified via props
+        disableSourceFilter={!!source || !!onSourceFilterChange}
       />
+
+      {onSourceFilterChange && (
+        <SourceFilter
+          selectedSource={sourceFilter}
+          onSourceChange={onSourceFilterChange}
+          articleCounts={articleCounts}
+        />
+      )}
       
       <div className="flex justify-end">
         <ViewToggle 
@@ -177,14 +220,14 @@ const ArticleGrid: FC<ArticleGridProps> = ({
       
       {viewMode === "grid" ? (
         <VirtualizedArticleList
-          articles={filteredArticles}
+          articles={finalFilteredArticles}
           onTagClick={handleTagClick}
           selectedTags={selectedTags}
         />
       ) : viewMode === "list" ? (
         <ArticleContent
           viewMode="list"
-          articles={filteredArticles}
+          articles={finalFilteredArticles}
           isLoading={isLoading}
           onTagClick={handleTagClick}
           selectedTags={selectedTags}
@@ -192,7 +235,7 @@ const ArticleGrid: FC<ArticleGridProps> = ({
       ) : (
         <ArticleContent
           viewMode="table"
-          articles={filteredArticles}
+          articles={finalFilteredArticles}
           isLoading={isLoading}
           onTagClick={handleTagClick}
           selectedTags={selectedTags}
