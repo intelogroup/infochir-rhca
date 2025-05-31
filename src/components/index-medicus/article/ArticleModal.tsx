@@ -58,17 +58,7 @@ export const ArticleModal: React.FC<ArticleModalProps> = ({
 
         <ScrollArea className="flex-1 px-6 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
           <div className="py-6 space-y-6">
-            <div className="flex flex-wrap gap-2">
-              {article.tags && article.tags.map((tag) => (
-                <Badge 
-                  key={tag} 
-                  variant="default" 
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 px-3 py-1 text-sm font-medium"
-                >
-                  {tag}
-                </Badge>
-              ))}
-            </div>
+            {/* Tags section removed */}
 
             <div className="flex flex-wrap gap-6 text-sm text-gray-600">
               {article.authors && article.authors.length > 0 && (
