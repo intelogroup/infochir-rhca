@@ -8,39 +8,18 @@ import { MobileOptimizedContainer } from "@/components/mobile/MobileOptimizedCon
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export const RhcaContent: React.FC = () => {
-  const {
-    searchTerm,
-    selectedCategories,
-    selectedVolumes,
-    selectedYears,
-    sortBy,
-    sortOrder,
-    viewMode,
-    currentPage,
-    setCurrentPage,
-    ITEMS_PER_PAGE
-  } = useArticlesState();
-
+  const { articlesByYear, years } = useArticlesState();
   const isMobile = useIsMobile();
 
   const {
-    data: articlesData,
-    isLoading,
+    articles,
+    loading: isLoading,
     error,
     refetch
-  } = useRHCAArticles({
-    searchTerm,
-    selectedCategories,
-    selectedVolumes,
-    selectedYears,
-    sortBy,
-    sortOrder,
-    currentPage,
-    itemsPerPage: ITEMS_PER_PAGE
-  });
+  } = useRHCAArticles();
 
   const handleRefresh = async () => {
-    await refetch();
+    refetch();
   };
 
   if (isLoading) {
@@ -66,10 +45,6 @@ export const RhcaContent: React.FC = () => {
     );
   }
 
-  const articles = articlesData?.articles || [];
-  const totalCount = articlesData?.totalCount || 0;
-  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
-
   const renderContent = () => {
     if (articles.length === 0) {
       return (
@@ -82,11 +57,11 @@ export const RhcaContent: React.FC = () => {
       );
     }
 
-    if (viewMode === 'table' && !isMobile) {
-      return <RhcaTable articles={articles} />;
+    if (!isMobile) {
+      return <RhcaTable articles={articles} searchQuery="" onSearchChange={() => {}} />;
     }
     
-    return <RhcaGrid articles={articles} />;
+    return <RhcaGrid articles={articles} viewMode="grid" searchQuery="" onSearchChange={() => {}} />;
   };
 
   return (
@@ -95,32 +70,6 @@ export const RhcaContent: React.FC = () => {
       className="space-y-6"
     >
       {renderContent()}
-      
-      {totalPages > 1 && (
-        <div className="mt-8 flex justify-center">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
-              className="px-3 py-1 text-sm border rounded disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Précédent
-            </button>
-            
-            <span className="text-sm text-gray-600">
-              Page {currentPage} sur {totalPages}
-            </span>
-            
-            <button
-              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-              disabled={currentPage === totalPages}
-              className="px-3 py-1 text-sm border rounded disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Suivant
-            </button>
-          </div>
-        </div>
-      )}
     </MobileOptimizedContainer>
   );
 };

@@ -260,34 +260,17 @@ const ArticleGrid: FC<ArticleGridProps> = ({
         />
       </div>
       
-      {viewMode === "grid" ? (
-        <VirtualizedArticleList
-          articles={sortedFilteredArticles}
-          onTagClick={handleTagClick}
-          selectedTags={selectedTags}
-        />
-      ) : viewMode === "list" ? (
-        <ArticleContent
-          viewMode="list"
-          articles={sortedFilteredArticles}
-          isLoading={isLoading}
-          onTagClick={handleTagClick}
-          selectedTags={selectedTags}
-        />
-      ) : (
-        <ArticleContent
-          viewMode="table"
-          articles={sortedFilteredArticles}
-          isLoading={isLoading}
-          onTagClick={handleTagClick}
-          selectedTags={selectedTags}
-        />
-      )}
-
-      <Pagination
+      <ArticleContent
+        viewMode={viewMode}
+        articles={sortedFilteredArticles}
+        isLoading={isLoading}
+        error={error}
+        onTagClick={handleTagClick}
+        selectedTags={selectedTags}
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
+        onRefresh={refetch}
       />
     </div>
   );

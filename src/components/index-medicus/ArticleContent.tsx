@@ -4,65 +4,57 @@ import { ArticleGrid } from "./ArticleGrid";
 import { ArticleTable } from "./ArticleTable";
 import { ArticleCompactList } from "./ArticleCompactList";
 import { VirtualizedArticleList } from "./VirtualizedArticleList";
-import { LoadingState } from "./components/LoadingState";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ErrorDisplay } from "./components/ErrorDisplay";
 import { Pagination } from "./components/Pagination";
 import { MobileOptimizedContainer } from "@/components/mobile/MobileOptimizedContainer";
-import { useArticlesState } from "./hooks/useArticlesState";
-import { useArticlesQuery } from "./hooks/useArticlesQuery";
 import { useIsMobile } from "@/hooks/use-mobile";
+import type { Article } from "./types";
 
-export const ArticleContent: React.FC = () => {
-  const {
-    searchTerm,
-    selectedSources,
-    selectedTags,
-    selectedCategories,
-    selectedAuthors,
-    dateRange,
-    sortBy,
-    sortOrder,
-    viewMode,
-    currentPage,
-    setCurrentPage,
-    ITEMS_PER_PAGE
-  } = useArticlesState();
+interface ArticleContentProps {
+  viewMode?: "grid" | "table" | "list" | "virtual";
+  articles: Article[];
+  isLoading: boolean;
+  error?: Error | null;
+  onTagClick?: (tag: string) => void;
+  selectedTags?: string[];
+  currentPage?: number;
+  totalPages?: number;
+  onPageChange?: (page: number) => void;
+  onRefresh?: () => Promise<void> | void;
+}
 
+export const ArticleContent: React.FC<ArticleContentProps> = ({
+  viewMode = "table",
+  articles,
+  isLoading,
+  error,
+  onTagClick,
+  selectedTags,
+  currentPage = 0,
+  totalPages = 0,
+  onPageChange,
+  onRefresh
+}) => {
   const isMobile = useIsMobile();
 
-  const {
-    data: articlesData,
-    isLoading,
-    error,
-    refetch
-  } = useArticlesQuery({
-    searchTerm,
-    selectedSources,
-    selectedTags,
-    selectedCategories,
-    selectedAuthors,
-    dateRange,
-    sortBy,
-    sortOrder,
-    currentPage,
-    itemsPerPage: ITEMS_PER_PAGE
-  });
-
   const handleRefresh = async () => {
-    await refetch();
+    if (onRefresh) {
+      await onRefresh();
+    }
   };
 
-  if (isLoading) {
-    return <LoadingState />;
+  if (isLoading && articles.length === 0) {
+    return (
+      <div className="min-h-[50vh] flex flex-col items-center justify-center py-8">
+        <LoadingSpinner size="lg" variant="primary" text="Chargement des articles..." />
+      </div>
+    );
   }
 
   if (error) {
-    return <ErrorDisplay error={error} onRetry={() => refetch()} />;
+    return <ErrorDisplay error={error} onRetry={() => onRefresh?.()} />;
   }
-
-  const articles = articlesData?.articles || [];
-  const totalCount = articlesData?.totalCount || 0;
-  const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE);
 
   const renderContent = () => {
     if (articles.length === 0) {
@@ -84,9 +76,9 @@ export const ArticleContent: React.FC = () => {
       case 'list':
         return <ArticleCompactList articles={articles} />;
       case 'virtual':
-        return <VirtualizedArticleList articles={articles} />;
+        return <VirtualizedArticleList articles={articles} onTagClick={onTagClick} selectedTags={selectedTags} />;
       default:
-        return <ArticleGrid articles={articles} />;
+        return <ArticleTable articles={articles} />;
     }
   };
 
@@ -97,12 +89,12 @@ export const ArticleContent: React.FC = () => {
     >
       {renderContent()}
       
-      {totalPages > 1 && (
+      {totalPages > 1 && onPageChange && (
         <div className="mt-8 flex justify-center">
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={setCurrentPage}
+            onPageChange={onPageChange}
           />
         </div>
       )}
