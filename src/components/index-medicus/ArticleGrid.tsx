@@ -1,4 +1,3 @@
-
 import { SearchBar } from "./SearchBar";
 import { ArticleContent } from "./ArticleContent";
 import { useArticlesState } from "./hooks/useArticlesState";
@@ -41,8 +40,15 @@ const ArticleGrid: FC<ArticleGridProps> = ({
     return undefined;
   };
 
+  // Get category filter for INDEX_ARTICLES
+  const getCategoryFilter = (filter: SourceFilterType): string | undefined => {
+    if (filter === 'INDEX_ARTICLES') return 'article';
+    return undefined;
+  };
+
   const querySource = source || getQuerySource(sourceFilter);
-  const { data, isLoading, error, refetch } = useArticlesQuery(currentPage, querySource);
+  const categoryFilter = getCategoryFilter(sourceFilter);
+  const { data, isLoading, error, refetch } = useArticlesQuery(currentPage, querySource, categoryFilter);
   
   // Mark component as mounted
   useEffect(() => {
@@ -92,12 +98,7 @@ const ArticleGrid: FC<ArticleGridProps> = ({
   } = useArticlesState(articles);
 
   // Filter articles for INDEX_ARTICLES (articles with category containing "Article")
-  const finalFilteredArticles = sourceFilter === 'INDEX_ARTICLES' 
-    ? filteredArticles.filter(article => 
-        article.category.toLowerCase().includes('article') || 
-        article.category.toLowerCase().includes('index')
-      )
-    : filteredArticles;
+  const finalFilteredArticles = filteredArticles;
 
   // Calculate article counts for the SourceFilter component
   const articleCounts = {

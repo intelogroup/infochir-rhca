@@ -8,9 +8,9 @@ import { createLogger } from "@/lib/error-logger";
 const logger = createLogger('useArticlesQuery');
 const PAGE_SIZE = 10;
 
-export const useArticlesQuery = (page = 0, source?: ArticleSource) => {
+export const useArticlesQuery = (page = 0, source?: ArticleSource, categoryFilter?: string) => {
   return useQuery({
-    queryKey: ["articles", page, source],
+    queryKey: ["articles", page, source, categoryFilter],
     queryFn: async () => {
       const start = page * PAGE_SIZE;
       const end = start + PAGE_SIZE - 1;
@@ -25,6 +25,11 @@ export const useArticlesQuery = (page = 0, source?: ArticleSource) => {
         // Add source filter if specified
         if (source) {
           query = query.eq("source", source);
+        }
+
+        // Add category filter if specified
+        if (categoryFilter) {
+          query = query.ilike("category", `%${categoryFilter}%`);
         }
           
         // Execute query with pagination
