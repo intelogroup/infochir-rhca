@@ -4,7 +4,6 @@ import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/s
 import { AppSidebar } from "@/components/admin/AppSidebar";
 import { Separator } from "@/components/ui/separator";
 import { Breadcrumbs } from "@/components/navigation/Breadcrumbs";
-import { Navbar } from "@/components/Navbar";
 import { useLocation } from "react-router-dom";
 
 interface AdminLayoutProps {
@@ -50,25 +49,22 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#f8fafc] to-white">
-      <Navbar />
-      <SidebarProvider>
-        <div className="flex w-full" style={{ minHeight: 'calc(100vh - 4rem)', marginTop: '4rem' }}>
-          <AppSidebar />
-          <SidebarInset className="flex-1">
-            <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-white px-4 shadow-sm">
-              <SidebarTrigger className="-ml-1" />
-              <Separator orientation="vertical" className="mr-2 h-4" />
-              <Breadcrumbs items={getBreadcrumbs()} />
-            </header>
-            <main className="flex-1 p-6">
-              <div className="max-w-7xl mx-auto">
-                {children}
-              </div>
-            </main>
-          </SidebarInset>
-        </div>
-      </SidebarProvider>
-    </div>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-gray-50">
+        <AppSidebar />
+        <SidebarInset className="flex-1">
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-white px-4 shadow-sm">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
+            <Breadcrumbs items={getBreadcrumbs()} />
+          </header>
+          <main className="flex-1 p-6">
+            <div className="max-w-7xl mx-auto">
+              {children}
+            </div>
+          </main>
+        </SidebarInset>
+      </div>
+    </SidebarProvider>
   );
 };
