@@ -22,7 +22,7 @@ import AdminDashboard from '@/pages/admin/Dashboard';
 import AdminUsers from '@/pages/admin/Users';
 import AdminSettings from '@/pages/admin/Settings';
 import AdminAnalytics from '@/pages/admin/Analytics';
-import AdminIndexMedicus from '@/pages/admin/IndexMedicus';
+import IndexMedicusAdmin from '@/pages/admin/IndexMedicusAdmin';
 import AdminEmailSettings from '@/pages/admin/EmailSettings';
 import AdminLogin from '@/pages/admin/Login';
 import Content from '@/pages/admin/Content';
@@ -50,47 +50,47 @@ export const AppRoutes = () => {
       {/* Admin Routes */}
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/admin/dashboard" element={
-        <AdminRouteWrapper>
+        <AdminRouteWrapper component="AdminDashboard">
           <AdminDashboard />
         </AdminRouteWrapper>
       } />
       <Route path="/admin/content" element={
-        <AdminRouteWrapper>
+        <AdminRouteWrapper component="Content">
           <Content />
         </AdminRouteWrapper>
       } />
       <Route path="/admin/articles/new" element={
-        <AdminRouteWrapper>
+        <AdminRouteWrapper component="ArticleCreate">
           <ArticleCreate />
         </AdminRouteWrapper>
       } />
       <Route path="/admin/files" element={
-        <AdminRouteWrapper>
+        <AdminRouteWrapper component="FileManagement">
           <FileManagement />
         </AdminRouteWrapper>
       } />
       <Route path="/admin/users" element={
-        <AdminRouteWrapper>
+        <AdminRouteWrapper component="AdminUsers">
           <AdminUsers />
         </AdminRouteWrapper>
       } />
       <Route path="/admin/analytics" element={
-        <AdminRouteWrapper>
+        <AdminRouteWrapper component="AdminAnalytics">
           <AdminAnalytics />
         </AdminRouteWrapper>
       } />
       <Route path="/admin/index-medicus" element={
-        <AdminRouteWrapper>
-          <AdminIndexMedicus />
+        <AdminRouteWrapper component="IndexMedicusAdmin">
+          <IndexMedicusAdmin />
         </AdminRouteWrapper>
       } />
       <Route path="/admin/settings" element={
-        <AdminRouteWrapper>
+        <AdminRouteWrapper component="AdminSettings">
           <AdminSettings />
         </AdminRouteWrapper>
       } />
       <Route path="/admin/email-settings" element={
-        <AdminRouteWrapper>
+        <AdminRouteWrapper component="AdminEmailSettings">
           <AdminEmailSettings />
         </AdminRouteWrapper>
       } />
