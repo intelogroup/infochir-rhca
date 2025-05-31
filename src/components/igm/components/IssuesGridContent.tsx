@@ -1,102 +1,60 @@
 
-import { YearGroupList } from "./YearGroupList";
-import { IssuesTable } from "@/components/issues/IssuesTable";
-import { FileText, Search } from "lucide-react";
+import React from "react";
+import { IssueCard } from "../IssueCard";
+import { LoadingState } from "./LoadingState";
+import { MobileOptimizedContainer } from "@/components/mobile/MobileOptimizedContainer";
 import type { Issue } from "../types";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface IssuesGridContentProps {
-  viewMode: "grid" | "table";
-  sortedIssues: Issue[];
-  issuesByYear: Record<number, Issue[]>;
-  sortedYears: number[];
+  issues: Issue[];
   isLoading: boolean;
-  onLoadMore?: () => void;
-  hasMore?: boolean;
+  error: Error | null;
+  onRefresh?: () => Promise<void>;
 }
 
-export const IssuesGridContent = ({
-  viewMode,
-  sortedIssues,
-  issuesByYear,
-  sortedYears,
+export const IssuesGridContent: React.FC<IssuesGridContentProps> = ({
+  issues,
   isLoading,
-  onLoadMore,
-  hasMore,
-}: IssuesGridContentProps) => {
+  error,
+  onRefresh
+}) => {
   if (isLoading) {
+    return <LoadingState />;
+  }
+
+  if (error) {
     return (
-      <div className="min-h-[50vh] flex flex-col items-center justify-center py-10">
-        <LoadingSpinner variant="primary" size="lg" text="Chargement des numéros..." />
+      <div className="text-center py-12">
+        <p className="text-red-600 mb-4">Erreur lors du chargement des numéros</p>
+        <button 
+          onClick={onRefresh}
+          className="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90"
+        >
+          Réessayer
+        </button>
       </div>
     );
   }
 
-  if (sortedIssues.length === 0) {
+  if (issues.length === 0) {
     return (
-      <div 
-        className="flex flex-col items-center justify-center p-12 bg-white rounded-xl border border-gray-100 text-center"
-        role="status"
-        aria-live="polite"
-      >
-        <div className="bg-secondary/10 p-4 rounded-full mb-4">
-          <Search className="h-8 w-8 text-secondary-foreground/70" aria-hidden="true" />
-        </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Aucun numéro trouvé</h3>
-        <p className="text-sm text-gray-500 max-w-md">
-          Nous n'avons trouvé aucun numéro correspondant à vos critères de recherche. 
-          Essayez de modifier vos filtres ou d'effectuer une nouvelle recherche.
+      <div className="text-center py-12">
+        <p className="text-gray-500 text-lg">Aucun numéro trouvé</p>
+        <p className="text-gray-400 text-sm mt-2">
+          Essayez de modifier vos critères de recherche
         </p>
       </div>
     );
   }
 
   return (
-    <motion.div 
-      className="space-y-6"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
+    <MobileOptimizedContainer 
+      onRefresh={onRefresh}
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6"
     >
-      {viewMode === "grid" ? (
-        <ScrollArea className="h-[700px] pr-4">
-          <YearGroupList 
-            issuesByYear={issuesByYear}
-            sortedYears={sortedYears}
-          />
-          
-          {hasMore && (
-            <div className="flex justify-center mt-6 pb-4">
-              <Button 
-                variant="outline"
-                onClick={onLoadMore}
-                className="gap-2"
-              >
-                Charger plus
-              </Button>
-            </div>
-          )}
-        </ScrollArea>
-      ) : (
-        <>
-          <IssuesTable issues={sortedIssues} />
-          
-          {hasMore && (
-            <div className="flex justify-center mt-6">
-              <Button 
-                variant="outline"
-                onClick={onLoadMore}
-                className="gap-2"
-              >
-                Charger plus
-              </Button>
-            </div>
-          )}
-        </>
-      )}
-    </motion.div>
+      {issues.map((issue) => (
+        <IssueCard key={issue.id} issue={issue} />
+      ))}
+    </MobileOptimizedContainer>
   );
 };

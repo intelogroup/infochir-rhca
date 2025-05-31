@@ -7,6 +7,8 @@ import { toast } from "sonner";
 import { downloadPDF } from "@/lib/analytics/download";
 import { DocumentType } from "@/lib/analytics/download/statistics/types";
 import { ShareAction } from "@/components/index-medicus/article/actions/ShareAction";
+import { handleMobileDownload, getMobileDownloadInstructions } from "@/lib/mobile/download-handler";
+import { useIsMobile } from "@/hooks/use-mobile";
 import type { RhcaArticle } from "../types";
 
 interface CardActionsProps {
@@ -15,6 +17,8 @@ interface CardActionsProps {
 }
 
 export const CardActions: React.FC<CardActionsProps> = ({ article, pdfUrl }) => {
+  const isMobile = useIsMobile();
+
   const handleDownload = async (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent card click event
     
@@ -31,29 +35,64 @@ export const CardActions: React.FC<CardActionsProps> = ({ article, pdfUrl }) => 
       
       console.log('Attempting download with filename:', fileName);
       
-      // Use the standardized downloadPDF function with RHCA document type
-      const success = await downloadPDF({
-        url: pdfUrl,
-        fileName,
-        documentId: article.id,
-        documentType: DocumentType.RHCA,
-        trackingEnabled: true
-      });
-      
-      if (success) {
-        toast.success("Téléchargement du PDF en cours...");
+      if (isMobile) {
+        // Use mobile-optimized download handler
+        const success = await handleMobileDownload(
+          pdfUrl,
+          fileName,
+          async () => {
+            // Success callback
+            toast.success("Téléchargement réussi");
+            
+            // Update download count in articles table
+            const { error } = await supabase
+              .from('articles')
+              .update({ downloads: (article.downloads || 0) + 1 })
+              .eq('id', article.id);
+            
+            if (error) {
+              console.error('Error updating download count:', error);
+            }
+          },
+          (error) => {
+            console.error('Mobile download failed:', error);
+            toast.error("Une erreur est survenue lors du téléchargement");
+          }
+        );
         
-        // Update download count in articles table
-        const { error } = await supabase
-          .from('articles')
-          .update({ downloads: (article.downloads || 0) + 1 })
-          .eq('id', article.id);
-        
-        if (error) {
-          console.error('Error updating download count:', error);
+        // Show mobile-specific instructions
+        if (success) {
+          setTimeout(() => {
+            toast.info(getMobileDownloadInstructions(), {
+              duration: 5000
+            });
+          }, 1000);
         }
       } else {
-        toast.error("Une erreur est survenue lors du téléchargement");
+        // Use the standardized downloadPDF function for desktop
+        const success = await downloadPDF({
+          url: pdfUrl,
+          fileName,
+          documentId: article.id,
+          documentType: DocumentType.RHCA,
+          trackingEnabled: true
+        });
+        
+        if (success) {
+          toast.success("Téléchargement du PDF en cours...");
+          
+          // Update download count in articles table
+          const { error } = await supabase
+            .from('articles')
+            .update({ downloads: (article.downloads || 0) + 1 })
+            .eq('id', article.id);
+          
+          if (error) {
+            console.error('Error updating download count:', error);
+          }
+        } else {
+          toast.error("Une erreur est survenue lors du téléchargement");
+        }
       }
     } catch (error) {
       console.error('Download error:', error);
