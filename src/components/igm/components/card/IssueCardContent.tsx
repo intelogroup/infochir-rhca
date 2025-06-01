@@ -70,7 +70,14 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
       
       {getTags.length > 0 && (
         <div className="flex flex-wrap gap-0.5">
-          <ArticleTags tags={getTags} />
+          {getTags.map((tag, index) => (
+            <span
+              key={index}
+              className="inline-flex items-center px-1 py-0.5 rounded text-[7px] font-medium bg-primary/10 text-primary border border-primary/20"
+            >
+              {tag}
+            </span>
+          ))}
         </div>
       )}
       
