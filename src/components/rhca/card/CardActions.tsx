@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Download, Share2, ExternalLink } from "lucide-react";
@@ -113,7 +114,7 @@ export const CardActions: React.FC<CardActionsProps> = ({ article, pdfUrl }) => 
   return (
     <div className="flex items-center justify-end gap-1">
       <div className="flex items-center gap-1">
-        <div className="h-5 w-5">
+        <div className="bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200">
           <ShareAction 
             articleId={article.id} 
             articleTitle={article.title}
@@ -125,19 +126,21 @@ export const CardActions: React.FC<CardActionsProps> = ({ article, pdfUrl }) => 
             <Button 
               variant="outline" 
               size="sm"
-              className="h-5 w-5 p-0 border-blue-200 text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200"
+              className="bg-green-50 px-2 py-0.5 rounded-md border border-green-200 text-green-700 hover:bg-green-100 transition-all duration-200 text-xs font-medium"
               onClick={handleOpenPdf}
             >
-              <ExternalLink className="h-2.5 w-2.5" />
+              <ExternalLink className="mr-1 h-2.5 w-2.5" />
+              Ouvrir
             </Button>
             
             <Button 
               variant="default" 
               size="sm"
-              className="h-5 w-5 p-0 bg-primary text-white hover:bg-primary/90 transition-all duration-200"
+              className="bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200 text-amber-700 hover:bg-amber-100 transition-all duration-200 text-xs font-medium"
               onClick={handleDownload}
             >
-              <Download className="h-2.5 w-2.5" />
+              <Download className="mr-1 h-2.5 w-2.5" />
+              PDF
             </Button>
           </>
         )}
@@ -145,3 +148,4 @@ export const CardActions: React.FC<CardActionsProps> = ({ article, pdfUrl }) => 
     </div>
   );
 };
+
