@@ -86,9 +86,9 @@ export const CardContent: React.FC<CardContentProps> = ({ article, pdfUrl }) => 
       </div>
       
       <div className="flex justify-between items-center mt-auto pt-1.5 border-t border-gray-100">
-        <div className="flex items-center bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
-          <FileText className="mr-1 h-2.5 w-2.5 text-amber-600 flex-shrink-0" />
-          <span className="font-medium text-xs text-amber-700">
+        <div className="flex items-center bg-amber-50 px-1 py-0.5 rounded border border-amber-200 h-5">
+          <FileText className="mr-0.5 h-2 w-2 text-amber-600 flex-shrink-0" />
+          <span className="font-medium text-[10px] text-amber-700">
             {getTotalPages}
           </span>
         </div>
