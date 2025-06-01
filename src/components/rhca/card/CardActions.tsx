@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Download, Share2, ExternalLink } from "lucide-react";
@@ -30,7 +31,7 @@ export const CardActions: React.FC<CardActionsProps> = ({ article, pdfUrl }) => 
     
     try {
       // Generate a proper filename
-      const fileName = `RHCA-${article.title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 30)}.pdf";
+      const fileName = `RHCA-${article.title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 30)}.pdf`;
       
       console.log('Attempting download with filename:', fileName);
       
