@@ -26,6 +26,51 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue }) => {
     setIsModalOpen(true);
   };
 
+  // Calculate total pages from articles
+  const getTotalPages = (() => {
+    try {
+      // If pageCount is directly available, use it
+      if (issue.pageCount && typeof issue.pageCount === 'number') {
+        return `${issue.pageCount} Pages`;
+      }
+      
+      // Check if we can extract page information from articles
+      if (!issue.articles || issue.articles.length === 0) {
+        return "- Pages";
+      }
+      
+      let maxPage = 0;
+      
+      // Loop through all articles to find the highest page number
+      issue.articles.forEach(article => {
+        if (!article.pageNumber) return;
+        
+        const pageNumber = article.pageNumber.toString().trim();
+        
+        // Handle page range format (e.g., "1-28")
+        if (pageNumber.includes('-')) {
+          const [start, end] = pageNumber.split('-').map(num => parseInt(num.trim(), 10));
+          if (!isNaN(end) && end > maxPage) {
+            maxPage = end;
+          }
+        } 
+        // Handle single page format (e.g., "34")
+        else {
+          const pageNum = parseInt(pageNumber, 10);
+          if (!isNaN(pageNum) && pageNum > maxPage) {
+            maxPage = pageNum;
+          }
+        }
+      });
+      
+      return maxPage > 0 ? `${maxPage} Pages` : "- Pages";
+      
+    } catch (error) {
+      console.error('Error calculating total pages:', error);
+      return "- Pages";
+    }
+  })();
+
   return (
     <>
       <motion.div 
@@ -50,12 +95,23 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue }) => {
               <IssueCardContent issue={issue} />
             </div>
             
-            <div className={`flex ${isMobile ? 'mt-1' : 'mt-2'} justify-end`}>
-              <IssueCardActions 
-                pdfUrl={issue.pdfUrl} 
-                id={issue.id}
-                title={issue.title}
-              />
+            {/* Stats and buttons section combined */}
+            <div className="mt-2 space-y-1">
+              <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600">
+                <span className="bg-secondary/10 px-2 py-0.5 rounded-full font-medium">
+                  {getTotalPages}
+                </span>
+                <span>{(issue.downloads || issue.downloadCount) || 0} téléchargements</span>
+                <span>{(issue.shares || issue.shareCount) || 0} partages</span>
+              </div>
+              
+              <div className="flex justify-end">
+                <IssueCardActions 
+                  pdfUrl={issue.pdfUrl} 
+                  id={issue.id}
+                  title={issue.title}
+                />
+              </div>
             </div>
           </div>
         </Card>

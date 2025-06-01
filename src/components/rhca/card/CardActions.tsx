@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Download, Share2, ExternalLink } from "lucide-react";
@@ -114,12 +112,10 @@ export const CardActions: React.FC<CardActionsProps> = ({ article, pdfUrl }) => 
   return (
     <div className="flex items-center justify-end gap-0.5">
       <div className="flex items-center gap-0.5">
-        <div className="bg-blue-50 px-1 py-0.5 rounded border border-blue-200">
-          <ShareAction 
-            articleId={article.id} 
-            articleTitle={article.title}
-          />
-        </div>
+        <ShareAction 
+          articleId={article.id} 
+          articleTitle={article.title}
+        />
         
         {pdfUrl && (
           <>
@@ -148,4 +144,3 @@ export const CardActions: React.FC<CardActionsProps> = ({ article, pdfUrl }) => 
     </div>
   );
 };
-
