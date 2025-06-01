@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from "react";
 import { Issue } from "../types";
 import { IssueCard } from "../IssueCard";
@@ -115,13 +114,13 @@ export const YearGroupList = ({ issuesByYear = {}, sortedYears = [] }: YearGroup
             </div>
             
             {!collapsedYears[year] && (
-              <div className="flex flex-col gap-6">
+              <div>
                 {hasIssues ? (
-                  yearIssues.map((issue) => (
-                    <div key={issue.id}>
-                      <IssueCard issue={issue} />
-                    </div>
-                  ))
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {yearIssues.map((issue) => (
+                      <IssueCard key={issue.id} issue={issue} />
+                    ))}
+                  </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-lg border border-gray-100">
                     <AlertCircle className="h-10 w-10 text-gray-400 mb-2" />
