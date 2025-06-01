@@ -111,12 +111,14 @@ export const CardActions: React.FC<CardActionsProps> = ({ article, pdfUrl }) => 
   };
 
   return (
-    <div className="flex items-center justify-end gap-1">
-      <div className="flex items-center gap-0.5">
-        <ShareAction 
-          articleId={article.id} 
-          articleTitle={article.title}
-        />
+    <div className="flex items-center justify-end gap-1.5">
+      <div className="flex items-center gap-1">
+        <div className="h-6">
+          <ShareAction 
+            articleId={article.id} 
+            articleTitle={article.title}
+          />
+        </div>
         
         {pdfUrl && (
           <>
