@@ -81,26 +81,26 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue }) => {
         className="h-full flex"
       >
         <Card 
-          className="overflow-hidden group cursor-pointer h-full flex flex-col w-full border border-gray-200 hover:shadow-md transition-all"
+          className="overflow-hidden group cursor-pointer h-full flex flex-col w-full border border-gray-200 hover:shadow-md transition-all max-w-[280px]"
           onClick={handleCardClick}
         >
-          <div className="h-32 w-full">
+          <div className="h-24 w-full">
             <IssueCardCover coverImage={issue.coverImage} title={issue.title} />
           </div>
           
-          <div className="flex-1 flex flex-col p-2 min-h-0">
-            <div className="flex-1">
+          <div className="flex-1 flex flex-col p-1.5 min-h-0">
+            <div className="flex-1 min-h-0">
               <IssueCardContent issue={issue} />
             </div>
             
-            {/* Stats and buttons section combined */}
+            {/* Stats and buttons section */}
             <div className="mt-1 space-y-1">
-              <div className="flex flex-wrap items-center gap-2 text-xs text-gray-600">
-                <span className="bg-amber-50 px-1 py-0.5 rounded border border-amber-200 font-medium text-[10px] text-amber-700">
+              <div className="flex flex-wrap items-center gap-1.5 text-xs text-gray-600">
+                <span className="bg-amber-50 px-1 py-0.5 rounded border border-amber-200 font-medium text-[9px] text-amber-700">
                   {getTotalPages}
                 </span>
-                <span className="text-[10px]">{(issue.downloads || issue.downloadCount) || 0} téléchargements</span>
-                <span className="text-[10px]">{(issue.shares || issue.shareCount) || 0} partages</span>
+                <span className="text-[9px]">{(issue.downloads || issue.downloadCount) || 0} téléchargements</span>
+                <span className="text-[9px]">{(issue.shares || issue.shareCount) || 0} partages</span>
               </div>
               
               <div className="flex justify-end">

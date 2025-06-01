@@ -43,8 +43,8 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
           }
         });
       }
-      // Return unique tags (up to 3)
-      return [...new Set(allTags)].slice(0, 3);
+      // Return unique tags (up to 2 for more compact layout)
+      return [...new Set(allTags)].slice(0, 2);
     } catch (error) {
       console.error('Error extracting tags:', error);
       return [];
@@ -52,31 +52,29 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
   })();
 
   return (
-    <div className="flex-1 min-w-0 space-y-1">
-      <div className="flex justify-between items-start gap-1">
-        <div className="min-w-0">
-          <h3 className="text-xs font-semibold text-gray-900 leading-tight tracking-tight line-clamp-2 mb-0.5">
-            {issue.title || 'Sans titre'}
-          </h3>
-          <div className="text-xs font-medium text-gray-700">
-            {issue.volume ? `Vol. ${issue.volume}` : 'Vol. -'} • {issue.issue ? `No. ${issue.issue}` : 'No. -'}
-          </div>
-          <div className="flex items-center gap-1 text-xs text-gray-600">
-            <Calendar className="h-3 w-3 flex-shrink-0" />
-            <span className="truncate text-[10px]">
-              {formattedDate}
-            </span>
-          </div>
+    <div className="flex-1 min-w-0 space-y-0.5">
+      <div className="min-w-0">
+        <h3 className="text-[11px] font-semibold text-gray-900 leading-tight tracking-tight line-clamp-2 mb-0.5">
+          {issue.title || 'Sans titre'}
+        </h3>
+        <div className="text-[10px] font-medium text-gray-700">
+          {issue.volume ? `Vol. ${issue.volume}` : 'Vol. -'} • {issue.issue ? `No. ${issue.issue}` : 'No. -'}
+        </div>
+        <div className="flex items-center gap-1 text-[9px] text-gray-600 mb-0.5">
+          <Calendar className="h-2.5 w-2.5 flex-shrink-0" />
+          <span className="truncate">
+            {formattedDate}
+          </span>
         </div>
       </div>
       
       {getTags.length > 0 && (
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-0.5">
           <ArticleTags tags={getTags} />
         </div>
       )}
       
-      <p className="text-xs text-gray-600 leading-relaxed line-clamp-2">
+      <p className="text-[10px] text-gray-600 leading-relaxed line-clamp-2">
         {issue.abstract || 'Aucun résumé disponible'}
       </p>
     </div>
