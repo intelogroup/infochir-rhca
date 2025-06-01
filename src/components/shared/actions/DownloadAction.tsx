@@ -45,12 +45,13 @@ export const DownloadAction: React.FC<DownloadActionProps> = ({
     try {
       setIsDownloading(true);
       
-      // Generate a proper filename
+      // Generate a proper filename with timestamp for uniqueness
       const prefix = contentType === 'igm' ? 'IGM' : 'RHCA';
-      const cleanTitle = title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 30);
-      const fileName = `${prefix}_${cleanTitle}.pdf`;
+      const cleanTitle = title.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_').slice(0, 30);
+      const timestamp = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+      const fileName = `${prefix}_${cleanTitle}_${timestamp}.pdf`;
       
-      logger.log(`Starting download: ${fileName}`);
+      logger.log(`Starting download: ${fileName} (Mobile: ${isMobile})`);
       
       if (isMobile) {
         // Use mobile-optimized download handler
@@ -90,8 +91,10 @@ export const DownloadAction: React.FC<DownloadActionProps> = ({
           }, 1000);
         }
       } else {
-        // Use the standardized downloadPDF function for desktop
+        // Enhanced desktop download with blob handling
         const documentType = contentType === 'igm' ? DocumentType.IGM : DocumentType.RHCA;
+        
+        logger.log('Starting desktop download with enhanced blob handling');
         
         const success = await downloadPDF({
           url: pdfUrl,
@@ -102,7 +105,9 @@ export const DownloadAction: React.FC<DownloadActionProps> = ({
         });
         
         if (success) {
-          toast.success("Téléchargement du PDF en cours...");
+          toast.success("Téléchargement du PDF en cours...", {
+            description: "Le fichier est sauvegardé dans votre dossier Téléchargements"
+          });
           
           // Update download count in articles table using RPC
           try {
@@ -119,7 +124,9 @@ export const DownloadAction: React.FC<DownloadActionProps> = ({
             logger.error('Database error updating download count:', dbError);
           }
         } else {
-          toast.error("Erreur lors du téléchargement");
+          toast.error("Erreur lors du téléchargement", {
+            description: "Veuillez réessayer ou contactez le support"
+          });
         }
       }
     } catch (error) {

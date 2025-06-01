@@ -39,7 +39,7 @@ export const downloadPDF = async ({
         [DocumentType.RHCA]: 'rhca-pdfs',
         [DocumentType.IGM]: 'igm-pdfs',
         [DocumentType.ADC]: 'article-pdfs',
-        [DocumentType.INDEX]: 'indexmedicuspdf', // Use the correct bucket for INDEX
+        [DocumentType.INDEX]: 'indexmedicuspdf',
         [DocumentType.Test]: 'article-pdfs'
       };
       
@@ -54,23 +54,60 @@ export const downloadPDF = async ({
     
     console.log('Final download URL:', actualUrl);
     
-    // Try to fetch the file first to check if it exists
-    const response = await fetch(actualUrl, { method: 'HEAD' });
-    if (!response.ok) {
-      console.error('File not accessible:', response.status, response.statusText);
-      throw new Error(`File not accessible: ${response.status}`);
+    // Enhanced desktop download logic with blob handling
+    try {
+      // Fetch the file as a blob for better desktop handling
+      const response = await fetch(actualUrl);
+      if (!response.ok) {
+        throw new Error(`File not accessible: ${response.status}`);
+      }
+      
+      // Get the file as a blob with proper MIME type
+      const blob = await response.blob();
+      const contentType = response.headers.get('content-type') || 'application/pdf';
+      
+      // Create a proper blob with PDF MIME type
+      const pdfBlob = new Blob([blob], { type: contentType });
+      
+      // Create object URL for the blob
+      const objectUrl = URL.createObjectURL(pdfBlob);
+      
+      // Create download link with proper attributes for desktop saving
+      const link = document.createElement('a');
+      link.href = objectUrl;
+      link.download = fileName; // This forces download instead of opening in browser
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      
+      // Add to DOM, click, and clean up
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up the object URL after a short delay
+      setTimeout(() => {
+        URL.revokeObjectURL(objectUrl);
+      }, 1000);
+      
+      console.log('Desktop download triggered successfully for:', fileName);
+      
+    } catch (fetchError) {
+      console.warn('Blob download failed, falling back to direct link method:', fetchError);
+      
+      // Fallback to direct link method
+      const link = document.createElement('a');
+      link.href = actualUrl;
+      link.download = fileName;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      
+      // Force download attribute for desktop
+      link.setAttribute('download', fileName);
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
-    
-    // Create a link and trigger the download
-    const link = document.createElement('a');
-    link.href = actualUrl;
-    link.download = fileName;
-    link.target = '_blank';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    console.log('Download triggered successfully');
     
     // Track the download if tracking is enabled
     if (trackingEnabled) {
