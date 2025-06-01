@@ -11,7 +11,7 @@ interface YearGroupListProps {
   sortedYears: number[];
 }
 
-export const YearGroupList = ({ issuesByYear, sortedYears }: YearGroupListProps) => {
+export const YearGroupList = ({ issuesByYear = {}, sortedYears = [] }: YearGroupListProps) => {
   const [collapsedYears, setCollapsedYears] = useState<Record<number, boolean>>({});
   
   // Define all the years we want to display
@@ -42,6 +42,18 @@ export const YearGroupList = ({ issuesByYear, sortedYears }: YearGroupListProps)
     toast.success(`Lien pour les numéros de ${year} copié dans le presse-papier`);
   };
 
+  // Safety check for empty data
+  if (!issuesByYear || Object.keys(issuesByYear).length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-500 text-lg">Aucun numéro trouvé</p>
+        <p className="text-gray-400 text-sm mt-2">
+          Essayez de modifier vos critères de recherche
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       <div className="text-center mb-6">
@@ -50,9 +62,9 @@ export const YearGroupList = ({ issuesByYear, sortedYears }: YearGroupListProps)
       
       {allDisplayYears.map((year) => {
         // Check if the year actually has issues
-        const hasIssues = issuesByYear[year]?.length > 0;
-        const issueCount = issuesByYear[year]?.length || 0;
-        console.log(`Year ${year} has issues: ${hasIssues}, count: ${issueCount}`);
+        const yearIssues = issuesByYear[year] || [];
+        const hasIssues = yearIssues.length > 0;
+        const issueCount = yearIssues.length;
         
         return (
           <div key={year} className="mb-10">
@@ -105,7 +117,7 @@ export const YearGroupList = ({ issuesByYear, sortedYears }: YearGroupListProps)
             {!collapsedYears[year] && (
               <div className="flex flex-col gap-6">
                 {hasIssues ? (
-                  issuesByYear[year].map((issue) => (
+                  yearIssues.map((issue) => (
                     <div key={issue.id}>
                       <IssueCard issue={issue} />
                     </div>
