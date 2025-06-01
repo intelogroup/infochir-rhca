@@ -1,6 +1,6 @@
 
 import React from "react";
-import { YearGroupList } from "../YearGroupList";
+import { YearGroupList } from "./YearGroupList";
 import { IssuesTable } from "../../issues/IssuesTable";
 import { LoadingState } from "./LoadingState";
 import { MobileOptimizedContainer } from "@/components/mobile/MobileOptimizedContainer";
