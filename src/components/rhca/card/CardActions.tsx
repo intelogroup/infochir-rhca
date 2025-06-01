@@ -112,9 +112,9 @@ export const CardActions: React.FC<CardActionsProps> = ({ article, pdfUrl }) => 
   };
 
   return (
-    <div className="flex items-center justify-end gap-1">
-      <div className="flex items-center gap-1">
-        <div className="bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200">
+    <div className="flex items-center justify-end gap-0.5">
+      <div className="flex items-center gap-0.5">
+        <div className="bg-blue-50 px-1 py-0.5 rounded border border-blue-200">
           <ShareAction 
             articleId={article.id} 
             articleTitle={article.title}
@@ -126,20 +126,20 @@ export const CardActions: React.FC<CardActionsProps> = ({ article, pdfUrl }) => 
             <Button 
               variant="outline" 
               size="sm"
-              className="bg-green-50 px-2 py-0.5 rounded-md border border-green-200 text-green-700 hover:bg-green-100 transition-all duration-200 text-xs font-medium"
+              className="bg-green-50 px-1 py-0.5 rounded border border-green-200 text-green-700 hover:bg-green-100 transition-all duration-200 text-[10px] font-medium h-5"
               onClick={handleOpenPdf}
             >
-              <ExternalLink className="mr-1 h-2.5 w-2.5" />
+              <ExternalLink className="mr-0.5 h-2 w-2" />
               Ouvrir
             </Button>
             
             <Button 
               variant="default" 
               size="sm"
-              className="bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200 text-amber-700 hover:bg-amber-100 transition-all duration-200 text-xs font-medium"
+              className="bg-amber-50 px-1 py-0.5 rounded border border-amber-200 text-amber-700 hover:bg-amber-100 transition-all duration-200 text-[10px] font-medium h-5"
               onClick={handleDownload}
             >
-              <Download className="mr-1 h-2.5 w-2.5" />
+              <Download className="mr-0.5 h-2 w-2" />
               PDF
             </Button>
           </>
