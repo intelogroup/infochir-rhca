@@ -77,32 +77,30 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue }) => {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        whileHover={{ y: -5 }}
+        whileHover={{ y: -2 }}
         className="h-full flex"
       >
         <Card 
-          className="overflow-hidden group cursor-pointer h-full flex flex-row w-full border border-gray-200 hover:shadow-md transition-all"
+          className="overflow-hidden group cursor-pointer h-full flex flex-col w-full border border-gray-200 hover:shadow-md transition-all"
           onClick={handleCardClick}
         >
-          <div className={`shrink-0 ${isMobile ? 'w-1/3' : 'w-1/3 md:w-1/4'} h-full`}>
-            <div className="h-full">
-              <IssueCardCover coverImage={issue.coverImage} title={issue.title} />
-            </div>
+          <div className="h-32 w-full">
+            <IssueCardCover coverImage={issue.coverImage} title={issue.title} />
           </div>
           
-          <div className="flex-1 flex flex-col p-2 sm:p-4">
+          <div className="flex-1 flex flex-col p-2 min-h-0">
             <div className="flex-1">
               <IssueCardContent issue={issue} />
             </div>
             
             {/* Stats and buttons section combined */}
-            <div className="mt-2 space-y-1">
-              <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600">
-                <span className="bg-secondary/10 px-2 py-0.5 rounded-full font-medium">
+            <div className="mt-1 space-y-1">
+              <div className="flex flex-wrap items-center gap-2 text-xs text-gray-600">
+                <span className="bg-amber-50 px-1 py-0.5 rounded border border-amber-200 font-medium text-[10px] text-amber-700">
                   {getTotalPages}
                 </span>
-                <span>{(issue.downloads || issue.downloadCount) || 0} téléchargements</span>
-                <span>{(issue.shares || issue.shareCount) || 0} partages</span>
+                <span className="text-[10px]">{(issue.downloads || issue.downloadCount) || 0} téléchargements</span>
+                <span className="text-[10px]">{(issue.shares || issue.shareCount) || 0} partages</span>
               </div>
               
               <div className="flex justify-end">

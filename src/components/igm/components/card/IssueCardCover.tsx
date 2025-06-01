@@ -9,15 +9,15 @@ interface IssueCardCoverProps {
 
 export const IssueCardCover = ({ coverImage, title }: IssueCardCoverProps) => {
   return (
-    <AspectRatio ratio={3/4} className="overflow-hidden rounded-lg bg-muted/10">
+    <div className="w-full h-full overflow-hidden rounded-t-lg bg-muted/10">
       <ImageOptimizer
         src={coverImage}
         alt={`Couverture ${title}`}
-        width={120}
-        height={160}
+        width={200}
+        height={128}
         className="w-full h-full object-cover object-top transition-all duration-300 group-hover:scale-105"
         fallbackText="Image non disponible"
       />
-    </AspectRatio>
+    </div>
   );
 };
