@@ -35,12 +35,13 @@ export const OpenAction: React.FC<OpenActionProps> = ({
       // Open PDF in new tab
       window.open(pdfUrl, '_blank');
       
-      // Update view count in the database
+      // Update view count in the database using RPC
       try {
-        const { error } = await supabase
-          .from('articles')
-          .update({ views: supabase.sql`views + 1` })
-          .eq('id', id);
+        const { error } = await supabase.rpc('increment_count', {
+          table_name: 'articles',
+          column_name: 'views',
+          row_id: id
+        });
           
         if (error) {
           logger.error('Error updating view count:', error);

@@ -52,12 +52,13 @@ export const ShareAction: React.FC<ShareActionProps> = ({
         toast.success("Lien copié dans le presse-papier");
       }
       
-      // Update share count in the database
+      // Update share count in the database using RPC
       try {
-        const { error } = await supabase
-          .from('articles')
-          .update({ shares: supabase.sql`shares + 1` })
-          .eq('id', id);
+        const { error } = await supabase.rpc('increment_count', {
+          table_name: 'articles',
+          column_name: 'shares',
+          row_id: id
+        });
           
         if (error) {
           logger.error('Error updating share count:', error);

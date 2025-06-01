@@ -58,12 +58,13 @@ export const DownloadAction: React.FC<DownloadActionProps> = ({
           pdfUrl,
           fileName,
           async () => {
-            // Success callback - update download count
+            // Success callback - update download count using RPC
             try {
-              const { error } = await supabase
-                .from('articles')
-                .update({ downloads: supabase.sql`downloads + 1` })
-                .eq('id', id);
+              const { error } = await supabase.rpc('increment_count', {
+                table_name: 'articles',
+                column_name: 'downloads',
+                row_id: id
+              });
                 
               if (error) {
                 logger.error('Error updating download count:', error);
@@ -103,12 +104,13 @@ export const DownloadAction: React.FC<DownloadActionProps> = ({
         if (success) {
           toast.success("Téléchargement du PDF en cours...");
           
-          // Update download count in articles table
+          // Update download count in articles table using RPC
           try {
-            const { error } = await supabase
-              .from('articles')
-              .update({ downloads: supabase.sql`downloads + 1` })
-              .eq('id', id);
+            const { error } = await supabase.rpc('increment_count', {
+              table_name: 'articles',
+              column_name: 'downloads',
+              row_id: id
+            });
               
             if (error) {
               logger.error('Error updating download count:', error);
