@@ -1,20 +1,14 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
-import { Download, Share2, Tag, Calendar, BookOpen, Share, FileText, ExternalLink, Users } from "lucide-react";
+import { Tag, Calendar, BookOpen, FileText, Users } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
-import { downloadPDF } from "@/lib/analytics/download";
-import { DocumentType } from "@/lib/analytics/download/statistics/types";
-import { createLogger } from "@/lib/error-logger";
+import { ShareAction } from "@/components/shared/actions/ShareAction";
+import { DownloadAction } from "@/components/shared/actions/DownloadAction";
+import { OpenAction } from "@/components/shared/actions/OpenAction";
 import type { Issue } from "../../types";
-
-const logger = createLogger('IGMIssueModal');
 
 interface IGMIssueModalProps {
   issue: Issue;
@@ -23,78 +17,6 @@ interface IGMIssueModalProps {
 }
 
 export const IGMIssueModal = ({ issue, open, onClose }: IGMIssueModalProps) => {
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [isSharing, setIsSharing] = useState(false);
-
-  const handleShare = async () => {
-    setIsSharing(true);
-    const shareUrl = `${window.location.origin}/igm/issues/${issue.id}`;
-    
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: issue.title,
-          text: `Découvrez "${issue.title}" sur Info Gazette Médicale`,
-          url: shareUrl
-        });
-        toast.success("Contenu partagé avec succès");
-      } else {
-        await navigator.clipboard.writeText(shareUrl);
-        toast.success("Lien copié dans le presse-papier");
-      }
-      
-      // Increment the share count in the database
-      await supabase.rpc('increment_count', {
-        table_name: 'articles',
-        column_name: 'shares',
-        row_id: issue.id
-      });
-    } catch (error) {
-      logger.error('Error sharing:', error);
-      if (error instanceof Error && error.name !== 'AbortError') {
-        toast.error("Erreur lors du partage");
-      }
-    } finally {
-      setIsSharing(false);
-    }
-  };
-
-  const handleDownload = async () => {
-    if (!issue.pdfUrl) {
-      toast.error("Le PDF n'est pas encore disponible pour ce numéro");
-      return;
-    }
-
-    setIsDownloading(true);
-    try {
-      const success = await downloadPDF({
-        url: issue.pdfUrl,
-        fileName: `IGM_${issue.title.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`,
-        documentId: issue.id,
-        documentType: DocumentType.IGM
-      });
-      
-      if (success) {
-        toast.success("Téléchargement du PDF en cours...");
-      } else {
-        toast.error("Erreur lors du téléchargement");
-      }
-    } catch (error) {
-      logger.error('Error downloading:', error);
-      toast.error("Erreur lors du téléchargement");
-    } finally {
-      setIsDownloading(false);
-    }
-  };
-
-  const handleOpenPdf = () => {
-    if (!issue.pdfUrl) {
-      toast.error("Le PDF n'est pas disponible");
-      return;
-    }
-    window.open(issue.pdfUrl, '_blank');
-  };
-
   // Calculate total pages
   const getTotalPages = () => {
     if (issue.pageCount) return issue.pageCount;
@@ -251,39 +173,31 @@ export const IGMIssueModal = ({ issue, open, onClose }: IGMIssueModalProps) => {
 
             {/* Actions Section */}
             <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200">
-              <Button
-                variant="outline"
+              <ShareAction
+                id={issue.id}
+                title={issue.title}
+                contentType="igm"
                 size="sm"
-                className="gap-2"
-                onClick={handleShare}
-                disabled={isSharing}
-              >
-                <Share2 className="h-4 w-4" />
-                Partager
-              </Button>
+                variant="outline"
+              />
               
               {issue.pdfUrl && (
                 <>
-                  <Button
+                  <OpenAction
+                    id={issue.id}
+                    pdfUrl={issue.pdfUrl}
+                    size="sm"
                     variant="outline"
-                    size="sm"
-                    className="gap-2"
-                    onClick={handleOpenPdf}
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                    Ouvrir le PDF
-                  </Button>
+                  />
                   
-                  <Button
-                    variant="default"
+                  <DownloadAction
+                    id={issue.id}
+                    title={issue.title}
+                    pdfUrl={issue.pdfUrl}
+                    contentType="igm"
                     size="sm"
-                    className="gap-2"
-                    onClick={handleDownload}
-                    disabled={isDownloading}
-                  >
-                    <Download className="h-4 w-4" />
-                    Télécharger PDF
-                  </Button>
+                    variant="default"
+                  />
                 </>
               )}
             </div>
