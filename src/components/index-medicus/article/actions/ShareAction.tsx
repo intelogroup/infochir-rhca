@@ -44,7 +44,7 @@ export const ShareAction: React.FC<ShareActionProps> = ({ articleId, articleTitl
     <Button
       variant="outline"
       size="sm"
-      className="bg-blue-50 px-1 py-0.5 rounded border border-blue-200 text-blue-700 hover:bg-blue-100 transition-all duration-200 text-[10px] font-medium h-5"
+      className="bg-blue-50 px-1 py-0.5 rounded text-blue-700 hover:bg-blue-100 transition-all duration-200 text-[10px] font-medium h-5"
       onClick={handleShare}
       disabled={isSharing}
     >

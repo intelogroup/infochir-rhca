@@ -23,6 +23,7 @@ export const IssueCardActions: React.FC<IssueCardActionsProps> = ({
   title
 }) => {
   const [isDownloading, setIsDownloading] = React.useState(false);
+  const [isSharing, setIsSharing] = React.useState(false);
   const isMobile = useIsMobile();
 
   const handleDownload = async (e: React.MouseEvent) => {
@@ -63,6 +64,8 @@ export const IssueCardActions: React.FC<IssueCardActionsProps> = ({
     e.stopPropagation(); // Prevent card click event
     
     try {
+      setIsSharing(true);
+      
       // Generate share URL
       const shareUrl = `${window.location.origin}/igm/issues/${id}`;
       
@@ -91,6 +94,8 @@ export const IssueCardActions: React.FC<IssueCardActionsProps> = ({
       if (error instanceof Error && error.name !== 'AbortError') {
         toast.error("Erreur lors du partage");
       }
+    } finally {
+      setIsSharing(false);
     }
   };
 
@@ -105,54 +110,42 @@ export const IssueCardActions: React.FC<IssueCardActionsProps> = ({
   };
 
   return (
-    <div className="flex gap-1 flex-wrap justify-end">
+    <div className="flex items-center gap-0.5">
       <Button
         variant="outline"
-        size={isMobile ? "sm" : "sm"}
-        className={isMobile ? "h-8 px-2 py-1 text-xs flex-grow sm:flex-grow-0" : "h-7 w-7 p-0"}
+        size="sm"
+        className="bg-blue-50 px-1 py-0.5 rounded text-blue-700 hover:bg-blue-100 transition-all duration-200 text-[10px] font-medium h-5"
         onClick={handleShare}
+        disabled={isSharing}
       >
-        {isMobile ? (
-          <>
-            <Share2 className="h-3 w-3 mr-1" />
-            <span className="text-xs">Partager</span>
-          </>
-        ) : (
-          <Share2 className="h-3.5 w-3.5" />
-        )}
+        <Share2 className="mr-0.5 h-2 w-2" />
+        Partager
       </Button>
-      <Button
-        variant="outline"
-        size={isMobile ? "sm" : "sm"}
-        className={isMobile ? "h-8 px-2 py-1 text-xs flex-grow sm:flex-grow-0" : "h-7 w-7 p-0"}
-        onClick={handleOpenPdf}
-        disabled={!pdfUrl}
-      >
-        {isMobile ? (
-          <>
-            <ExternalLink className="h-3 w-3 mr-1" />
-            <span className="text-xs">Ouvrir</span>
-          </>
-        ) : (
-          <ExternalLink className="h-3.5 w-3.5" />
-        )}
-      </Button>
-      <Button
-        variant="outline"
-        size={isMobile ? "sm" : "sm"}
-        className={isMobile ? "h-8 px-2 py-1 text-xs flex-grow sm:flex-grow-0" : "h-7 w-7 p-0"}
-        onClick={handleDownload}
-        disabled={!pdfUrl || isDownloading}
-      >
-        {isMobile ? (
-          <>
-            <Download className={`h-3 w-3 mr-1 ${isDownloading ? 'animate-pulse' : ''}`} />
-            <span className="text-xs">PDF</span>
-          </>
-        ) : (
-          <Download className={`h-3.5 w-3.5 ${isDownloading ? 'animate-pulse' : ''}`} />
-        )}
-      </Button>
+      
+      {pdfUrl && (
+        <>
+          <Button
+            variant="outline"
+            size="sm"
+            className="bg-green-50 px-1 py-0.5 rounded text-green-700 hover:bg-green-100 transition-all duration-200 text-[10px] font-medium h-5"
+            onClick={handleOpenPdf}
+          >
+            <ExternalLink className="mr-0.5 h-2 w-2" />
+            Ouvrir
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            className="bg-amber-50 px-1 py-0.5 rounded text-amber-700 hover:bg-amber-100 transition-all duration-200 text-[10px] font-medium h-5"
+            onClick={handleDownload}
+            disabled={isDownloading}
+          >
+            <Download className="mr-0.5 h-2 w-2" />
+            PDF
+          </Button>
+        </>
+      )}
     </div>
   );
 };
