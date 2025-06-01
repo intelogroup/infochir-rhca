@@ -114,7 +114,7 @@ export const IssueCardActions: React.FC<IssueCardActionsProps> = ({
       <Button
         variant="outline"
         size="sm"
-        className="bg-blue-50 px-1 py-0.5 rounded text-blue-700 hover:bg-blue-100 transition-all duration-200 text-[9px] font-medium h-4"
+        className="bg-blue-50 px-1 py-0.5 rounded text-blue-700 hover:bg-blue-100 transition-all duration-200 text-[8px] font-medium h-4"
         onClick={handleShare}
         disabled={isSharing}
       >
@@ -127,7 +127,7 @@ export const IssueCardActions: React.FC<IssueCardActionsProps> = ({
           <Button
             variant="outline"
             size="sm"
-            className="bg-green-50 px-1 py-0.5 rounded text-green-700 hover:bg-green-100 transition-all duration-200 text-[9px] font-medium h-4"
+            className="bg-green-50 px-1 py-0.5 rounded text-green-700 hover:bg-green-100 transition-all duration-200 text-[8px] font-medium h-4"
             onClick={handleOpenPdf}
           >
             <ExternalLink className="mr-0.5 h-2 w-2" />
@@ -137,7 +137,7 @@ export const IssueCardActions: React.FC<IssueCardActionsProps> = ({
           <Button
             variant="outline"
             size="sm"
-            className="bg-amber-50 px-1 py-0.5 rounded text-amber-700 hover:bg-amber-100 transition-all duration-200 text-[9px] font-medium h-4"
+            className="bg-amber-50 px-1 py-0.5 rounded text-amber-700 hover:bg-amber-100 transition-all duration-200 text-[8px] font-medium h-4"
             onClick={handleDownload}
             disabled={isDownloading}
           >

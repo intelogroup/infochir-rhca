@@ -7,7 +7,7 @@ import { IssueCardCover } from "./components/card/IssueCardCover";
 import { IssueCardActions } from "./components/card/IssueCardActions";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { DocumentModal } from "@/components/shared/DocumentModal";
+import { IGMIssueModal } from "./components/modal/IGMIssueModal";
 
 interface IssueCardProps {
   issue: Issue;
@@ -93,49 +93,30 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue }) => {
               <IssueCardContent issue={issue} />
             </div>
             
-            {/* Stats and buttons section */}
-            <div className="mt-1 space-y-1">
-              <div className="flex flex-wrap items-center gap-1.5 text-xs text-gray-600">
+            {/* Actions and page info section */}
+            <div className="mt-1">
+              <div className="flex items-center justify-between gap-1">
                 <span className="bg-amber-50 px-1 py-0.5 rounded border border-amber-200 font-medium text-[9px] text-amber-700">
                   {getTotalPages}
                 </span>
-                <span className="text-[9px]">{(issue.downloads || issue.downloadCount) || 0} téléchargements</span>
-                <span className="text-[9px]">{(issue.shares || issue.shareCount) || 0} partages</span>
-              </div>
-              
-              <div className="flex justify-end">
-                <IssueCardActions 
-                  pdfUrl={issue.pdfUrl} 
-                  id={issue.id}
-                  title={issue.title}
-                />
+                
+                <div className="flex justify-end">
+                  <IssueCardActions 
+                    pdfUrl={issue.pdfUrl} 
+                    id={issue.id}
+                    title={issue.title}
+                  />
+                </div>
               </div>
             </div>
           </div>
         </Card>
       </motion.div>
 
-      <DocumentModal
-        document={{
-          id: issue.id,
-          title: issue.title,
-          date: issue.date,
-          description: issue.description || issue.abstract,
-          articleCount: issue.articleCount || 0,
-          downloadCount: issue.downloadCount || 0,
-          shareCount: issue.shareCount || 0,
-          coverImage: issue.coverImage,
-          pdfUrl: issue.pdfUrl
-        }}
+      <IGMIssueModal
+        issue={issue}
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        renderActions={(document) => (
-          <IssueCardActions 
-            pdfUrl={document.pdfUrl} 
-            id={document.id}
-            title={document.title}
-          />
-        )}
       />
     </>
   );
