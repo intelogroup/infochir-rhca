@@ -55,10 +55,7 @@ export const RhcaContent: React.FC = () => {
       );
     }
 
-    if (!isMobile) {
-      return <RhcaTable articles={articles} searchQuery="" onSearchChange={() => {}} />;
-    }
-    
+    // Always use grid view for RHCA to show the card-based layout
     return <RhcaGrid articles={articles} viewMode="grid" searchQuery="" onSearchChange={() => {}} />;
   };
 
