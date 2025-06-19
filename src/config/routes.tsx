@@ -17,6 +17,7 @@ import Donate from '@/pages/Donate';
 import Opportunities from '@/pages/Opportunities';
 import NotFound from '@/pages/NotFound';
 import TriggerUploads from '@/pages/TriggerUploads';
+import ArticleDetail from '@/pages/articles/ArticleDetail';
 
 // Admin components
 import { AdminRouteWrapper } from '@/components/routing/AdminRouteWrapper';
@@ -50,6 +51,7 @@ export const AppRoutes = () => {
         <Route path="donate" element={<Donate />} />
         <Route path="opportunities" element={<Opportunities />} />
         <Route path="trigger-uploads" element={<TriggerUploads />} />
+        <Route path="articles/:id" element={<ArticleDetail />} />
       </Route>
 
       {/* Admin Login Route (no sidebar) */}

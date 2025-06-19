@@ -57,7 +57,13 @@ export const CarouselModal = ({
       return;
     }
 
-    // If there's a direct link, open it
+    // If there's a direct link that starts with /articles/, navigate to it
+    if (item.link && item.link.startsWith('/articles/')) {
+      navigate(item.link);
+      return;
+    }
+
+    // If there's any other direct link, open it in new tab
     if (item.link) {
       window.open(item.link, '_blank');
       return;
