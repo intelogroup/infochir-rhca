@@ -5,7 +5,6 @@ import { CarouselHeader } from "./CarouselHeader";
 import { CarouselLoadingState } from "./CarouselLoadingState";
 import { CarouselErrorState } from "./CarouselErrorState";
 import { CarouselContentSection } from "./CarouselContent";
-import { highlights } from "./carouselData";
 
 export const CarouselSection = () => {
   const { data: carouselData, isLoading, error, refetch } = useCarouselData();
@@ -19,9 +18,8 @@ export const CarouselSection = () => {
     return <CarouselErrorState error={error} onRetry={refetch} />;
   }
 
-  // Flatten highlights data to match CarouselItem[] type
-  const fallbackData = highlights.flatMap(section => section.items);
-  const displayData = carouselData || fallbackData;
+  // carouselData is now always CarouselItem[] from the hook
+  const displayData = carouselData || [];
 
   return (
     <section 

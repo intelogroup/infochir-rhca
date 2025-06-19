@@ -24,7 +24,8 @@ export const useCarouselData = () => {
 
       if (!articles || articles.length === 0) {
         logger.debug('No articles found, falling back to highlights');
-        return highlights;
+        // Flatten highlights data to match CarouselItem[] type
+        return highlights.flatMap(section => section.items);
       }
 
       // Group by source to get the latest of each
@@ -70,7 +71,7 @@ export const useCarouselData = () => {
           category: article.source,
           author: authorString,
           link: `/articles/${article.id}`,
-          type: 'article' as const, // Add required type property
+          type: 'article' as const,
         };
       }) as CarouselItem[];
     },
