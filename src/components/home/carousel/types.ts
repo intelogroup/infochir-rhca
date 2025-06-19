@@ -1,15 +1,20 @@
 
 export interface CarouselItem {
-  id?: string;
+  id: string;
   title: string;
-  description: string;
+  description?: string;
+  abstract?: string;
   image: string;
+  author?: string;
   date?: string;
   category?: string;
-  author?: string;
-  link: string;
   pdfUrl?: string;
-  abstract?: string;
+  source?: string; // Add source property for routing
+  type: 'article' | 'event' | 'training';
 }
 
-export type Highlight = CarouselItem;
+export interface CarouselSection {
+  title: string;
+  subtitle?: string;
+  items: CarouselItem[];
+}

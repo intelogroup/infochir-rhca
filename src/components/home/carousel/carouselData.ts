@@ -1,48 +1,71 @@
 
-import { CarouselItem } from "./types";
+import { CarouselSection } from "./types";
 
-export const highlights: CarouselItem[] = [
+export const carouselData: CarouselSection[] = [
   {
-    title: "Séminaire sur les nouvelles techniques de chirurgie digestive",
-    description: "Un séminaire regroupant les chirurgiens du pays a été organisé au HUEH pour présenter les nouvelles techniques de chirurgie digestive.",
-    image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&auto=format&fit=crop&q=80",
-    date: "15/01/2024",
-    category: "RHCA",
-    author: "Dr. Jean Dupont",
-    link: "#"
+    title: "Articles récents",
+    subtitle: "Découvrez nos dernières publications scientifiques",
+    items: [
+      {
+        id: "1",
+        title: "Innovations en chirurgie cardiaque",
+        description: "Les dernières avancées en matière de chirurgie cardiaque minimalement invasive",
+        abstract: "Cette étude présente les innovations récentes en chirurgie cardiaque, notamment les techniques minimalement invasives qui révolutionnent le domaine.",
+        image: "/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png",
+        author: "Dr. Jean Baptiste",
+        date: "2024-01-15",
+        category: "Chirurgie",
+        source: "RHCA",
+        type: "article"
+      },
+      {
+        id: "2",
+        title: "Anesthésie pédiatrique moderne",
+        description: "Nouvelles approches en anesthésie pour les enfants",
+        abstract: "Un aperçu complet des techniques modernes d'anesthésie pédiatrique et leur impact sur la sécurité des patients.",
+        image: "/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png",
+        author: "Dr. Marie Claire",
+        date: "2024-01-10",
+        category: "Anesthésie",
+        source: "IGM",
+        type: "article"
+      },
+      {
+        id: "3",
+        title: "Diagnostic par imagerie avancée",
+        description: "L'imagerie médicale au service du diagnostic chirurgical",
+        abstract: "Cette publication explore les avancées en imagerie médicale et leur application dans le diagnostic chirurgical.",
+        image: "/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png",
+        author: "Dr. Pierre Louis",
+        date: "2024-01-05",
+        category: "Diagnostic",
+        source: "ADC",
+        type: "article"
+      }
+    ]
   },
   {
-    title: "Lymphœdème chronique : physiopathologie et prise en charge",
-    description: "Cette revue aborde la physiopathologie du lymphœdème chronique ainsi que les modalités thérapeutiques actuelles pour cette affection.",
-    image: "https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?w=800&auto=format&fit=crop&q=80",
-    date: "10/02/2024",
-    category: "IGM",
-    author: "Dr. Marie Laurent, Dr. Pierre Michel",
-    link: "#"
-  },
-  {
-    title: "Cas clinique: Présentation atypique d'une appendicite aiguë",
-    description: "Ce cas clinique présente une forme atypique d'appendicite aiguë chez un patient de 45 ans, illustrant les défis diagnostiques rencontrés en urgence.",
-    image: "https://images.unsplash.com/photo-1511174511562-5f7f18b874f8?w=800&auto=format&fit=crop&q=80",
-    date: "05/03/2024",
-    category: "ADC",
-    author: "Dr. Louis Télémaque",
-    link: "#"
-  },
-  {
-    title: "Conférence internationale sur la chirurgie traumatologique",
-    description: "La conférence internationale sur la chirurgie traumatologique se tiendra au Karibe Convention Center du 20 au 22 juin 2024.",
-    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&auto=format&fit=crop&q=80",
-    date: "20/03/2024",
-    category: "Événement",
-    link: "#"
-  },
-  {
-    title: "Formation en échographie FAST pour les urgentistes",
-    description: "Une formation en échographie FAST sera organisée pour les médecins urgentistes et traumatologues le mois prochain.",
-    image: "https://images.unsplash.com/photo-1530497610245-94d3c16cda28?w=800&auto=format&fit=crop&q=80",
-    date: "02/04/2024",
-    category: "Formation",
-    link: "#"
+    title: "Événements à venir",
+    subtitle: "Participez à nos prochaines formations et conférences",
+    items: [
+      {
+        id: "4",
+        title: "Conférence Internationale de Chirurgie",
+        description: "3 jours de conférences avec les meilleurs spécialistes",
+        image: "/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png",
+        date: "2024-03-15",
+        category: "Conférence",
+        type: "event"
+      },
+      {
+        id: "5",
+        title: "Formation en Techniques Laparoscopiques",
+        description: "Workshop pratique sur les techniques chirurgicales modernes",
+        image: "/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png",
+        date: "2024-02-20",
+        category: "Formation",
+        type: "training"
+      }
+    ]
   }
 ];

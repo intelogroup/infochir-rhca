@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { useState, useEffect, useRef } from "react";
 import { Outlet, useLocation } from "react-router-dom";
@@ -15,7 +16,8 @@ export interface MainLayoutProps {
 
 export const MainLayout = ({ children }: MainLayoutProps) => {
   const location = useLocation();
-  const showFooter = location.pathname === "/" || location.pathname === "/index";
+  // Show footer on home page and about page
+  const showFooter = location.pathname === "/" || location.pathname === "/index" || location.pathname === "/about";
   const [isLoading, setIsLoading] = useState(false);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const prevPathRef = useRef(location.pathname);

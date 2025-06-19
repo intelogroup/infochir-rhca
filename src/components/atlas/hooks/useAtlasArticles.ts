@@ -63,7 +63,7 @@ export const useAtlasArticles = () => {
           publicationDate: article.publication_date || article.created_at || '',
           author: article.primary_author || (article.authors && article.authors[0]) || '',
           authors: article.authors || [],
-          status: article.status === 'published' ? 'available' : 'coming',
+          status: (article.status === 'published' ? 'available' : 'coming') as 'available' | 'coming' | 'coming-soon' | 'unavailable',
           coverImage: article.image_url || article.cover_image_filename || '',
           pdfUrl: article.pdf_url || '',
           stats: {
