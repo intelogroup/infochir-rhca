@@ -1,5 +1,4 @@
 
-
 import { 
   Dialog, 
   DialogContent, 
@@ -52,11 +51,22 @@ export const CarouselModal = ({
   }, [isOpen, item]);
 
   const handleOpenPdf = () => {
-    if (!item.pdfUrl) {
-      toast.error("Le PDF n'est pas disponible");
-      return;
+    // Determine the correct route based on the item source
+    if (item.source === 'IGM') {
+      // Navigate to IGM issues page
+      navigate('/igm');
+    } else if (item.source === 'RHCA') {
+      // Navigate to RHCA volumes page
+      navigate('/rhca');
+    } else if (item.source === 'ADC') {
+      // Navigate to Atlas page
+      navigate('/adc');
+    } else if (item.pdfUrl) {
+      // Fallback to opening PDF directly
+      window.open(item.pdfUrl, '_blank');
+    } else {
+      toast.error("Le contenu n'est pas disponible");
     }
-    window.open(item.pdfUrl, '_blank');
   };
 
   return (
@@ -171,8 +181,7 @@ export const CarouselModal = ({
             size="sm"
             className="gap-2"
             onClick={handleOpenPdf}
-            disabled={!item.pdfUrl}
-            aria-label={`Open PDF: ${item.title}`}
+            aria-label={`Open content: ${item.title}`}
           >
             <ExternalLink className="h-4 w-4" />
             Ouvrir
@@ -182,4 +191,3 @@ export const CarouselModal = ({
     </Dialog>
   );
 };
-

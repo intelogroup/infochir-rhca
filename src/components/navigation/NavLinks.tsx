@@ -51,9 +51,9 @@ export const NavLinks = () => {
   const getFullName = (itemName: string) => {
     switch (itemName) {
       case "RHCA":
-        return "REVUE HAÏTIENNE DE CHIRURGIE ET D'ANESTHÉSIOLOGIE";
+        return "REVUE HAITIENNE DE CHIRURGIE ET D'ANESTHESILOGIE";
       case "IGM":
-        return "INFO GAZETTE MÉDICALE";
+        return "INFO GAZETTE MEDICALE";
       case "Atlas":
         return "ATLAS DE DIAGNOSTIC CHIRURGICAL";
       case "Index Medicus":

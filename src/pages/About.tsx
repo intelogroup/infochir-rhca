@@ -38,8 +38,7 @@ const About = () => {
                 À propos d'INFOCHIR/RHCA
               </h1>
               <p className="text-lg text-gray-700 leading-relaxed mb-8">
-                INFOCHIR/RHCA est une plateforme dédiée à l'avancement des connaissances en chirurgie et anesthésiologie en Haïti.
-                Notre mission est de faciliter le partage des connaissances médicales et de promouvoir la recherche scientifique.
+                En 2011, ces médecins visionnaires se sont réunis pour créer INFOCHIR/RHCA, une organisation dédiée à la promotion de la littérature médicale haïtienne, à la recherche et au culte des aînés.
               </p>
             </motion.div>
           </div>

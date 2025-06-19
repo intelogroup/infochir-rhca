@@ -9,6 +9,13 @@ export const ProductsSection = () => (
     <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
     
     <div className="max-w-7xl mx-auto relative">
+      {/* Added section header */}
+      <div className="text-center mb-12">
+        <h2 className="text-2xl md:text-3xl font-bold text-primary mb-4">
+          Accédez aux différentes revues d'INFOCHIR/RHCA
+        </h2>
+      </div>
+      
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 auto-rows-fr">
         {products.map((product, index) => (
           <motion.div 

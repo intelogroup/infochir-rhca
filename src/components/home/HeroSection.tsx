@@ -209,7 +209,7 @@ export const HeroSection = () => {
             Votre espace scientifique<br className="md:hidden" /> en ligne
           </h1>
           <p className="text-sm sm:text-base md:text-lg text-white/90 mb-6 sm:mb-8 animate-fade-up leading-relaxed">
-            La plateforme de référence pour les professionnels de santé en Haïti
+            La plateforme de référence pour tous les professionnels de la santé, étudiants en médecine et le grand public.
           </p>
           <div className="flex flex-wrap gap-3 sm:gap-4">
             <Button 
@@ -219,7 +219,6 @@ export const HeroSection = () => {
               onClick={() => navigate('/submission')}
             >
               Soumettre votre article
-              <ArrowRight className="ml-1.5 sm:ml-2 h-3.5 w-3.5 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform" />
             </Button>
             <Button 
               size="default"
