@@ -25,7 +25,7 @@ export const ArticleTableRow: React.FC<ArticleTableRowProps> = ({
     if (article.authors && article.authors.length > 0) {
       return article.authors[0];
     }
-    return article.author || 'Auteur inconnu';
+    return 'Auteur inconnu';
   };
 
   return (

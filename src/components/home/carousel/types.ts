@@ -10,6 +10,7 @@ export interface CarouselItem {
   category?: string;
   pdfUrl?: string;
   source?: string; // Add source property for routing
+  link?: string; // Add link property for navigation
   type: 'article' | 'event' | 'training';
 }
 

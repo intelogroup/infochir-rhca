@@ -70,6 +70,7 @@ export const useCarouselData = () => {
           category: article.source,
           author: authorString,
           link: `/articles/${article.id}`,
+          type: 'article' as const, // Add required type property
         };
       }) as CarouselItem[];
     },

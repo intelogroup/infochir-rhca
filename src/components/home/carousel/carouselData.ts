@@ -69,3 +69,6 @@ export const carouselData: CarouselSection[] = [
     ]
   }
 ];
+
+// Export highlights as an alias for carouselData for backward compatibility
+export const highlights = carouselData;
