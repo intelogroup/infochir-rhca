@@ -19,7 +19,9 @@ export const CarouselSection = () => {
     return <CarouselErrorState error={error} onRetry={refetch} />;
   }
 
-  const displayData = carouselData || highlights;
+  // Flatten highlights data to match CarouselItem[] type
+  const fallbackData = highlights.flatMap(section => section.items);
+  const displayData = carouselData || fallbackData;
 
   return (
     <section 
