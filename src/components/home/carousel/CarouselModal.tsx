@@ -51,19 +51,25 @@ export const CarouselModal = ({
   }, [isOpen, item]);
 
   const handleOpenPdf = () => {
-    // Determine the correct route based on the item source
+    // If there's a direct PDF URL, open it
+    if (item.pdfUrl) {
+      window.open(item.pdfUrl, '_blank');
+      return;
+    }
+
+    // If there's a direct link, open it
+    if (item.link) {
+      window.open(item.link, '_blank');
+      return;
+    }
+
+    // Navigate based on source type
     if (item.source === 'IGM') {
-      // Navigate to IGM issues page
       navigate('/igm');
     } else if (item.source === 'RHCA') {
-      // Navigate to RHCA volumes page
       navigate('/rhca');
     } else if (item.source === 'ADC') {
-      // Navigate to Atlas page
       navigate('/adc');
-    } else if (item.pdfUrl) {
-      // Fallback to opening PDF directly
-      window.open(item.pdfUrl, '_blank');
     } else {
       toast.error("Le contenu n'est pas disponible");
     }
