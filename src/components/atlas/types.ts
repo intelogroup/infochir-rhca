@@ -25,6 +25,10 @@ export interface AtlasChapter {
   source?: string;
   primary_author?: string; // Added missing property
   co_authors?: string[]; // Added missing property
+  issue?: string; // Added missing property for sorting
+  volume?: string; // Added missing property
+  specialty?: string; // Added missing property
+  institution?: string; // Added missing property
 }
 
 export interface AtlasTableOfContentsProps {

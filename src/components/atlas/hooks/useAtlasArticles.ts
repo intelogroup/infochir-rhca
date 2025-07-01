@@ -1,6 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase, getADCCoverUrl } from "@/integrations/supabase/client";
+import { generateAtlasImageAlternatives, findWorkingImageUrl } from "@/lib/image-validation";
 import type { AtlasChapter } from "../types";
 
 // Define the exact order of chapters (1-23)
@@ -53,14 +54,23 @@ export const useAtlasArticles = () => {
       }
 
       // Transform the data and sort by the predefined chapter order
-      const chapters: AtlasChapter[] = data
-        .map((article) => {
+      const chapters: AtlasChapter[] = await Promise.all(
+        data.map(async (article) => {
           // Generate proper cover image URL for ADC articles
           let coverImageUrl = '';
           if (article.cover_image_filename) {
             try {
               coverImageUrl = getADCCoverUrl(article.cover_image_filename);
-              console.log(`Generated ADC cover URL: ${coverImageUrl}`);
+              console.log(`Generated primary ADC cover URL: ${coverImageUrl}`);
+              
+              // Try to find a working alternative if the primary URL might not work
+              const alternatives = generateAtlasImageAlternatives(article.cover_image_filename);
+              const workingUrl = await findWorkingImageUrl([coverImageUrl, ...alternatives]);
+              
+              if (workingUrl && workingUrl !== coverImageUrl) {
+                console.log(`Found working alternative URL: ${workingUrl} for ${article.cover_image_filename}`);
+                coverImageUrl = workingUrl;
+              }
             } catch (error) {
               console.error(`Failed to generate ADC image URL: ${article.cover_image_filename}`, error);
             }
@@ -95,36 +105,30 @@ export const useAtlasArticles = () => {
             institution: article.institution || ''
           };
         })
-        .sort((a, b) => {
-          // First try to sort by the predefined chapter order
-          const aIndex = CHAPTER_ORDER.findIndex(chapter => 
-            chapter.toLowerCase().includes(a.title.toLowerCase()) || 
-            a.title.toLowerCase().includes(chapter.toLowerCase())
-          );
-          const bIndex = CHAPTER_ORDER.findIndex(chapter => 
-            chapter.toLowerCase().includes(b.title.toLowerCase()) || 
-            b.title.toLowerCase().includes(chapter.toLowerCase())
-          );
-          
-          if (aIndex !== -1 && bIndex !== -1) {
-            return aIndex - bIndex;
-          }
-          
-          // If not found in predefined order, try to sort by issue number
-          if (a.issue && b.issue) {
-            const aIssueNum = parseInt(a.issue);
-            const bIssueNum = parseInt(b.issue);
-            if (!isNaN(aIssueNum) && !isNaN(bIssueNum)) {
-              return aIssueNum - bIssueNum;
-            }
-          }
-          
-          // Fallback to alphabetical order
-          return a.title.localeCompare(b.title);
-        });
+      );
 
-      console.log("Processed and sorted atlas chapters:", chapters);
-      return chapters;
+      // Sort the chapters by the predefined order
+      const sortedChapters = chapters.sort((a, b) => {
+        // First try to sort by the predefined chapter order
+        const aIndex = CHAPTER_ORDER.findIndex(chapter => 
+          chapter.toLowerCase().includes(a.title.toLowerCase()) || 
+          a.title.toLowerCase().includes(chapter.toLowerCase())
+        );
+        const bIndex = CHAPTER_ORDER.findIndex(chapter => 
+          chapter.toLowerCase().includes(b.title.toLowerCase()) || 
+          b.title.toLowerCase().includes(chapter.toLowerCase())
+        );
+        
+        if (aIndex !== -1 && bIndex !== -1) {
+          return aIndex - bIndex;
+        }
+        
+        // Fallback to alphabetical order by title
+        return a.title.localeCompare(b.title);
+      });
+
+      console.log("Processed and sorted atlas chapters:", sortedChapters);
+      return sortedChapters;
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 3,

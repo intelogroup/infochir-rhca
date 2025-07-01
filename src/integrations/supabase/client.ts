@@ -190,47 +190,23 @@ export const getFounderAvatarUrl = (imagePath: string): string => {
  * @param imagePath The path to the image
  * @returns The full public URL for the ADC cover image
  */
-export const getADCCoverUrl = (imagePath: string): string => {
-  if (!imagePath) {
-    logger.log('[getADCCoverUrl] Empty image path provided');
+export const getADCCoverUrl = (filename: string): string => {
+  if (!filename) {
+    console.warn('[SupabaseClient] [getADCCoverUrl] No filename provided');
     return '';
   }
   
-  // If the image path is already a full URL, return it as is
-  if (imagePath.startsWith('/lovable-uploads/') || 
-      imagePath.startsWith('http://') || 
-      imagePath.startsWith('https://')) {
-    return imagePath;
+  // Clean the filename of any path separators or unwanted characters
+  const cleanFilename = filename.replace(/^.*[\\/]/, '').trim();
+  
+  if (!cleanFilename) {
+    console.warn('[SupabaseClient] [getADCCoverUrl] Invalid filename after cleaning:', filename);
+    return '';
   }
   
-  // If the image path is a full Supabase URL, return it as is
-  if (imagePath.includes('/storage/v1/object/public/')) {
-    return imagePath;
-  }
-  
-  // Extract just the filename without path
-  let filename = imagePath;
-  
-  // Remove any bucket prefixes
-  filename = filename
-    .replace('/adc_covers/', '')
-    .replace('adc_covers/', '')
-    .replace('/adc_articles_view/', '')
-    .replace('adc_articles_view/', '')
-    .replace('/atlas_covers/', '')
-    .replace('atlas_covers/', '');
-    
-  // Remove any query parameters
-  if (filename.includes('?')) {
-    filename = filename.split('?')[0];
-  }
-  
-  // Create direct URL to atlas_covers bucket (primary location)
-  const directUrl = `${SUPABASE_URL}/storage/v1/object/public/atlas_covers/${filename}`;
-  
-  logger.log(`[getADCCoverUrl] Using direct URL: ${directUrl}`);
-  
-  return directUrl;
+  const baseUrl = `${SUPABASE_URL}/storage/v1/object/public/atlas_covers/${cleanFilename}`;
+  console.log('[SupabaseClient] [getADCCoverUrl] Generated URL:', baseUrl, 'for filename:', filename);
+  return baseUrl;
 };
 
 /**
