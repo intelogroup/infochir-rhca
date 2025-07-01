@@ -1,6 +1,6 @@
 
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, getADCCoverUrl } from "@/integrations/supabase/client";
 import type { AtlasChapter } from "../types";
 
 // Define the exact order of chapters (1-23)
@@ -54,31 +54,47 @@ export const useAtlasArticles = () => {
 
       // Transform the data and sort by the predefined chapter order
       const chapters: AtlasChapter[] = data
-        .map((article) => ({
-          id: article.id || '',
-          title: article.title || '',
-          description: article.abstract || '',
-          abstract: article.abstract || '',
-          lastUpdated: article.updated_at || article.created_at || '',
-          publicationDate: article.publication_date || article.created_at || '',
-          author: article.primary_author || (article.authors && article.authors[0]) || '',
-          authors: article.authors || [],
-          status: (article.status === 'published' ? 'available' : 'coming') as 'available' | 'coming' | 'coming-soon' | 'unavailable',
-          coverImage: article.image_url || article.cover_image_filename || '',
-          pdfUrl: article.pdf_url || '',
-          stats: {
-            views: article.views || 0,
-            shares: article.shares || 0,
-            downloads: article.downloads || 0
-          },
-          source: 'ADC',
-          tags: article.tags || [],
-          issue: article.issue || '',
-          volume: article.volume || '',
-          specialty: article.specialty || '',
-          category: article.category || '',
-          institution: article.institution || ''
-        }))
+        .map((article) => {
+          // Generate proper cover image URL for ADC articles
+          let coverImageUrl = '';
+          if (article.cover_image_filename) {
+            try {
+              coverImageUrl = getADCCoverUrl(article.cover_image_filename);
+              console.log(`Generated ADC cover URL: ${coverImageUrl}`);
+            } catch (error) {
+              console.error(`Failed to generate ADC image URL: ${article.cover_image_filename}`, error);
+            }
+          } else if (article.image_url) {
+            coverImageUrl = article.image_url;
+          }
+
+          return {
+            id: article.id || '',
+            title: article.title || '',
+            description: article.abstract || '',
+            abstract: article.abstract || '',
+            lastUpdated: article.updated_at || article.created_at || '',
+            publicationDate: article.publication_date || article.created_at || '',
+            author: article.primary_author || (article.authors && article.authors[0]) || '',
+            authors: article.authors || [],
+            status: (article.status === 'published' ? 'available' : 'coming') as 'available' | 'coming' | 'coming-soon' | 'unavailable',
+            coverImage: coverImageUrl,
+            coverImageUrl: coverImageUrl, // Add both for compatibility
+            pdfUrl: article.pdf_url || '',
+            stats: {
+              views: article.views || 0,
+              shares: article.shares || 0,
+              downloads: article.downloads || 0
+            },
+            source: 'ADC',
+            tags: article.tags || [],
+            issue: article.issue || '',
+            volume: article.volume || '',
+            specialty: article.specialty || '',
+            category: article.category || '',
+            institution: article.institution || ''
+          };
+        })
         .sort((a, b) => {
           // First try to sort by the predefined chapter order
           const aIndex = CHAPTER_ORDER.findIndex(chapter => 
