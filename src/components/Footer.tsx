@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { FooterSection, quickLinks, resources } from "./layouts/FooterSection";
 import { FooterLogo } from "./footer/FooterLogo";
@@ -62,7 +63,7 @@ export const Footer = () => {
         >
           <div className="text-center md:text-left">
             <p className="text-gray-500 text-sm">
-              © {new Date().getFullYear()} InfoChir. Tous droits réservés. By: <a href="https://syfexstudio.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">syfexstudio</a>
+              © {new Date().getFullYear()} InfoChir. Tous droits réservés.
             </p>
           </div>
           <div className="flex items-center justify-center md:justify-end space-x-3">
