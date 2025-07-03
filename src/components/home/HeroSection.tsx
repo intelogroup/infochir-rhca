@@ -211,7 +211,7 @@ export const HeroSection = () => {
           <p className="text-sm sm:text-base md:text-lg text-white/90 mb-6 sm:mb-8 animate-fade-up leading-relaxed">
             La plateforme de référence pour tous les professionnels de la santé, étudiants en médecine et le grand public.
           </p>
-          <div className="flex flex-wrap gap-3 sm:gap-4">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
             <Button 
               size="default"
               variant="secondary" 
