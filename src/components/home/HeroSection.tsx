@@ -211,18 +211,18 @@ export const HeroSection = () => {
           <p className="text-sm sm:text-base md:text-lg text-white/90 mb-6 sm:mb-8 animate-fade-up leading-relaxed">
             La plateforme de référence pour tous les professionnels de la santé, étudiants en médecine et le grand public.
           </p>
-          <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 items-start w-[40%]">
             <Button 
               size="default"
               variant="secondary" 
-              className="group bg-white hover:bg-white/90 text-[#122db0] font-medium text-xs sm:text-sm md:text-base py-1.5 sm:py-2"
+              className="group bg-white hover:bg-white/90 text-[#122db0] font-medium text-xs sm:text-sm md:text-base py-1.5 sm:py-2 w-full sm:w-auto"
               onClick={() => navigate('/submission')}
             >
               Soumettre votre article
             </Button>
             <Button 
               size="default"
-              className="bg-transparent hover:bg-white/10 text-white border-white border text-xs sm:text-sm md:text-base py-1.5 sm:py-2"
+              className="bg-transparent hover:bg-white/10 text-white border-white border text-xs sm:text-sm md:text-base py-1.5 sm:py-2 w-full sm:w-auto"
               onClick={() => navigate('/about')}
             >
               En savoir plus
