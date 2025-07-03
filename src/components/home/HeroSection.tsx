@@ -205,13 +205,13 @@ export const HeroSection = () => {
       {/* Content section */}
       <div className="relative max-w-7xl mx-auto text-left z-10">
         <div className="max-w-xl lg:max-w-3xl">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 animate-fade-up tracking-tight md:whitespace-nowrap whitespace-normal">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 animate-fade-up tracking-tight md:whitespace-nowrap whitespace-normal mt-0.5 sm:mt-0">
             Votre espace scientifique<br className="md:hidden" /> en ligne
           </h1>
-          <p className="text-sm sm:text-base md:text-lg text-white/90 mb-6 sm:mb-8 animate-fade-up leading-relaxed">
+          <p className="text-sm sm:text-base md:text-lg text-white/90 mb-6 sm:mb-8 animate-fade-up leading-relaxed mt-0.5 sm:mt-0">
             La plateforme de référence pour tous les professionnels de la santé, étudiants en médecine et le grand public.
           </p>
-          <div className="flex flex-wrap gap-3 sm:gap-4">
+          <div className="flex flex-wrap gap-3 sm:gap-4 mt-0.5 sm:mt-0">
             <Button 
               size="default"
               variant="secondary" 
