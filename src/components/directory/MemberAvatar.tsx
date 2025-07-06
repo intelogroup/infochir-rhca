@@ -22,10 +22,6 @@ export const MemberAvatar = ({ avatarUrl, name }: MemberAvatarProps) => {
           src={getPublicUrl(avatarUrl)}
           alt={name}
           className="object-cover"
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
-          }}
         />
         <AvatarFallback className="bg-gradient-to-br from-primary to-primary-dark text-white">
           <UserRound className="h-6 w-6" />
