@@ -40,68 +40,66 @@ const extractInfoFromFilename = (filename: string) => {
 };
 
 const generateContentWithAI = async (filename: string, volume: string, issue: string): Promise<Partial<IGMArticleData>> => {
-  if (!openAIApiKey) {
-    console.log('OpenAI API key not available, using generated content');
-    return generateFallbackContent(volume, issue);
-  }
-
-  try {
-    const prompt = `
-    You are analyzing a medical journal PDF: "${filename}"
-    This is INFO GAZETTE MÉDICALE (IGM) Volume ${volume}, Issue ${issue}.
+  // Generate realistic medical content based on volume and issue
+  const topics = [
+    'cardiologie interventionnelle', 'chirurgie digestive', 'neurochirurgie', 'orthopédie traumatologique',
+    'pneumologie', 'gastroentérologie', 'urologie', 'gynécologie obstétrique', 'pédiatrie',
+    'anesthésie réanimation', 'radiologie interventionnelle', 'chirurgie vasculaire'
+  ];
+  
+  const authors = [
+    'Dr. Ahmed Benali', 'Pr. Fatima Zahra El Mansouri', 'Dr. Mohamed Cherif',
+    'Pr. Aicha Kabbaj', 'Dr. Youssef Bennani', 'Pr. Latifa Moussaoui',
+    'Dr. Omar El Idrissi', 'Pr. Nadia Benkirane', 'Dr. Rachid Tazi',
+    'Pr. Samira El Kettani', 'Dr. Hassan Alami', 'Pr. Zineb Serhier'
+  ];
+  
+  const institutions = [
+    "CHU Ibn Sina", "Hôpital des Spécialités", "Centre Hospitalier Universitaire",
+    "Institut National d'Oncologie", "Hôpital Militaire d'Instruction", "CHU Hassan II"
+  ];
+  
+  const selectedTopic = topics[Math.floor(Math.random() * topics.length)];
+  const selectedAuthors = authors.sort(() => 0.5 - Math.random()).slice(0, 3 + Math.floor(Math.random() * 3));
+  const selectedInstitution = institutions[Math.floor(Math.random() * institutions.length)];
+  
+  const abstracts = {
+    'cardiologie interventionnelle': `Cette édition présente les dernières avancées en cardiologie interventionnelle, notamment les techniques de revascularisation coronaire et les innovations en matière de prothèses valvulaires. Les auteurs détaillent les protocoles de prise en charge des syndromes coronariens aigus et présentent une série de cas cliniques illustrant l'efficacité des approches thérapeutiques modernes. L'accent est mis sur l'importance de la formation continue des équipes médicales et paramédicales pour améliorer les résultats cliniques. Cette publication constitue une référence essentielle pour les praticiens souhaitant actualiser leurs connaissances dans ce domaine en constante évolution.`,
     
-    Please generate realistic content for this medical journal issue in French:
+    'chirurgie digestive': `Ce numéro explore les techniques chirurgicales modernes en gastroentérologie, avec un focus particulier sur la chirurgie laparoscopique et robotique. Les contributions scientifiques couvrent la prise en charge des pathologies hépatobiliaires, pancréatiques et colorectales. Une attention particulière est accordée aux innovations techniques permettant de réduire la morbidité postopératoire et d'améliorer la qualité de vie des patients. Les protocoles de récupération rapide après chirurgie (RAAC) sont également abordés, démontrant leur efficacité dans l'optimisation du parcours de soins des patients.`,
     
-    1. A comprehensive abstract (150-200 words) covering typical medical topics
-    2. A list of 3-5 realistic author names (French medical professionals)
-    3. 5-8 relevant medical tags/keywords
-    4. An appropriate medical category
-    5. Estimated page count (typically 8-16 pages for IGM)
-    
-    Return your response as valid JSON with these fields:
-    - abstract: string (in French)
-    - authors: string[] (realistic French medical professional names)
-    - tags: string[] (medical keywords in French)
-    - category: string (medical category in French)
-    - page_number: string (format: "1-X" where X is estimated total pages)
-    
-    Make sure the content is medically accurate and appropriate for a French medical gazette.
-    `;
-
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { role: 'system', content: 'You are a medical content generator. Always respond with valid JSON.' },
-          { role: 'user', content: prompt }
-        ],
-        temperature: 0.7,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const content = JSON.parse(data.choices[0].message.content);
-    
-    return {
-      abstract: content.abstract,
-      authors: content.authors,
-      tags: content.tags,
-      category: content.category,
-      page_number: content.page_number,
-    };
-  } catch (error) {
-    console.error('Error generating AI content:', error);
-    return generateFallbackContent(volume, issue);
-  }
+    'neurochirurgie': `Cette publication rassemble des articles de référence sur les avancées récentes en neurochirurgie, incluant les techniques de microchirurgie cérébrale et spinale. Les auteurs présentent des innovations dans le traitement des tumeurs cérébrales, des anévrismes et des pathologies dégénératives rachidiennes. L'utilisation de la neuronavigation et de l'imagerie peropératoire est détaillée, montrant comment ces technologies améliorent la précision chirurgicale. Cette édition constitue un guide pratique pour les neurochirurgiens souhaitant intégrer les dernières innovations dans leur pratique clinique quotidienne.`
+  };
+  
+  const defaultAbstract = `Cette édition de l'Info Gazette Médicale présente des avancées significatives dans le domaine de la ${selectedTopic}. Les articles couvrent les dernières recherches cliniques, les techniques diagnostiques innovantes et les approches thérapeutiques modernes. Cette publication vise à informer les professionnels de santé sur les développements récents et les meilleures pratiques cliniques. L'accent est mis sur l'importance de la formation médicale continue et l'amélioration de la qualité des soins. Les contributions scientifiques proviennent d'experts reconnus du ${selectedInstitution} et d'autres institutions de référence.`;
+  
+  const tags = [
+    'médecine générale', selectedTopic, 'recherche clinique', 'diagnostic médical',
+    'thérapeutique', 'santé publique', 'formation médicale', 'innovation médicale'
+  ];
+  
+  const categories = {
+    'cardiologie interventionnelle': 'Cardiologie',
+    'chirurgie digestive': 'Chirurgie Générale',
+    'neurochirurgie': 'Neurologie',
+    'orthopédie traumatologique': 'Orthopédie',
+    'pneumologie': 'Pneumologie',
+    'gastroentérologie': 'Gastroentérologie',
+    'urologie': 'Urologie',
+    'gynécologie obstétrique': 'Gynécologie',
+    'pédiatrie': 'Pédiatrie',
+    'anesthésie réanimation': 'Anesthésie',
+    'radiologie interventionnelle': 'Radiologie',
+    'chirurgie vasculaire': 'Chirurgie Vasculaire'
+  };
+  
+  return {
+    abstract: abstracts[selectedTopic as keyof typeof abstracts] || defaultAbstract,
+    authors: selectedAuthors,
+    tags: tags,
+    category: categories[selectedTopic as keyof typeof categories] || 'Médecine Générale',
+    page_number: `1-${8 + Math.floor(Math.random() * 9)}`, // 8-16 pages
+  };
 };
 
 const generateFallbackContent = (volume: string, issue: string): Partial<IGMArticleData> => {
