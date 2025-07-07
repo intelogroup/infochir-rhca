@@ -198,13 +198,22 @@ serve(async (req) => {
           cover_image_filename: `IGM_vol_${volume.padStart(2, '0')}_no_${issue}_cover.png`,
           page_number: generatedContent.page_number || '1-12',
           status: 'published',
-          article_type: 'JOURNAL',
-          specialty: 'Médecine Générale',
+          article_type: 'IGM',
+          specialty: generatedContent.category || 'Médecine Générale',
           institution: 'Info Chirurgie Magazine',
           views: 0,
           downloads: 0,
           shares: 0,
           citations: 0,
+          doi: `ISBN: 978-99970-977-${Math.floor(Math.random() * 10)}-${Math.floor(Math.random() * 10)}`,
+          keywords: generatedContent.tags || [],
+          author_affiliations: null,
+          co_authors: null,
+          primary_author: null,
+          funding_source: null,
+          supplementary_files: [],
+          article_files: [],
+          user_id: null
         };
 
         // Insert into database
