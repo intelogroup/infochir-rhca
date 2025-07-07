@@ -8,6 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RHCABackfillPanel } from "@/components/admin/RHCABackfillPanel";
+import { AtlasBackfillPanel } from "@/components/admin/AtlasBackfillPanel";
+import { IGMBackfillPanel } from "@/components/admin/IGMBackfillPanel";
 import { 
   FileText, 
   Plus, 
@@ -25,7 +29,8 @@ import {
   SortDesc,
   Grid3X3,
   List,
-  BookOpen
+  BookOpen,
+  Database
 } from "lucide-react";
 
 // Enhanced stats with modern card design and better visual hierarchy
@@ -216,6 +221,42 @@ const QuickActions = () => (
   </Card>
 );
 
+// Enhanced data management section with backfill panels
+const DataManagement = () => (
+  <Card className="border-0 shadow-sm">
+    <CardHeader className="border-b border-gray-100 bg-gray-50/50">
+      <div className="flex items-center gap-2">
+        <Database className="h-5 w-5 text-primary" />
+        <div>
+          <CardTitle className="text-lg font-semibold">Gestion des données</CardTitle>
+          <CardDescription>Outils de remplissage et synchronisation des articles</CardDescription>
+        </div>
+      </div>
+    </CardHeader>
+    <CardContent className="p-6">
+      <Tabs defaultValue="rhca" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="rhca">RHCA</TabsTrigger>
+          <TabsTrigger value="atlas">Atlas</TabsTrigger>
+          <TabsTrigger value="igm">IGM</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="rhca" className="mt-6">
+          <RHCABackfillPanel />
+        </TabsContent>
+        
+        <TabsContent value="atlas" className="mt-6">
+          <AtlasBackfillPanel />
+        </TabsContent>
+        
+        <TabsContent value="igm" className="mt-6">
+          <IGMBackfillPanel />
+        </TabsContent>
+      </Tabs>
+    </CardContent>
+  </Card>
+);
+
 // Enhanced content management section
 const ContentManagement = () => (
   <Card className="border-0 shadow-sm">
@@ -309,13 +350,17 @@ const Content = () => {
       </Card>
 
       {/* Enhanced layout with better responsive design */}
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
-        <div className="xl:col-span-3">
-          <RecentArticles />
-        </div>
-        <div className="space-y-6">
-          <QuickActions />
-          <ContentManagement />
+      <div className="grid grid-cols-1 gap-6">
+        <DataManagement />
+        
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+          <div className="xl:col-span-3">
+            <RecentArticles />
+          </div>
+          <div className="space-y-6">
+            <QuickActions />
+            <ContentManagement />
+          </div>
         </div>
       </div>
     </div>
