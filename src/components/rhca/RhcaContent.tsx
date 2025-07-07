@@ -63,6 +63,7 @@ export const RhcaContent: React.FC = () => {
     <MobileOptimizedContainer 
       onRefresh={handleRefresh}
       className="space-y-6"
+      disablePullToRefresh={true}
     >
       {renderContent()}
     </MobileOptimizedContainer>
