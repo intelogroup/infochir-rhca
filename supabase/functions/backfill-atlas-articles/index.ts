@@ -25,66 +25,99 @@ const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const extractInfoFromFilename = (filename: string) => {
-  // Extract volume, issue, and date from filename pattern: ATLAS_vol_XX_no_YY_DD_MM_YY.pdf
-  const match = filename.match(/ATLAS_vol_(\d+)_no_(\d+)_(\d+)_(\d+)_(\d+)\.pdf/);
-  if (!match) return null;
+  // Extract chapter and date from ADC filename pattern: ADC_ch_X_maj_DD_MM_YY.pdf or ADC_intro_maj_DD_MM_YY.pdf
+  const chapterMatch = filename.match(/ADC_ch_(\d+)_maj_(\d+)_(\d+)_(\d+)\.pdf/);
+  const introMatch = filename.match(/ADC_intro_maj_(\d+)_(\d+)_(\d+)\.pdf/);
   
-  const [, volume, issue, day, month, year] = match;
-  const fullYear = parseInt(year) < 50 ? `20${year}` : `19${year}`;
-  const publicationDate = `${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  if (chapterMatch) {
+    const [, chapter, day, month, year] = chapterMatch;
+    const fullYear = parseInt(year) < 50 ? `20${year}` : `19${year}`;
+    const publicationDate = `${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    return { chapter, publicationDate, isIntro: false };
+  } else if (introMatch) {
+    const [, day, month, year] = introMatch;
+    const fullYear = parseInt(year) < 50 ? `20${year}` : `19${year}`;
+    const publicationDate = `${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    return { chapter: '00', publicationDate, isIntro: true };
+  }
   
-  return { volume, issue, publicationDate };
+  return null;
 };
 
-const generateAtlasContent = async (filename: string, volume: string, issue: string): Promise<Partial<AtlasArticleData>> => {
+const generateAtlasContent = async (filename: string, chapter: string, publicationDate: string, isIntro: boolean): Promise<Partial<AtlasArticleData>> => {
   const openAIApiKey = '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';
   
   try {
     if (!openAIApiKey) {
-      return generateFallbackAtlasContent(volume, issue);
+      return generateFallbackAtlasContent(chapter, isIntro);
     }
 
-    const pathologists = [
-      'Pr. Laila Chbani', 'Dr. Hassan El Fatemi', 'Pr. Nawal Hammas',
-      'Dr. Zineb Benbrahim', 'Pr. Abderrahmane Al Bouzidi', 'Dr. Karima Bendahhou',
-      'Pr. Mohamed Allaoui', 'Dr. Siham Dikhaye', 'Pr. Hinde El Fatemi',
-      'Dr. Lamiaa Quessar', 'Pr. Mounia Serraj', 'Dr. Amal Bennani'
+    const haitianSurgeons = [
+      'Dr. Louis-Franck TÉLÉMAQUE', 'Dr. Michel DODARD', 'Dr. Pierre Marie WOOLLEY',
+      'Dr. Patrick Jean-Gilles', 'Dr. Sterman TOUSSAINT', 'Dr. Emmanuel RÉGIS',
+      'Dr. Jean-Fritz JACQUES', 'Dr. Edouard BONTEMPS', 'Dr. Wilfine DUPONT',
+      'Dr. Maurice DAGHUIL', 'Dr. Grenson JEUNE', 'Dr. Djhonn St CYR',
+      'Dr. David NOËL', 'Dr. Eunice DÉRIVOIS', 'Dr. Margareth DÉGAND',
+      'Dr. Jacques Maurice JEUDY', 'Dr. Pascale JEAN-BAPTISTE', 'Dr. Carl Renan FAYETTE'
     ];
 
-    const pathologyTopics = [
-      'anatomie pathologique générale', 'histopathologie diagnostique', 'cytopathologie',
-      'pathologie tumorale', 'pathologie inflammatoire', 'pathologie infectieuse',
-      'neuropathologie', 'pathologie cardiovasculaire', 'pathologie digestive',
-      'pathologie pulmonaire', 'pathologie rénale', 'pathologie gynécologique',
-      'hématopathologie', 'dermatopathologie', 'pathologie pédiatrique'
+    const surgicalTopics = [
+      'traumatismes et chirurgie d\'urgence', 'pathologies cutanées et chirurgie plastique', 
+      'chirurgie du sein et oncologie', 'chirurgie thoracique et cardiovasculaire',
+      'ophtalmologie et chirurgie maxillo-faciale', 'chirurgie digestive et hépato-biliaire',
+      'chirurgie orthopédique et traumatologie', 'neurochirurgie et spine',
+      'urologie et chirurgie génito-urinaire', 'chirurgie vasculaire',
+      'chirurgie pédiatrique', 'anesthésie et réanimation'
     ];
 
-    const prompt = `Génère un contenu médical spécialisé pour l'Atlas d'Anatomie Pathologique Vol ${volume} No ${issue}.
+    const prompt = isIntro 
+      ? `Génère un contenu pour l'introduction de l'Atlas de Diagnostic Chirurgical (ADC) haïtien.
+      
+      Contexte: L'ADC est un atlas médical haïtien de référence qui présente des cas cliniques chirurgicaux illustrés, des techniques diagnostiques, et des guides thérapeutiques adaptés au contexte haïtien.
+      
+      Génère:
+      1. Un titre pour l'introduction
+      2. Un résumé détaillé (400-500 mots) présentant l'atlas, son importance pour la médecine haïtienne
+      3. Les auteurs principaux (1-3 auteurs)
+      4. Une catégorie médicale
+      5. Des mots-clés pertinents (6-8 mots-clés)
+      6. Une spécialité médicale
+      
+      Format de réponse JSON:
+      {
+        "title": "Atlas de Diagnostic Chirurgical (ADC) - Introduction",
+        "abstract": "résumé détaillé en français",
+        "authors": ["auteur1", "auteur2"],
+        "category": "Introduction",
+        "tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"],
+        "specialty": "Chirurgie générale"
+      }`
+      : `Génère un contenu pour le chapitre ${chapter} de l'Atlas de Diagnostic Chirurgical (ADC) haïtien.
+      
+      Contexte: L'ADC est un atlas chirurgical haïtien qui présente des cas cliniques illustrés par spécialité médicale. Chaque chapitre couvre une spécialité ou région anatomique différente.
+      
+      Génère:
+      1. Un titre pour ce chapitre (inclure la spécialité/région)
+      2. Un résumé détaillé (300-400 mots) décrivant les pathologies et techniques couvertes
+      3. Une liste d'auteurs chirurgiens haïtiens (3-6 auteurs)
+      4. Une catégorie chirurgicale principale
+      5. Des mots-clés médicaux pertinents (6-8 mots-clés)
+      6. Une spécialité chirurgicale
+      
+      Thèmes suggérés: ${surgicalTopics.slice(0, 4).join(', ')}
+      Auteurs suggérés: ${haitianSurgeons.slice(0, 6).join(', ')}
+      
+      Format de réponse JSON:
+      {
+        "title": "Atlas de Diagnostic Chirurgical (ADC) - [Spécialité]",
+        "abstract": "résumé détaillé en français",
+        "authors": ["auteur1", "auteur2", "auteur3"],
+        "category": "catégorie chirurgicale",
+        "tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"],
+        "specialty": "spécialité chirurgicale"
+      }`;
 
-    Contexte: L'Atlas d'Anatomie Pathologique est une publication éducative spécialisée qui présente des cas cliniques illustrés, des planches anatomopathologiques, et des guides diagnostiques pour les pathologistes et étudiants en médecine.
-
-    Génère:
-    1. Un titre professionnel et éducatif
-    2. Un résumé détaillé (300-400 mots) décrivant le contenu éducatif et les cas présentés
-    3. Une liste d'auteurs pathologistes experts (2-4 auteurs)
-    4. Une catégorie de pathologie principale
-    5. Des mots-clés en pathologie et diagnostic (6-8 mots-clés)
-    6. Une spécialité en anatomie pathologique
-
-    Thèmes suggérés: ${pathologyTopics.slice(0, 4).join(', ')}
-    Auteurs suggérés: ${pathologists.slice(0, 4).join(', ')}
-
-    Format de réponse JSON:
-    {
-      "title": "titre professionnel",
-      "abstract": "résumé détaillé en français",
-      "authors": ["auteur1", "auteur2", "auteur3"],
-      "category": "catégorie pathologique",
-      "tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"],
-      "specialty": "spécialité pathologique"
-    }`;
-
-    console.log(`Generating AI content for Atlas Vol ${volume} No ${issue}`);
+    console.log(`Generating AI content for ADC Chapter ${chapter}${isIntro ? ' (Introduction)' : ''}`);
     
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -97,7 +130,7 @@ const generateAtlasContent = async (filename: string, volume: string, issue: str
         messages: [
           {
             role: 'system',
-            content: 'Tu es un pathologiste expert spécialisé dans la rédaction de contenus éducatifs pour des atlas d\'anatomie pathologique. Réponds uniquement en JSON valide.'
+            content: 'Tu es un chirurgien haïtien expert spécialisé dans la rédaction de contenus médicaux pour l\'Atlas de Diagnostic Chirurgical haïtien. Réponds uniquement en JSON valide.'
           },
           {
             role: 'user',
@@ -105,13 +138,13 @@ const generateAtlasContent = async (filename: string, volume: string, issue: str
           }
         ],
         temperature: 0.7,
-        max_tokens: 1300
+        max_tokens: 1400
       }),
     });
 
     if (!response.ok) {
       console.error(`OpenAI API error: ${response.status} ${response.statusText}`);
-      return generateFallbackAtlasContent(volume, issue);
+      return generateFallbackAtlasContent(chapter, isIntro);
     }
 
     const data = await response.json();
@@ -123,37 +156,49 @@ const generateAtlasContent = async (filename: string, volume: string, issue: str
       authors: aiContent.authors,
       tags: aiContent.tags,
       category: aiContent.category,
-      page_number: `1-${20 + Math.floor(Math.random() * 20)}`, // 20-40 pages (atlas format)
+      page_number: `1-${isIntro ? '5' : (15 + Math.floor(Math.random() * 25))}`, // 1-5 for intro, 15-40 for chapters
     };
 
   } catch (error) {
-    console.error('Error generating AI content for Atlas:', error);
-    return generateFallbackAtlasContent(volume, issue);
+    console.error('Error generating AI content for ADC:', error);
+    return generateFallbackAtlasContent(chapter, isIntro);
   }
 };
 
-const generateFallbackAtlasContent = (volume: string, issue: string): Partial<AtlasArticleData> => {
-  const topics = ['anatomie pathologique', 'histopathologie', 'cytopathologie', 'pathologie tumorale'];
-  const randomTopic = topics[Math.floor(Math.random() * topics.length)];
+const generateFallbackAtlasContent = (chapter: string, isIntro: boolean): Partial<AtlasArticleData> => {
+  const specialties = ['Traumatismes', 'Peau et tissu Sous-cutané', 'Le Sein', 'Thorax', 
+                      'Ophtalmologie', 'Digestif', 'Orthopédie', 'Neurochirurgie'];
+  const randomSpecialty = specialties[Math.floor(Math.random() * specialties.length)];
+  
+  if (isIntro) {
+    return {
+      title: 'Atlas de Diagnostic Chirurgical (ADC) - Introduction',
+      abstract: `L'Atlas de Diagnostic Chirurgical haïtien représente une avancée majeure dans la documentation médicale nationale, offrant un panorama complet des pathologies chirurgicales rencontrées et traitées en Haïti. Cette ressource de référence rassemble le savoir et l'expertise des chirurgiens haïtiens à travers des images cliniques authentiques et des explications détaillées couvrant l'ensemble des spécialités chirurgicales.`,
+      authors: ['Dr. Louis-Franck TÉLÉMAQUE'],
+      tags: ['atlas chirurgical', 'diagnostic', 'médecine haïtienne', 'formation médicale', 'chirurgie', 'cas cliniques'],
+      category: 'Introduction',
+      page_number: '1-5',
+    };
+  }
   
   return {
-    title: `ATLAS D'ANATOMIE PATHOLOGIQUE Vol ${volume} No ${issue}`,
-    abstract: `Cette édition de l'Atlas d'Anatomie Pathologique présente une collection exceptionnelle de cas diagnostiques illustrant les principales pathologies en ${randomTopic}. Les planches anatomopathologiques haute résolution sont accompagnées de descriptions détaillées des critères morphologiques et des corrélations clinico-pathologiques. Cette publication constitue un outil pédagogique de référence pour les pathologistes et étudiants en médecine.`,
+    title: `Atlas de Diagnostic Chirurgical (ADC) - ${randomSpecialty}`,
+    abstract: `Ce chapitre de l'Atlas de Diagnostic Chirurgical couvre les pathologies et techniques chirurgicales liées au domaine ${randomSpecialty.toLowerCase()}. Il présente des cas cliniques illustrés, des techniques diagnostiques et des approches thérapeutiques adaptées au contexte haïtien. Les images cliniques authentiques sont accompagnées d'explications détaillées pour faciliter l'apprentissage et la pratique chirurgicale.`,
     authors: [
-      'Pr. Laila Chbani',
-      'Dr. Hassan El Fatemi',
-      'Pr. Nawal Hammas'
+      'Dr. Louis-Franck TÉLÉMAQUE',
+      'Dr. Michel DODARD',
+      'Dr. Pierre Marie WOOLLEY'
     ],
     tags: [
-      'anatomie pathologique',
-      randomTopic,
-      'diagnostic histologique',
-      'morphologie',
-      'immunohistochimie',
-      'formation médicale'
+      'chirurgie',
+      randomSpecialty.toLowerCase(),
+      'diagnostic chirurgical',
+      'cas cliniques',
+      'techniques chirurgicales',
+      'atlas médical'
     ],
-    category: 'Anatomie Pathologique',
-    page_number: '1-30',
+    category: 'Chirurgie',
+    page_number: '1-25',
   };
 };
 
@@ -178,7 +223,7 @@ serve(async (req) => {
     const { data: existingArticles, error: dbError } = await supabase
       .from('articles')
       .select('pdf_filename')
-      .eq('source', 'ATLAS');
+      .eq('source', 'ADC');
 
     if (dbError) {
       throw new Error(`Database error: ${dbError.message}`);
@@ -191,7 +236,7 @@ serve(async (req) => {
       file.name.endsWith('.pdf') && !existingFilenames.has(file.name)
     ) || [];
 
-    console.log(`Found ${missingFiles.length} missing Atlas files to process`);
+    console.log(`Found ${missingFiles.length} missing ADC files to process`);
 
     const results = [];
     
@@ -204,36 +249,36 @@ serve(async (req) => {
           continue;
         }
 
-        const { volume, issue, publicationDate } = fileInfo;
+        const { chapter, publicationDate, isIntro } = fileInfo;
         
         // Generate content for this file
-        const generatedContent = await generateAtlasContent(file.name, volume, issue);
+        const generatedContent = await generateAtlasContent(file.name, chapter, publicationDate, isIntro);
         
         // Prepare article data
         const articleData = {
-          title: generatedContent.title || `ATLAS D'ANATOMIE PATHOLOGIQUE Vol ${volume} No ${issue}`,
+          title: generatedContent.title || `Atlas de Diagnostic Chirurgical (ADC) - Chapitre ${chapter}`,
           abstract: generatedContent.abstract || '',
           authors: generatedContent.authors || [],
-          source: 'ATLAS',
-          category: generatedContent.category || 'Anatomie Pathologique',
+          source: 'ADC',
+          category: generatedContent.category || 'Chirurgie',
           tags: generatedContent.tags || [],
-          volume: volume,
-          issue: issue,
+          volume: null, // ADC doesn't use volumes
+          issue: chapter.padStart(2, '0'), // Use chapter as issue
           publication_date: publicationDate,
           pdf_filename: file.name,
           pdf_url: `${supabaseUrl}/storage/v1/object/public/atlas-pdfs/${file.name}`,
-          image_url: `${supabaseUrl}/storage/v1/object/public/atlas_covers/ATLAS_vol_${volume.padStart(2, '0')}_no_${issue}_cover.png`,
-          cover_image_filename: `ATLAS_vol_${volume.padStart(2, '0')}_no_${issue}_cover.png`,
-          page_number: generatedContent.page_number || '1-30',
+          image_url: `${supabaseUrl}/storage/v1/object/public/atlas_covers/ADC_ch_${chapter.padStart(2, '0')}_cover.png`,
+          cover_image_filename: `ADC_ch_${chapter.padStart(2, '0')}_cover.png`,
+          page_number: generatedContent.page_number || '1-25',
           status: 'published',
-          article_type: 'ATLAS',
-          specialty: generatedContent.category || 'Anatomie Pathologique',
-          institution: 'Atlas d\'Anatomie Pathologique',
+          article_type: 'ADC',
+          specialty: generatedContent.category || 'Chirurgie',
+          institution: 'Atlas de Diagnostic Chirurgical',
           views: 0,
           downloads: 0,
           shares: 0,
           citations: 0,
-          doi: `ISSN: 2658-${Math.floor(Math.random() * 9000) + 1000}`,
+          doi: `ADC-${chapter.padStart(2, '0')}-${new Date(publicationDate).getFullYear()}`,
           keywords: generatedContent.tags || [],
           author_affiliations: null,
           co_authors: null,
@@ -283,31 +328,31 @@ serve(async (req) => {
     const successCount = results.filter(r => r.success).length;
     const failureCount = results.filter(r => !r.success).length;
 
-    return new Response(
-      JSON.stringify({
-        message: 'Atlas articles backfill completed',
-        totalProcessed: results.length,
-        successful: successCount,
-        failed: failureCount,
-        results: results
-      }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+        return new Response(
+          JSON.stringify({
+            message: 'ADC articles backfill completed',
+            totalProcessed: results.length,
+            successful: successCount,
+            failed: failureCount,
+            results: results
+          }),
+          {
+            status: 200,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
 
   } catch (error) {
     console.error('Error in Atlas backfill function:', error);
-    return new Response(
-      JSON.stringify({
-        error: 'Atlas backfill failed',
-        message: error.message
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+        return new Response(
+          JSON.stringify({
+            error: 'ADC backfill failed',
+            message: error.message
+          }),
+          {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
   }
 });
