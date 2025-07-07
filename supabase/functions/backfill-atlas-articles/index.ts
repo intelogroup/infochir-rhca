@@ -37,65 +37,123 @@ const extractInfoFromFilename = (filename: string) => {
 };
 
 const generateAtlasContent = async (filename: string, volume: string, issue: string): Promise<Partial<AtlasArticleData>> => {
-  const topics = [
-    'anatomie pathologique', 'histopathologie', 'cytopathologie', 'anatomie clinique',
-    'pathologie moléculaire', 'immunohistochimie', 'microscopie électronique', 'pathologie tumorale',
-    'pathologie inflammatoire', 'pathologie infectieuse', 'neuropathologie', 'pathologie cardiovasculaire'
-  ];
+  const openAIApiKey = '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';
   
-  const authors = [
-    'Pr. Laila Chbani', 'Dr. Hassan El Fatemi', 'Pr. Nawal Hammas',
-    'Dr. Zineb Benbrahim', 'Pr. Abderrahmane Al Bouzidi', 'Dr. Karima Bendahhou',
-    'Pr. Mohamed Allaoui', 'Dr. Siham Dikhaye', 'Pr. Hinde El Fatemi',
-    'Dr. Lamiaa Quessar', 'Pr. Mounia Serraj', 'Dr. Amal Bennani'
-  ];
-  
-  const institutions = [
-    "Laboratoire d'Anatomie Pathologique CHU Hassan II", "Service d'Anatomie Pathologique CHU Ibn Sina",
-    "Centre d'Anatomie Pathologique", "Laboratoire Central d'Anatomie Pathologique",
-    "Institut National d'Oncologie", "Hôpital des Spécialités"
-  ];
-  
-  const selectedTopic = topics[Math.floor(Math.random() * topics.length)];
-  const selectedAuthors = authors.sort(() => 0.5 - Math.random()).slice(0, 2 + Math.floor(Math.random() * 3));
-  const selectedInstitution = institutions[Math.floor(Math.random() * institutions.length)];
-  
-  const abstracts = {
-    'anatomie pathologique': `Cette édition de l'Atlas d'Anatomie Pathologique présente une collection exceptionnelle de cas diagnostiques illustrant les principales pathologies rencontrées en pratique courante. Les planches anatomopathologiques haute résolution sont accompagnées de descriptions détaillées des critères morphologiques, des données immunohistochimiques et des corrélations clinico-pathologiques. Cette publication constitue un outil pédagogique de référence pour les pathologistes, les cliniciens et les étudiants en médecine, facilitant l'apprentissage du diagnostic différentiel et l'amélioration des pratiques diagnostiques.`,
+  try {
+    if (!openAIApiKey) {
+      return generateFallbackAtlasContent(volume, issue);
+    }
+
+    const pathologists = [
+      'Pr. Laila Chbani', 'Dr. Hassan El Fatemi', 'Pr. Nawal Hammas',
+      'Dr. Zineb Benbrahim', 'Pr. Abderrahmane Al Bouzidi', 'Dr. Karima Bendahhou',
+      'Pr. Mohamed Allaoui', 'Dr. Siham Dikhaye', 'Pr. Hinde El Fatemi',
+      'Dr. Lamiaa Quessar', 'Pr. Mounia Serraj', 'Dr. Amal Bennani'
+    ];
+
+    const pathologyTopics = [
+      'anatomie pathologique générale', 'histopathologie diagnostique', 'cytopathologie',
+      'pathologie tumorale', 'pathologie inflammatoire', 'pathologie infectieuse',
+      'neuropathologie', 'pathologie cardiovasculaire', 'pathologie digestive',
+      'pathologie pulmonaire', 'pathologie rénale', 'pathologie gynécologique',
+      'hématopathologie', 'dermatopathologie', 'pathologie pédiatrique'
+    ];
+
+    const prompt = `Génère un contenu médical spécialisé pour l'Atlas d'Anatomie Pathologique Vol ${volume} No ${issue}.
+
+    Contexte: L'Atlas d'Anatomie Pathologique est une publication éducative spécialisée qui présente des cas cliniques illustrés, des planches anatomopathologiques, et des guides diagnostiques pour les pathologistes et étudiants en médecine.
+
+    Génère:
+    1. Un titre professionnel et éducatif
+    2. Un résumé détaillé (300-400 mots) décrivant le contenu éducatif et les cas présentés
+    3. Une liste d'auteurs pathologistes experts (2-4 auteurs)
+    4. Une catégorie de pathologie principale
+    5. Des mots-clés en pathologie et diagnostic (6-8 mots-clés)
+    6. Une spécialité en anatomie pathologique
+
+    Thèmes suggérés: ${pathologyTopics.slice(0, 4).join(', ')}
+    Auteurs suggérés: ${pathologists.slice(0, 4).join(', ')}
+
+    Format de réponse JSON:
+    {
+      "title": "titre professionnel",
+      "abstract": "résumé détaillé en français",
+      "authors": ["auteur1", "auteur2", "auteur3"],
+      "category": "catégorie pathologique",
+      "tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"],
+      "specialty": "spécialité pathologique"
+    }`;
+
+    console.log(`Generating AI content for Atlas Vol ${volume} No ${issue}`);
     
-    'histopathologie': `Ce numéro explore les techniques avancées en histopathologie, avec un focus sur l'analyse morphologique fine des tissus et les innovations en coloration histologique. Les contributions scientifiques abordent les nouvelles approches de traitement des échantillons, les techniques de fixation optimales, et l'interprétation des artefacts tissulaires. Une attention particulière est accordée aux critères diagnostiques des pathologies émergentes et aux protocoles standardisés de qualité. Cette édition reflète l'excellence de la pathologie marocaine dans le diagnostic histologique.`,
-    
-    'cytopathologie': `Cette publication rassemble des cas remarquables en cytopathologie, incluant l'analyse cytologique des prélèvements par aspiration à l'aiguille fine, les liquides biologiques et les frottis cervicaux. Les auteurs présentent les critères cytomorphologiques essentiels, les pièges diagnostiques fréquents et les innovations en cytologie liquide. L'accent est mis sur l'amélioration de la sensibilité diagnostique et la réduction des faux positifs et négatifs. Cette édition constitue un guide pratique pour les cytopathologistes et les cliniciens.`
-  };
-  
-  const defaultAbstract = `Cette édition de l'Atlas d'Anatomie Pathologique présente des avancées significatives dans le domaine de la ${selectedTopic}. Les planches illustrent les aspects morphologiques caractéristiques, les techniques diagnostiques spécialisées et les approches thérapeutiques modernes. Cette publication vise à enrichir les connaissances des professionnels de santé sur les développements récents en pathologie. L'accent est mis sur l'amélioration de la précision diagnostique et l'excellence en anatomie pathologique. Les contributions proviennent d'experts reconnus du ${selectedInstitution}.`;
-  
-  const tags = [
-    'anatomie pathologique', selectedTopic, 'diagnostic histologique', 'morphologie',
-    'immunohistochimie', 'formation médicale', 'atlas médical', 'pathologie diagnostique'
-  ];
-  
-  const categories = {
-    'anatomie pathologique': 'Anatomie Pathologique',
-    'histopathologie': 'Histopathologie',
-    'cytopathologie': 'Cytopathologie',
-    'anatomie clinique': 'Anatomie Clinique',
-    'pathologie moléculaire': 'Pathologie Moléculaire',
-    'immunohistochimie': 'Immunohistochimie',
-    'microscopie électronique': 'Microscopie',
-    'pathologie tumorale': 'Oncologie',
-    'pathologie inflammatoire': 'Pathologie Inflammatoire',
-    'pathologie infectieuse': 'Pathologie Infectieuse',
-    'neuropathologie': 'Neuropathologie',
-    'pathologie cardiovasculaire': 'Pathologie Cardiovasculaire'
-  };
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: 'Tu es un pathologiste expert spécialisé dans la rédaction de contenus éducatifs pour des atlas d\'anatomie pathologique. Réponds uniquement en JSON valide.'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 1300
+      }),
+    });
+
+    if (!response.ok) {
+      console.error(`OpenAI API error: ${response.status} ${response.statusText}`);
+      return generateFallbackAtlasContent(volume, issue);
+    }
+
+    const data = await response.json();
+    const aiContent = JSON.parse(data.choices[0].message.content);
+
+    return {
+      title: aiContent.title,
+      abstract: aiContent.abstract,
+      authors: aiContent.authors,
+      tags: aiContent.tags,
+      category: aiContent.category,
+      page_number: `1-${20 + Math.floor(Math.random() * 20)}`, // 20-40 pages (atlas format)
+    };
+
+  } catch (error) {
+    console.error('Error generating AI content for Atlas:', error);
+    return generateFallbackAtlasContent(volume, issue);
+  }
+};
+
+const generateFallbackAtlasContent = (volume: string, issue: string): Partial<AtlasArticleData> => {
+  const topics = ['anatomie pathologique', 'histopathologie', 'cytopathologie', 'pathologie tumorale'];
+  const randomTopic = topics[Math.floor(Math.random() * topics.length)];
   
   return {
-    abstract: abstracts[selectedTopic as keyof typeof abstracts] || defaultAbstract,
-    authors: selectedAuthors,
-    tags: tags,
-    category: categories[selectedTopic as keyof typeof categories] || 'Anatomie Pathologique',
-    page_number: `1-${20 + Math.floor(Math.random() * 20)}`, // 20-40 pages (atlas format)
+    title: `ATLAS D'ANATOMIE PATHOLOGIQUE Vol ${volume} No ${issue}`,
+    abstract: `Cette édition de l'Atlas d'Anatomie Pathologique présente une collection exceptionnelle de cas diagnostiques illustrant les principales pathologies en ${randomTopic}. Les planches anatomopathologiques haute résolution sont accompagnées de descriptions détaillées des critères morphologiques et des corrélations clinico-pathologiques. Cette publication constitue un outil pédagogique de référence pour les pathologistes et étudiants en médecine.`,
+    authors: [
+      'Pr. Laila Chbani',
+      'Dr. Hassan El Fatemi',
+      'Pr. Nawal Hammas'
+    ],
+    tags: [
+      'anatomie pathologique',
+      randomTopic,
+      'diagnostic histologique',
+      'morphologie',
+      'immunohistochimie',
+      'formation médicale'
+    ],
+    category: 'Anatomie Pathologique',
+    page_number: '1-30',
   };
 };
 
@@ -153,7 +211,7 @@ serve(async (req) => {
         
         // Prepare article data
         const articleData = {
-          title: `ATLAS D'ANATOMIE PATHOLOGIQUE Vol ${volume} No ${issue}`,
+          title: generatedContent.title || `ATLAS D'ANATOMIE PATHOLOGIQUE Vol ${volume} No ${issue}`,
           abstract: generatedContent.abstract || '',
           authors: generatedContent.authors || [],
           source: 'ATLAS',

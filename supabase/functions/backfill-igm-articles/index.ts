@@ -25,7 +25,7 @@ const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // OpenAI API key
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+const openAIApiKey = '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';
 
 const extractInfoFromFilename = (filename: string) => {
   // Extract volume, issue, and date from filename pattern: IGM_vol_XX_no_YY_DD_MM_YY.pdf
@@ -40,66 +40,99 @@ const extractInfoFromFilename = (filename: string) => {
 };
 
 const generateContentWithAI = async (filename: string, volume: string, issue: string): Promise<Partial<IGMArticleData>> => {
-  // Generate realistic medical content based on volume and issue
-  const topics = [
-    'cardiologie interventionnelle', 'chirurgie digestive', 'neurochirurgie', 'orthopédie traumatologique',
-    'pneumologie', 'gastroentérologie', 'urologie', 'gynécologie obstétrique', 'pédiatrie',
-    'anesthésie réanimation', 'radiologie interventionnelle', 'chirurgie vasculaire'
-  ];
-  
-  const authors = [
-    'Dr. Ahmed Benali', 'Pr. Fatima Zahra El Mansouri', 'Dr. Mohamed Cherif',
-    'Pr. Aicha Kabbaj', 'Dr. Youssef Bennani', 'Pr. Latifa Moussaoui',
-    'Dr. Omar El Idrissi', 'Pr. Nadia Benkirane', 'Dr. Rachid Tazi',
-    'Pr. Samira El Kettani', 'Dr. Hassan Alami', 'Pr. Zineb Serhier'
-  ];
-  
-  const institutions = [
-    "CHU Ibn Sina", "Hôpital des Spécialités", "Centre Hospitalier Universitaire",
-    "Institut National d'Oncologie", "Hôpital Militaire d'Instruction", "CHU Hassan II"
-  ];
-  
-  const selectedTopic = topics[Math.floor(Math.random() * topics.length)];
-  const selectedAuthors = authors.sort(() => 0.5 - Math.random()).slice(0, 3 + Math.floor(Math.random() * 3));
-  const selectedInstitution = institutions[Math.floor(Math.random() * institutions.length)];
-  
-  const abstracts = {
-    'cardiologie interventionnelle': `Cette édition présente les dernières avancées en cardiologie interventionnelle, notamment les techniques de revascularisation coronaire et les innovations en matière de prothèses valvulaires. Les auteurs détaillent les protocoles de prise en charge des syndromes coronariens aigus et présentent une série de cas cliniques illustrant l'efficacité des approches thérapeutiques modernes. L'accent est mis sur l'importance de la formation continue des équipes médicales et paramédicales pour améliorer les résultats cliniques. Cette publication constitue une référence essentielle pour les praticiens souhaitant actualiser leurs connaissances dans ce domaine en constante évolution.`,
+  try {
+    if (!openAIApiKey) {
+      return generateFallbackContent(volume, issue);
+    }
+
+    const haitianAuthors = [
+      'Dr. Jean ALOUIDOR', 'Dr. Michel Dodard', 'Dr. Christophe Millien', 'Dr. Louis-Franck TÉLÉMAQUE',
+      'Dr. Marie Edelyne St Jacques', 'Dr. Ronald Laroche', 'Dr. Pierre Marie Cherenfant',
+      'Dr. Wisly Joseph', 'Dr. Patrick Jean-Gilles', 'Dr. Maxi Raymonville', 'Dr. Jean Patrick ALFRED',
+      'Dr. Evans Vladimir LARSEN', 'Dr. Leandre Fernet', 'Dr. Marie-Marcelle Deschamps',
+      'Dr. Judith Jean-Baptiste', 'Dr. Berteline Beaulieu', 'Dr. Georges Sakoulas',
+      'Dr. Bruce Soloway', 'Dr. Thomas L. Schwenk', 'Dr. Allan S. Brett'
+    ];
+
+    const medicalTopics = [
+      'cardiologie et maladies cardiovasculaires', 'diabète et endocrinologie', 'santé publique en Haïti',
+      'gynécologie obstétrique', 'pédiatrie et santé infantile', 'chirurgie générale',
+      'anesthésie et réanimation', 'maladies infectieuses', 'neurologie', 'orthopédie',
+      'dermatologie', 'ophtalmologie', 'psychiatrie et santé mentale', 'médecine d\'urgence',
+      'gériatrie', 'oncologie', 'pneumologie', 'gastroentérologie', 'urologie', 'radiologie'
+    ];
+
+    const prompt = `Génère un contenu médical réaliste pour l'Info Gazette Médicale (IGM) Vol ${volume} No ${issue}, une revue médicale haïtienne.
+
+    Contexte: L'IGM est une publication médicale haïtienne qui traite de sujets médicaux généraux, de santé publique, et de problématiques médicales spécifiques à Haïti et aux Caraïbes.
+
+    Génère:
+    1. Un titre professionnel et informatif
+    2. Un résumé détaillé (200-300 mots) traitant de sujets médicaux pertinents pour Haïti
+    3. Une liste d'auteurs haïtiens ou caribéens (3-6 auteurs)
+    4. Une catégorie médicale principale
+    5. Des mots-clés médicaux pertinents (5-8 mots-clés)
+    6. Une spécialité médicale
+
+    Thèmes suggérés: ${medicalTopics.slice(0, 5).join(', ')}
+    Auteurs suggérés: ${haitianAuthors.slice(0, 6).join(', ')}
+
+    Format de réponse JSON:
+    {
+      "title": "titre professionnel",
+      "abstract": "résumé détaillé en français",
+      "authors": ["auteur1", "auteur2", "auteur3"],
+      "category": "catégorie médicale",
+      "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+      "specialty": "spécialité médicale"
+    }`;
+
+    console.log(`Generating AI content for IGM Vol ${volume} No ${issue}`);
     
-    'chirurgie digestive': `Ce numéro explore les techniques chirurgicales modernes en gastroentérologie, avec un focus particulier sur la chirurgie laparoscopique et robotique. Les contributions scientifiques couvrent la prise en charge des pathologies hépatobiliaires, pancréatiques et colorectales. Une attention particulière est accordée aux innovations techniques permettant de réduire la morbidité postopératoire et d'améliorer la qualité de vie des patients. Les protocoles de récupération rapide après chirurgie (RAAC) sont également abordés, démontrant leur efficacité dans l'optimisation du parcours de soins des patients.`,
-    
-    'neurochirurgie': `Cette publication rassemble des articles de référence sur les avancées récentes en neurochirurgie, incluant les techniques de microchirurgie cérébrale et spinale. Les auteurs présentent des innovations dans le traitement des tumeurs cérébrales, des anévrismes et des pathologies dégénératives rachidiennes. L'utilisation de la neuronavigation et de l'imagerie peropératoire est détaillée, montrant comment ces technologies améliorent la précision chirurgicale. Cette édition constitue un guide pratique pour les neurochirurgiens souhaitant intégrer les dernières innovations dans leur pratique clinique quotidienne.`
-  };
-  
-  const defaultAbstract = `Cette édition de l'Info Gazette Médicale présente des avancées significatives dans le domaine de la ${selectedTopic}. Les articles couvrent les dernières recherches cliniques, les techniques diagnostiques innovantes et les approches thérapeutiques modernes. Cette publication vise à informer les professionnels de santé sur les développements récents et les meilleures pratiques cliniques. L'accent est mis sur l'importance de la formation médicale continue et l'amélioration de la qualité des soins. Les contributions scientifiques proviennent d'experts reconnus du ${selectedInstitution} et d'autres institutions de référence.`;
-  
-  const tags = [
-    'médecine générale', selectedTopic, 'recherche clinique', 'diagnostic médical',
-    'thérapeutique', 'santé publique', 'formation médicale', 'innovation médicale'
-  ];
-  
-  const categories = {
-    'cardiologie interventionnelle': 'Cardiologie',
-    'chirurgie digestive': 'Chirurgie Générale',
-    'neurochirurgie': 'Neurologie',
-    'orthopédie traumatologique': 'Orthopédie',
-    'pneumologie': 'Pneumologie',
-    'gastroentérologie': 'Gastroentérologie',
-    'urologie': 'Urologie',
-    'gynécologie obstétrique': 'Gynécologie',
-    'pédiatrie': 'Pédiatrie',
-    'anesthésie réanimation': 'Anesthésie',
-    'radiologie interventionnelle': 'Radiologie',
-    'chirurgie vasculaire': 'Chirurgie Vasculaire'
-  };
-  
-  return {
-    abstract: abstracts[selectedTopic as keyof typeof abstracts] || defaultAbstract,
-    authors: selectedAuthors,
-    tags: tags,
-    category: categories[selectedTopic as keyof typeof categories] || 'Médecine Générale',
-    page_number: `1-${8 + Math.floor(Math.random() * 9)}`, // 8-16 pages
-  };
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: 'Tu es un expert médical haïtien spécialisé dans la rédaction de contenus médicaux pour des revues professionnelles. Réponds uniquement en JSON valide.'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 1000
+      }),
+    });
+
+    if (!response.ok) {
+      console.error(`OpenAI API error: ${response.status} ${response.statusText}`);
+      return generateFallbackContent(volume, issue);
+    }
+
+    const data = await response.json();
+    const aiContent = JSON.parse(data.choices[0].message.content);
+
+    return {
+      title: aiContent.title,
+      abstract: aiContent.abstract,
+      authors: aiContent.authors,
+      tags: aiContent.tags,
+      category: aiContent.category,
+      page_number: `1-${8 + Math.floor(Math.random() * 9)}`, // 8-16 pages
+    };
+
+  } catch (error) {
+    console.error('Error generating AI content:', error);
+    return generateFallbackContent(volume, issue);
+  }
 };
 
 const generateFallbackContent = (volume: string, issue: string): Partial<IGMArticleData> => {
@@ -183,7 +216,7 @@ serve(async (req) => {
         
         // Prepare article data
         const articleData = {
-          title: `INFO GAZETTE MÉDICALE (IGM) Vol ${volume} No ${issue}`,
+          title: generatedContent.title || `INFO GAZETTE MÉDICALE (IGM) Vol ${volume} No ${issue}`,
           abstract: generatedContent.abstract || '',
           authors: generatedContent.authors || [],
           source: 'IGM',

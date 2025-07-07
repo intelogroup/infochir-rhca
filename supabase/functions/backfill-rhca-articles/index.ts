@@ -37,64 +37,123 @@ const extractInfoFromFilename = (filename: string) => {
 };
 
 const generateRHCAContent = async (filename: string, volume: string, issue: string): Promise<Partial<RHCAArticleData>> => {
-  const topics = [
-    'chirurgie générale', 'chirurgie digestive', 'chirurgie thoracique', 'chirurgie vasculaire',
-    'chirurgie orthopédique', 'neurochirurgie', 'chirurgie plastique', 'chirurgie pédiatrique',
-    'chirurgie cardiaque', 'chirurgie urologique', 'anesthésie réanimation', 'soins intensifs'
-  ];
+  const openAIApiKey = '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';
   
-  const authors = [
-    'Pr. Mohamed El Andaloussi', 'Dr. Aicha Bennani', 'Pr. Hassan Cherkaoui',
-    'Dr. Fatima Zahra Alami', 'Pr. Youssef El Idrissi', 'Dr. Nadia Benkirane',
-    'Pr. Omar Fassi Fihri', 'Dr. Latifa Moussaoui', 'Pr. Ahmed Tazi',
-    'Dr. Samira El Kettani', 'Pr. Rachid Benali', 'Dr. Zineb Serhier'
-  ];
-  
-  const institutions = [
-    "CHU Ibn Sina Rabat", "Hôpital des Spécialités Rabat", "Centre Hospitalier Universitaire",
-    "Hôpital Militaire d'Instruction Mohammed V", "CHU Hassan II Casablanca", "Hôpital Ibn Rochd"
-  ];
-  
-  const selectedTopic = topics[Math.floor(Math.random() * topics.length)];
-  const selectedAuthors = authors.sort(() => 0.5 - Math.random()).slice(0, 2 + Math.floor(Math.random() * 4));
-  const selectedInstitution = institutions[Math.floor(Math.random() * institutions.length)];
-  
-  const abstracts = {
-    'chirurgie générale': `Cette édition de la Revue d'Hépato-gastroentérologie et Chirurgie Abdominale présente les dernières avancées en chirurgie générale, avec un focus sur les techniques mini-invasives et la chirurgie robotique. Les contributions scientifiques abordent les innovations en chirurgie laparoscopique, les protocoles de récupération rapide après chirurgie (RAAC), et l'optimisation de la prise en charge périopératoire. Cette publication constitue une référence pour les chirurgiens souhaitant actualiser leurs pratiques selon les dernières recommandations internationales et améliorer les résultats cliniques de leurs patients.`,
+  try {
+    if (!openAIApiKey) {
+      return generateFallbackRHCAContent(volume, issue);
+    }
+
+    const haitianSurgeons = [
+      'Dr. Michel Dodard', 'Dr. Louis-Franck TÉLÉMAQUE', 'Dr. Evans Vladimir LARSEN',
+      'Dr. Christophe Millien', 'Dr. Pierre Marie Cherenfant', 'Dr. Ronald Laroche',
+      'Dr. Maxi Raymonville', 'Dr. Leandre Fernet', 'Dr. Jean Patrick ALFRED',
+      'Dr. Patrick Jean-Gilles', 'Dr. Wisly Joseph', 'Dr. Pierre Marie Woolley',
+      'Dr. Jean ALOUIDOR', 'Dr. Bruce Soloway', 'Dr. Marie Edelyne St Jacques'
+    ];
+
+    const surgicalTopics = [
+      'chirurgie digestive et hépatobiliaire', 'chirurgie générale et d\'urgence', 'anesthésie et réanimation',
+      'chirurgie thoracique', 'chirurgie vasculaire', 'neurochirurgie', 'chirurgie orthopédique',
+      'chirurgie plastique et reconstructrice', 'chirurgie pédiatrique', 'chirurgie cardiaque',
+      'urologie chirurgicale', 'soins intensifs chirurgicaux'
+    ];
+
+    const prompt = `Génère un contenu chirurgical réaliste pour la Revue Haïtienne de Chirurgie et d'Anesthésiologie (RHCA) Vol ${volume} No ${issue}.
+
+    Contexte: La RHCA est une revue chirurgicale haïtienne spécialisée dans la chirurgie, l'anesthésie, et les soins périopératoires. Elle traite de cas cliniques, techniques chirurgicales, et innovations médicales adaptées au contexte haïtien.
+
+    Génère:
+    1. Un titre professionnel et technique
+    2. Un résumé détaillé (250-350 mots) traitant de techniques chirurgicales ou d'anesthésie
+    3. Une liste d'auteurs chirurgiens haïtiens (2-5 auteurs)
+    4. Une catégorie chirurgicale principale
+    5. Des mots-clés chirurgicaux et médicaux (5-8 mots-clés)
+    6. Une spécialité chirurgicale
+
+    Thèmes suggérés: ${surgicalTopics.slice(0, 4).join(', ')}
+    Auteurs suggérés: ${haitianSurgeons.slice(0, 5).join(', ')}
+
+    Format de réponse JSON:
+    {
+      "title": "titre professionnel",
+      "abstract": "résumé détaillé en français",
+      "authors": ["auteur1", "auteur2", "auteur3"],
+      "category": "catégorie chirurgicale",
+      "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+      "specialty": "spécialité chirurgicale"
+    }`;
+
+    console.log(`Generating AI content for RHCA Vol ${volume} No ${issue}`);
     
-    'chirurgie digestive': `Ce numéro explore les techniques chirurgicales modernes en gastroentérologie, avec un accent particulier sur la chirurgie hépatobiliaire et pancréatique. Les articles couvrent les innovations en transplantation hépatique, les résections pancréatiques complexes, et les approches multidisciplinaires du traitement des cancers digestifs. Une attention spéciale est accordée aux techniques de préservation d'organes et aux protocoles de surveillance postopératoire. Cette édition reflète l'excellence de la chirurgie digestive marocaine et son alignement avec les standards internationaux.`,
-    
-    'chirurgie thoracique': `Cette publication rassemble des contributions majeures en chirurgie thoracique, incluant les innovations en chirurgie pulmonaire, cardiaque et médiastinale. Les auteurs présentent les dernières techniques en chirurgie thoracique vidéo-assistée (VATS), les approches robotiques, et les stratégies de prise en charge des pathologies thoraciques complexes. L'accent est mis sur l'amélioration des résultats fonctionnels et la réduction de la morbidité postopératoire. Cette édition constitue un guide pratique pour les chirurgiens thoraciques.`
-  };
-  
-  const defaultAbstract = `Cette édition de la Revue d'Hépato-gastroentérologie et Chirurgie Abdominale présente des avancées significatives dans le domaine de la ${selectedTopic}. Les articles couvrent les dernières innovations chirurgicales, les techniques diagnostiques avancées et les approches thérapeutiques modernes. Cette publication vise à informer les professionnels de santé sur les développements récents et les meilleures pratiques chirurgicales. L'accent est mis sur l'amélioration de la qualité des soins et l'excellence chirurgicale. Les contributions proviennent d'experts reconnus du ${selectedInstitution}.`;
-  
-  const tags = [
-    'chirurgie', selectedTopic, 'innovation chirurgicale', 'techniques mini-invasives',
-    'qualité des soins', 'formation chirurgicale', 'recherche clinique', 'excellence médicale'
-  ];
-  
-  const categories = {
-    'chirurgie générale': 'Chirurgie Générale',
-    'chirurgie digestive': 'Hépato-Gastroentérologie',
-    'chirurgie thoracique': 'Chirurgie Thoracique',
-    'chirurgie vasculaire': 'Chirurgie Vasculaire',
-    'chirurgie orthopédique': 'Orthopédie',
-    'neurochirurgie': 'Neurochirurgie',
-    'chirurgie plastique': 'Chirurgie Plastique',
-    'chirurgie pédiatrique': 'Chirurgie Pédiatrique',
-    'chirurgie cardiaque': 'Chirurgie Cardiaque',
-    'chirurgie urologique': 'Urologie',
-    'anesthésie réanimation': 'Anesthésie-Réanimation',
-    'soins intensifs': 'Soins Intensifs'
-  };
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: 'Tu es un chirurgien haïtien expert spécialisé dans la rédaction de contenus chirurgicaux pour des revues médicales professionnelles. Réponds uniquement en JSON valide.'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 1200
+      }),
+    });
+
+    if (!response.ok) {
+      console.error(`OpenAI API error: ${response.status} ${response.statusText}`);
+      return generateFallbackRHCAContent(volume, issue);
+    }
+
+    const data = await response.json();
+    const aiContent = JSON.parse(data.choices[0].message.content);
+
+    return {
+      title: aiContent.title,
+      abstract: aiContent.abstract,
+      authors: aiContent.authors,
+      tags: aiContent.tags,
+      category: aiContent.category,
+      page_number: `1-${12 + Math.floor(Math.random() * 16)}`, // 12-28 pages
+    };
+
+  } catch (error) {
+    console.error('Error generating AI content for RHCA:', error);
+    return generateFallbackRHCAContent(volume, issue);
+  }
+};
+
+const generateFallbackRHCAContent = (volume: string, issue: string): Partial<RHCAArticleData> => {
+  const topics = ['chirurgie générale', 'anesthésie', 'chirurgie digestive', 'traumatologie'];
+  const randomTopic = topics[Math.floor(Math.random() * topics.length)];
   
   return {
-    abstract: abstracts[selectedTopic as keyof typeof abstracts] || defaultAbstract,
-    authors: selectedAuthors,
-    tags: tags,
-    category: categories[selectedTopic as keyof typeof categories] || 'Chirurgie Générale',
-    page_number: `1-${12 + Math.floor(Math.random() * 16)}`, // 12-28 pages
+    title: `REVUE D'HÉPATO-GASTROENTÉROLOGIE ET CHIRURGIE ABDOMINALE (RHCA) Vol ${volume} No ${issue}`,
+    abstract: `Cette édition de la Revue d'Hépato-gastroentérologie et Chirurgie Abdominale présente des avancées significatives dans le domaine de la ${randomTopic}. Les articles couvrent les dernières innovations chirurgicales, les techniques diagnostiques avancées et les approches thérapeutiques modernes adaptées au contexte haïtien. Cette publication vise à informer les chirurgiens sur les développements récents et les meilleures pratiques chirurgicales.`,
+    authors: [
+      'Dr. Michel Dodard',
+      'Dr. Louis-Franck TÉLÉMAQUE',
+      'Dr. Evans Vladimir LARSEN'
+    ],
+    tags: [
+      'chirurgie',
+      randomTopic,
+      'innovation chirurgicale',
+      'techniques mini-invasives',
+      'formation chirurgicale',
+      'excellence médicale'
+    ],
+    category: 'Chirurgie Générale',
+    page_number: '1-20',
   };
 };
 
@@ -152,7 +211,7 @@ serve(async (req) => {
         
         // Prepare article data
         const articleData = {
-          title: `REVUE D'HÉPATO-GASTROENTÉROLOGIE ET CHIRURGIE ABDOMINALE (RHCA) Vol ${volume} No ${issue}`,
+          title: generatedContent.title || `REVUE D'HÉPATO-GASTROENTÉROLOGIE ET CHIRURGIE ABDOMINALE (RHCA) Vol ${volume} No ${issue}`,
           abstract: generatedContent.abstract || '',
           authors: generatedContent.authors || [],
           source: 'RHCA',
