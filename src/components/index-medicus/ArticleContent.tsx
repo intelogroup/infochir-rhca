@@ -86,6 +86,7 @@ export const ArticleContent: React.FC<ArticleContentProps> = ({
     <MobileOptimizedContainer 
       onRefresh={handleRefresh}
       className="space-y-6"
+      disablePullToRefresh={true}
     >
       {renderContent()}
       
