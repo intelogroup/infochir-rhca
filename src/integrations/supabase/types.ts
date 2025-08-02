@@ -685,6 +685,36 @@ export type Database = {
         }
         Relationships: []
       }
+      security_audit_log: {
+        Row: {
+          created_at: string | null
+          event_data: Json | null
+          event_type: string
+          id: string
+          ip_address: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       unified_collections: {
         Row: {
           article_count: number | null
@@ -1454,6 +1484,23 @@ export type Database = {
       increment_count: {
         Args: { table_name: string; column_name: string; row_id: string }
         Returns: undefined
+      }
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_valid_email: {
+        Args: { email_text: string }
+        Returns: boolean
+      }
+      log_security_event: {
+        Args: {
+          event_type_param: string
+          event_data_param?: Json
+          ip_address_param?: string
+          user_agent_param?: string
+        }
+        Returns: string
       }
       track_user_event: {
         Args: {
