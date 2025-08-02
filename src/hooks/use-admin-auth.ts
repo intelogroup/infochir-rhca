@@ -83,10 +83,40 @@ export const useAdminAuth = () => {
 
         if (error) {
           console.error('[AdminAuth] Error checking admin role:', error);
+          
+          // Log security event for failed admin check
+          try {
+            await supabase.rpc('log_security_event', {
+              event_type_param: 'admin_role_check_failed',
+              event_data_param: { 
+                user_id: user.id,
+                error: error.message
+              }
+            });
+          } catch (e) {
+            console.error('Failed to log security event:', e);
+          }
+          
           throw error;
         }
 
         console.log('[AdminAuth] Admin role check result:', data);
+        
+        // Log successful admin access
+        if (data) {
+          try {
+            await supabase.rpc('log_security_event', {
+              event_type_param: 'admin_access_granted',
+              event_data_param: { 
+                user_id: user.id,
+                email: user.email
+              }
+            });
+          } catch (e) {
+            console.error('Failed to log security event:', e);
+          }
+        }
+        
         return data as boolean;
       } catch (err) {
         console.error('[AdminAuth] Error checking admin role:', err);

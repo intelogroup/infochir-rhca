@@ -5,6 +5,17 @@ import { corsHeaders, handleCors } from "../_shared/cors.ts";
 import { checkResendApiKey } from "../_shared/email-sender.ts";
 import { logError, createErrorResponse, createSuccessResponse } from "../_shared/error-logger.ts";
 
+// Input validation constants
+const MAX_TITLE_LENGTH = 500;
+const MAX_ABSTRACT_LENGTH = 5000;
+const MAX_EMAIL_LENGTH = 254;
+const MAX_NAME_LENGTH = 100;
+const ALLOWED_PUBLICATION_TYPES = ['research_article', 'review', 'case_study', 'editorial', 'letter'];
+
+// Rate limiting constants
+const SUBMISSION_RATE_LIMIT = 5;
+const RATE_LIMIT_WINDOW_HOURS = 1;
+
 // Create a Supabase client with the Admin key to bypass RLS
 const supabaseAdmin = createClient(
   Deno.env.get('SUPABASE_URL') || '',
@@ -142,20 +153,71 @@ serve(async (req) => {
     console.log("- Article files count:", submissionData.article_files_urls?.length || 0);
     console.log("- Image annexes count:", submissionData.image_annexes_urls?.length || 0);
     
-    // Basic validation - ensure required fields are present
-    const requiredFields = ['title', 'authors', 'abstract', 'publication_type'];
-    const missingFields = [];
+    // Enhanced input validation and sanitization
+    const validationErrors = [];
     
+    // Check required fields
+    const requiredFields = ['title', 'authors', 'abstract', 'publication_type', 'corresponding_author_email', 'corresponding_author_name'];
     for (const field of requiredFields) {
-      if (!submissionData[field]) {
-        missingFields.push(field);
+      if (!submissionData[field] || submissionData[field].toString().trim() === '') {
+        validationErrors.push(`${field} is required`);
       }
     }
     
-    if (missingFields.length > 0) {
-      console.error(`[submit-article] Missing required fields:`, missingFields);
+    // Validate field lengths and formats
+    if (submissionData.title && submissionData.title.length > MAX_TITLE_LENGTH) {
+      validationErrors.push(`Title must be less than ${MAX_TITLE_LENGTH} characters`);
+    }
+    
+    if (submissionData.abstract && submissionData.abstract.length > MAX_ABSTRACT_LENGTH) {
+      validationErrors.push(`Abstract must be less than ${MAX_ABSTRACT_LENGTH} characters`);
+    }
+    
+    if (submissionData.corresponding_author_email) {
+      if (submissionData.corresponding_author_email.length > MAX_EMAIL_LENGTH) {
+        validationErrors.push(`Email must be less than ${MAX_EMAIL_LENGTH} characters`);
+      }
+      // Basic email validation
+      const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+      if (!emailRegex.test(submissionData.corresponding_author_email)) {
+        validationErrors.push('Invalid email format');
+      }
+    }
+    
+    if (submissionData.corresponding_author_name && submissionData.corresponding_author_name.length > MAX_NAME_LENGTH) {
+      validationErrors.push(`Author name must be less than ${MAX_NAME_LENGTH} characters`);
+    }
+    
+    if (submissionData.publication_type && !ALLOWED_PUBLICATION_TYPES.includes(submissionData.publication_type)) {
+      validationErrors.push(`Invalid publication type. Allowed: ${ALLOWED_PUBLICATION_TYPES.join(', ')}`);
+    }
+    
+    // Validate arrays
+    if (submissionData.article_files_urls && submissionData.article_files_urls.length > 10) {
+      validationErrors.push('Maximum 10 article files allowed');
+    }
+    
+    if (submissionData.image_annexes_urls && submissionData.image_annexes_urls.length > 20) {
+      validationErrors.push('Maximum 20 image annexes allowed');
+    }
+    
+    if (validationErrors.length > 0) {
+      console.error(`[submit-article] Validation errors:`, validationErrors);
+      
+      // Log security event for invalid submission attempt
+      await supabaseAdmin.rpc('log_security_event', {
+        event_type_param: 'invalid_submission_attempt',
+        event_data_param: { 
+          errors: validationErrors,
+          email: submissionData.corresponding_author_email,
+          ip_address: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip')
+        },
+        ip_address_param: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip'),
+        user_agent_param: req.headers.get('user-agent')
+      });
+      
       return createErrorResponse(
-        `Missing required fields: ${missingFields.join(', ')}`,
+        `Validation failed: ${validationErrors.join(', ')}`,
         400, 
         corsHeaders
       );
