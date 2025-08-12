@@ -19,24 +19,25 @@ export const useArticleFormState = ({ initialData }: UseArticleFormStateProps) =
   const form = useForm<ArticleFormData>({
     resolver: zodResolver(articleFormSchema),
     defaultValues: {
+      // Required fields
       publicationType: (initialData?.publication_type as "RHCA" | "IGM" | "ADC" | "INDEX") || "RHCA",
       title: initialData?.title || "",
       abstract: initialData?.abstract || "",
       authors: initialData?.authors || [],
       category: initialData?.category || "",
       tags: initialData?.tags || [],
+      status: (initialData?.status as "draft" | "published") || "draft",
+      
+      // Optional advanced fields
       institution: initialData?.institution || "",
       keywords: initialData?.keywords || [],
       volume: initialData?.volume || "",
       issue: initialData?.issue || "",
       pageNumber: initialData?.page_number || "",
       specialty: initialData?.specialty || "",
-      primaryAuthor: initialData?.primary_author || "",
-      coAuthors: initialData?.co_authors || [],
       authorAffiliations: initialData?.author_affiliations || [],
       fundingSource: initialData?.funding_source || "",
       doi: initialData?.doi || "",
-      status: (initialData?.status as "draft" | "published") || "draft",
     },
     mode: "onChange"
   });

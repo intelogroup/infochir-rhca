@@ -75,8 +75,9 @@ export const useSubmissionHandler = ({
           issue: values.issue,
           page_number: values.pageNumber,
           specialty: values.specialty,
-          primary_author: values.primaryAuthor,
-          co_authors: values.coAuthors,
+          // Map authors array to primary_author (first) and co_authors (rest)
+          primary_author: values.authors[0] || "",
+          co_authors: values.authors.slice(1),
           author_affiliations: values.authorAffiliations,
           funding_source: values.fundingSource,
           doi: values.doi,

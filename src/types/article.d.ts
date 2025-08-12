@@ -37,22 +37,23 @@ export interface Article {
 }
 
 export interface ArticleFormData {
+  // Required fields
   title: string;
   abstract: string;
   publicationType: "RHCA" | "IGM" | "ADC" | "INDEX";
   authors: string[];
   category: string;
   tags: string[];
-  institution: string;
-  keywords: string[];
-  volume: string;
-  issue: string;
-  pageNumber: string;
-  specialty: string;
-  primaryAuthor: string;
-  coAuthors: string[];
-  authorAffiliations: string[];
-  fundingSource: string;
-  doi: string;
   status: "draft" | "published";
+  
+  // Optional advanced fields
+  institution?: string;
+  keywords?: string[];
+  volume?: string;
+  issue?: string;
+  pageNumber?: string;
+  specialty?: string;
+  fundingSource?: string;
+  doi?: string;
+  authorAffiliations?: string[];
 }
