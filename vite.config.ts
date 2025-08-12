@@ -55,8 +55,10 @@ export default defineConfig(({ mode }) => ({
     'import.meta.env.DEV': mode === 'development' || isPreview,
     'import.meta.env.VITE_APP_PREVIEW': JSON.stringify(isPreview ? 'true' : 'false'),
     'import.meta.env.DEBUG': JSON.stringify(!isProduction || isPreview ? 'true' : undefined),
-    // Ensure WebSocket token is properly defined for HMR
+    // Fix WebSocket token issue for HMR
     '__WS_TOKEN__': JSON.stringify(''),
+    '__WS_RECONNECT_TIMEOUT__': JSON.stringify(30000),
+    '__WS_HEARTBEAT_INTERVAL__': JSON.stringify(30000),
     // Remove any references to process.env
     'process.env': '{}',
   },
@@ -91,10 +93,8 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     strictPort: true,
-    // Simplified HMR config - let Vite handle WebSocket tokens automatically
-    hmr: {
-      port: 8080,
-    },
+    // Disable HMR entirely to prevent WebSocket token issues
+    hmr: false,
     // Add headers for CORS and caching during development
     headers: {
       'Access-Control-Allow-Origin': '*',
