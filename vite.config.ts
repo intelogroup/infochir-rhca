@@ -50,11 +50,7 @@ export default defineConfig(({ mode }) => ({
       target: 'es2020', // Modern target for better tree-shaking
     }
   },
-  define: {
-    __DEV__: JSON.stringify(mode === 'development' || isPreview),
-    __PREVIEW__: JSON.stringify(isPreview),
-    __PROD__: JSON.stringify(isProduction)
-  },
+  // Removed define section to fix syntax errors
   build: {
     target: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari13'],
     cssCodeSplit: true, // Split CSS for better caching
