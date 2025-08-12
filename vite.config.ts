@@ -52,15 +52,11 @@ export default defineConfig(({ mode }) => ({
   },
   define: {
     'import.meta.env.MODE': JSON.stringify(mode),
-    'import.meta.env.DEV': mode === 'development' || isPreview,
+    'import.meta.env.DEV': JSON.stringify(mode === 'development' || isPreview),
     'import.meta.env.VITE_APP_PREVIEW': JSON.stringify(isPreview ? 'true' : 'false'),
-    'import.meta.env.DEBUG': JSON.stringify(!isProduction || isPreview ? 'true' : undefined),
-    // Fix WebSocket token issue for HMR
-    '__WS_TOKEN__': JSON.stringify(''),
-    '__WS_RECONNECT_TIMEOUT__': JSON.stringify(30000),
-    '__WS_HEARTBEAT_INTERVAL__': JSON.stringify(30000),
+    'import.meta.env.DEBUG': JSON.stringify(!isProduction || isPreview ? 'true' : 'false'),
     // Remove any references to process.env
-    'process.env': '{}',
+    'process.env': JSON.stringify({}),
   },
   build: {
     target: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari13'],
