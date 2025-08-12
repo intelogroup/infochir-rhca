@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@babel/runtime": "^7.28.2",
     "@hookform/resolvers": "^3.9.1",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-alert-dialog": "^1.1.1",
@@ -42,6 +43,7 @@
     "@radix-ui/react-visually-hidden": "^1.1.2",
     "@stripe/stripe-js": "^2.4.0",
     "@supabase/auth-helpers-react": "^0.5.0",
+    "@supabase/auth-js": "^2.71.1",
     "@supabase/auth-ui-react": "^0.4.7",
     "@supabase/auth-ui-shared": "^0.1.8",
     "@supabase/supabase-js": "^2.48.1",
@@ -55,6 +57,7 @@
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.3.0",
+    "esbuild": "^0.25.8",
     "framer-motion": "^11.18.2",
     "input-otp": "^1.2.4",
     "lucide-react": "^0.462.0",
@@ -93,6 +96,6 @@
     "tailwindcss": "^3.4.11",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
-    "vite": "^5.4.1"
+    "vite": "^5.4.19"
   }
 }
