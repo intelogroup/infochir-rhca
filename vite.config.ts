@@ -51,12 +51,9 @@ export default defineConfig(({ mode }) => ({
     }
   },
   define: {
-    'import.meta.env.MODE': JSON.stringify(mode),
-    'import.meta.env.DEV': JSON.stringify(mode === 'development' || isPreview),
-    'import.meta.env.VITE_APP_PREVIEW': JSON.stringify(isPreview ? 'true' : 'false'),
-    'import.meta.env.DEBUG': JSON.stringify(!isProduction || isPreview ? 'true' : 'false'),
-    // Remove any references to process.env
-    'process.env': JSON.stringify({}),
+    __DEV__: JSON.stringify(mode === 'development' || isPreview),
+    __PREVIEW__: JSON.stringify(isPreview),
+    __PROD__: JSON.stringify(isProduction)
   },
   build: {
     target: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari13'],
