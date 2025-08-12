@@ -60,6 +60,10 @@ export const useSubmissionHandler = ({
     toast.loading("Création de l'article en cours...");
     
     try {
+      // Prepare the first PDF file URL for pdf_url field
+      const primaryPdfUrl = articleFilesUrls.length > 0 ? articleFilesUrls[0] : null;
+      const primaryPdfFilename = primaryPdfUrl ? primaryPdfUrl.split('/').pop() : null;
+      
       const { data, error } = await supabase
         .from('unified_content')
         .insert({
@@ -70,18 +74,12 @@ export const useSubmissionHandler = ({
           category: values.category,
           tags: values.tags,
           institution: values.institution,
-          keywords: values.keywords,
           volume: values.volume,
           issue: values.issue,
           page_number: values.pageNumber,
           specialty: values.specialty,
-          // Map authors array to primary_author (first) and co_authors (rest)
-          primary_author: values.authors[0] || "",
-          co_authors: values.authors.slice(1),
-          author_affiliations: values.authorAffiliations,
-          funding_source: values.fundingSource,
-          doi: values.doi,
-          article_files: articleFilesUrls,
+          pdf_url: primaryPdfUrl,
+          pdf_filename: primaryPdfFilename,
           image_url: coverImageUrl,
           status: values.status
         })
