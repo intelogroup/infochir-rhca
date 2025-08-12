@@ -30,6 +30,8 @@ import AdminEmailSettings from '@/pages/admin/EmailSettings';
 import AdminLogin from '@/pages/admin/Login';
 import Content from '@/pages/admin/Content';
 import ArticleCreate from '@/pages/admin/ArticleCreate';
+import ArticleList from '@/pages/admin/ArticleList';
+import ArticleEdit from '@/pages/admin/ArticleEdit';
 import FileManagement from '@/pages/admin/FileManagement';
 import Debug from '@/pages/admin/Debug';
 
@@ -65,7 +67,9 @@ export const AppRoutes = () => {
       }>
         <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="content" element={<Content />} />
+        <Route path="articles" element={<ArticleList />} />
         <Route path="articles/new" element={<ArticleCreate />} />
+        <Route path="articles/edit/:id" element={<ArticleEdit />} />
         <Route path="files" element={<FileManagement />} />
         <Route path="users" element={<AdminUsers />} />
         <Route path="analytics" element={<AdminAnalytics />} />

@@ -16,9 +16,10 @@ interface ArticleFormProps {
   initialData?: Article;
   onSubmit?: (data: ArticleFormData) => Promise<void>;
   isLoading?: boolean;
+  isEditing?: boolean;
 }
 
-export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = false }: ArticleFormProps) => {
+export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = false, isEditing = false }: ArticleFormProps) => {
   const {
     form,
     formValues,
@@ -34,7 +35,7 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
     formErrors,
     setFormErrors,
     isFormValid
-  } = useArticleFormState({ initialData });
+  } = useArticleFormState({ initialData, isEditing });
 
   const { handleSubmit } = useSubmissionHandler({
     articleFilesUrls,
@@ -68,24 +69,37 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
 
           <ArticleDetails form={form} />
           
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold">Image de couverture</h3>
-            <CoverImageUploader
-              onImageUpload={setCoverImageUrl}
-              currentImage={coverImageUrl}
-              className="mb-2"
-            />
-            {formErrors.coverImage && (
-              <p className="text-sm text-destructive mt-1">{formErrors.coverImage}</p>
-            )}
-          </div>
+          {!isEditing && (
+            <>
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold">Image de couverture</h3>
+                <CoverImageUploader
+                  onImageUpload={setCoverImageUrl}
+                  currentImage={coverImageUrl}
+                  className="mb-2"
+                />
+                {formErrors.coverImage && (
+                  <p className="text-sm text-destructive mt-1">{formErrors.coverImage}</p>
+                )}
+              </div>
 
-          <FileUploaders
-            setArticleFilesUrls={setArticleFilesUrls}
-            setImageAnnexesUrls={setImageAnnexesUrls}
-            errors={formErrors}
-            publicationType={publicationType}
-          />
+              <FileUploaders
+                setArticleFilesUrls={setArticleFilesUrls}
+                setImageAnnexesUrls={setImageAnnexesUrls}
+                errors={formErrors}
+                publicationType={publicationType}
+              />
+            </>
+          )}
+
+          {isEditing && (
+            <div className="p-4 bg-muted/50 rounded-lg">
+              <p className="text-sm text-muted-foreground">
+                Les fichiers PDF et images de couverture ne peuvent pas être modifiés. 
+                Seules les informations textuelles peuvent être mises à jour.
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="flex justify-end">
@@ -95,8 +109,8 @@ export const ArticleForm = ({ initialData, onSubmit: customSubmit, isLoading = f
             className="min-w-[200px]"
           >
             {isSubmitting || isLoading 
-              ? "Création en cours..." 
-              : initialData 
+              ? (isEditing ? "Mise à jour en cours..." : "Création en cours...")
+              : isEditing 
                 ? "Mettre à jour l'article"
                 : "Créer l'article"
             }

@@ -7,9 +7,10 @@ import { articleFormSchema } from "./formSchema";
 
 interface UseArticleFormStateProps {
   initialData?: Article;
+  isEditing?: boolean;
 }
 
-export const useArticleFormState = ({ initialData }: UseArticleFormStateProps) => {
+export const useArticleFormState = ({ initialData, isEditing = false }: UseArticleFormStateProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [coverImageUrl, setCoverImageUrl] = useState(initialData?.image_url || "");
   const [articleFilesUrls, setArticleFilesUrls] = useState<string[]>(initialData?.article_files || []);
@@ -65,8 +66,7 @@ export const useArticleFormState = ({ initialData }: UseArticleFormStateProps) =
   }, [articleFilesUrls, formErrors]);
 
   const isFormValid = form.formState.isValid && 
-                     articleFilesUrls.length > 0 && 
-                     !!coverImageUrl && 
+                     (isEditing || (articleFilesUrls.length > 0 && !!coverImageUrl)) && 
                      Object.keys(formErrors).length === 0;
 
   return {
