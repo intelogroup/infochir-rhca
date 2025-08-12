@@ -5,6 +5,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 import { useAdminAuth } from "@/hooks/use-admin-auth";
+import { AdminSecurityProvider } from "@/components/admin/security/AdminSecurityProvider";
 import { toast } from "sonner";
 
 interface AdminRouteWrapperProps {
@@ -54,14 +55,16 @@ export const AdminRouteWrapper = ({ component: Component, children }: AdminRoute
   console.log('[AdminRouteWrapper] Admin access granted for user:', user.email);
 
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner variant="default" size="lg" />
-      </div>
-    }>
-      <ErrorBoundary>
-        {children}
-      </ErrorBoundary>
-    </Suspense>
+    <AdminSecurityProvider>
+      <Suspense fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <LoadingSpinner variant="default" size="lg" />
+        </div>
+      }>
+        <ErrorBoundary>
+          {children}
+        </ErrorBoundary>
+      </Suspense>
+    </AdminSecurityProvider>
   );
 };

@@ -13,6 +13,8 @@ import {
   Shield,
   Save
 } from "lucide-react";
+import { SensitiveAdminGuard } from "@/components/admin/security/SensitiveAdminGuard";
+import { useAdminSecurity } from "@/components/admin/security/AdminSecurityProvider";
 
 const SystemStatus = () => (
   <Card>
@@ -100,27 +102,53 @@ const SecuritySettings = () => (
   </Card>
 );
 
-const QuickActions = () => (
-  <Card>
-    <CardHeader>
-      <CardTitle>Actions rapides</CardTitle>
-    </CardHeader>
-    <CardContent className="space-y-3">
-      <Button variant="outline" className="w-full justify-start">
-        <Mail className="h-4 w-4 mr-2" />
-        Configuration email
-      </Button>
-      <Button variant="outline" className="w-full justify-start">
-        <Database className="h-4 w-4 mr-2" />
-        Sauvegarde base de données
-      </Button>
-      <Button variant="outline" className="w-full justify-start">
-        <Shield className="h-4 w-4 mr-2" />
-        Gérer les permissions
-      </Button>
-    </CardContent>
-  </Card>
-);
+const QuickActions = () => {
+  const { confirmAction } = useAdminSecurity();
+
+  const handleDatabaseBackup = async () => {
+    try {
+      await confirmAction({
+        title: "Sauvegarde base de données",
+        description: "Vous êtes sur le point de lancer une sauvegarde complète de la base de données. Cette opération peut prendre plusieurs minutes.",
+        confirmText: "Lancer la sauvegarde",
+        requirePassword: true,
+        eventType: 'database_backup_initiated',
+        eventData: { timestamp: new Date().toISOString() }
+      });
+      
+      // Here you would trigger the actual backup
+      console.log("Database backup initiated");
+    } catch (error) {
+      console.error("Backup cancelled:", error);
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Actions rapides</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <Button variant="outline" className="w-full justify-start">
+          <Mail className="h-4 w-4 mr-2" />
+          Configuration email
+        </Button>
+        <Button 
+          variant="outline" 
+          className="w-full justify-start"
+          onClick={handleDatabaseBackup}
+        >
+          <Database className="h-4 w-4 mr-2" />
+          Sauvegarde base de données
+        </Button>
+        <Button variant="outline" className="w-full justify-start">
+          <Shield className="h-4 w-4 mr-2" />
+          Gérer les permissions
+        </Button>
+      </CardContent>
+    </Card>
+  );
+};
 
 const Settings = () => {
   return (
@@ -133,7 +161,15 @@ const Settings = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="space-y-6">
           <GeneralSettings />
-          <SecuritySettings />
+          <SensitiveAdminGuard
+            title="Paramètres de sécurité"
+            description="Configuration des paramètres de sécurité du système. Accès restreint aux super-administrateurs."
+            requirePassword={true}
+            level="high"
+            confirmText="Accéder aux paramètres de sécurité"
+          >
+            <SecuritySettings />
+          </SensitiveAdminGuard>
         </div>
         <div className="space-y-6">
           <SystemStatus />

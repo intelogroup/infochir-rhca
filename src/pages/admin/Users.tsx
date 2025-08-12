@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { assignAdminRole } from "@/lib/admin-utils";
+import { SensitiveAdminGuard } from "@/components/admin/security/SensitiveAdminGuard";
+import { useAdminSecurity } from "@/components/admin/security/AdminSecurityProvider";
 
 const UsersList = () => (
   <Card>
@@ -57,6 +59,7 @@ const UsersList = () => (
 const AdminRoleAssignment = () => {
   const [adminEmail, setAdminEmail] = useState("");
   const [isAssigning, setIsAssigning] = useState(false);
+  const { confirmAction } = useAdminSecurity();
 
   const handleAssignAdminRole = async () => {
     if (!adminEmail) {
@@ -64,8 +67,18 @@ const AdminRoleAssignment = () => {
       return;
     }
 
-    setIsAssigning(true);
     try {
+      await confirmAction({
+        title: "Attribuer rôle administrateur",
+        description: `Vous êtes sur le point d'attribuer les droits d'administrateur à ${adminEmail}. Cette action est irréversible et donne un accès complet au système.`,
+        confirmText: "Attribuer le rôle",
+        requirePassword: true,
+        variant: 'destructive',
+        eventType: 'admin_role_assignment_attempt',
+        eventData: { target_email: adminEmail }
+      });
+
+      setIsAssigning(true);
       const success = await assignAdminRole(adminEmail);
       if (success) {
         toast.success(`Rôle administrateur attribué à ${adminEmail}`);
@@ -75,7 +88,9 @@ const AdminRoleAssignment = () => {
       }
     } catch (error) {
       console.error("Erreur:", error);
-      toast.error("Erreur lors de l'attribution du rôle");
+      if (error instanceof Error && error.message !== 'Mot de passe incorrect') {
+        toast.error("Erreur lors de l'attribution du rôle");
+      }
     } finally {
       setIsAssigning(false);
     }
@@ -161,7 +176,15 @@ const Users = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <UsersList />
-        <AdminRoleAssignment />
+        <SensitiveAdminGuard
+          title="Attribution de rôles administrateur"
+          description="Cette section permet d'attribuer des droits d'administrateur. Accès restreint avec confirmation requise."
+          requirePassword={true}
+          level="critical"
+          confirmText="Débloquer la gestion des rôles"
+        >
+          <AdminRoleAssignment />
+        </SensitiveAdminGuard>
       </div>
     </div>
   );
