@@ -17,9 +17,9 @@ import { BodyScripts } from "@/components/html/BodyScripts";
 import { LoadingScreen } from "@/components/html/LoadingScreen";
 
 // Set up in production mode or preview mode
-const isDebugMode = process.env.NODE_ENV === 'development' || 
-                   process.env.VITE_APP_PREVIEW === 'true' ||
-                   process.env.DEBUG === 'true';
+const isDebugMode = import.meta.env.DEV || 
+                   import.meta.env.VITE_APP_PREVIEW === 'true' ||
+                   import.meta.env.VITE_DEBUG === 'true';
 
 // Preload critical images but don't block rendering
 const preloadCriticalImages = () => {

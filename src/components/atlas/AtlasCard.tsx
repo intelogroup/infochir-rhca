@@ -11,6 +11,7 @@ import { createLogger } from "@/lib/error-logger";
 import { downloadPDF } from "@/lib/analytics/download";
 import { DocumentType } from "@/lib/analytics/download/statistics/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { OptimizedImageLoader } from "@/components/shared/OptimizedImageLoader";
 
 const logger = createLogger('AtlasCard');
 
@@ -83,24 +84,13 @@ export const AtlasCard = ({ chapter }: AtlasCardProps) => {
   const handleImageLoad = () => {
     setImageLoaded(true);
     setImageError(false);
-    logger.log(`[AtlasCard] Image loaded successfully for chapter: ${chapter.id}`);
+    if (import.meta.env.DEV) {
+      logger.log(`[AtlasCard] Image loaded successfully for chapter: ${chapter.id}`);
+    }
   };
 
   const handleImageError = () => {
-    if (imageRetries < MAX_RETRIES && chapter.coverImageUrl) {
-      logger.warn(`[AtlasCard] Image failed to load, retrying (${imageRetries + 1}/${MAX_RETRIES}): ${chapter.coverImageUrl}`);
-      setImageRetries(prev => prev + 1);
-      // Force reload by updating the src with a cache-busting parameter
-      setTimeout(() => {
-        const img = document.querySelector(`[data-chapter-id="${chapter.id}"]`) as HTMLImageElement;
-        if (img) {
-          img.src = `${chapter.coverImageUrl}?retry=${imageRetries + 1}`;
-        }
-      }, 500);
-    } else {
-      logger.error(`[AtlasCard] Image failed to load after ${MAX_RETRIES} retries: ${chapter.coverImageUrl}`);
-      setImageError(true);
-    }
+    setImageError(true);
   };
   
   return (
@@ -115,21 +105,22 @@ export const AtlasCard = ({ chapter }: AtlasCardProps) => {
           </div>
         )}
         
-        {imageError || !chapter.coverImageUrl ? (
-          <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100">
-            <AlertCircle className="h-8 w-8 text-gray-400 mb-2" />
-            <span className="text-sm text-gray-500">Image non disponible</span>
-          </div>
-        ) : (
-          <img 
-            src={chapter.coverImageUrl} 
-            alt={chapter.title} 
-            data-chapter-id={chapter.id}
-            className={`w-full h-full object-cover transition-transform duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+        {chapter.coverImageUrl ? (
+          <OptimizedImageLoader
+            src={chapter.coverImageUrl}
+            alt={chapter.title}
+            width={400}
+            height={160}
+            className="w-full h-full object-cover transition-transform duration-300"
             onLoad={handleImageLoad}
             onError={handleImageError}
             loading="lazy"
           />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100">
+            <AlertCircle className="h-8 w-8 text-gray-400 mb-2" />
+            <span className="text-sm text-gray-500">Image non disponible</span>
+          </div>
         )}
         
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />

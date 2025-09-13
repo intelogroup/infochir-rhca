@@ -22,9 +22,8 @@ export const getLoadingDiagnostics = (): string => {
  * Check if we're in a development or debug environment
  */
 export const isDebugMode = (): boolean => {
-  return typeof process !== 'undefined' && (
-    process.env.NODE_ENV === 'development' || 
-    process.env.DEBUG === 'true' ||
-    process.env.VITE_APP_PREVIEW === 'true'
-  );
+  return import.meta.env.DEV || 
+         import.meta.env.MODE === 'development' || 
+         import.meta.env.VITE_DEBUG === 'true' ||
+         import.meta.env.VITE_APP_PREVIEW === 'true';
 };

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ImageOptimizer } from "../../shared/ImageOptimizer";
+import { OptimizedImageLoader } from "../../shared/OptimizedImageLoader";
 import { PdfStatusIndicator } from "../../shared/PdfStatusIndicator";
 import type { RhcaArticle } from "../types";
 
@@ -20,7 +20,7 @@ export const CoverImage: React.FC<CoverImageProps> = ({
   return (
     <div className="relative w-full h-full flex items-center justify-center">
       <div className="w-full h-full max-h-[180px] flex items-center justify-center bg-gray-50 rounded-md overflow-hidden">
-        <ImageOptimizer
+        <OptimizedImageLoader
           src={coverUrl || ''}
           alt={article.title}
           width={150}

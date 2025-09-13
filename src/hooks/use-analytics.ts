@@ -47,7 +47,7 @@ export const useAnalytics = () => {
     };
 
     // Only track in production, or if the debug flag is set
-    if (process.env.NODE_ENV === 'production' || process.env.VITE_DEBUG_ANALYTICS === 'true') {
+    if (import.meta.env.PROD || import.meta.env.VITE_DEBUG_ANALYTICS === 'true') {
       trackPageView();
     }
   }, [location.pathname]);

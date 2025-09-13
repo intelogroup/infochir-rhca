@@ -10,6 +10,12 @@ const logger = createLogger('AnalyticsTracking');
  */
 export const trackView = async (documentId: string, documentType: DocumentType): Promise<boolean> => {
   try {
+    // Validate inputs
+    if (!documentId || !documentType) {
+      logger.warn('Invalid parameters for trackView:', { documentId, documentType });
+      return false;
+    }
+
     // Use the RPC function to track the view
     const { error } = await supabase.rpc('track_user_event', {
       p_event_type: 'view',
@@ -22,27 +28,19 @@ export const trackView = async (documentId: string, documentType: DocumentType):
     });
     
     if (error) {
-      logger.error('Error tracking view:', error);
-      
-      // Fallback: try to increment the count directly
-      try {
-        if (isValidUuid(documentId)) {
-          await supabase.rpc('increment_count', {
-            table_name: 'articles',
-            column_name: 'views',
-            row_id: documentId
-          });
-        }
-      } catch (incrementError) {
-        logger.error('Error incrementing view count:', incrementError);
+      // Only log detailed error in development
+      if (import.meta.env.DEV) {
+        logger.error('Error tracking view:', error);
       }
-      
       return false;
     }
     
     return true;
   } catch (error) {
-    logger.error('Exception tracking view:', error);
+    // Only log detailed error in development
+    if (import.meta.env.DEV) {
+      logger.error('Exception tracking view:', error);
+    }
     return false;
   }
 };

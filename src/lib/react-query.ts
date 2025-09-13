@@ -3,9 +3,9 @@ import { QueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 // Check if we're in development, preview or debugging mode
-const isDebugMode = process.env.NODE_ENV === 'development' || 
-                   process.env.VITE_APP_PREVIEW === 'true' || 
-                   process.env.DEBUG === 'true';
+const isDebugMode = import.meta.env.DEV || 
+                   import.meta.env.VITE_APP_PREVIEW === 'true' || 
+                   import.meta.env.VITE_DEBUG === 'true';
 
 // Create a more resilient query client
 export const queryClient = new QueryClient({

@@ -7,9 +7,9 @@ import { mapDatabaseArticleToArticle } from '@/components/index-medicus/types';
 import { toast } from 'sonner';
 
 // Check if we're in development or debugging mode
-const isDebugMode = process.env.NODE_ENV === 'development' || 
-                   process.env.VITE_APP_PREVIEW === 'true' || 
-                   process.env.DEBUG === 'true';
+const isDebugMode = import.meta.env.DEV || 
+                   import.meta.env.VITE_APP_PREVIEW === 'true' || 
+                   import.meta.env.VITE_DEBUG === 'true';
 
 // Define a more specific type for the database article that includes cover_image_filename
 interface RhcaDatabaseArticle {
