@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -1409,6 +1409,10 @@ export type Database = {
         Args: { _email: string }
         Returns: boolean
       }
+      can_access_analytics: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       check_email_limit_and_notify: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -1429,43 +1433,43 @@ export type Database = {
         Args: { days_back?: number }
         Returns: {
           date: string
-          total_downloads: number
-          successful_downloads: number
           failed_downloads: number
+          successful_downloads: number
+          total_downloads: number
         }[]
       }
       get_document_download_stats: {
         Args: { doc_id: string }
         Returns: {
-          total_downloads: number
-          successful_downloads: number
           failed_downloads: number
           last_download_time: string
+          successful_downloads: number
+          total_downloads: number
         }[]
       }
       get_document_events: {
         Args: { doc_id: string; event_types?: string[] }
         Returns: {
-          event_type: string
           event_count: number
+          event_type: string
           last_event_time: string
         }[]
       }
       get_download_statistics: {
         Args: Record<PropertyKey, never>
         Returns: {
-          total_downloads: number
-          successful_downloads: number
-          failed_downloads: number
           document_types: Json
+          failed_downloads: number
+          successful_downloads: number
+          total_downloads: number
         }[]
       }
       get_download_stats_by_type: {
         Args: { doc_type: string }
         Returns: {
-          total_downloads: number
-          successful_downloads: number
           failed_downloads: number
+          successful_downloads: number
+          total_downloads: number
           unique_documents: number
         }[]
       }
@@ -1482,7 +1486,7 @@ export type Database = {
         Returns: boolean
       }
       increment_count: {
-        Args: { table_name: string; column_name: string; row_id: string }
+        Args: { column_name: string; row_id: string; table_name: string }
         Returns: undefined
       }
       is_admin: {
@@ -1495,8 +1499,8 @@ export type Database = {
       }
       log_security_event: {
         Args: {
-          event_type_param: string
           event_data_param?: Json
+          event_type_param: string
           ip_address_param?: string
           user_agent_param?: string
         }
@@ -1504,16 +1508,16 @@ export type Database = {
       }
       track_user_event: {
         Args: {
-          p_event_type: string
           p_document_id?: string
           p_document_type?: string
-          p_user_id?: string
           p_event_data?: Json
+          p_event_type: string
+          p_ip_address?: string
+          p_page_url?: string
+          p_referrer?: string
           p_session_id?: string
           p_user_agent?: string
-          p_referrer?: string
-          p_page_url?: string
-          p_ip_address?: string
+          p_user_id?: string
         }
         Returns: string
       }
