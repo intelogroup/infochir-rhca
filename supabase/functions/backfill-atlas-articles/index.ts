@@ -1,5 +1,6 @@
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.48.1';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -7,118 +8,113 @@ const corsHeaders = {
 };
 
 interface AtlasArticleData {
-  filename: string;
-  volume: string;
-  issue: string;
-  publication_date: string;
   title: string;
   abstract: string;
   authors: string[];
-  tags: string[];
+  source: string;
   category: string;
+  tags: string[];
+  pdf_url: string;
+  image_url: string;
+  status: string;
+  institution: string;
+  volume: string;
+  issue: string;
   page_number: string;
+  specialty: string;
+  article_type: string;
+  primary_author: string;
+  co_authors: string[];
+  author_affiliations: string[];
+  keywords: string[];
+  pdf_filename: string;
+  cover_image_filename: string;
+  publication_date: string;
+}
+
+interface BackfillResult {
+  filename: string;
+  success: boolean;
+  error?: string;
+  id?: string;
 }
 
 // Initialize Supabase client
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-const extractInfoFromFilename = (filename: string) => {
-  // Extract chapter and date from ADC filename pattern: ADC_ch_X_maj_DD_MM_YY.pdf or ADC_intro_maj_DD_MM_YY.pdf
-  const chapterMatch = filename.match(/ADC_ch_(\d+)_maj_(\d+)_(\d+)_(\d+)\.pdf/);
-  const introMatch = filename.match(/ADC_intro_maj_(\d+)_(\d+)_(\d+)\.pdf/);
-  
-  if (chapterMatch) {
-    const [, chapter, day, month, year] = chapterMatch;
-    const fullYear = parseInt(year) < 50 ? `20${year}` : `19${year}`;
-    const publicationDate = `${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-    return { chapter, publicationDate, isIntro: false };
-  } else if (introMatch) {
-    const [, day, month, year] = introMatch;
-    const fullYear = parseInt(year) < 50 ? `20${year}` : `19${year}`;
-    const publicationDate = `${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-    return { chapter: '00', publicationDate, isIntro: true };
-  }
-  
-  return null;
-};
-
-const generateAtlasContent = async (filename: string, chapter: string, publicationDate: string, isIntro: boolean): Promise<Partial<AtlasArticleData>> => {
-  const openAIApiKey = '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';
-  
+/**
+ * Extracts chapter information from ADC filename
+ */
+function extractInfoFromFilename(filename: string) {
   try {
+    // Match pattern: ADC_ch_X_...
+    const chapterMatch = filename.match(/ADC_ch_(\d+)/i);
+    if (!chapterMatch) {
+      throw new Error(`Could not extract chapter number from filename: ${filename}`);
+    }
+    
+    const chapterNumber = parseInt(chapterMatch[1]);
+    
+    // Extract date patterns if available
+    const dateMatch = filename.match(/(\d{1,2}_\d{1,2}_\d{2,4})/);
+    let publicationDate = new Date().toISOString();
+    
+    if (dateMatch) {
+      const dateParts = dateMatch[1].split('_');
+      if (dateParts.length === 3) {
+        const [day, month, year] = dateParts;
+        const fullYear = year.length === 2 ? `20${year}` : year;
+        publicationDate = new Date(`${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`).toISOString();
+      }
+    }
+    
+    // Check if this is an introduction file
+    const isIntro = filename.toLowerCase().includes('intro');
+    
+    return {
+      chapter: chapterNumber,
+      publicationDate,
+      isIntro
+    };
+  } catch (error) {
+    console.error('[Atlas Backfill] Error extracting info from filename:', error);
+    return null;
+  }
+}
+
+/**
+ * Generates content for Atlas articles using OpenAI
+ */
+async function generateAtlasContent(filename: string, chapter: number, publicationDate: string, isIntro: boolean) {
+  try {
+    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
+      console.log('[Atlas Backfill] OpenAI API key not found, using fallback content');
       return generateFallbackAtlasContent(chapter, isIntro);
     }
 
+    // Define surgical specialties and topics for Haiti
     const haitianSurgeons = [
-      'Dr. Louis-Franck TÉLÉMAQUE', 'Dr. Michel DODARD', 'Dr. Pierre Marie WOOLLEY',
-      'Dr. Patrick Jean-Gilles', 'Dr. Sterman TOUSSAINT', 'Dr. Emmanuel RÉGIS',
-      'Dr. Jean-Fritz JACQUES', 'Dr. Edouard BONTEMPS', 'Dr. Wilfine DUPONT',
-      'Dr. Maurice DAGHUIL', 'Dr. Grenson JEUNE', 'Dr. Djhonn St CYR',
-      'Dr. David NOËL', 'Dr. Eunice DÉRIVOIS', 'Dr. Margareth DÉGAND',
-      'Dr. Jacques Maurice JEUDY', 'Dr. Pascale JEAN-BAPTISTE', 'Dr. Carl Renan FAYETTE'
+      "Dr. Jean-Claude Moïse", "Dr. Marie-Claire Pierre", "Dr. Jacques Bourgeois",
+      "Dr. Anne-Marie Destin", "Dr. Pierre-Louis Jean", "Dr. Micheline Auguste",
+      "Dr. Ronald François", "Dr. Carole Bernadel", "Dr. Emmanuel Saint-Vil"
     ];
 
     const surgicalTopics = [
-      'traumatismes et chirurgie d\'urgence', 'pathologies cutanées et chirurgie plastique', 
-      'chirurgie du sein et oncologie', 'chirurgie thoracique et cardiovasculaire',
-      'ophtalmologie et chirurgie maxillo-faciale', 'chirurgie digestive et hépato-biliaire',
-      'chirurgie orthopédique et traumatologie', 'neurochirurgie et spine',
-      'urologie et chirurgie génito-urinaire', 'chirurgie vasculaire',
-      'chirurgie pédiatrique', 'anesthésie et réanimation'
+      "Trauma Surgery in Resource-Limited Settings",
+      "Pediatric Surgery Techniques", "Orthopedic Procedures",
+      "General Surgery Principles", "Emergency Surgical Interventions",
+      "Minimally Invasive Surgery", "Surgical Education and Training",
+      "Post-operative Care in Haiti", "Surgical Equipment Management",
+      "Community Health Surgery"
     ];
 
     const prompt = isIntro 
-      ? `Génère un contenu pour l'introduction de l'Atlas de Diagnostic Chirurgical (ADC) haïtien.
-      
-      Contexte: L'ADC est un atlas médical haïtien de référence qui présente des cas cliniques chirurgicaux illustrés, des techniques diagnostiques, et des guides thérapeutiques adaptés au contexte haïtien.
-      
-      Génère:
-      1. Un titre pour l'introduction
-      2. Un résumé détaillé (400-500 mots) présentant l'atlas, son importance pour la médecine haïtienne
-      3. Les auteurs principaux (1-3 auteurs)
-      4. Une catégorie médicale
-      5. Des mots-clés pertinents (6-8 mots-clés)
-      6. Une spécialité médicale
-      
-      Format de réponse JSON:
-      {
-        "title": "Atlas de Diagnostic Chirurgical (ADC) - Introduction",
-        "abstract": "résumé détaillé en français",
-        "authors": ["auteur1", "auteur2"],
-        "category": "Introduction",
-        "tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"],
-        "specialty": "Chirurgie générale"
-      }`
-      : `Génère un contenu pour le chapitre ${chapter} de l'Atlas de Diagnostic Chirurgical (ADC) haïtien.
-      
-      Contexte: L'ADC est un atlas chirurgical haïtien qui présente des cas cliniques illustrés par spécialité médicale. Chaque chapitre couvre une spécialité ou région anatomique différente.
-      
-      Génère:
-      1. Un titre pour ce chapitre (inclure la spécialité/région)
-      2. Un résumé détaillé (300-400 mots) décrivant les pathologies et techniques couvertes
-      3. Une liste d'auteurs chirurgiens haïtiens (3-6 auteurs)
-      4. Une catégorie chirurgicale principale
-      5. Des mots-clés médicaux pertinents (6-8 mots-clés)
-      6. Une spécialité chirurgicale
-      
-      Thèmes suggérés: ${surgicalTopics.slice(0, 4).join(', ')}
-      Auteurs suggérés: ${haitianSurgeons.slice(0, 6).join(', ')}
-      
-      Format de réponse JSON:
-      {
-        "title": "Atlas de Diagnostic Chirurgical (ADC) - [Spécialité]",
-        "abstract": "résumé détaillé en français",
-        "authors": ["auteur1", "auteur2", "auteur3"],
-        "category": "catégorie chirurgicale",
-        "tags": ["tag1", "tag2", "tag3", "tag4", "tag5", "tag6"],
-        "specialty": "spécialité chirurgicale"
-      }`;
+      ? `Generate content for Chapter ${chapter} Introduction of the Atlas Digital de Chirurgie (ADC) - a Haitian surgical atlas. This should be an introductory overview.`
+      : `Generate content for Chapter ${chapter} of the Atlas Digital de Chirurgie (ADC) - a comprehensive surgical atlas for Haiti. Focus on practical surgical techniques relevant to Haitian healthcare.`;
 
-    console.log(`Generating AI content for ADC Chapter ${chapter}${isIntro ? ' (Introduction)' : ''}`);
-    
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -130,229 +126,233 @@ const generateAtlasContent = async (filename: string, chapter: string, publicati
         messages: [
           {
             role: 'system',
-            content: 'Tu es un chirurgien haïtien expert spécialisé dans la rédaction de contenus médicaux pour l\'Atlas de Diagnostic Chirurgical haïtien. Réponds uniquement en JSON valide.'
+            content: `You are creating content for the Atlas Digital de Chirurgie (ADC), a surgical education resource for Haiti. Generate realistic but educational content. Use appropriate medical terminology in French when relevant.`
           },
           {
             role: 'user',
-            content: prompt
+            content: `${prompt}
+
+Please provide:
+1. A title in French
+2. An abstract (150-200 words) in French
+3. Primary author (choose from: ${haitianSurgeons.slice(0, 3).join(', ')})
+4. 2-3 co-authors (from: ${haitianSurgeons.slice(3).join(', ')})
+5. Keywords (5-7 relevant surgical terms in French)
+6. A relevant surgical topic (from: ${surgicalTopics.join(', ')})
+
+Format as JSON with keys: title, abstract, primary_author, co_authors (array), keywords (array), topic`
           }
         ],
         temperature: 0.7,
-        max_tokens: 1400
+        max_tokens: 1000
       }),
     });
 
     if (!response.ok) {
-      console.error(`OpenAI API error: ${response.status} ${response.statusText}`);
-      return generateFallbackAtlasContent(chapter, isIntro);
+      throw new Error(`OpenAI API error: ${response.status}`);
     }
 
     const data = await response.json();
-    const aiContent = JSON.parse(data.choices[0].message.content);
-
+    const content = JSON.parse(data.choices[0].message.content);
+    
     return {
-      title: aiContent.title,
-      abstract: aiContent.abstract,
-      authors: aiContent.authors,
-      tags: aiContent.tags,
-      category: aiContent.category,
-      page_number: `1-${isIntro ? '5' : (15 + Math.floor(Math.random() * 25))}`, // 1-5 for intro, 15-40 for chapters
+      title: content.title,
+      abstract: content.abstract,
+      primary_author: content.primary_author,
+      co_authors: content.co_authors || [],
+      keywords: content.keywords || [],
+      category: content.topic || surgicalTopics[0]
     };
-
   } catch (error) {
-    console.error('Error generating AI content for ADC:', error);
+    console.error('[Atlas Backfill] Error generating content with OpenAI:', error);
     return generateFallbackAtlasContent(chapter, isIntro);
   }
-};
+}
 
-const generateFallbackAtlasContent = (chapter: string, isIntro: boolean): Partial<AtlasArticleData> => {
-  const specialties = ['Traumatismes', 'Peau et tissu Sous-cutané', 'Le Sein', 'Thorax', 
-                      'Ophtalmologie', 'Digestif', 'Orthopédie', 'Neurochirurgie'];
-  const randomSpecialty = specialties[Math.floor(Math.random() * specialties.length)];
-  
-  if (isIntro) {
-    return {
-      title: 'Atlas de Diagnostic Chirurgical (ADC) - Introduction',
-      abstract: `L'Atlas de Diagnostic Chirurgical haïtien représente une avancée majeure dans la documentation médicale nationale, offrant un panorama complet des pathologies chirurgicales rencontrées et traitées en Haïti. Cette ressource de référence rassemble le savoir et l'expertise des chirurgiens haïtiens à travers des images cliniques authentiques et des explications détaillées couvrant l'ensemble des spécialités chirurgicales.`,
-      authors: ['Dr. Louis-Franck TÉLÉMAQUE'],
-      tags: ['atlas chirurgical', 'diagnostic', 'médecine haïtienne', 'formation médicale', 'chirurgie', 'cas cliniques'],
-      category: 'Introduction',
-      page_number: '1-5',
-    };
-  }
-  
-  return {
-    title: `Atlas de Diagnostic Chirurgical (ADC) - ${randomSpecialty}`,
-    abstract: `Ce chapitre de l'Atlas de Diagnostic Chirurgical couvre les pathologies et techniques chirurgicales liées au domaine ${randomSpecialty.toLowerCase()}. Il présente des cas cliniques illustrés, des techniques diagnostiques et des approches thérapeutiques adaptées au contexte haïtien. Les images cliniques authentiques sont accompagnées d'explications détaillées pour faciliter l'apprentissage et la pratique chirurgicale.`,
-    authors: [
-      'Dr. Louis-Franck TÉLÉMAQUE',
-      'Dr. Michel DODARD',
-      'Dr. Pierre Marie WOOLLEY'
-    ],
-    tags: [
-      'chirurgie',
-      randomSpecialty.toLowerCase(),
-      'diagnostic chirurgical',
-      'cas cliniques',
-      'techniques chirurgicales',
-      'atlas médical'
-    ],
-    category: 'Chirurgie',
-    page_number: '1-25',
+/**
+ * Generates fallback content when OpenAI is not available
+ */
+function generateFallbackAtlasContent(chapter: number, isIntro: boolean) {
+  const fallbackData = {
+    title: isIntro 
+      ? `Atlas Digital de Chirurgie - Chapitre ${chapter} : Introduction`
+      : `Atlas Digital de Chirurgie - Chapitre ${chapter}`,
+    abstract: isIntro
+      ? `Introduction au chapitre ${chapter} de l'Atlas Digital de Chirurgie. Ce chapitre présente les concepts fondamentaux et les techniques chirurgicales essentielles pour la pratique médicale en Haïti. L'atlas vise à fournir aux professionnels de santé haïtiens des ressources éducatives de qualité adaptées au contexte local.`
+      : `Chapitre ${chapter} de l'Atlas Digital de Chirurgie présentant des techniques chirurgicales avancées et des procédures médicales spécialisées. Ce contenu éducatif est conçu pour les professionnels de santé travaillant dans le système de santé haïtien, avec un focus sur les meilleures pratiques et les innovations en chirurgie.`,
+    primary_author: "Dr. Jean-Claude Moïse",
+    co_authors: ["Dr. Marie-Claire Pierre", "Dr. Jacques Bourgeois"],
+    keywords: ["chirurgie", "atlas", "éducation médicale", "Haïti", "techniques chirurgicales"],
+    category: "Chirurgie Générale"
   };
-};
+
+  return fallbackData;
+}
 
 serve(async (req) => {
+  console.log('[Atlas Backfill] Function called with method:', req.method);
+
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    console.log('Starting Atlas articles backfill process...');
+    console.log('[Atlas Backfill] Starting Atlas articles backfill process...');
 
-    // Get all PDFs from storage
-    const { data: storageFiles, error: storageError } = await supabase.storage
+    // Get all files from the atlas-pdfs bucket
+    const { data: files, error: filesError } = await supabase.storage
       .from('atlas-pdfs')
-      .list('');
+      .list('', {
+        limit: 100,
+        sortBy: { column: 'name', order: 'asc' }
+      });
 
-    if (storageError) {
-      throw new Error(`Storage error: ${storageError.message}`);
+    if (filesError) {
+      console.error('[Atlas Backfill] Error fetching files:', filesError);
+      throw new Error(`Failed to fetch files from storage: ${filesError.message}`);
     }
 
-    // Get existing articles from database
-    const { data: existingArticles, error: dbError } = await supabase
+    console.log(`[Atlas Backfill] Found ${files?.length || 0} files in atlas-pdfs bucket`);
+
+    if (!files || files.length === 0) {
+      return new Response(JSON.stringify({
+        message: 'No files found in atlas-pdfs bucket',
+        totalProcessed: 0,
+        successful: 0,
+        failed: 0,
+        results: []
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200
+      });
+    }
+
+    // Get existing articles with source 'ADC' to avoid duplicates
+    const { data: existingArticles, error: articlesError } = await supabase
       .from('articles')
       .select('pdf_filename')
       .eq('source', 'ADC');
 
-    if (dbError) {
-      throw new Error(`Database error: ${dbError.message}`);
+    if (articlesError) {
+      console.error('[Atlas Backfill] Error fetching existing articles:', articlesError);
+      throw new Error(`Failed to fetch existing articles: ${articlesError.message}`);
     }
 
-    const existingFilenames = new Set(existingArticles?.map(a => a.pdf_filename).filter(Boolean) || []);
-    
-    // Find missing files
-    const missingFiles = storageFiles?.filter(file => 
-      file.name.endsWith('.pdf') && !existingFilenames.has(file.name)
-    ) || [];
+    const existingFilenames = new Set(existingArticles?.map(a => a.pdf_filename) || []);
+    console.log(`[Atlas Backfill] Found ${existingFilenames.size} existing ADC articles`);
 
-    console.log(`Found ${missingFiles.length} missing ADC files to process`);
+    // Filter out existing files and non-PDF files
+    const pdfFiles = files.filter(file => 
+      file.name.toLowerCase().endsWith('.pdf') && 
+      !existingFilenames.has(file.name)
+    );
 
-    const results = [];
-    
-    // Process each missing file
-    for (const file of missingFiles) {
+    console.log(`[Atlas Backfill] Processing ${pdfFiles.length} new PDF files...`);
+
+    const results: BackfillResult[] = [];
+    let successful = 0;
+    let failed = 0;
+
+    // Process each PDF file
+    for (const file of pdfFiles) {
       try {
+        console.log(`[Atlas Backfill] Processing file: ${file.name}`);
+
+        // Extract information from filename
         const fileInfo = extractInfoFromFilename(file.name);
         if (!fileInfo) {
-          console.log(`Skipping file with invalid format: ${file.name}`);
-          continue;
+          throw new Error('Could not extract chapter information from filename');
         }
 
         const { chapter, publicationDate, isIntro } = fileInfo;
-        
-        // Generate content for this file
-        const generatedContent = await generateAtlasContent(file.name, chapter, publicationDate, isIntro);
-        
+
+        // Generate content for the article
+        const content = await generateAtlasContent(file.name, chapter, publicationDate, isIntro);
+
         // Prepare article data
-        const articleData = {
-          title: generatedContent.title || `Atlas de Diagnostic Chirurgical (ADC) - Chapitre ${chapter}`,
-          abstract: generatedContent.abstract || '',
-          authors: generatedContent.authors || [],
+        const articleData: AtlasArticleData = {
+          title: content.title,
+          abstract: content.abstract,
+          authors: [content.primary_author, ...content.co_authors],
           source: 'ADC',
-          category: generatedContent.category || 'Chirurgie',
-          tags: generatedContent.tags || [],
-          volume: null, // ADC doesn't use volumes
-          issue: chapter.padStart(2, '0'), // Use chapter as issue
-          publication_date: publicationDate,
-          pdf_filename: file.name,
-          pdf_url: `${supabaseUrl}/storage/v1/object/public/atlas-pdfs/${file.name}`,
-          image_url: `${supabaseUrl}/storage/v1/object/public/atlas_covers/ADC_ch_${chapter.padStart(2, '0')}_cover.png`,
-          cover_image_filename: `ADC_ch_${chapter.padStart(2, '0')}_cover.png`,
-          page_number: generatedContent.page_number || '1-25',
+          category: content.category,
+          tags: content.keywords,
+          pdf_url: `https://llxzstqejdrplmxdjxlu.supabase.co/storage/v1/object/public/atlas-pdfs/${file.name}`,
+          image_url: '',
           status: 'published',
+          institution: 'Association Haïtienne de Chirurgie',
+          volume: '1',
+          issue: chapter.toString(),
+          page_number: chapter.toString(),
+          specialty: 'Chirurgie',
           article_type: 'ADC',
-          specialty: generatedContent.category || 'Chirurgie',
-          institution: 'Atlas de Diagnostic Chirurgical',
-          views: 0,
-          downloads: 0,
-          shares: 0,
-          citations: 0,
-          doi: `ADC-${chapter.padStart(2, '0')}-${new Date(publicationDate).getFullYear()}`,
-          keywords: generatedContent.tags || [],
-          author_affiliations: null,
-          co_authors: null,
-          primary_author: null,
-          funding_source: null,
-          supplementary_files: [],
-          article_files: [],
-          user_id: null
+          primary_author: content.primary_author,
+          co_authors: content.co_authors,
+          author_affiliations: ['Association Haïtienne de Chirurgie'],
+          keywords: content.keywords,
+          pdf_filename: file.name,
+          cover_image_filename: `ADC_ch_${chapter}_cover.png`,
+          publication_date: publicationDate
         };
 
         // Insert into database
         const { data: insertedArticle, error: insertError } = await supabase
           .from('articles')
           .insert([articleData])
-          .select()
+          .select('id')
           .single();
 
         if (insertError) {
-          console.error(`Error inserting ${file.name}:`, insertError);
-          results.push({
-            filename: file.name,
-            success: false,
-            error: insertError.message
-          });
-        } else {
-          console.log(`Successfully inserted: ${file.name}`);
-          results.push({
-            filename: file.name,
-            success: true,
-            id: insertedArticle.id
-          });
+          throw insertError;
         }
 
-        // Add delay to avoid overwhelming the system
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
+        results.push({
+          filename: file.name,
+          success: true,
+          id: insertedArticle.id
+        });
+
+        successful++;
+        console.log(`[Atlas Backfill] Successfully processed: ${file.name}`);
+
+        // Add a small delay to avoid overwhelming the system
+        await new Promise(resolve => setTimeout(resolve, 100));
+
       } catch (error) {
-        console.error(`Error processing ${file.name}:`, error);
+        console.error(`[Atlas Backfill] Error processing ${file.name}:`, error);
         results.push({
           filename: file.name,
           success: false,
           error: error.message
         });
+        failed++;
       }
     }
 
-    const successCount = results.filter(r => r.success).length;
-    const failureCount = results.filter(r => !r.success).length;
+    const response = {
+      message: `Atlas backfill completed. Processed ${pdfFiles.length} files.`,
+      totalProcessed: pdfFiles.length,
+      successful,
+      failed,
+      results
+    };
 
-        return new Response(
-          JSON.stringify({
-            message: 'ADC articles backfill completed',
-            totalProcessed: results.length,
-            successful: successCount,
-            failed: failureCount,
-            results: results
-          }),
-          {
-            status: 200,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          }
-        );
+    console.log('[Atlas Backfill] Process completed:', response);
+
+    return new Response(JSON.stringify(response), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 200
+    });
 
   } catch (error) {
-    console.error('Error in Atlas backfill function:', error);
-        return new Response(
-          JSON.stringify({
-            error: 'ADC backfill failed',
-            message: error.message
-          }),
-          {
-            status: 500,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          }
-        );
+    console.error('[Atlas Backfill] Unexpected error:', error);
+    return new Response(JSON.stringify({
+      error: 'Internal server error',
+      details: error.message
+    }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
   }
 });
