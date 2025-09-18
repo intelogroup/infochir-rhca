@@ -11,6 +11,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export const ChaptersGrid = () => {
   const { data: chapters, isLoading, error } = useAtlasArticles();
+  
+  // Debug logging
+  React.useEffect(() => {
+    if (chapters) {
+      console.log('ChaptersGrid: Total chapters received:', chapters.length);
+      console.log('ChaptersGrid: Chapters data:', chapters);
+    }
+  }, [chapters]);
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const [searchTerm, setSearchTerm] = useState("");
   
