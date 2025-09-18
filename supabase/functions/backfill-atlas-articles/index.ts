@@ -49,16 +49,19 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
  */
 function extractInfoFromFilename(filename: string) {
   try {
-    // Match pattern: ADC_ch_X_...
-    const chapterMatch = filename.match(/ADC_ch_(\d+)/i);
+    // Clean filename by removing extra spaces and double dots
+    const cleanFilename = filename.replace(/\s+/g, '_').replace(/\.{2,}/g, '.');
+    
+    // Match pattern: ADC_ch_X_... (case insensitive)
+    const chapterMatch = cleanFilename.match(/ADC_ch_(\d+)/i);
     if (!chapterMatch) {
       throw new Error(`Could not extract chapter number from filename: ${filename}`);
     }
     
     const chapterNumber = parseInt(chapterMatch[1]);
     
-    // Extract date patterns if available
-    const dateMatch = filename.match(/(\d{1,2}_\d{1,2}_\d{2,4})/);
+    // Extract date patterns if available (various formats)
+    const dateMatch = cleanFilename.match(/(\d{1,2}_\d{1,2}_\d{2,4})/);
     let publicationDate = new Date().toISOString();
     
     if (dateMatch) {
@@ -66,17 +69,25 @@ function extractInfoFromFilename(filename: string) {
       if (dateParts.length === 3) {
         const [day, month, year] = dateParts;
         const fullYear = year.length === 2 ? `20${year}` : year;
-        publicationDate = new Date(`${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`).toISOString();
+        try {
+          publicationDate = new Date(`${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`).toISOString();
+        } catch (dateError) {
+          console.warn(`[Atlas Backfill] Invalid date format in ${filename}, using current date`);
+          publicationDate = new Date().toISOString();
+        }
       }
     }
     
     // Check if this is an introduction file
-    const isIntro = filename.toLowerCase().includes('intro');
+    const isIntro = cleanFilename.toLowerCase().includes('intro');
+    
+    console.log(`[Atlas Backfill] Extracted info from ${filename}: Chapter ${chapterNumber}, Date: ${publicationDate}, Intro: ${isIntro}`);
     
     return {
       chapter: chapterNumber,
       publicationDate,
-      isIntro
+      isIntro,
+      cleanFilename
     };
   } catch (error) {
     console.error('[Atlas Backfill] Error extracting info from filename:', error);
@@ -265,7 +276,7 @@ serve(async (req) => {
           throw new Error('Could not extract chapter information from filename');
         }
 
-        const { chapter, publicationDate, isIntro } = fileInfo;
+        const { chapter, publicationDate, isIntro, cleanFilename } = fileInfo;
 
         // Generate content for the article
         const content = await generateAtlasContent(file.name, chapter, publicationDate, isIntro);

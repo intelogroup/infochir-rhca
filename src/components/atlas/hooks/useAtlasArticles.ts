@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase, getADCCoverUrl } from "@/integrations/supabase/client";
 import { generateAtlasImageAlternatives, findWorkingImageUrl } from "@/lib/image-validation";
 import type { AtlasChapter } from "../types";
+import { createMissingChapterPlaceholders, getCompleteChapterOrder } from "../utils/missingChapters";
 
 // Define the exact order of chapters (1-23)
 const CHAPTER_ORDER = [
@@ -102,32 +103,31 @@ export const useAtlasArticles = () => {
             volume: article.volume || '',
             specialty: article.specialty || '',
             category: article.category || '',
-            institution: article.institution || ''
+            institution: article.institution || '',
+            chapterNumber: parseInt(article.issue || '0') || undefined,
+            pageNumber: article.page_number || article.issue || ''
           };
         })
       );
 
-      // Sort the chapters by the predefined order
-      const sortedChapters = chapters.sort((a, b) => {
-        // First try to sort by the predefined chapter order
-        const aIndex = CHAPTER_ORDER.findIndex(chapter => 
-          chapter.toLowerCase().includes(a.title.toLowerCase()) || 
-          a.title.toLowerCase().includes(chapter.toLowerCase())
-        );
-        const bIndex = CHAPTER_ORDER.findIndex(chapter => 
-          chapter.toLowerCase().includes(b.title.toLowerCase()) || 
-          b.title.toLowerCase().includes(chapter.toLowerCase())
-        );
+      // Add missing chapter placeholders
+      const missingChapters = createMissingChapterPlaceholders();
+      const allChapters = [...chapters, ...missingChapters];
+      
+      // Sort chapters by chapter number (1-23)
+      const sortedChapters = allChapters.sort((a, b) => {
+        const chapterA = a.chapterNumber || parseInt(a.issue || '0') || 0;
+        const chapterB = b.chapterNumber || parseInt(b.issue || '0') || 0;
         
-        if (aIndex !== -1 && bIndex !== -1) {
-          return aIndex - bIndex;
+        if (chapterA && chapterB) {
+          return chapterA - chapterB;
         }
         
         // Fallback to alphabetical order by title
         return a.title.localeCompare(b.title);
       });
 
-      console.log("Processed and sorted atlas chapters:", sortedChapters);
+      console.log("Processed and sorted atlas chapters with placeholders:", sortedChapters);
       return sortedChapters;
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
