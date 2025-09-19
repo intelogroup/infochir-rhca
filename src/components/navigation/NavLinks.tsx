@@ -100,13 +100,6 @@ export const NavLinks = () => {
                 />
               )}
               <span className="text-sm md:text-[0.9375rem] font-medium">{item.name}</span>
-              {isActive && (
-                <motion.div 
-                  className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 rounded-full bg-white"
-                  layoutId="activeIndicator"
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                />
-              )}
             </motion.button>
           );
 
