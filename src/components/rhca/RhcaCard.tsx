@@ -46,7 +46,7 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
         else if (article.volume && article.issue) {
           const paddedVolume = String(article.volume).padStart(2, '0');
           const paddedIssue = String(article.issue).padStart(2, '0');
-          const generatedFilename = `RHCA_vol_${paddedVolume}_no_${paddedIssue}.png`;
+          const generatedFilename = `RHCA_vol_${paddedVolume}_no_${paddedIssue}_cover.png`;
           const publicUrl = getStorageUrl('rhca_covers', generatedFilename);
           
           setCoverUrl(publicUrl);
