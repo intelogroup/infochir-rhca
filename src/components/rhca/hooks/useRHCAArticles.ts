@@ -60,7 +60,7 @@ export const useRHCAArticles = () => {
     debugLog(`Processing ${data.length} articles`);
     
     return data.map((article: any) => {
-      // Generate cover image filename - prioritize existing data
+      // Generate cover image filename - try to match actual storage patterns
       let coverImageFilename = article.cover_image_filename;
       
       // If we don't have a filename but we have an image_url, extract filename from URL
@@ -70,15 +70,19 @@ export const useRHCAArticles = () => {
         debugLog(`Extracted filename from image_url: ${coverImageFilename}`);
       }
       
-      // If we still don't have a filename, generate one from volume/issue
-      if (!coverImageFilename && article.volume && article.issue) {
+      // If we still don't have a filename, generate one using date pattern from publication_date
+      if (!coverImageFilename && article.volume && article.issue && article.publication_date) {
         const paddedVolume = String(article.volume).padStart(2, '0');
-        const paddedIssue = String(article.issue).padStart(2, '0');
+        const issueDate = new Date(article.publication_date);
         
-        // Primary pattern: RHCA_vol_XX_no_YY_cover.png (matches storage)
-        coverImageFilename = `RHCA_vol_${paddedVolume}_no_${paddedIssue}_cover.png`;
-        
-        debugLog(`Generated cover filename: ${coverImageFilename} for vol ${article.volume}, issue ${article.issue}`);
+        if (!isNaN(issueDate.getTime())) {
+          const day = String(issueDate.getDate()).padStart(1, '0'); // Don't pad day to match storage pattern
+          const month = String(issueDate.getMonth() + 1).padStart(1, '0'); // Don't pad month
+          const year = issueDate.getFullYear();
+          coverImageFilename = `RHCA_vol_${paddedVolume}_no_${article.issue}_${day}_${month}_${year}.png`;
+          
+          debugLog(`Generated date-based filename: ${coverImageFilename} for vol ${article.volume}, issue ${article.issue}`);
+        }
       }
       
       // Ensure required fields have default values

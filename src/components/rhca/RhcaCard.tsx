@@ -45,15 +45,27 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
           setCoverUrl(publicUrl);
           logger.log(`[RhcaCard] Cover URL from rhca_covers: ${publicUrl}`);
         }
-        // If no image is available, try to generate a filename from volume and issue
-        else if (article.volume && article.issue) {
+        // If no direct URLs, generate filename from volume/issue using actual storage patterns
+        else if (article.volume && article.issue && article.publicationDate) {
           const paddedVolume = String(article.volume).padStart(2, '0');
-          const paddedIssue = String(article.issue).padStart(2, '0');
-          const generatedFilename = `RHCA_vol_${paddedVolume}_no_${paddedIssue}_cover.png`;
-          const publicUrl = getStorageUrl('rhca_covers', generatedFilename);
+          const issueDate = new Date(article.publicationDate);
           
-          setCoverUrl(publicUrl);
-          logger.log(`[RhcaCard] Using generated filename: ${generatedFilename}`);
+          if (!isNaN(issueDate.getTime())) {
+            const day = String(issueDate.getDate()).padStart(1, '0');
+            const month = String(issueDate.getMonth() + 1).padStart(1, '0');
+            const year = issueDate.getFullYear();
+            
+            // Try date-based pattern that matches actual storage
+            const generatedFilename = `RHCA_vol_${paddedVolume}_no_${article.issue}_${day}_${month}_${year}.png`;
+            const publicUrl = getStorageUrl('rhca_covers', generatedFilename);
+            
+            if (isDebugMode) {
+              console.log(`[RhcaCard] Generated date-based cover URL: ${publicUrl}`);
+            }
+            
+            setCoverUrl(publicUrl);
+            logger.log(`[RhcaCard] Using generated date-based filename: ${generatedFilename}`);
+          }
         } 
         // If no image is available, use null
         else {
