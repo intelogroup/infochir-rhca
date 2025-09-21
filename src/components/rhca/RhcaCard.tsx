@@ -34,11 +34,23 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
         logger.log(`[RhcaCard] Cover image filename: ${article.coverImageFileName}`);
         
         // Load cover image - prioritize cover_image_filename which has correct names
-        if (article.coverImageFileName) {
-          // Use the cover_image_filename from database (it has the correct date-based pattern)
-          const publicUrl = getStorageUrl('rhca_covers', article.coverImageFileName);
+        let coverFilename = article.coverImageFileName;
+        
+        // Fix specific mismatched filenames for issues 47 and 48 based on actual storage
+        if (article.issue === '47' && coverFilename?.includes('vol_02_no_47')) {
+          coverFilename = 'RHCA_vol_07_no_47_19_7_2024.png';
+          logger.log(`[RhcaCard] Fixed issue 47 filename to match storage: ${coverFilename}`);
+        }
+        if (article.issue === '48' && article.volume === '03') {
+          coverFilename = 'RHCA_vol_07_no_48_18_10_2024.png';
+          logger.log(`[RhcaCard] Fixed issue 48 vol 03 filename to match storage: ${coverFilename}`);
+        }
+        
+        if (coverFilename) {
+          // Use the corrected filename
+          const publicUrl = getStorageUrl('rhca_covers', coverFilename);
           setCoverUrl(publicUrl);
-          logger.log(`[RhcaCard] Using cover_image_filename: ${article.coverImageFileName}`);
+          logger.log(`[RhcaCard] Using cover filename: ${coverFilename}`);
         }
         else if (article.image_url) {
           // Fallback to image_url if available
