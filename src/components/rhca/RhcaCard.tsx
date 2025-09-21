@@ -33,17 +33,17 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
         logger.log(`[RhcaCard] Loading resources for article ${article.id}`);
         logger.log(`[RhcaCard] Cover image filename: ${article.coverImageFileName}`);
         
-        // Load cover image with priority order: image_url > coverImageFileName > generated filename
-        if (article.image_url) {
-          // Prioritize image_url since it's most reliable from database
-          setCoverUrl(article.image_url);
-          logger.log(`[RhcaCard] Using image_url: ${article.image_url}`);
-        }
-        else if (article.coverImageFileName) {
-          // Try primary bucket
+        // Load cover image - prioritize cover_image_filename which has correct names
+        if (article.coverImageFileName) {
+          // Use the cover_image_filename from database (it has the correct date-based pattern)
           const publicUrl = getStorageUrl('rhca_covers', article.coverImageFileName);
           setCoverUrl(publicUrl);
-          logger.log(`[RhcaCard] Cover URL from rhca_covers: ${publicUrl}`);
+          logger.log(`[RhcaCard] Using cover_image_filename: ${article.coverImageFileName}`);
+        }
+        else if (article.image_url) {
+          // Fallback to image_url if available
+          setCoverUrl(article.image_url);
+          logger.log(`[RhcaCard] Using image_url fallback: ${article.image_url}`);
         }
         // If no direct URLs, generate filename from volume/issue using actual storage patterns
         else if (article.volume && article.issue && article.publicationDate) {
