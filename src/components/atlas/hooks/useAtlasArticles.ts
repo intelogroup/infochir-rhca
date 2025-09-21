@@ -114,17 +114,23 @@ export const useAtlasArticles = () => {
       const missingChapters = createMissingChapterPlaceholders();
       const allChapters = [...chapters, ...missingChapters];
       
-      // Sort chapters by chapter number (1-23)
+      // Sort chapters by sequential order: Introduction (00), then chapters 01, 02, 03, etc.
       const sortedChapters = allChapters.sort((a, b) => {
-        const chapterA = a.chapterNumber || parseInt(a.issue || '0') || 0;
-        const chapterB = b.chapterNumber || parseInt(b.issue || '0') || 0;
+        // Get chapter numbers from issue field, treating intro as 0
+        const getChapterOrder = (chapter: AtlasChapter) => {
+          if (chapter.title?.toLowerCase().includes('introduction')) return 0;
+          if (chapter.issue) {
+            const issueNum = parseInt(chapter.issue);
+            return isNaN(issueNum) ? 999 : issueNum;
+          }
+          if (chapter.chapterNumber) return chapter.chapterNumber;
+          return 999;
+        };
         
-        if (chapterA && chapterB) {
-          return chapterA - chapterB;
-        }
+        const orderA = getChapterOrder(a);
+        const orderB = getChapterOrder(b);
         
-        // Fallback to alphabetical order by title
-        return a.title.localeCompare(b.title);
+        return orderA - orderB;
       });
 
       console.log("Processed and sorted atlas chapters with placeholders:", sortedChapters);
