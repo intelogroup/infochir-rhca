@@ -33,18 +33,18 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
         logger.log(`[RhcaCard] Loading resources for article ${article.id}`);
         logger.log(`[RhcaCard] Cover image filename: ${article.coverImageFileName}`);
         
-        // Load cover image with better fallbacks
-        if (article.coverImageFileName) {
+        // Load cover image with priority order: image_url > coverImageFileName > generated filename
+        if (article.image_url) {
+          // Prioritize image_url since it's most reliable from database
+          setCoverUrl(article.image_url);
+          logger.log(`[RhcaCard] Using image_url: ${article.image_url}`);
+        }
+        else if (article.coverImageFileName) {
           // Try primary bucket
           const publicUrl = getStorageUrl('rhca_covers', article.coverImageFileName);
           setCoverUrl(publicUrl);
           logger.log(`[RhcaCard] Cover URL from rhca_covers: ${publicUrl}`);
-        } 
-        // Fallback to image_url if available
-        else if (article.image_url) {
-          setCoverUrl(article.image_url);
-          logger.log(`[RhcaCard] Using image_url fallback: ${article.image_url}`);
-        } 
+        }
         // If no image is available, try to generate a filename from volume and issue
         else if (article.volume && article.issue) {
           const paddedVolume = String(article.volume).padStart(2, '0');

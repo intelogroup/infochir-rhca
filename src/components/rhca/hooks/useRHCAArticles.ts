@@ -60,9 +60,17 @@ export const useRHCAArticles = () => {
     debugLog(`Processing ${data.length} articles`);
     
     return data.map((article: any) => {
-      // Generate cover image filename if needed - prioritize _cover.png pattern
+      // Generate cover image filename - prioritize existing data
       let coverImageFilename = article.cover_image_filename;
       
+      // If we don't have a filename but we have an image_url, extract filename from URL
+      if (!coverImageFilename && article.image_url) {
+        const urlParts = article.image_url.split('/');
+        coverImageFilename = urlParts[urlParts.length - 1];
+        debugLog(`Extracted filename from image_url: ${coverImageFilename}`);
+      }
+      
+      // If we still don't have a filename, generate one from volume/issue
       if (!coverImageFilename && article.volume && article.issue) {
         const paddedVolume = String(article.volume).padStart(2, '0');
         const paddedIssue = String(article.issue).padStart(2, '0');
