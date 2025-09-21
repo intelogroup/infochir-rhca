@@ -1,6 +1,6 @@
 
 import { useQuery } from "@tanstack/react-query";
-import { supabase, getADCCoverUrl } from "@/integrations/supabase/client";
+import { supabase, getADCCoverUrl, getStorageUrl } from "@/integrations/supabase/client";
 import { highlights } from "@/components/home/carousel/carouselData";
 import { CarouselItem } from "./types";
 import { createLogger } from "@/lib/error-logger";
@@ -54,6 +54,26 @@ export const useCarouselData = () => {
             logger.debug(`Generated ADC cover URL for carousel: ${imageUrl}`);
           } catch (imageError) {
             logger.error(`Failed to generate ADC image URL for carousel: ${article.cover_image_filename}`, imageError);
+          }
+        }
+        
+        // Generate proper cover image URL for RHCA articles
+        if (article.source === 'RHCA') {
+          try {
+            if (article.cover_image_filename) {
+              // Use existing cover image filename
+              imageUrl = getStorageUrl('rhca_covers', article.cover_image_filename);
+              logger.debug(`Generated RHCA cover URL for carousel: ${imageUrl}`);
+            } else if (article.volume && article.issue) {
+              // Generate filename from volume and issue
+              const paddedVolume = String(article.volume).padStart(2, '0');
+              const paddedIssue = String(article.issue).padStart(2, '0');
+              const generatedFilename = `RHCA_vol_${paddedVolume}_no_${paddedIssue}_cover.png`;
+              imageUrl = getStorageUrl('rhca_covers', generatedFilename);
+              logger.debug(`Generated RHCA cover URL from volume/issue for carousel: ${imageUrl}`);
+            }
+          } catch (imageError) {
+            logger.error(`Failed to generate RHCA image URL for carousel:`, imageError);
           }
         }
 
