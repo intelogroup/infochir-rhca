@@ -1,7 +1,7 @@
 import { AtlasChapter } from '@/components/atlas/types';
 
 // Missing chapters that should show as "Coming Soon"
-const MISSING_CHAPTERS = [9, 10, 11, 13, 21, 22, 23];
+const MISSING_CHAPTERS = [10, 11, 13, 21, 22, 23];
 
 // Complete chapter definitions with expected content
 const PLANNED_CHAPTERS: Partial<AtlasChapter>[] = [
