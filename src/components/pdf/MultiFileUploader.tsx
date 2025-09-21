@@ -21,7 +21,7 @@ interface MultiFileUploaderProps {
 export const MultiFileUploader = ({
   bucket,
   acceptedFileTypes,
-  maxFileSize = 30,
+  maxFileSize = 10,
   maxFiles = 5,
   onUploadComplete,
   helperText,

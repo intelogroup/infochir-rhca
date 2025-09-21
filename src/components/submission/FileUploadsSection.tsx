@@ -45,10 +45,10 @@ export const FileUploadsSection: React.FC<FileUploadsSectionProps> = ({
               'application/msword': ['.doc'],
               'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
             }}
-            maxFileSize={30}
+            maxFileSize={10}
             maxFiles={20} 
             onUploadComplete={setArticleFiles}
-            helperText="Formats acceptés: DOC, DOCX, PDF. Taille max: 30MB par fichier. Maximum 20 fichiers"
+            helperText="Formats acceptés: DOC, DOCX, PDF. Taille max: 10MB par fichier. Maximum 20 fichiers"
           />
         </div>
         {formErrors.articleFiles && (

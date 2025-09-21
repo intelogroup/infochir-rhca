@@ -56,7 +56,7 @@ const FileManagement = () => {
                     'application/msword': ['.doc'],
                     'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
                   }}
-                  maxFileSize={30}
+                  maxFileSize={10}
                   maxFiles={10}
                   onUploadComplete={setRhcaFiles}
                   helperText="Formats: PDF, DOC, DOCX - Max: 30MB"
@@ -111,7 +111,7 @@ const FileManagement = () => {
                     'application/msword': ['.doc'],
                     'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
                   }}
-                  maxFileSize={30}
+                  maxFileSize={10}
                   maxFiles={10}
                   onUploadComplete={setIgmFiles}
                   helperText="Formats: PDF, DOC, DOCX - Max: 30MB"
@@ -165,7 +165,7 @@ const FileManagement = () => {
                   'application/msword': ['.doc'],
                   'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
                 }}
-                maxFileSize={50}
+                maxFileSize={10}
                 maxFiles={20}
                 onUploadComplete={setIndexFiles}
                 helperText="Formats: PDF, DOC, DOCX - Max: 50MB"
@@ -194,7 +194,7 @@ const FileManagement = () => {
                     'application/msword': ['.doc'],
                     'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
                   }}
-                  maxFileSize={30}
+                  maxFileSize={10}
                   maxFiles={15}
                   onUploadComplete={() => {}}
                   helperText="Formats: PDF, DOC, DOCX - Max: 30MB"

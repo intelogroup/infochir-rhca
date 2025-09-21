@@ -18,9 +18,9 @@ export const PDFUploader = () => {
       return;
     }
 
-    // Validate file size (30MB max)
-    if (file.size > 30 * 1024 * 1024) {
-      toast.error("Le fichier ne doit pas dépasser 30MB");
+    // Validate file size (10MB max)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Le fichier ne doit pas dépasser 10MB");
       return;
     }
 

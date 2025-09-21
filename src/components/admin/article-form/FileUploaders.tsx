@@ -49,10 +49,10 @@ export const FileUploaders = ({
             'application/msword': ['.doc'],
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
           }}
-          maxFileSize={30}
+          maxFileSize={10}
           maxFiles={5}
           onUploadComplete={setArticleFilesUrls}
-          helperText="Formats: PDF, DOC, DOCX - Max: 30MB"
+          helperText="Formats: PDF, DOC, DOCX - Max: 10MB"
         />
         
         {errors.files && (
