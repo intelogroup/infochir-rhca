@@ -2,6 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent as CardContentUI } from "@/components/ui/card";
 import { getStorageUrl } from "@/integrations/supabase/client";
+
+// Debug mode check
+const isDebugMode = import.meta.env.DEV;
 import { CoverImage } from "./card/CoverImage";
 import { CardContent } from "./card/CardContent";
 import { RhcaArticleModal } from "./article/RhcaArticleModal";

@@ -60,21 +60,17 @@ export const useRHCAArticles = () => {
     debugLog(`Processing ${data.length} articles`);
     
     return data.map((article: any) => {
-      // Generate cover image filename if needed
+      // Generate cover image filename if needed - prioritize _cover.png pattern
       let coverImageFilename = article.cover_image_filename;
       
       if (!coverImageFilename && article.volume && article.issue) {
         const paddedVolume = String(article.volume).padStart(2, '0');
-        const issueDate = new Date(article.publication_date);
+        const paddedIssue = String(article.issue).padStart(2, '0');
         
-        if (isNaN(issueDate.getTime())) {
-          coverImageFilename = `RHCA_vol_${paddedVolume}_no_${article.issue}.png`;
-        } else {
-          const day = String(issueDate.getDate()).padStart(2, '0');
-          const month = String(issueDate.getMonth() + 1).padStart(2, '0');
-          const year = issueDate.getFullYear();
-          coverImageFilename = `RHCA_vol_${paddedVolume}_no_${article.issue}_${day}_${month}_${year}.png`;
-        }
+        // Primary pattern: RHCA_vol_XX_no_YY_cover.png (matches storage)
+        coverImageFilename = `RHCA_vol_${paddedVolume}_no_${paddedIssue}_cover.png`;
+        
+        debugLog(`Generated cover filename: ${coverImageFilename} for vol ${article.volume}, issue ${article.issue}`);
       }
       
       // Ensure required fields have default values

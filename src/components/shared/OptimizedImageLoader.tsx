@@ -77,10 +77,16 @@ export const OptimizedImageLoader = ({
         .replace('igm_covers', 'igm-covers');
       
       if (nextSrc !== currentSrc) {
+        logger.log(`[OptimizedImageLoader] Retrying with alternative bucket name: ${nextSrc}`);
         setRetryCount(prev => prev + 1);
         setCurrentSrc(nextSrc);
         return;
       }
+    }
+    
+    // Log RHCA-specific failures for debugging
+    if (currentSrc.includes('rhca')) {
+      logger.warn(`[OptimizedImageLoader] RHCA image failed to load: ${currentSrc}`);
     }
     
     // Mark as failed and show fallback
