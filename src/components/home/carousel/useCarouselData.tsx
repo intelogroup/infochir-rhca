@@ -13,12 +13,12 @@ export const useCarouselData = () => {
     queryFn: async () => {
       logger.debug('Fetching carousel highlights for IGM, RHCA, and ADC sources...');
       
-      // Get the latest article from each source (IGM, RHCA, ADC)
+      // Get the latest updated article from each source (IGM, RHCA, ADC)
       const { data: articles, error } = await supabase
         .from('articles')
         .select('*')
         .in('source', ['IGM', 'RHCA', 'ADC'])
-        .order('publication_date', { ascending: false });
+        .order('updated_at', { ascending: false });
 
       if (error) throw error;
 
