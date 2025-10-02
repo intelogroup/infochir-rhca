@@ -77,6 +77,13 @@ export type Database = {
             referencedRelation: "members"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "article_authors_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members_public_view"
+            referencedColumns: ["id"]
+          },
         ]
       }
       article_submissions: {
@@ -1280,6 +1287,30 @@ export type Database = {
           shares: number | null
           title: string | null
           volume: string | null
+        }
+        Relationships: []
+      }
+      members_public_view: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          id: number | null
+          name: string | null
+          titre: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          id?: number | null
+          name?: string | null
+          titre?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          id?: number | null
+          name?: string | null
+          titre?: string | null
         }
         Relationships: []
       }
