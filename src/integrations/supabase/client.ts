@@ -15,3 +15,31 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     autoRefreshToken: true,
   }
 });
+
+/**
+ * Gets a public URL for a file in a Supabase storage bucket
+ */
+export const getStorageUrl = (bucketName: string, fileName: string): string => {
+  if (!fileName) return '';
+  if (fileName.startsWith('http')) return fileName;
+  
+  const { data } = supabase.storage
+    .from(bucketName)
+    .getPublicUrl(fileName);
+  
+  return data.publicUrl;
+};
+
+/**
+ * Gets a public URL for an ADC cover image
+ */
+export const getADCCoverUrl = (fileName: string): string => {
+  return getStorageUrl('atlas_covers', fileName);
+};
+
+/**
+ * Gets a public URL for a founder avatar
+ */
+export const getFounderAvatarUrl = (fileName: string): string => {
+  return getStorageUrl('founder_avatars', fileName);
+};
