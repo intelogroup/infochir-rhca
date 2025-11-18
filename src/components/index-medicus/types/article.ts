@@ -29,11 +29,25 @@ export interface Article {
 
 // Add the missing mapping function
 export const mapDatabaseArticleToArticle = (dbArticle: any): Article => {
+  // Consolidate authors from all possible sources
+  let authors: string[] = [];
+  if (Array.isArray(dbArticle.authors) && dbArticle.authors.length > 0) {
+    authors = dbArticle.authors;
+  } else {
+    // Build from primary_author and co_authors if authors array is empty
+    if (dbArticle.primary_author) {
+      authors.push(dbArticle.primary_author);
+    }
+    if (Array.isArray(dbArticle.co_authors) && dbArticle.co_authors.length > 0) {
+      authors = [...authors, ...dbArticle.co_authors];
+    }
+  }
+
   return {
     id: dbArticle.id,
     title: dbArticle.title,
     abstract: dbArticle.abstract,
-    authors: Array.isArray(dbArticle.authors) ? dbArticle.authors : [],
+    authors: authors,
     publicationDate: dbArticle.publication_date,
     date: dbArticle.date || dbArticle.publication_date,
     source: dbArticle.source as ArticleSource,

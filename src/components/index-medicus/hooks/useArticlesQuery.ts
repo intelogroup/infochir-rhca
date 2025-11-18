@@ -45,32 +45,49 @@ export const useArticlesQuery = (page = 0, source?: ArticleSource, categoryFilte
           return { articles: [], totalPages: 0 };
         }
 
-        const articles: Article[] = data.map((item) => ({
-          id: item.id,
-          title: item.title,
-          abstract: item.abstract,
-          date: item.publication_date,
-          publicationDate: item.publication_date,
-          source: item.source as Article['source'],
-          category: item.category,
-          authors: Array.isArray(item.authors) ? item.authors : [],
-          tags: Array.isArray(item.tags) ? item.tags : [],
-          imageUrl: item.image_url,
-          views: item.views || 0,
-          citations: item.citations || 0,
-          pdfUrl: item.pdf_url,
-          downloads: item.downloads || 0,
-          institution: item.institution,
-          status: (item.status === 'published' || item.status === 'pending' || item.status === 'draft') 
-            ? item.status as 'published' | 'pending' | 'draft'
-            : 'published',
-          shares: item.shares || 0,
-          volume: item.volume,
-          issue: item.issue,
-          pageNumber: item.page_number,
-          specialty: item.specialty,
-          articleType: item.source as Article['source']
-        }));
+        const articles: Article[] = data.map((item) => {
+          // Consolidate authors from all possible sources
+          let authors: string[] = [];
+          if (Array.isArray(item.authors) && item.authors.length > 0) {
+            authors = item.authors;
+          } else {
+            // Build from primary_author and co_authors if authors array is empty
+            if (item.primary_author) {
+              authors.push(item.primary_author);
+            }
+            if (Array.isArray(item.co_authors) && item.co_authors.length > 0) {
+              authors = [...authors, ...item.co_authors];
+            }
+          }
+
+          return {
+            id: item.id,
+            title: item.title,
+            abstract: item.abstract,
+            date: item.publication_date,
+            publicationDate: item.publication_date,
+            source: item.source as Article['source'],
+            category: item.category,
+            authors: authors,
+            tags: Array.isArray(item.tags) ? item.tags : [],
+            imageUrl: item.image_url,
+            views: item.views || 0,
+            citations: item.citations || 0,
+            pdfUrl: item.pdf_url,
+            pdf_url: item.pdf_url,
+            downloads: item.downloads || 0,
+            institution: item.institution,
+            status: (item.status === 'published' || item.status === 'pending' || item.status === 'draft') 
+              ? item.status as 'published' | 'pending' | 'draft'
+              : 'published',
+            shares: item.shares || 0,
+            volume: item.volume,
+            issue: item.issue,
+            pageNumber: item.page_number,
+            specialty: item.specialty,
+            articleType: item.source as Article['source']
+          };
+        });
 
         const totalPages = Math.ceil((count || 0) / PAGE_SIZE);
 
