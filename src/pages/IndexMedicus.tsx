@@ -84,7 +84,7 @@ const IndexMedicus = () => {
                   <div className="bg-white rounded-lg p-2 sm:p-4 lg:p-6 shadow-md border border-gray-100">
                     <Suspense fallback={<LoadingSpinner variant="primary" text="Chargement des articles..." />}>
                       <ArticleGrid 
-                        viewMode="table" 
+                        viewMode="list"
                         sourceFilter={sourceFilter}
                         onSourceFilterChange={handleSourceFilterChange}
                         sortBy="title"
@@ -97,7 +97,7 @@ const IndexMedicus = () => {
                   <div className="bg-white rounded-lg p-2 sm:p-4 lg:p-6 shadow-md border border-gray-100">
                     <Suspense fallback={<LoadingSpinner variant="primary" text="Chargement des articles..." />}>
                       <ArticleGrid 
-                        viewMode="table" 
+                        viewMode="list"
                         sourceFilter={sourceFilter}
                         onSourceFilterChange={handleSourceFilterChange}
                         sortBy="author"
