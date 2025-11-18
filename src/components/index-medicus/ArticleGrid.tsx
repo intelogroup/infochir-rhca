@@ -22,14 +22,14 @@ interface ArticleGridProps {
 }
 
 const ArticleGrid: FC<ArticleGridProps> = ({ 
-  viewMode: initialViewMode = "list",
+  viewMode: initialViewMode = "table",
   source,
   sourceFilter = 'all',
   onSourceFilterChange,
   sortBy = "title"
 }) => {
   const isMobile = useIsMobile();
-  const [viewMode, setViewMode] = useState<"grid" | "table" | "list">("list");
+  const [viewMode, setViewMode] = useState<"grid" | "table" | "list">("table");
   const [currentPage, setCurrentPage] = useState(0);
   const mountedRef = useRef(false);
   
