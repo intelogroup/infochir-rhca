@@ -95,7 +95,6 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick, s
                 </div>
                 <ArticleActions 
                   article={article}
-                  pdfUrl={article.pdfUrl}
                 />
               </CardContent>
             </div>

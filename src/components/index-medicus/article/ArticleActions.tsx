@@ -6,10 +6,9 @@ import type { Article } from "../types";
 
 interface ArticleActionsProps {
   article: Article;
-  pdfUrl?: string | null;
 }
 
-export const ArticleActions: React.FC<ArticleActionsProps> = ({ article, pdfUrl }) => {
+export const ArticleActions: React.FC<ArticleActionsProps> = ({ article }) => {
   const handleActionsClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent card click event
   };
@@ -23,7 +22,7 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({ article, pdfUrl 
       
       <PdfActions 
         article={article}
-        pdfUrl={pdfUrl}
+        pdfUrl={article.pdfUrl || article.pdf_url || null}
       />
     </div>
   );
