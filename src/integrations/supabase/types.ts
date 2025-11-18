@@ -1436,26 +1436,11 @@ export type Database = {
       }
     }
     Functions: {
-      assign_admin_role_by_email: {
-        Args: { _email: string }
-        Returns: boolean
-      }
-      can_access_analytics: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      check_email_limit_and_notify: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      cleanup_failed_emails: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      cleanup_old_email_usage: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      assign_admin_role_by_email: { Args: { _email: string }; Returns: boolean }
+      can_access_analytics: { Args: never; Returns: boolean }
+      check_email_limit_and_notify: { Args: never; Returns: undefined }
+      cleanup_failed_emails: { Args: never; Returns: undefined }
+      cleanup_old_email_usage: { Args: never; Returns: undefined }
       create_payment_intent: {
         Args: { amount: number; currency: string }
         Returns: Json
@@ -1487,7 +1472,7 @@ export type Database = {
         }[]
       }
       get_download_statistics: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           document_types: Json
           failed_downloads: number
@@ -1504,14 +1489,8 @@ export type Database = {
           unique_documents: number
         }[]
       }
-      get_downloads_by_type: {
-        Args: { doc_type: string }
-        Returns: number
-      }
-      get_total_downloads: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
+      get_downloads_by_type: { Args: { doc_type: string }; Returns: number }
+      get_total_downloads: { Args: never; Returns: number }
       has_role: {
         Args: { _role: Database["public"]["Enums"]["app_role"] }
         Returns: boolean
@@ -1520,14 +1499,8 @@ export type Database = {
         Args: { column_name: string; row_id: string; table_name: string }
         Returns: undefined
       }
-      is_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      is_valid_email: {
-        Args: { email_text: string }
-        Returns: boolean
-      }
+      is_admin: { Args: never; Returns: boolean }
+      is_valid_email: { Args: { email_text: string }; Returns: boolean }
       log_security_event: {
         Args: {
           event_data_param?: Json
