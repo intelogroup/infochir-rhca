@@ -78,24 +78,23 @@ export const NavLinks = () => {
             <motion.button
               onClick={() => navigate(item.href)}
               className={`
-                group relative flex h-9 md:h-10 w-auto px-3 md:px-4 items-center justify-center 
-                rounded-full transition-all duration-300 
+                group relative flex h-9 md:h-10 w-auto px-2 md:px-3 items-center justify-center 
+                transition-all duration-300 
                 ${isActive 
-                  ? 'bg-gradient-to-r from-primary to-primary-light text-white shadow-lg hover:shadow-xl hover:scale-105' 
-                  : 'bg-white/90 hover:bg-white text-gray-600 hover:text-primary border border-gray-200/50 shadow-sm hover:shadow-md hover:border-primary/20'
+                  ? 'text-primary' 
+                  : 'text-gray-600 hover:text-primary'
                 }
-                focus:outline-none focus:ring-2 focus:ring-primary/20
+                focus:outline-none
               `}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               role="menuitem"
               aria-label={item.name}
               aria-current={isActive ? 'page' : undefined}
             >
               {item.icon && (
                 <item.icon 
-                  className={`h-4 md:h-4.5 w-4 md:w-4.5 mr-2 
-                    ${isActive ? 'text-white' : 'text-primary/70 group-hover:text-primary transition-colors'}`} 
+                  className={`h-5 md:h-6 w-5 md:w-6 mr-2 transition-colors`} 
                   aria-hidden="true" 
                 />
               )}
