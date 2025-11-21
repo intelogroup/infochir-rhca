@@ -190,17 +190,6 @@ export const HeroSection = () => {
         </div>
       </AnimatePresence>
       
-      {/* Decorative grid overlay */}
-      <div 
-        className="absolute inset-0 z-3 pointer-events-none"
-        style={{ 
-          backgroundImage: `radial-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px)`,
-          backgroundSize: '20px 20px',
-          backgroundPosition: '0 0',
-          opacity: 0.4,
-          mixBlendMode: 'overlay'
-        }}
-      ></div>
       
       {/* Content section */}
       <div className="relative max-w-7xl mx-auto text-left z-10">
