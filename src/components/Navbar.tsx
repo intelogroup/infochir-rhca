@@ -30,7 +30,7 @@ export const Navbar = () => {
       role="navigation" 
       aria-label="Main navigation"
     >
-      <div className="w-full border-b border-gray-200/50 bg-white/85 backdrop-blur-md shadow-lg">
+      <div className="w-full bg-white shadow-sm">
         <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-12">
           <div className="flex h-16 md:h-[4.5rem] lg:h-20 items-center justify-between">
             {/* Logo section */}
