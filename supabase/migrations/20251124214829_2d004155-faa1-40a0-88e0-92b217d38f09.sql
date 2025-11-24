@@ -1,0 +1,36 @@
+-- Insert RHCA Vol. 8, No 51 article
+INSERT INTO articles (
+  title,
+  abstract,
+  source,
+  volume,
+  issue,
+  tags,
+  authors,
+  category,
+  status,
+  pdf_filename,
+  cover_image_filename,
+  page_number,
+  publication_date,
+  specialty,
+  doi,
+  article_type
+) VALUES (
+  'Synthèse du Journal (RHCA Vol. 8, No 51)',
+  'Ce numéro de la Revue Haïtienne de Chirurgie et d''Anatomie (RHCA) se concentre sur plusieurs domaines de la chirurgie et de la pratique médicale. Les thèmes majeurs comprennent l''évaluation du score de Glasgow (GCS) pour le traumatisme crânien, la césarienne dans un contexte d''urgence obstétricale, l''incidence des hernies inguinales et crurales chez la femme, l''impact d''une formation en anatomie/physiologie pour le personnel de santé, et l''importance d''une préparation adéquate du patient pour une endoscopie digestive. Des articles abordent aussi la prévention de la transmission mère-enfant du VIH et une analyse des activités chirurgicales à l''Hôpital St. Damien en Haïti.',
+  'RHCA',
+  '8',
+  '51',
+  ARRAY['Chirurgie', 'Traumatisme crânien', 'Obstétrique', 'Hernie inguinale', 'Endoscopie digestive', 'VIH/SIDA'],
+  ARRAY['Louis-Franck Télémaque MD', 'Nicaisse B. Brizard MD', 'Junior V. Jean-Pierre MD', 'Vanessa J. Dor MD', 'Wilfine Dupont MD', 'Samuel M. Jean-Claude MD', 'Pierre S. Joseph MD', 'Samuel M. Jean Claude MD', 'Emmanuel S. Jean François MD', 'Pierre P. F. Jacques MD', 'Gérald Lerebours MD', 'Eunice Dérivois Merisier MD', 'Pierre C. Woolley MD', 'Judith Jean-Baptiste MD', 'Carla F. Dérivois MD'],
+  'Chirurgie',
+  'published',
+  'RHCA_vol_08_no_51_21_10_2025.pdf',
+  'RHCA_vol_08_no_51_21_10_2025.png',
+  '13',
+  '2025-10-21',
+  'Chirurgie générale',
+  '978-99970-978-6-6',
+  'RHCA'
+);
