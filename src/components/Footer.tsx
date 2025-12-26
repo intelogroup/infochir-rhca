@@ -1,5 +1,5 @@
-
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { FooterSection, quickLinks, resources } from "./layouts/FooterSection";
 import { FooterLogo } from "./footer/FooterLogo";
 import { SocialLinks } from "./footer/SocialLinks";
@@ -67,13 +67,13 @@ export const Footer = () => {
             </p>
           </div>
           <div className="flex items-center justify-center md:justify-end space-x-3">
-            <a href="/privacy" className="text-xs text-gray-500 hover:text-primary transition-colors">
+            <Link to="/privacy" className="text-xs text-gray-500 hover:text-primary transition-colors">
               Politique de confidentialité
-            </a>
+            </Link>
             <span className="text-gray-400">•</span>
-            <a href="/terms" className="text-xs text-gray-500 hover:text-primary transition-colors">
+            <Link to="/terms" className="text-xs text-gray-500 hover:text-primary transition-colors">
               Conditions d'utilisation
-            </a>
+            </Link>
           </div>
         </motion.div>
       </div>
