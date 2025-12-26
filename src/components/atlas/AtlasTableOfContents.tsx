@@ -59,14 +59,14 @@ export const AtlasTableOfContents = () => {
   };
 
   const formatTitle = (title: string, issueNumber?: number) => {
-    // Check if title already includes "Atlas de Diagnostic Chirurgicale (ADC)"
-    if (title.includes("Atlas de Diagnostic Chirurgicale")) {
+    // Check if title already includes "Atlas de Diagnostic Chirurgical (ADC)"
+    if (title.includes("Atlas de Diagnostic Chirurgical")) {
       return title;
     }
     
     // Add the full ADC prefix if not present
     const chapterName = title;
-    return `Atlas de Diagnostic Chirurgicale (ADC) - ${chapterName}`;
+    return `Atlas de Diagnostic Chirurgical (ADC) - ${chapterName}`;
   };
 
   return (
