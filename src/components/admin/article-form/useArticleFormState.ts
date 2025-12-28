@@ -65,9 +65,8 @@ export const useArticleFormState = ({ initialData, isEditing = false }: UseArtic
     }
   }, [articleFilesUrls, formErrors]);
 
-  const isFormValid = form.formState.isValid && 
-                     (isEditing || (articleFilesUrls.length > 0 && !!coverImageUrl)) && 
-                     Object.keys(formErrors).length === 0;
+  // For admin CMS, files are optional - only form validation is required
+  const isFormValid = form.formState.isValid && Object.keys(formErrors).length === 0;
 
   return {
     form,

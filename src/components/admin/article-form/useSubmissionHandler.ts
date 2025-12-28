@@ -29,16 +29,16 @@ export const useSubmissionHandler = ({
   const handleSubmit = async (values: ArticleFormData) => {
     setFormErrors({});
     
-    if (articleFilesUrls.length === 0) {
-      setFormErrors((prev) => ({...prev, files: "Veuillez uploader au moins un fichier d'article"}));
-      toast.error("Veuillez uploader au moins un fichier d'article");
-      return;
+    // Files are now optional for admin CMS - only warn if missing
+    const hasFiles = articleFilesUrls.length > 0;
+    const hasCoverImage = !!coverImageUrl;
+    
+    if (!hasFiles) {
+      console.warn("No article files uploaded - article will be created without PDF");
     }
-
-    if (!coverImageUrl) {
-      setFormErrors((prev) => ({...prev, coverImage: "Veuillez ajouter une image de couverture"}));
-      toast.error("Veuillez ajouter une image de couverture");
-      return;
+    
+    if (!hasCoverImage) {
+      console.warn("No cover image uploaded - article will be created without image");
     }
 
     if (customSubmit) {
@@ -60,7 +60,7 @@ export const useSubmissionHandler = ({
     toast.loading("Création de l'article en cours...");
     
     try {
-      // Prepare the first PDF file URL for pdf_url field
+      // Prepare the first PDF file URL for pdf_url field (optional)
       const primaryPdfUrl = articleFilesUrls.length > 0 ? articleFilesUrls[0] : null;
       const primaryPdfFilename = primaryPdfUrl ? primaryPdfUrl.split('/').pop() : null;
       
@@ -80,7 +80,7 @@ export const useSubmissionHandler = ({
           specialty: values.specialty,
           pdf_url: primaryPdfUrl,
           pdf_filename: primaryPdfFilename,
-          image_url: coverImageUrl,
+          image_url: coverImageUrl || null,
           status: values.status
         })
         .select()
