@@ -67,6 +67,13 @@ export type Database = {
             foreignKeyName: "article_authors_article_id_fkey"
             columns: ["article_id"]
             isOneToOne: false
+            referencedRelation: "popular_articles_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "article_authors_article_id_fkey"
+            columns: ["article_id"]
+            isOneToOne: false
             referencedRelation: "rhca_articles_view"
             referencedColumns: ["id"]
           },
@@ -1036,12 +1043,34 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_analytics_summary: {
+        Row: {
+          monthly_page_views: number | null
+          monthly_unique_sessions: number | null
+          total_downloads: number | null
+          total_igm_articles: number | null
+          total_index_medicus: number | null
+          total_members: number | null
+          total_rhca_articles: number | null
+          total_shares: number | null
+          total_views: number | null
+        }
+        Relationships: []
+      }
       analytics_dashboard: {
         Row: {
           day: string | null
           document_type: string | null
           event_count: number | null
           event_type: string | null
+        }
+        Relationships: []
+      }
+      daily_activity_view: {
+        Row: {
+          day: string | null
+          event_count: number | null
+          unique_sessions: number | null
         }
         Relationships: []
       }
@@ -1320,6 +1349,17 @@ export type Database = {
           failed_downloads: number | null
           successful_downloads: number | null
           total_downloads: number | null
+        }
+        Relationships: []
+      }
+      popular_articles_view: {
+        Row: {
+          downloads: number | null
+          id: string | null
+          shares: number | null
+          source: string | null
+          title: string | null
+          views: number | null
         }
         Relationships: []
       }
