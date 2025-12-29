@@ -86,6 +86,17 @@ const RhcaArticleDetail: React.FC = () => {
         
         setArticle(article);
         
+        // Track view - increment view count
+        try {
+          await supabase.rpc('increment_count', {
+            table_name: 'articles',
+            column_name: 'views',
+            row_id: id
+          });
+        } catch (viewError) {
+          console.warn('Failed to track view:', viewError);
+        }
+        
         // Get PDF URL if available
         if (article.pdfFileName) {
           const url = getStorageUrl('rhca-pdfs', article.pdfFileName);
