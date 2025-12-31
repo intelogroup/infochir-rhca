@@ -4,9 +4,10 @@
 import { Resend } from "npm:resend@2.0.0";
 import { logError } from "./error-logger.ts";
 
-// Initialize Resend email client with the environment variable
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+// Get API key dynamically to support runtime updates
+const getApiKey = () => Deno.env.get("RESEND_API_KEY");
 let resend: Resend | null = null;
+let lastApiKey: string | undefined = undefined;
 
 // Cache for API key validation to prevent repeated checks
 let apiKeyValidationCache = {
@@ -14,7 +15,7 @@ let apiKeyValidationCache = {
   message: "",
   timestamp: 0
 };
-const CACHE_TTL = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes cache (reduced for faster updates)
 
 // Updated sender configuration to use verified domain
 const DEFAULT_SENDER = "InfoChir <noreply@info-chir.org>";
@@ -33,11 +34,18 @@ const MAX_ATTACHMENT_SIZE = 40 * 1024 * 1024; // 40MB Resend limit
 const MAX_TOTAL_SIZE = 45 * 1024 * 1024; // 45MB total including email content
 const MAX_ATTACHMENTS = 10; // Reasonable limit
 
-// Lazy initialization of Resend client to avoid unnecessary instantiation
+// Lazy initialization of Resend client - recreates if API key changes
 const getResendClient = () => {
-  if (!resend && RESEND_API_KEY) {
-    console.log("[email-sender] Initializing Resend client");
-    resend = new Resend(RESEND_API_KEY);
+  const currentApiKey = getApiKey();
+  // Recreate client if API key changed
+  if (!resend || currentApiKey !== lastApiKey) {
+    if (currentApiKey) {
+      console.log("[email-sender] Initializing Resend client with current API key");
+      resend = new Resend(currentApiKey);
+      lastApiKey = currentApiKey;
+      // Clear validation cache when API key changes
+      apiKeyValidationCache = { valid: false, message: "", timestamp: 0 };
+    }
   }
   return resend;
 };
@@ -60,6 +68,8 @@ export async function checkResendApiKey(): Promise<{ valid: boolean; message: st
       message: apiKeyValidationCache.message 
     };
   }
+  
+  const RESEND_API_KEY = getApiKey();
   
   if (!RESEND_API_KEY) {
     const result = { 
@@ -156,7 +166,8 @@ export async function checkDomainVerification(
   try {
     console.log("[email-sender] Checking domain verification status for:", domain);
     
-    if (!RESEND_API_KEY) {
+    const apiKey = getApiKey();
+    if (!apiKey) {
       return {
         success: false,
         verified: false,
@@ -176,7 +187,7 @@ export async function checkDomainVerification(
     const domainsResponse = await fetch('https://api.resend.com/domains', {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${RESEND_API_KEY}`,
+        'Authorization': `Bearer ${apiKey}`,
       },
     });
     
