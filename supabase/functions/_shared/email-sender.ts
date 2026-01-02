@@ -17,10 +17,9 @@ let apiKeyValidationCache = {
 };
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes cache (reduced for faster updates)
 
-// Sender configuration - using Resend's test domain until info-chir.org is verified
-// Once verified, change back to: "InfoChir <noreply@info-chir.org>"
-const DEFAULT_SENDER = "InfoChir <onboarding@resend.dev>";
-const DEFAULT_BACKUP_SENDER = "InfoChir <onboarding@resend.dev>";
+// Sender configuration - using verified info-chir.org domain
+const DEFAULT_SENDER = "InfoChir <noreply@info-chir.org>";
+const DEFAULT_BACKUP_SENDER = "InfoChir <noreply@info-chir.org>";
 
 // Email attachment interface
 export interface EmailAttachment {
