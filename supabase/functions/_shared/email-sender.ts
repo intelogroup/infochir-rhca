@@ -17,9 +17,10 @@ let apiKeyValidationCache = {
 };
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes cache (reduced for faster updates)
 
-// Updated sender configuration to use verified domain
-const DEFAULT_SENDER = "InfoChir <noreply@info-chir.org>";
-const DEFAULT_BACKUP_SENDER = "InfoChir Backup <noreply@info-chir.org>";
+// Sender configuration - using Resend's test domain until info-chir.org is verified
+// Once verified, change back to: "InfoChir <noreply@info-chir.org>"
+const DEFAULT_SENDER = "InfoChir <onboarding@resend.dev>";
+const DEFAULT_BACKUP_SENDER = "InfoChir <onboarding@resend.dev>";
 
 // Email attachment interface
 export interface EmailAttachment {
@@ -363,6 +364,14 @@ export async function sendEmail(
   replyTo?: string,
   attachments?: EmailAttachment[]
 ): Promise<{ success: boolean; data?: any; error?: any; attachmentInfo?: any }> {
+  // Declare attachmentInfo outside try block so it's accessible in catch
+  let attachmentInfo = {
+    requested: 0,
+    processed: 0,
+    totalSize: 0,
+    skipped: 0
+  };
+  
   try {
     console.log("[email-sender] === SENDING EMAIL ===");
     console.log("- To:", recipient);
@@ -378,13 +387,6 @@ export async function sendEmail(
       console.error("[email-sender] No Resend client available");
       throw error;
     }
-    
-    let attachmentInfo = {
-      requested: 0,
-      processed: 0,
-      totalSize: 0,
-      skipped: 0
-    };
     
     // Validate and process attachments if provided
     let processedAttachments: any[] = [];
@@ -491,7 +493,7 @@ export async function sendEmail(
     return {
       success: false,
       error: emailErr,
-      attachmentInfo: attachmentInfo || { requested: 0, processed: 0, totalSize: 0, skipped: 0 }
+      attachmentInfo
     };
   }
 }

@@ -93,7 +93,7 @@ const Home = () => {
     }
   };
 
-  // Function to test email configuration
+  // Function to test email configuration using Supabase client
   const testEmailConfig = async () => {
     try {
       logger.info("Testing email configuration");
@@ -101,27 +101,21 @@ const Home = () => {
       // Record the check time immediately to prevent parallel requests
       localStorage.setItem(EMAIL_CONFIG_CHECK_KEY, Date.now().toString());
       
-      const response = await fetch(
-        'https://llxzstqejdrplmxdjxlu.supabase.co/functions/v1/check-email-config', 
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-      
-      if (!response.ok) {
-        logger.error('Email config test failed with status:', response.status);
-        return;
-      }
-      
-      const { data, error } = await response.json();
+      // Use supabase.functions.invoke for proper handling
+      const { data, error } = await supabase.functions.invoke('check-email-config', {
+        method: 'POST'
+      });
       
       if (error) {
         logger.error('Email config test failed:', error);
-        toast.error(`Erreur de configuration email: ${error.message || JSON.stringify(error)}`);
-      } else if (data) {
+        // Don't show toast for network errors in production
+        if (import.meta.env.DEV) {
+          toast.error(`Erreur de configuration email: ${error.message}`);
+        }
+        return;
+      }
+      
+      if (data) {
         logger.info('Email configuration status:', data);
         
         // Check API key status
