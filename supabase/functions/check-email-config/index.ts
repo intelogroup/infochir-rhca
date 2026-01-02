@@ -11,6 +11,8 @@ serve(async (req) => {
     return corsResponse;
   }
   
+  console.log("[check-email-config] Request method:", req.method);
+  
   try {
     console.log("[check-email-config] Testing email configuration");
     
