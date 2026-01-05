@@ -2,6 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger } from "@/lib/error-logger";
 import { DocumentType } from "./download/statistics/types";
+import { getClientInfo } from "./session";
 
 const logger = createLogger('AnalyticsTracking');
 
@@ -16,14 +17,21 @@ export const trackView = async (documentId: string, documentType: DocumentType):
       return false;
     }
 
+    const clientInfo = getClientInfo();
+
     // Use the RPC function to track the view
     const { error } = await supabase.rpc('track_user_event', {
       p_event_type: 'view',
       p_document_id: isValidUuid(documentId) ? documentId : null,
       p_document_type: documentType,
+      p_session_id: clientInfo.sessionId,
+      p_user_agent: clientInfo.userAgent,
+      p_referrer: clientInfo.referrer,
+      p_page_url: clientInfo.pageUrl,
       p_event_data: {
-        page_url: window.location.href,
-        document_reference: !isValidUuid(documentId) ? documentId : null
+        page_url: clientInfo.pageUrl,
+        document_reference: !isValidUuid(documentId) ? documentId : null,
+        screen_size: clientInfo.screenSize
       }
     });
     
@@ -54,14 +62,20 @@ export const trackShare = async (
   shareMethod: 'social' | 'email' | 'clipboard' | 'other' = 'other'
 ): Promise<boolean> => {
   try {
+    const clientInfo = getClientInfo();
+
     // Use the RPC function to track the share
     const { error } = await supabase.rpc('track_user_event', {
       p_event_type: 'share',
       p_document_id: isValidUuid(documentId) ? documentId : null,
       p_document_type: documentType,
+      p_session_id: clientInfo.sessionId,
+      p_user_agent: clientInfo.userAgent,
+      p_referrer: clientInfo.referrer,
+      p_page_url: clientInfo.pageUrl,
       p_event_data: {
         share_method: shareMethod,
-        page_url: window.location.href,
+        page_url: clientInfo.pageUrl,
         document_reference: !isValidUuid(documentId) ? documentId : null
       }
     });
@@ -102,6 +116,7 @@ export const trackDownload = async (
   success: boolean = true
 ): Promise<boolean> => {
   try {
+    const clientInfo = getClientInfo();
     // Check if document ID is a valid UUID
     const isValidId = isValidUuid(documentId);
     
@@ -110,10 +125,14 @@ export const trackDownload = async (
       p_event_type: 'download',
       p_document_id: isValidId ? documentId : null,
       p_document_type: documentType,
+      p_session_id: clientInfo.sessionId,
+      p_user_agent: clientInfo.userAgent,
+      p_referrer: clientInfo.referrer,
+      p_page_url: clientInfo.pageUrl,
       p_event_data: {
         fileName,
         status: success ? 'success' : 'failed',
-        screenSize: `${window.innerWidth}x${window.innerHeight}`,
+        screenSize: clientInfo.screenSize,
         document_reference: !isValidId ? documentId : null
       }
     });
@@ -124,13 +143,13 @@ export const trackDownload = async (
       // Try direct insert as fallback
       try {
         await supabase.from('download_events').insert({
-          document_id: isValidId ? documentId : '00000000-0000-0000-0000-000000000000', // Use a fallback UUID for non-UUID IDs
+          document_id: isValidId ? documentId : '00000000-0000-0000-0000-000000000000',
           document_type: documentType,
           file_name: fileName,
           status: success ? 'success' : 'failed',
-          user_agent: navigator.userAgent,
-          screen_size: `${window.innerWidth}x${window.innerHeight}`,
-          referrer: document.referrer
+          user_agent: clientInfo.userAgent,
+          screen_size: clientInfo.screenSize,
+          referrer: clientInfo.referrer
         });
       } catch (insertError) {
         logger.error('Error inserting download event:', insertError);
@@ -165,17 +184,23 @@ export const trackDownload = async (
 export const trackSearch = async (
   query: string,
   resultsCount: number,
-  filters?: Record<string, any>
+  filters?: Record<string, unknown>
 ): Promise<boolean> => {
   try {
+    const clientInfo = getClientInfo();
+
     // Use the RPC function to track the search
     const { error } = await supabase.rpc('track_user_event', {
       p_event_type: 'search',
+      p_session_id: clientInfo.sessionId,
+      p_user_agent: clientInfo.userAgent,
+      p_referrer: clientInfo.referrer,
+      p_page_url: clientInfo.pageUrl,
       p_event_data: {
         query,
         results_count: resultsCount,
         filters: filters ? JSON.stringify(filters) : null,
-        page_url: window.location.href
+        page_url: clientInfo.pageUrl
       }
     });
     
@@ -187,6 +212,84 @@ export const trackSearch = async (
     return true;
   } catch (error) {
     logger.error('Exception tracking search:', error);
+    return false;
+  }
+};
+
+/**
+ * Track a page view event (for route changes)
+ */
+export const trackPageView = async (route: string): Promise<boolean> => {
+  try {
+    const clientInfo = getClientInfo();
+
+    const { error } = await supabase.rpc('track_user_event', {
+      p_event_type: 'page_view',
+      p_session_id: clientInfo.sessionId,
+      p_user_agent: clientInfo.userAgent,
+      p_referrer: clientInfo.referrer,
+      p_page_url: clientInfo.pageUrl,
+      p_event_data: {
+        route,
+        screen_size: clientInfo.screenSize,
+        timestamp: new Date().toISOString()
+      }
+    });
+
+    if (error) {
+      if (import.meta.env.DEV) {
+        logger.error('Error tracking page view:', error);
+      }
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      logger.error('Exception tracking page view:', error);
+    }
+    return false;
+  }
+};
+
+/**
+ * Track article/document click event
+ */
+export const trackClick = async (
+  documentId: string,
+  documentType: DocumentType,
+  title?: string
+): Promise<boolean> => {
+  try {
+    const clientInfo = getClientInfo();
+
+    const { error } = await supabase.rpc('track_user_event', {
+      p_event_type: 'click',
+      p_document_id: isValidUuid(documentId) ? documentId : null,
+      p_document_type: documentType,
+      p_session_id: clientInfo.sessionId,
+      p_user_agent: clientInfo.userAgent,
+      p_referrer: clientInfo.referrer,
+      p_page_url: clientInfo.pageUrl,
+      p_event_data: {
+        document_reference: !isValidUuid(documentId) ? documentId : null,
+        title,
+        screen_size: clientInfo.screenSize
+      }
+    });
+
+    if (error) {
+      if (import.meta.env.DEV) {
+        logger.error('Error tracking click:', error);
+      }
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      logger.error('Exception tracking click:', error);
+    }
     return false;
   }
 };
