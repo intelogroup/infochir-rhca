@@ -58,19 +58,19 @@ export const useCarouselData = () => {
         }
         
         // Generate proper cover image URL for RHCA articles
+        // Storage convention: RHCA_vol_XX_no_YY_cover.png — prefer this over
+        // the stored filename which can be inconsistent (e.g. dated variants).
         if (article.source === 'RHCA') {
           try {
-            if (article.cover_image_filename) {
-              // Use existing cover image filename
-              imageUrl = getStorageUrl('rhca_covers', article.cover_image_filename);
-              logger.debug(`Generated RHCA cover URL for carousel: ${imageUrl}`);
-            } else if (article.volume && article.issue) {
-              // Generate filename from volume and issue
+            if (article.volume && article.issue) {
               const paddedVolume = String(article.volume).padStart(2, '0');
               const paddedIssue = String(article.issue).padStart(2, '0');
               const generatedFilename = `RHCA_vol_${paddedVolume}_no_${paddedIssue}_cover.png`;
               imageUrl = getStorageUrl('rhca_covers', generatedFilename);
               logger.debug(`Generated RHCA cover URL from volume/issue for carousel: ${imageUrl}`);
+            } else if (article.cover_image_filename) {
+              imageUrl = getStorageUrl('rhca_covers', article.cover_image_filename);
+              logger.debug(`Generated RHCA cover URL for carousel: ${imageUrl}`);
             }
           } catch (imageError) {
             logger.error(`Failed to generate RHCA image URL for carousel:`, imageError);
