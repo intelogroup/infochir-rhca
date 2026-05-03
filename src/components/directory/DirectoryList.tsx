@@ -34,15 +34,20 @@ const DirectoryList: FC<DirectoryListProps> = () => {
     queryKey: ['members'],
     queryFn: async () => {
       console.time('Fetch Members');
-      const { data, error } = await supabase
-        .from('members')
-        .select('*')
-        .order('name');
+      const { data: { session } } = await supabase.auth.getSession();
+
+      // Authenticated users see full member records (incl. email/phone).
+      // Anonymous users only see basic public info via the public view.
+      const query = session
+        ? supabase.from('members').select('*').order('name')
+        : supabase.from('members_public_view').select('*').order('name');
+
+      const { data, error } = await query;
 
       console.timeEnd('Fetch Members');
       
       if (error) throw error;
-      return data || [];
+      return (data as any[]) || [];
     },
   });
 
