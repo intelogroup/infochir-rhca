@@ -52,7 +52,7 @@ export const useStatsData = () => {
 
         // Get members count
         const { data: members, error: membersError } = await supabase
-          .from('members')
+          .from('members_public_view')
           .select('id');
         
         if (membersError) {
