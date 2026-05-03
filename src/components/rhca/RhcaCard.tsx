@@ -33,56 +33,14 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
         logger.log(`[RhcaCard] Loading resources for article ${article.id}`);
         logger.log(`[RhcaCard] Cover image filename: ${article.coverImageFileName}`);
         
-        // Load cover image - prioritize cover_image_filename which has correct names
-        let coverFilename = article.coverImageFileName;
-        
-        // Fix specific mismatched filenames for issues 47 and 48 based on actual storage
-        if (article.issue === '47' && coverFilename?.includes('vol_02_no_47')) {
-          coverFilename = 'RHCA_vol_07_no_47_19_7_2024.png';
-          logger.log(`[RhcaCard] Fixed issue 47 filename to match storage: ${coverFilename}`);
-        }
-        if (article.issue === '48' && article.volume === '03') {
-          coverFilename = 'RHCA_vol_07_no_48_18_10_2024.png';
-          logger.log(`[RhcaCard] Fixed issue 48 vol 03 filename to match storage: ${coverFilename}`);
-        }
-        
+        // Use cover_image_filename from DB (already normalized to match storage)
+        const coverFilename = article.coverImageFileName;
         if (coverFilename) {
-          // Use the corrected filename
-          const publicUrl = getStorageUrl('rhca_covers', coverFilename);
-          setCoverUrl(publicUrl);
-          logger.log(`[RhcaCard] Using cover filename: ${coverFilename}`);
-        }
-        else if (article.image_url) {
-          // Fallback to image_url if available
+          setCoverUrl(getStorageUrl('rhca_covers', coverFilename));
+        } else if (article.image_url) {
           setCoverUrl(article.image_url);
-          logger.log(`[RhcaCard] Using image_url fallback: ${article.image_url}`);
-        }
-        // If no direct URLs, generate filename from volume/issue using actual storage patterns
-        else if (article.volume && article.issue && article.publicationDate) {
-          const paddedVolume = String(article.volume).padStart(2, '0');
-          const issueDate = new Date(article.publicationDate);
-          
-          if (!isNaN(issueDate.getTime())) {
-            const day = String(issueDate.getDate()).padStart(1, '0');
-            const month = String(issueDate.getMonth() + 1).padStart(1, '0');
-            const year = issueDate.getFullYear();
-            
-            // Try date-based pattern that matches actual storage
-            const generatedFilename = `RHCA_vol_${paddedVolume}_no_${article.issue}_${day}_${month}_${year}.png`;
-            const publicUrl = getStorageUrl('rhca_covers', generatedFilename);
-            
-            if (isDebugMode) {
-              console.log(`[RhcaCard] Generated date-based cover URL: ${publicUrl}`);
-            }
-            
-            setCoverUrl(publicUrl);
-            logger.log(`[RhcaCard] Using generated date-based filename: ${generatedFilename}`);
-          }
-        } 
-        // If no image is available, use null
-        else {
+        } else {
           setCoverUrl(null);
-          logger.warn(`[RhcaCard] No cover image available for article ${article.id}`);
         }
         
         // Load PDF URL
