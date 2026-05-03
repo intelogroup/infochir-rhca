@@ -86,5 +86,10 @@ export const sponsors: Sponsor[] = [
     name: "FMP_EBO",
     logo: "/lovable-uploads/5319f234-4c0d-48e2-85eb-f267dc21d813.png",
     type: "partner"
+  },
+  {
+    name: "Promotion Dr. Fritz G. Sam FMP Haiti (40 ans, 1986-2026)",
+    logo: "/lovable-uploads/promotion-fritz-sam-fmp-haiti.jpg",
+    type: "partner"
   }
 ];
