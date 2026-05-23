@@ -12,3 +12,7 @@ verify_jwt = false
 [functions.upload-igm-issue]
 verify_jwt = false
 
+[functions.upload-cover]
+verify_jwt = false
+
+
