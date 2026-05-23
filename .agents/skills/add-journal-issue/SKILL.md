@@ -113,3 +113,16 @@ Then check the carousel on `/` and the listing on `/igm` (or `/rhca`, `/adc`).
 - `pdftoppm` output is named `cover-01.png` (not `cover-1.png`) at default padding.
 - RLS on `igm-pdfs` / `rhca-pdfs` / `atlas-pdfs` only allows admin INSERT — that's why uploads go through the service-role edge function.
 - If the cover doesn't render in the UI, the most common cause is a filename mismatch between `articles.cover_image_filename` and the actual storage object. Query both sides to confirm.
+
+## Backfilling missing covers (any source)
+
+There's a generic `upload-cover` edge function that takes `{coverBase64, coverFilename, bucket, articleIds[]}` — uploads to the given bucket (service role) and patches `cover_image_filename` + `image_url` on the listed articles.
+
+Flow for backfilling RHCA/IGM/ADC covers from already-uploaded PDFs:
+
+1. Fetch groups via PostgREST (anon key) — `articles?source=eq.RHCA&select=id,pdf_filename&pdf_filename=not.is.null`, then group ids by `pdf_filename` in Python.
+2. For each group: `curl` the PDF from `<SB_URL>/storage/v1/object/public/<pdf-bucket>/<pdf>` → `pdftoppm -png -r 120 -f 1 -l 1 in.pdf out` → base64 the `out-1.png`.
+3. POST to `/functions/v1/upload-cover` with `bucket="rhca_covers"` (or `igm_covers`/`atlas_covers`) and `coverFilename = pdf_basename + ".png"` (matches the existing convention).
+
+Reference script: `/tmp/backfill_rhca.py` was used to backfill all 56 RHCA covers in one pass (May 2026).
+
