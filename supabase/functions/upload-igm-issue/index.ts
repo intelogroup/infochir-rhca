@@ -15,20 +15,28 @@ Deno.serve(async (req) => {
     );
 
     const body = await req.json();
-    const { pdfBase64, coverBase64, pdfFilename, coverFilename, article } = body;
+    const {
+      pdfBase64,
+      coverBase64,
+      pdfFilename,
+      coverFilename,
+      article,
+      pdfBucket = 'igm-pdfs',
+      coverBucket = 'igm_covers',
+    } = body;
 
     const b64ToBytes = (b64: string) => Uint8Array.from(atob(b64), c => c.charCodeAt(0));
 
     if (pdfBase64) {
       const { error: e1 } = await supabase.storage
-        .from('igm-pdfs')
+        .from(pdfBucket)
         .upload(pdfFilename, b64ToBytes(pdfBase64), { contentType: 'application/pdf', upsert: true });
       if (e1) throw new Error('pdf upload: ' + e1.message);
     }
 
     if (coverBase64) {
       const { error: e2 } = await supabase.storage
-        .from('igm_covers')
+        .from(coverBucket)
         .upload(coverFilename, b64ToBytes(coverBase64), { contentType: 'image/png', upsert: true });
       if (e2) throw new Error('cover upload: ' + e2.message);
     }
@@ -38,8 +46,8 @@ Deno.serve(async (req) => {
       const url = Deno.env.get('SUPABASE_URL')!;
       const articleData = {
         ...article,
-        pdf_url: `${url}/storage/v1/object/public/igm-pdfs/${pdfFilename}`,
-        image_url: `${url}/storage/v1/object/public/igm_covers/${coverFilename}`,
+        pdf_url: `${url}/storage/v1/object/public/${pdfBucket}/${pdfFilename}`,
+        image_url: `${url}/storage/v1/object/public/${coverBucket}/${coverFilename}`,
         pdf_filename: pdfFilename,
         cover_image_filename: coverFilename,
       };
