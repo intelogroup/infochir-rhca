@@ -69,6 +69,12 @@ export const OptimizedImageLoader = ({
   };
 
   const handleError = () => {
+    // Ignore spurious error events fired while currentSrc is empty or out of sync
+    // with the latest src prop (state hasn't caught up yet via useEffect).
+    if (!currentSrc || currentSrc !== src) {
+      return;
+    }
+
     if (retryCount < MAX_RETRIES) {
       // Try one simple alternative: different bucket naming
       const nextSrc = currentSrc
@@ -107,6 +113,13 @@ export const OptimizedImageLoader = ({
     );
   }
 
+  // Don't render an <img> with an empty src — empty src triggers a spurious
+  // onError in browsers and would cause us to mark the real URL as failed
+  // before it ever loads.
+  if (!currentSrc) {
+    return null;
+  }
+
   const optimizedSrc = getOptimizedImageUrl(currentSrc, width, height);
 
   return (
@@ -117,6 +130,7 @@ export const OptimizedImageLoader = ({
       height={height}
       className={className}
       loading={loading || (priority ? 'eager' : 'lazy')}
+      crossOrigin="anonymous"
       onLoad={handleLoad}
       onError={handleError}
       style={{ opacity: isLoaded ? 1 : 0, transition: 'opacity 0.3s' }}
