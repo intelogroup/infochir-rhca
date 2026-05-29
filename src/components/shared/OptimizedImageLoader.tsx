@@ -69,6 +69,12 @@ export const OptimizedImageLoader = ({
   };
 
   const handleError = () => {
+    // Ignore spurious error events fired while currentSrc is empty or out of sync
+    // with the latest src prop (state hasn't caught up yet via useEffect).
+    if (!currentSrc || currentSrc !== src) {
+      return;
+    }
+
     if (retryCount < MAX_RETRIES) {
       // Try one simple alternative: different bucket naming
       const nextSrc = currentSrc
