@@ -113,6 +113,13 @@ export const OptimizedImageLoader = ({
     );
   }
 
+  // Don't render an <img> with an empty src — empty src triggers a spurious
+  // onError in browsers and would cause us to mark the real URL as failed
+  // before it ever loads.
+  if (!currentSrc) {
+    return null;
+  }
+
   const optimizedSrc = getOptimizedImageUrl(currentSrc, width, height);
 
   return (
