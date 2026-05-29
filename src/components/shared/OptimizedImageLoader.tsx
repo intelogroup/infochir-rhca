@@ -130,6 +130,7 @@ export const OptimizedImageLoader = ({
       height={height}
       className={className}
       loading={loading || (priority ? 'eager' : 'lazy')}
+      crossOrigin="anonymous"
       onLoad={handleLoad}
       onError={handleError}
       style={{ opacity: isLoaded ? 1 : 0, transition: 'opacity 0.3s' }}
