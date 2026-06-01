@@ -1,6 +1,6 @@
 
 // Service Worker for InfoChir application
-const CACHE_NAME = 'infochir-cache-v9';  // Increased cache version
+const CACHE_NAME = 'infochir-cache-v10';  // Bumped to refresh SW (cross-origin bypass fix)
 
 // Assets to cache immediately on install - critical path
 const CRITICAL_ASSETS = [
