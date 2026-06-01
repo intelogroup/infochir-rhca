@@ -22,8 +22,15 @@ export const BodyScripts = () => {
     const handleLoad = () => {
       // Mark load event
       if (window.performance && window.performance.mark) {
-        window.performance.mark('page-loaded');
-        window.performance.measure('full-page-load', 'app-init-start', 'page-loaded');
+        try {
+          window.performance.mark('page-loaded');
+          const marks = window.performance.getEntriesByName('app-init-start');
+          if (marks.length > 0) {
+            window.performance.measure('full-page-load', 'app-init-start', 'page-loaded');
+          }
+        } catch (e) {
+          // Ignore — mark may not exist yet
+        }
       }
       
       // Log performance data
