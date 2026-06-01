@@ -1,6 +1,6 @@
 
 // Service Worker for InfoChir application
-const CACHE_NAME = 'infochir-cache-v9';  // Increased cache version
+const CACHE_NAME = 'infochir-cache-v10';  // Bumped to refresh SW (cross-origin bypass fix)
 
 // Assets to cache immediately on install - critical path
 const CRITICAL_ASSETS = [
@@ -94,12 +94,9 @@ self.addEventListener('fetch', event => {
     return;
   }
   
-  // Skip cross-origin requests for specific domains and allow them to proceed normally
-  if (!url.startsWith(self.location.origin) && 
-      (url.includes('cdn.gpteng.co') || 
-       url.includes('stripe.com') || 
-       url.includes('supabase.co') ||
-       url.includes('ingesteer.services-prod.nsvcs.net'))) {
+  // Bypass ALL cross-origin requests (images from unsplash/pexels, third-party scripts, etc.)
+  // The service worker should only handle same-origin assets.
+  if (!url.startsWith(self.location.origin)) {
     return;
   }
   
