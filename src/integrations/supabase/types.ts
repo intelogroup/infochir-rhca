@@ -621,6 +621,45 @@ export type Database = {
         }
         Relationships: []
       }
+      newsletter_send_log: {
+        Row: {
+          content_id: string
+          content_title: string | null
+          content_type: string
+          created_at: string
+          error_message: string | null
+          id: string
+          recipient_email: string
+          resend_message_id: string | null
+          sent_at: string
+          status: string
+        }
+        Insert: {
+          content_id: string
+          content_title?: string | null
+          content_type: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          recipient_email: string
+          resend_message_id?: string | null
+          sent_at?: string
+          status?: string
+        }
+        Update: {
+          content_id?: string
+          content_title?: string | null
+          content_type?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          recipient_email?: string
+          resend_message_id?: string | null
+          sent_at?: string
+          status?: string
+        }
+        Relationships: []
+      }
       newsletter_subscriptions: {
         Row: {
           email: string
@@ -629,6 +668,7 @@ export type Database = {
           name: string
           phone: string | null
           subscribed_at: string
+          unsubscribe_token: string
         }
         Insert: {
           email: string
@@ -637,6 +677,7 @@ export type Database = {
           name: string
           phone?: string | null
           subscribed_at?: string
+          unsubscribe_token?: string
         }
         Update: {
           email?: string
@@ -645,6 +686,7 @@ export type Database = {
           name?: string
           phone?: string | null
           subscribed_at?: string
+          unsubscribe_token?: string
         }
         Relationships: []
       }
