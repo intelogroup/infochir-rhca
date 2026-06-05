@@ -15,4 +15,9 @@ verify_jwt = false
 [functions.upload-cover]
 verify_jwt = false
 
+[functions.ai-extract-issue-metadata]
+verify_jwt = false
+
+
+
 
