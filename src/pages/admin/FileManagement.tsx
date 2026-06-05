@@ -5,13 +5,16 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MultiFileUploader } from "@/components/pdf/MultiFileUploader";
+import { AIIssueUploader } from "@/components/admin/AIIssueUploader";
 import { 
   FileText, 
   BookOpen, 
   Database,
   Image,
-  Upload
+  Upload,
+  Sparkles
 } from "lucide-react";
+
 
 const FileManagement = () => {
   const [rhcaFiles, setRhcaFiles] = useState<string[]>([]);
@@ -28,15 +31,21 @@ const FileManagement = () => {
         backLink="/admin/content"
       />
 
-      <Tabs defaultValue="rhca" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+      <Tabs defaultValue="ai" className="w-full">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="ai" className="gap-1"><Sparkles className="h-3 w-3" />AI Upload</TabsTrigger>
           <TabsTrigger value="rhca">RHCA</TabsTrigger>
           <TabsTrigger value="igm">IGM</TabsTrigger>
           <TabsTrigger value="index">Index Medicus</TabsTrigger>
           <TabsTrigger value="general">Général</TabsTrigger>
         </TabsList>
 
+        <TabsContent value="ai" className="space-y-6">
+          <AIIssueUploader />
+        </TabsContent>
+
         <TabsContent value="rhca" className="space-y-6">
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
