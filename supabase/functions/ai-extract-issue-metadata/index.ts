@@ -1,6 +1,7 @@
 // AI-powered extraction of journal issue metadata from a PDF first-page image.
-// Uses Lovable AI Gateway (Gemini vision) to read the cover/sommaire and return
-// structured metadata matching the add-journal-issue skill's naming conventions.
+// Uses Lovable AI Gateway (Gemini vision). Admin-only.
+
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.48.1';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,39 +14,67 @@ matching this schema (no prose, no markdown):
 
 {
   "source": "IGM" | "RHCA" | "ADC",
-  "volume": string,           // numeric, not padded ("5")
-  "issue": string,            // numeric, not padded ("53"); for ADC use chapter number
-  "publication_date": string, // ISO YYYY-MM-DD; infer from filename pattern <PUB>_<NN>_DD_MM_YY.pdf or cover month/year
-  "title": string,            // e.g. "INFO GAZETTE MÉDICALE Vol 5 No 53 - Mai 2026"
-  "abstract": string,         // 2-4 sentence summary of the sommaire / theme in French
-  "specialty": string,        // main theme/specialty in French
-  "category": string,         // "Médecine Générale" | "Chirurgie" | "Anesthésie" | etc.
-  "tags": string[],           // 3-6 short tags in French
-  "keywords": string[],       // 3-8 keywords in French
-  "primary_author": string,   // chief editor if visible, else ""
-  "institution": string,      // e.g. "Info Chir"
-  "page_number": string,      // "1-32" if visible, else ""
-  "doi": string,              // ISBN/ISSN string if visible, else ""
-  "pdf_filename": string,     // strict: IGM_vol_XX_no_YY_DD_MM_YY.pdf | RHCA_vol_XX_no_YY_DD_MM_YYYY.pdf | ADC_ch_N_<slug>.pdf
-  "cover_filename": string    // matching .png: IGM_vol_XX_no_YY_cover.png | RHCA_vol_XX_no_YY_cover.png | ADC_ch_N_<slug>.png
+  "volume": string,
+  "issue": string,
+  "publication_date": string,
+  "title": string,
+  "abstract": string,
+  "specialty": string,
+  "category": string,
+  "tags": string[],
+  "keywords": string[],
+  "primary_author": string,
+  "institution": string,
+  "page_number": string,
+  "doi": string,
+  "pdf_filename": string,
+  "cover_filename": string
 }
 
 Rules:
-- Volume is always 2-digit zero-padded INSIDE filenames (vol_05) but unpadded in the "volume" field.
-- Issue is unpadded.
-- If the original filename already follows the convention, preserve volume/issue/date from it.
-- For ADC chapters use ADC_ch_<N>_<short-slug>.pdf.
+- Volume is always 2-digit zero-padded INSIDE filenames (vol_05) but unpadded in "volume" field.
+- Issue unpadded in field.
+- IGM filename: IGM_vol_XX_no_YY_DD_MM_YY.pdf, cover IGM_vol_XX_no_YY_cover.png
+- RHCA filename: RHCA_vol_XX_no_YY_DD_MM_YYYY.pdf, cover RHCA_vol_XX_no_YY_cover.png
+- ADC filename: ADC_ch_N_<slug>.pdf, cover ADC_ch_N_<slug>.png
 - Return ONLY the JSON object. No code fences.`;
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
+  const json = (b: unknown, status = 200) =>
+    new Response(JSON.stringify(b), {
+      status,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+
   try {
+    // --- Admin auth check ---
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const token = (req.headers.get('Authorization') ?? '').replace('Bearer ', '');
+    if (!token) return json({ ok: false, error: 'Missing auth token' }, 401);
+
+    const userClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!, {
+      global: { headers: { Authorization: `Bearer ${token}` } },
+    });
+    const { data: userData, error: userErr } = await userClient.auth.getUser();
+    if (userErr || !userData?.user) return json({ ok: false, error: 'Invalid auth' }, 401);
+
+    const admin = createClient(supabaseUrl, serviceKey);
+    const { data: roleRow } = await admin
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userData.user.id)
+      .eq('role', 'admin')
+      .maybeSingle();
+    if (!roleRow) return json({ ok: false, error: 'Admin role required' }, 403);
+
     const apiKey = Deno.env.get('LOVABLE_API_KEY');
     if (!apiKey) throw new Error('LOVABLE_API_KEY missing');
 
     const { imageBase64, filename, sourceHint } = await req.json();
-    if (!imageBase64 || !filename) throw new Error('imageBase64 and filename required');
+    if (!imageBase64 || !filename) return json({ ok: false, error: 'imageBase64 and filename required' }, 400);
 
     const userText =
       `Original filename: ${filename}` +
@@ -54,10 +83,7 @@ Deno.serve(async (req) => {
 
     const resp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
+      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'google/gemini-2.5-flash',
         messages: [
@@ -74,16 +100,8 @@ Deno.serve(async (req) => {
       }),
     });
 
-    if (resp.status === 429) {
-      return new Response(JSON.stringify({ ok: false, error: 'Rate limit. Please retry shortly.' }), {
-        status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-    if (resp.status === 402) {
-      return new Response(JSON.stringify({ ok: false, error: 'AI credits exhausted. Add credits in Workspace settings.' }), {
-        status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
+    if (resp.status === 429) return json({ ok: false, error: 'Rate limit. Please retry shortly.' }, 429);
+    if (resp.status === 402) return json({ ok: false, error: 'AI credits exhausted. Add credits in Workspace settings.' }, 402);
     if (!resp.ok) {
       const t = await resp.text();
       throw new Error(`AI gateway ${resp.status}: ${t.slice(0, 300)}`);
@@ -99,13 +117,8 @@ Deno.serve(async (req) => {
       metadata = m ? JSON.parse(m[0]) : {};
     }
 
-    return new Response(JSON.stringify({ ok: true, metadata }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return json({ ok: true, metadata });
   } catch (e) {
-    return new Response(JSON.stringify({ ok: false, error: String(e) }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return json({ ok: false, error: String((e as Error).message ?? e) }, 500);
   }
 });
