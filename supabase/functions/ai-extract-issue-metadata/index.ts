@@ -32,11 +32,16 @@ matching this schema (no prose, no markdown):
 }
 
 Rules:
-- Volume is always 2-digit zero-padded INSIDE filenames (vol_05) but unpadded in "volume" field.
-- Issue unpadded in field.
+- Volume is 2-digit zero-padded in BOTH the "volume" field AND inside filenames (e.g. "05").
+- Issue is unpadded in the "issue" field.
 - IGM filename: IGM_vol_XX_no_YY_DD_MM_YY.pdf, cover IGM_vol_XX_no_YY_cover.png
 - RHCA filename: RHCA_vol_XX_no_YY_DD_MM_YYYY.pdf, cover RHCA_vol_XX_no_YY_cover.png
 - ADC filename: ADC_ch_N_<slug>.pdf, cover ADC_ch_N_<slug>.png
+- TITLE RULES (critical):
+  * For IGM, the title MUST be exactly: "INFO GAZETTE MÉDICALE (IGM) Vol XX No YY" (volume zero-padded).
+  * For RHCA, the title MUST be exactly: "Revue Haïtienne de Chirurgie et d'Anesthésiologie (RHCA) Vol XX No YY".
+  * NEVER use the publisher banner "INFOCHIR/RHCA : Revue Haitienne de Chirurgie et d'Anesthésiologie" as the title of an IGM issue — that line is the publisher footer printed on every cover and is NOT the title.
+  * Ignore any masthead / banner / publisher text when choosing the title. Derive the title from source + volume + issue.
 - Return ONLY the JSON object. No code fences.`;
 
 Deno.serve(async (req) => {
