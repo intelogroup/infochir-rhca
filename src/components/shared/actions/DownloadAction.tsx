@@ -54,11 +54,21 @@ export const DownloadAction: React.FC<DownloadActionProps> = ({
       logger.log(`Starting download: ${fileName} (Mobile: ${isMobile})`);
       
       if (isMobile) {
+        const documentType = contentType === 'igm' ? DocumentType.IGM : DocumentType.RHCA;
         // Use mobile-optimized download handler
         const success = await handleMobileDownload(
           pdfUrl,
           fileName,
           async () => {
+            // Track the download event (user_events + download_events via RPC)
+            const { trackDownload } = await import("@/lib/analytics/download/track-downloads");
+            void trackDownload({
+              document_id: id,
+              document_type: documentType,
+              file_name: fileName,
+              status: 'success',
+            });
+
             // Success callback - update download count using RPC
             try {
               const { error } = await supabase.rpc('increment_count', {
@@ -66,22 +76,30 @@ export const DownloadAction: React.FC<DownloadActionProps> = ({
                 column_name: 'downloads',
                 row_id: id
               });
-                
+
               if (error) {
                 logger.error('Error updating download count:', error);
               }
             } catch (dbError) {
               logger.error('Database error updating download count:', dbError);
             }
-            
+
             toast.success("Téléchargement réussi");
           },
-          (error) => {
+          async (error: unknown) => {
             logger.error('Mobile download failed:', error);
+            const { trackDownload } = await import("@/lib/analytics/download/track-downloads");
+            void trackDownload({
+              document_id: id,
+              document_type: documentType,
+              file_name: fileName,
+              status: 'failed',
+              error_details: error instanceof Error ? error.message : String(error),
+            });
             toast.error("Erreur lors du téléchargement");
           }
         );
-        
+
         // Show mobile-specific instructions
         if (success) {
           setTimeout(() => {

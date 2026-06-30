@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Search, X } from 'lucide-react';
 import { createLogger } from '@/lib/error-logger';
+import { trackSearch } from '@/lib/analytics/track';
 
 const logger = createLogger('SearchBar');
 
@@ -14,6 +15,8 @@ interface SearchBarProps {
   className?: string;
   autoFocus?: boolean;
   debounceTime?: number;
+  /** Identifier sent with the search analytics event */
+  analyticsContext?: string;
 }
 
 export const SearchBar = ({
@@ -23,7 +26,8 @@ export const SearchBar = ({
   onSearch,
   className = '',
   autoFocus = false,
-  debounceTime = 300
+  debounceTime = 300,
+  analyticsContext = 'global',
 }: SearchBarProps) => {
   const [searchTimeout, setSearchTimeout] = useState<number | null>(null);
 
@@ -40,8 +44,11 @@ export const SearchBar = ({
     if (onSearch) {
       const timeoutId = window.setTimeout(() => {
         onSearch(newValue);
+        if (newValue.trim().length >= 2) {
+          void trackSearch(newValue.trim().slice(0, 200), 0, { context: analyticsContext });
+        }
       }, debounceTime);
-      
+
       setSearchTimeout(timeoutId);
     }
   };
@@ -60,6 +67,9 @@ export const SearchBar = ({
         setSearchTimeout(null);
       }
       onSearch(value);
+      if (value.trim().length >= 2) {
+        void trackSearch(value.trim().slice(0, 200), 0, { context: analyticsContext });
+      }
     }
   };
 

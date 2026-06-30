@@ -1,73 +1,56 @@
-## Newsletter auto-notification system
+## Telemetry & Observability Audit
 
-Goal: every time a new RHCA issue, IGM issue, Atlas chapter, or Index Medicus article is successfully added, automatically email every active subscriber in `newsletter_subscriptions` with a link to the new content.
+### What's working today
+- **Page views / article views**: `useAnalytics` hook + `trackPageView` is mounted in `MainLayout` and writes to `user_events` via `track_user_event` RPC. ✅ 5,238 `view` rows exist.
+- **Downloads (legacy path)**: `src/lib/analytics/download/index.ts` writes to `download_events` from PDF download flows. 2,839 rows exist (RHCA/IGM/article).
+- **Admin dashboards**: `/admin/analytics` reads from views (`admin_analytics_summary`, `popular_articles_view`, `daily_activity_view`, `analytics_dashboard`) — all exist.
+- **Session IDs**: Persisted via `getSessionId()` in localStorage.
 
-### 1. Sender domain (action needed from you)
+### Gaps found (with evidence)
 
-Resend requires a verified sender domain. Two paths:
+| # | Gap | Evidence |
+|---|-----|----------|
+| 1 | **`page_view` events never recorded** — only `view` exists in DB | `SELECT DISTINCT event_type FROM user_events` returns only `view`/`download`. Either `trackPageView` is gated by `import.meta.env.PROD` and the published build isn't firing it, or the `page_view` event_type is being dropped. |
+| 2 | **Downloads stopped May–Oct 2025**, while views still grow | `download_events` MAX = 2025-10-01; `user_events` MAX = 2026-01-02. The download buttons on RHCA/IGM/Article cards likely lost the `trackDownload` wiring during a refactor. |
+| 3 | **Share tracking only wired on ADC modal** | Only `ModalActions.tsx` calls `trackShare`. RHCA / IGM / Article share buttons never fire it → 0 `share` events in DB. |
+| 4 | **`performance_metrics` table empty** | No client code writes to it. Web Vitals (LCP, CLS, INP, TTFB) are not being captured. |
+| 5 | **`error_events` table empty** | No client error handler posts to it. Runtime errors are only console-logged. |
+| 6 | **No search tracking** | `trackSearch` exists but is not called from any search input. |
+| 7 | **No click-through tracking on cards** | `trackClick` defined but unused. We can't compute "card impression → article open" conversion. |
+| 8 | **Dev-mode blocking** | `useAnalytics` skips tracking unless `PROD` or `VITE_DEBUG_ANALYTICS=true`. Acceptable, but should be documented. |
+| 9 | **No funnel / engagement metrics** | No time-on-page, scroll-depth, or session duration captured. |
+| 10 | **Donations & contact form submissions not tracked as events** | We have rows in `donations`/`contact_messages` but no `user_events` link for funnel analysis. |
 
-- **Now (testing)**: send from `Info Chir <onboarding@resend.dev>` — works immediately, no setup, but Resend caps it to your own address only. Not viable for a real subscriber list.
-- **Production**: verify `infochir.org` (or a subdomain like `news.infochir.org`) in Resend → add the DKIM/SPF DNS records they give you → then send from `Info Chir <newsletter@infochir.org>`.
+### Plan to fix (build mode)
 
-I'll hardcode the From address as a constant in the edge function so it's easy to swap once your domain is verified. `RESEND_API_KEY` is already in your secrets ✅.
+**Phase 1 — Restore broken tracking (high value, low risk)**
+1. Audit every PDF download button (`DownloadAction`, `AtlasActions`, RHCA card, IGM card, Article card) and ensure `trackDownload` is invoked on click with the correct `documentType` + `documentId`.
+2. Wire `trackShare` into the shared `ShareAction` component so RHCA/IGM/Article shares are captured.
+3. Add `trackSearch` to the global search bar and the RHCA/IGM list filters.
+4. Add `trackClick` to article/issue card clicks so we measure CTR from listing pages.
 
-### 2. Database
+**Phase 2 — Add observability**
+5. Add a tiny `webVitals.ts` using `web-vitals` package → POST CLS/LCP/INP/FCP/TTFB to `performance_metrics`.
+6. Wire `window.onerror` + `window.onunhandledrejection` + React `ErrorBoundary` to insert into `error_events` (debounced, sampled).
+7. Track donation completion and contact form submit as `user_events` (`event_type='conversion'`).
 
-New table `newsletter_send_log` (track what was sent to whom, prevent duplicates, allow retries):
-- `content_id`, `content_type` (rhca | igm | atlas | index-medicus), `content_title`
-- `recipient_email`, `status` (sent | failed | skipped), `error_message`
-- `resend_message_id`, `sent_at`
+**Phase 3 — Admin visibility**
+8. Extend `/admin/analytics` with three new cards: **Web Vitals (p75)**, **JS errors (24h)**, **Conversions (donations / contacts / subscriptions)**.
+9. Add per-source breakdown (RHCA vs IGM vs ADC vs Index Medicus) on the daily activity chart.
+10. Add a "data freshness" indicator showing the timestamp of the most recent event, so future regressions are caught quickly.
 
-Add `unsubscribe_token` (uuid) column to `newsletter_subscriptions` for one-click unsubscribe links.
+**Phase 4 — Hygiene**
+11. Document `VITE_DEBUG_ANALYTICS=true` in README so we can validate tracking on preview.
+12. Add a Playwright smoke test that loads `/`, clicks a download, and asserts a row appears in `user_events`.
 
-### 3. Edge function: `send-new-content-newsletter`
+### Technical notes
+- All inserts go through the existing `track_user_event` RPC — no schema changes required for Phase 1.
+- Phase 2 uses the existing `performance_metrics` and `error_events` tables (already have anon-insert RLS with length guards).
+- Sampling: cap `performance_metrics` at 1 record per session per metric; cap `error_events` at 10 per session to avoid runaway inserts.
+- Keep `service_role` out of the client — all inserts remain anon via the existing RLS policies.
 
-Single function, invoked with `{ contentType, contentId }`. It:
-1. Fetches the content row (title, abstract, cover image, link target)
-2. Loads all active subscribers
-3. Filters out anyone already logged as sent for this `content_id`
-4. Sends via Resend in batches of 100 (Resend batch endpoint) with rate limiting
-5. Logs every send/failure in `newsletter_send_log`
-6. Returns counts: `{ sent, failed, skipped }`
+### Out of scope (ask before doing)
+- Third-party analytics (GA4, Plausible, PostHog) — not needed if the in-house pipeline is healthy.
+- Cookie consent banner — only needed if we add third-party tracking.
 
-Email template (React Email-style HTML) with InfoChir branding, cover image, title, abstract preview, "Lire maintenant" CTA, and unsubscribe link.
-
-### 4. Triggers (where the send fires)
-
-I'll invoke the function from the success paths of:
-- `upload-igm-issue` edge function (already exists) — after the article insert succeeds
-- `upload-cover` / RHCA + Atlas upload flows
-- Admin "publish" action for Index Medicus articles (`ArticleCreate` / `ArticleEdit` when `status` transitions to `published`)
-
-To keep it bulletproof, I'll **also** add a Postgres trigger on `articles` (AFTER INSERT … WHEN status='published') that calls the function via `pg_net.http_post`. That way even direct DB inserts or admin tool inserts notify subscribers. The function itself dedupes via `newsletter_send_log`, so double-invocations are safe.
-
-### 5. Unsubscribe
-
-- New edge function `newsletter-unsubscribe` (public, no JWT)
-- Public page `/newsletter/unsubscribe?token=…` that calls it and shows confirmation
-- Every email footer includes this link
-
-### 6. Admin visibility (small addition)
-
-Add a "Newsletter" panel to `/admin` showing: subscriber count, last 20 campaigns from `newsletter_send_log` grouped by `content_id` with sent/failed counts and a "Resend to failed" button.
-
-### Technical details
-
-- **Resend SDK**: call REST directly from Deno (`https://api.resend.com/emails/batch`) — no npm import needed
-- **Batching**: 100 recipients per Resend batch call, 500ms delay between batches to respect rate limits (10 req/s on free tier)
-- **Idempotency**: `newsletter_send_log` UNIQUE on `(content_id, recipient_email)` so retries never double-send
-- **Failures**: logged with error, surfaced in admin panel; manual resend button re-runs the function which only targets non-sent rows
-- **Security**: `newsletter_send_log` admin-only RLS; `unsubscribe_token` allows anon update of own row only
-
-### Deliverables
-
-1. Migration: `newsletter_send_log` table + `unsubscribe_token` column + GRANTs/RLS + optional pg trigger
-2. Edge function `send-new-content-newsletter`
-3. Edge function `newsletter-unsubscribe`
-4. Modifications to existing upload flows + admin publish action to invoke the function
-5. Public unsubscribe page
-6. Admin newsletter campaign panel
-
-### Open question before I build
-
-**Which From address should I configure?** If you don't have a verified Resend domain yet, I'll wire it up with `onboarding@resend.dev` so the code is fully functional, and you can change one constant + verify your domain in Resend whenever you're ready. Confirm and I'll start.
+Approve and I'll start with Phase 1 (the highest-impact fixes: restoring download/share/search tracking).

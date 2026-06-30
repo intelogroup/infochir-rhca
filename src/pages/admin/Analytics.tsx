@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { ObservabilityPanel } from "@/components/admin/ObservabilityPanel";
 
 // Fetch real analytics summary
 const fetchAnalyticsSummary = async () => {
@@ -298,6 +299,8 @@ const Analytics = () => {
           )}
         </CardContent>
       </Card>
+
+      <ObservabilityPanel />
     </div>
   );
 };

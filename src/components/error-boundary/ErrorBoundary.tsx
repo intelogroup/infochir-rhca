@@ -10,6 +10,7 @@ import {
 import { getLoadingDiagnostics, isDebugMode } from "./utils/diagnostics";
 import { getErrorMessage } from "./utils/errorMessages";
 import { logReactError } from "@/lib/error-logger";
+import { reportError } from "@/lib/analytics/error-reporting";
 
 interface Props {
   children: React.ReactNode;
@@ -36,6 +37,12 @@ export class ErrorBoundary extends React.Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     const boundaryName = this.props.name || 'unnamed';
     logReactError(error, errorInfo, boundaryName);
+    void reportError({
+      errorType: `react:${boundaryName}`,
+      message: error.message || 'React render error',
+      stack: error.stack,
+      componentStack: errorInfo.componentStack ?? undefined,
+    });
     this.setState({ errorInfo });
     
     // Log extra diagnostics in debug mode
