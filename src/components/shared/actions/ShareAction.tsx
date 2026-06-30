@@ -5,6 +5,8 @@ import { Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger } from "@/lib/error-logger";
+import { trackShare } from "@/lib/analytics/track";
+import { DocumentType } from "@/lib/analytics/download/statistics/types";
 
 const logger = createLogger('ShareAction');
 
@@ -39,18 +41,28 @@ export const ShareAction: React.FC<ShareActionProps> = ({
         : `${window.location.origin}/rhca/articles/${id}`;
       
       // Try to use the Web Share API if available
+      let shareMethod: 'social' | 'clipboard' = 'clipboard';
       if (navigator.share) {
         await navigator.share({
           title: title,
           text: `Découvrez "${title}" sur ${contentType === 'igm' ? 'Info Gazette Médicale' : 'RHCA'}`,
           url: shareUrl
         });
+        shareMethod = 'social';
         toast.success("Contenu partagé avec succès");
       } else {
         // Fallback to clipboard
         await navigator.clipboard.writeText(shareUrl);
         toast.success("Lien copié dans le presse-papier");
       }
+
+      // Record the share as a tracked event (writes to user_events)
+      void trackShare(
+        id,
+        contentType === 'igm' ? DocumentType.IGM : DocumentType.RHCA,
+        shareMethod
+      );
+
       
       // Update share count in the database using RPC
       try {
