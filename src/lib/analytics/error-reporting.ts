@@ -26,9 +26,11 @@ export const reportError = async (params: {
       error_type: params.errorType.slice(0, 100),
       message: params.message.slice(0, 5000),
       stack: params.stack?.slice(0, 10000) ?? null,
-      component_stack: params.componentStack?.slice(0, 5000) ?? null,
+      component: params.componentStack?.slice(0, 5000) ?? null,
       url: (params.url ?? window.location.href).slice(0, 2000),
+      route: window.location.pathname.slice(0, 500),
       user_agent: navigator.userAgent.slice(0, 500),
+      metadata: {},
     });
   } catch {
     // Swallow — never let observability break the app
