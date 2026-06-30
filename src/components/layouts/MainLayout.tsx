@@ -9,6 +9,8 @@ import { useAnalytics } from "@/hooks/use-analytics";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { WelcomeModal } from "@/components/welcome/WelcomeModal";
 import { ProductInfoModal } from "@/components/welcome/ProductInfoModal";
+import { initWebVitals } from "@/lib/analytics/web-vitals";
+import { initErrorReporting } from "@/lib/analytics/error-reporting";
 
 export interface MainLayoutProps {
   children?: React.ReactNode;
@@ -26,6 +28,12 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 
   // Initialize analytics
   useAnalytics();
+
+  // Initialize web vitals & error reporting once per session
+  useEffect(() => {
+    initWebVitals();
+    initErrorReporting();
+  }, []);
 
   // Mark initial load as complete and notify that the app has loaded
   useEffect(() => {
