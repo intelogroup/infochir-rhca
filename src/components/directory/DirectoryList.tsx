@@ -36,13 +36,16 @@ const DirectoryList: FC<DirectoryListProps> = () => {
       console.time('Fetch Members');
       const { data: { session } } = await supabase.auth.getSession();
 
-      // Authenticated users see full member records (incl. email/phone).
-      // Anonymous users only see basic public info via the public view.
-      const query = session
-        ? supabase.from('members').select('*').order('name')
-        : supabase.from('members_public_view').select('*').order('name');
+      // Try the admin-only full table first; fall back to the redacted public view
+      // for non-admin/authenticated and anonymous visitors.
+      let { data, error } = await supabase.from('members').select('*').order('name');
+      if (error || !data) {
+        const fallback = await supabase.from('members_public_view').select('*').order('name');
+        data = fallback.data as any;
+        error = fallback.error;
+      }
+      void session;
 
-      const { data, error } = await query;
 
       console.timeEnd('Fetch Members');
       
