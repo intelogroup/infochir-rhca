@@ -86,7 +86,7 @@ export const DownloadAction: React.FC<DownloadActionProps> = ({
 
             toast.success("Téléchargement réussi");
           },
-          async (error) => {
+          async (error: unknown) => {
             logger.error('Mobile download failed:', error);
             const { trackDownload } = await import("@/lib/analytics/download/track-downloads");
             void trackDownload({
