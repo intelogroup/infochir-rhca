@@ -34,7 +34,9 @@ const DonateSuccess = () => {
         
         if (verified) {
           setIsVerified(true);
+          void trackConversion('donation', { session_id: sessionId });
           toast.success("Thank you for your donation!");
+
         } else {
           toast.error("Unable to verify payment status");
           // Don't redirect - show verification failed message instead
