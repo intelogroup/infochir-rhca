@@ -72,9 +72,11 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
     if ((e.target as HTMLElement).closest('button')) {
       return;
     }
-    
+
+    void trackClick(article.id, DocumentType.RHCA, article.title);
     setIsModalOpen(true);
   };
+
   
   return (
     <>
