@@ -295,12 +295,46 @@ export const trackClick = async (
 };
 
 /**
+ * Track a conversion event (donation, contact form submit, newsletter sub, etc.)
+ */
+export const trackConversion = async (
+  conversionType: string,
+  data: Record<string, unknown> = {}
+): Promise<boolean> => {
+  try {
+    const clientInfo = getClientInfo();
+
+    const { error } = await supabase.rpc('track_user_event', {
+      p_event_type: 'conversion',
+      p_session_id: clientInfo.sessionId,
+      p_user_agent: clientInfo.userAgent,
+      p_referrer: clientInfo.referrer,
+      p_page_url: clientInfo.pageUrl,
+      p_event_data: {
+        conversion_type: conversionType,
+        ...data,
+      },
+    });
+
+    if (error) {
+      if (import.meta.env.DEV) logger.error('Error tracking conversion:', error);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    if (import.meta.env.DEV) logger.error('Exception tracking conversion:', error);
+    return false;
+  }
+};
+
+/**
  * Check if a string is a valid UUID
  */
 export const isValidUuid = (str: string): boolean => {
   if (!str) return false;
-  
+
   // UUID v4 regex pattern
   const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
   return uuidPattern.test(str);
 };
+
