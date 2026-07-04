@@ -11,6 +11,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createLogger } from "@/lib/error-logger";
+import { trackConversion } from "@/lib/analytics/track";
+
 
 // Create a logger for this component
 const logger = createLogger("NewsletterSection");
