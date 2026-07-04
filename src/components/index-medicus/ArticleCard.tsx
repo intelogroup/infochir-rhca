@@ -10,6 +10,9 @@ import { ArticleActions } from "./article/ArticleActions";
 import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
 import { ArticleModal } from "./article/ArticleModal";
 import { motion } from "framer-motion";
+import { trackClick } from "@/lib/analytics/track";
+import { DocumentType } from "@/lib/analytics/download/statistics/types";
+
 
 interface ArticleCardProps {
   article: Article;
