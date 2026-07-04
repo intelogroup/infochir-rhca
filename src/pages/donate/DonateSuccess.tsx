@@ -8,6 +8,8 @@ import { useNavigate } from "react-router-dom";
 import { CheckCircle2, AlertCircle } from "lucide-react";
 import { verifyPaymentStatus } from "@/lib/stripe";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { trackConversion } from "@/lib/analytics/track";
+
 
 const DonateSuccess = () => {
   const navigate = useNavigate();
@@ -32,7 +34,9 @@ const DonateSuccess = () => {
         
         if (verified) {
           setIsVerified(true);
+          void trackConversion('donation', { session_id: sessionId });
           toast.success("Thank you for your donation!");
+
         } else {
           toast.error("Unable to verify payment status");
           // Don't redirect - show verification failed message instead

@@ -11,8 +11,11 @@ import { RhcaArticleModal } from "./article/RhcaArticleModal";
 import type { RhcaArticle } from "./types";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { createLogger } from "@/lib/error-logger";
+import { trackClick } from "@/lib/analytics/track";
+import { DocumentType } from "@/lib/analytics/download/statistics/types";
 
 const logger = createLogger('RhcaCard');
+
 
 interface RhcaCardProps {
   article: RhcaArticle;
@@ -69,9 +72,11 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
     if ((e.target as HTMLElement).closest('button')) {
       return;
     }
-    
+
+    void trackClick(article.id, DocumentType.RHCA, article.title);
     setIsModalOpen(true);
   };
+
   
   return (
     <>

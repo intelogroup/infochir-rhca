@@ -204,6 +204,21 @@ VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
+### Optional: Analytics Debugging
+
+Client-side telemetry (page views, downloads, shares, clicks, searches, Web Vitals,
+JS error reporting, conversions) is only fired in production builds by default.
+To validate tracking against a preview / dev build, set:
+
+```env
+VITE_DEBUG_ANALYTICS=true
+```
+
+When enabled, every event is written to Supabase (`user_events`, `download_events`,
+`performance_metrics`, `error_events`) exactly as in production. Leave it unset for
+normal local development to avoid polluting analytics with dev noise.
+
+
 ## Contributing
 
 1. Follow the established code style

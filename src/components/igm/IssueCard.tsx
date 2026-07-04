@@ -8,6 +8,9 @@ import { IssueCardActions } from "./components/card/IssueCardActions";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { IGMIssueModal } from "./components/modal/IGMIssueModal";
+import { trackClick } from "@/lib/analytics/track";
+import { DocumentType } from "@/lib/analytics/download/statistics/types";
+
 
 interface IssueCardProps {
   issue: Issue;
@@ -22,9 +25,11 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue }) => {
     if ((e.target as HTMLElement).closest('button')) {
       return;
     }
-    
+
+    void trackClick(issue.id, DocumentType.IGM, issue.title);
     setIsModalOpen(true);
   };
+
 
   // Calculate total pages from articles
   const getTotalPages = (() => {

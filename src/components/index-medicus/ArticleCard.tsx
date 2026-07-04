@@ -10,6 +10,9 @@ import { ArticleActions } from "./article/ArticleActions";
 import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
 import { ArticleModal } from "./article/ArticleModal";
 import { motion } from "framer-motion";
+import { trackClick } from "@/lib/analytics/track";
+import { DocumentType } from "@/lib/analytics/download/statistics/types";
+
 
 interface ArticleCardProps {
   article: Article;
@@ -22,13 +25,16 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick, s
 
   const handleCardClick = (e: React.MouseEvent) => {
     // Only open the modal if clicking the card itself, not the buttons or tags
-    if ((e.target as HTMLElement).closest('button') || 
+    if ((e.target as HTMLElement).closest('button') ||
         (e.target as HTMLElement).closest('[data-tag]')) {
       return;
     }
-    
+
+    const docType = article.source === 'INDEX' ? DocumentType.INDEX : DocumentType.Article;
+    void trackClick(article.id, docType, article.title);
     setIsModalOpen(true);
   };
+
 
   return (
     <>

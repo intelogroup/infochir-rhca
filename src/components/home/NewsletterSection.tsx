@@ -11,6 +11,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createLogger } from "@/lib/error-logger";
+import { trackConversion } from "@/lib/analytics/track";
+
 
 // Create a logger for this component
 const logger = createLogger("NewsletterSection");
@@ -95,9 +97,16 @@ export const NewsletterSection = () => {
           id: toastId
         });
       }
-      
+
+      // Track successful conversion
+      void trackConversion('contact_form', {
+        has_phone: Boolean(values.phone),
+        message_length: values.message.length,
+      });
+
       // Reset form values
       form.reset();
+
     } catch (error: any) {
       logger.error("Contact form submission error:", error);
       toast.error(`Une erreur est survenue: ${error.message || "Veuillez réessayer plus tard"}`, {
