@@ -25,9 +25,11 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue }) => {
     if ((e.target as HTMLElement).closest('button')) {
       return;
     }
-    
+
+    void trackClick(issue.id, DocumentType.IGM, issue.title);
     setIsModalOpen(true);
   };
+
 
   // Calculate total pages from articles
   const getTotalPages = (() => {
