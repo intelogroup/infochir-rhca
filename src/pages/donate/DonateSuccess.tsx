@@ -8,6 +8,8 @@ import { useNavigate } from "react-router-dom";
 import { CheckCircle2, AlertCircle } from "lucide-react";
 import { verifyPaymentStatus } from "@/lib/stripe";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { trackConversion } from "@/lib/analytics/track";
+
 
 const DonateSuccess = () => {
   const navigate = useNavigate();
