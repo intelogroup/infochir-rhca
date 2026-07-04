@@ -97,9 +97,16 @@ export const NewsletterSection = () => {
           id: toastId
         });
       }
-      
+
+      // Track successful conversion
+      void trackConversion('contact_form', {
+        has_phone: Boolean(values.phone),
+        message_length: values.message.length,
+      });
+
       // Reset form values
       form.reset();
+
     } catch (error: any) {
       logger.error("Contact form submission error:", error);
       toast.error(`Une erreur est survenue: ${error.message || "Veuillez réessayer plus tard"}`, {
