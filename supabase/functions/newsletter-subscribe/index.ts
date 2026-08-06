@@ -314,7 +314,7 @@ async function sendAdminNotification(
   isDuplicate: boolean = false
 ): Promise<{sent: boolean; message?: string}> {
   try {
-    console.log(`Sending newsletter subscription notification to ${NOTIFICATION_EMAIL}`);
+    console.log(`Sending newsletter subscription notification to ${NOTIFICATION_EMAILS.join(", ")}`);
     
     const subscriptionTime = new Date().toLocaleString('fr-FR', {
       dateStyle: 'full',
