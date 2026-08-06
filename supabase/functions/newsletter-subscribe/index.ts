@@ -352,23 +352,35 @@ async function sendAdminNotification(
       This is an automated notification from your InfoChir website.
     `;
     
-    const emailResult = await sendEmail(
-      NOTIFICATION_EMAIL,
-      `${isDuplicate ? '[DUPLICATE] ' : ''}InfoChir Newsletter Subscription: ${name}`,
-      html,
-      text,
-      email // set reply-to as the subscriber's email
-    );
-    
-    if (emailResult.success) {
-      console.log("Admin newsletter notification email sent successfully");
-      return { sent: true };
+    const errors: string[] = [];
+    let anySent = false;
+
+    for (let i = 0; i < NOTIFICATION_EMAILS.length; i++) {
+      const recipient = NOTIFICATION_EMAILS[i];
+      if (i > 0) await delay(600); // stay under Resend rate limits
+
+      const emailResult = await sendEmail(
+        recipient,
+        `${isDuplicate ? '[DUPLICATE] ' : ''}InfoChir Newsletter Subscription: ${name}`,
+        html,
+        text,
+        email // set reply-to as the subscriber's email
+      );
+
+      if (emailResult.success) {
+        anySent = true;
+        console.log(`Admin newsletter notification sent to ${recipient}`);
+      } else {
+        const msg = emailResult.error instanceof Error ? emailResult.error.message : String(emailResult.error);
+        console.error(`Failed to notify ${recipient}:`, msg);
+        errors.push(`${recipient}: ${msg}`);
+      }
+    }
+
+    if (anySent) {
+      return { sent: true, message: errors.length ? `Partial failures: ${errors.join("; ")}` : undefined };
     } else {
-      console.error("Failed to send admin newsletter notification email:", emailResult.error);
-      return { 
-        sent: false, 
-        message: emailResult.error instanceof Error ? emailResult.error.message : String(emailResult.error)
-      };
+      return { sent: false, message: errors.join("; ") };
     }
   } catch (error) {
     console.error("Error sending admin newsletter notification:", error);
