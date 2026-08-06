@@ -26,8 +26,12 @@ interface SubscriptionResponse {
 const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
 const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 
-// Notification recipient email - updated to the specified email
-const NOTIFICATION_EMAIL = "jimkalinov@gmail.com";
+// Notification recipients for new newsletter subscriptions
+const NOTIFICATION_EMAILS = [
+  "jimkalinov@gmail.com",
+  "jalouidor@hotmail.com",
+  "eunicederivoismerisier@gmail.com",
+];
 
 // Helper function to add delay between emails
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
