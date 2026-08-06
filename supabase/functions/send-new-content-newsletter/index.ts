@@ -5,8 +5,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// TODO: Replace once you verify your domain in Resend (e.g. "Info Chir <newsletter@infochir.org>")
-const FROM_ADDRESS = 'Info Chir <onboarding@resend.dev>';
+// Verified domain in Resend: info-chir.org
+const FROM_ADDRESS = 'Info Chir <newsletter@info-chir.org>';
 const SITE_URL = 'https://infochir-rhca.lovable.app';
 const REPLY_TO = 'jimkalinov@gmail.com';
 

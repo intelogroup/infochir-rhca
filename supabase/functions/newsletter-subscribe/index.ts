@@ -26,8 +26,12 @@ interface SubscriptionResponse {
 const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
 const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 
-// Notification recipient email - updated to the specified email
-const NOTIFICATION_EMAIL = "jimkalinov@gmail.com";
+// Notification recipients for new newsletter subscriptions
+const NOTIFICATION_EMAILS = [
+  "jimkalinov@gmail.com",
+  "jalouidor@hotmail.com",
+  "eunicederivoismerisier@gmail.com",
+];
 
 // Helper function to add delay between emails
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -310,7 +314,7 @@ async function sendAdminNotification(
   isDuplicate: boolean = false
 ): Promise<{sent: boolean; message?: string}> {
   try {
-    console.log(`Sending newsletter subscription notification to ${NOTIFICATION_EMAIL}`);
+    console.log(`Sending newsletter subscription notification to ${NOTIFICATION_EMAILS.join(", ")}`);
     
     const subscriptionTime = new Date().toLocaleString('fr-FR', {
       dateStyle: 'full',
@@ -348,23 +352,35 @@ async function sendAdminNotification(
       This is an automated notification from your InfoChir website.
     `;
     
-    const emailResult = await sendEmail(
-      NOTIFICATION_EMAIL,
-      `${isDuplicate ? '[DUPLICATE] ' : ''}InfoChir Newsletter Subscription: ${name}`,
-      html,
-      text,
-      email // set reply-to as the subscriber's email
-    );
-    
-    if (emailResult.success) {
-      console.log("Admin newsletter notification email sent successfully");
-      return { sent: true };
+    const errors: string[] = [];
+    let anySent = false;
+
+    for (let i = 0; i < NOTIFICATION_EMAILS.length; i++) {
+      const recipient = NOTIFICATION_EMAILS[i];
+      if (i > 0) await delay(600); // stay under Resend rate limits
+
+      const emailResult = await sendEmail(
+        recipient,
+        `${isDuplicate ? '[DUPLICATE] ' : ''}InfoChir Newsletter Subscription: ${name}`,
+        html,
+        text,
+        email // set reply-to as the subscriber's email
+      );
+
+      if (emailResult.success) {
+        anySent = true;
+        console.log(`Admin newsletter notification sent to ${recipient}`);
+      } else {
+        const msg = emailResult.error instanceof Error ? emailResult.error.message : String(emailResult.error);
+        console.error(`Failed to notify ${recipient}:`, msg);
+        errors.push(`${recipient}: ${msg}`);
+      }
+    }
+
+    if (anySent) {
+      return { sent: true, message: errors.length ? `Partial failures: ${errors.join("; ")}` : undefined };
     } else {
-      console.error("Failed to send admin newsletter notification email:", emailResult.error);
-      return { 
-        sent: false, 
-        message: emailResult.error instanceof Error ? emailResult.error.message : String(emailResult.error)
-      };
+      return { sent: false, message: errors.join("; ") };
     }
   } catch (error) {
     console.error("Error sending admin newsletter notification:", error);

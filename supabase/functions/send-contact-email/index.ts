@@ -4,7 +4,11 @@ import { corsHeaders, handleCors } from "../_shared/cors.ts";
 import { sendEmail } from "../_shared/email-sender.ts";
 
 // Email notification recipients - multiple admin emails
-const ADMIN_EMAILS = ["jimkalinov@gmail.com", "jalouidor@hotmail.com"];
+const ADMIN_EMAILS = [
+  "jimkalinov@gmail.com",
+  "jalouidor@hotmail.com",
+  "eunicederivoismerisier@gmail.com",
+];
 
 interface ContactRequest {
   name: string;
