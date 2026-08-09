@@ -119,8 +119,6 @@ const DirectoryList: FC<DirectoryListProps> = () => {
     }
   }, [sortField]);
 
-  console.timeEnd('DirectoryList Render');
-
   if (isLoading) {
     return <LoadingSkeleton />;
   }
@@ -128,7 +126,13 @@ const DirectoryList: FC<DirectoryListProps> = () => {
   return (
     <div className="space-y-6">
       <SearchBar value={searchTerm} onChange={handleSearch} />
-      
+
+      {!isAuthenticated && (
+        <p className="text-sm text-gray-500 text-center">
+          Les coordonnées des membres sont masquées. Connectez-vous pour y accéder.
+        </p>
+      )}
+
       <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
         <Table>
           <TableHeader 
@@ -138,10 +142,11 @@ const DirectoryList: FC<DirectoryListProps> = () => {
           />
           <TableBody>
             {sortedMembers.map((member) => (
-              <MemberRow key={member.id} member={member} />
+              <MemberRow key={member.id} member={member} canViewContact={isAuthenticated} />
             ))}
           </TableBody>
         </Table>
+
         
         {sortedMembers.length === 0 && (
           <div className="p-8 text-center">
