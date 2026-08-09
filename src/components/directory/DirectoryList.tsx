@@ -3,7 +3,7 @@ import { Table, TableBody } from "@/components/ui/table";
 import { SearchBar } from "./SearchBar";
 import { TableHeader } from "./TableHeader";
 import { MemberRow } from "./MemberRow";
-import { useState, useMemo, useCallback, FC } from "react";
+import { useState, useMemo, useCallback, useEffect, FC } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
