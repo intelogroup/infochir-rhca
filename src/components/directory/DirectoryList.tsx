@@ -3,7 +3,7 @@ import { Table, TableBody } from "@/components/ui/table";
 import { SearchBar } from "./SearchBar";
 import { TableHeader } from "./TableHeader";
 import { MemberRow } from "./MemberRow";
-import { useState, useMemo, useCallback, FC } from "react";
+import { useState, useMemo, useCallback, useEffect, FC } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -25,10 +25,25 @@ LoadingSkeleton.displayName = 'LoadingSkeleton';
 interface DirectoryListProps {}
 
 const DirectoryList: FC<DirectoryListProps> = () => {
-  console.time('DirectoryList Render');
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState<'id' | 'name' | 'email'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (active) setIsAuthenticated(Boolean(session));
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      setIsAuthenticated(Boolean(session));
+    });
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
 
   const { data: members, isLoading } = useQuery({
     queryKey: ['members'],
@@ -104,8 +119,6 @@ const DirectoryList: FC<DirectoryListProps> = () => {
     }
   }, [sortField]);
 
-  console.timeEnd('DirectoryList Render');
-
   if (isLoading) {
     return <LoadingSkeleton />;
   }
@@ -113,7 +126,13 @@ const DirectoryList: FC<DirectoryListProps> = () => {
   return (
     <div className="space-y-6">
       <SearchBar value={searchTerm} onChange={handleSearch} />
-      
+
+      {!isAuthenticated && (
+        <p className="text-sm text-gray-500 text-center">
+          Les coordonnées des membres sont masquées. Connectez-vous pour y accéder.
+        </p>
+      )}
+
       <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
         <Table>
           <TableHeader 
@@ -123,10 +142,11 @@ const DirectoryList: FC<DirectoryListProps> = () => {
           />
           <TableBody>
             {sortedMembers.map((member) => (
-              <MemberRow key={member.id} member={member} />
+              <MemberRow key={member.id} member={member} canViewContact={isAuthenticated} />
             ))}
           </TableBody>
         </Table>
+
         
         {sortedMembers.length === 0 && (
           <div className="p-8 text-center">
