@@ -25,10 +25,25 @@ LoadingSkeleton.displayName = 'LoadingSkeleton';
 interface DirectoryListProps {}
 
 const DirectoryList: FC<DirectoryListProps> = () => {
-  console.time('DirectoryList Render');
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState<'id' | 'name' | 'email'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (active) setIsAuthenticated(Boolean(session));
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      setIsAuthenticated(Boolean(session));
+    });
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
 
   const { data: members, isLoading } = useQuery({
     queryKey: ['members'],
