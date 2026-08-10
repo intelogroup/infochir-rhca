@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { SEO } from "@/components/seo/SEO";
 
 const NewsletterUnsubscribe = () => {
   const [params] = useSearchParams();
@@ -32,6 +33,12 @@ const NewsletterUnsubscribe = () => {
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-background px-4">
+      <SEO
+        title="Désabonnement newsletter | Info CHIR"
+        description="Gérez votre désabonnement de la newsletter Info CHIR."
+        path="/newsletter/unsubscribe"
+        noindex
+      />
       <div className="max-w-md w-full bg-card border rounded-xl shadow-sm p-8 text-center">
         <h1 className="text-2xl font-bold mb-3 text-foreground">Newsletter Info Chir</h1>
         {state === "loading" && <p className="text-muted-foreground">Traitement en cours…</p>}
