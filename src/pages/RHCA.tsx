@@ -7,14 +7,18 @@ import { RHCAAdminPanel } from "@/components/rhca/admin/RHCAAdminPanel";
 import { useSearchParams } from "react-router-dom";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 import { createLogger } from '@/lib/error-logger';
+import { useAdminAuth } from "@/hooks/use-admin-auth";
 
 const logger = createLogger('RHCAPage');
 
 const RHCA: React.FC = () => {
   const [searchParams] = useSearchParams();
-  const isAdmin = searchParams.get('admin') === 'true';
-  const isDebug = searchParams.get('debug') === 'true';
+  // Admin tooling is gated on the server-verified admin role, never on a URL flag.
+  const { isAdmin: isVerifiedAdmin, isLoading: isAuthLoading } = useAdminAuth();
+  const isAdmin = !isAuthLoading && isVerifiedAdmin === true;
+  const isDebug = isAdmin && searchParams.get('debug') === 'true';
   const [isLoaded, setIsLoaded] = React.useState(false);
+
 
   React.useEffect(() => {
     setIsLoaded(true);

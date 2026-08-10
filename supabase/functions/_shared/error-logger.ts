@@ -39,16 +39,20 @@ export function createErrorResponse(
   headers: Record<string, string> = {},
   error?: any
 ): Response {
-  const errorBody: any = { 
-    error: message || 'Internal server error',
-    success: false 
-  };
-  
+  // Correlation id so support can match a client report to server logs.
+  const correlationId = crypto.randomUUID();
+
   if (error) {
-    errorBody.errorDetails = error.message;
-    errorBody.errorStack = error.stack;
+    // Full detail (message + stack) stays in server logs only.
+    logError(`[${correlationId}] ${message || 'Internal server error'}`, error);
   }
-  
+
+  const errorBody: Record<string, unknown> = {
+    error: message || 'Internal server error',
+    success: false,
+    correlationId,
+  };
+
   return new Response(
     JSON.stringify(errorBody),
     { 
@@ -60,6 +64,7 @@ export function createErrorResponse(
     }
   );
 }
+
 
 /**
  * Create a success response with proper headers

@@ -1,5 +1,6 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.48.1';
+import { requireAdmin, denyResponse } from '../_shared/require-admin.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,6 +14,11 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders, status: 204 });
   }
+
+
+  // Require an authenticated admin: this function performs privileged writes.
+  const adminCheck = await requireAdmin(req);
+  if (!adminCheck.ok) return denyResponse(adminCheck, corsHeaders);
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';

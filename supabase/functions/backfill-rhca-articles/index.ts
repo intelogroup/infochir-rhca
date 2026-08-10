@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.48.1';
+import { requireAdmin, denyResponse } from '../_shared/require-admin.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -37,7 +38,7 @@ const extractInfoFromFilename = (filename: string) => {
 };
 
 const generateRHCAContent = async (filename: string, volume: string, issue: string): Promise<Partial<RHCAArticleData>> => {
-  const openAIApiKey = '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';
+  const openAIApiKey = Deno.env.get('OPENAI_API_KEY') ?? '';
   
   try {
     if (!openAIApiKey) {
@@ -161,6 +162,11 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
+
+
+  // Require an authenticated admin: this function performs privileged writes.
+  const adminCheck = await requireAdmin(req);
+  if (!adminCheck.ok) return denyResponse(adminCheck, corsHeaders);
 
   try {
     console.log('Starting RHCA articles backfill process...');

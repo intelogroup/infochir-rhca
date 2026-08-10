@@ -1,8 +1,10 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.48.1';
+import { requireAdmin, denyResponse } from '../_shared/require-admin.ts';
+
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-newsletter-trigger-secret',
 };
 
 // Verified domain in Resend: info-chir.org
@@ -76,7 +78,19 @@ function emailHtml(opts: {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
+  // Only an authenticated admin, or the internal database trigger presenting the
+  // shared trigger secret, may fan out email to every subscriber.
+  const triggerSecret = Deno.env.get('NEWSLETTER_TRIGGER_SECRET') ?? '';
+  const providedSecret = req.headers.get('x-newsletter-trigger-secret') ?? '';
+  const isInternalTrigger = triggerSecret.length > 0 && providedSecret === triggerSecret;
+
+  if (!isInternalTrigger) {
+    const adminCheck = await requireAdmin(req);
+    if (!adminCheck.ok) return denyResponse(adminCheck, corsHeaders);
+  }
+
   try {
+
     const { contentId, contentType } = await req.json();
     if (!contentId) {
       return new Response(JSON.stringify({ ok: false, error: 'contentId required' }), {
