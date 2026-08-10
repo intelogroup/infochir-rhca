@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger } from "@/lib/error-logger";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
+import { SEO, organizationSchema, websiteSchema } from "@/components/seo/SEO";
 
 const logger = createLogger('HomePage');
 
