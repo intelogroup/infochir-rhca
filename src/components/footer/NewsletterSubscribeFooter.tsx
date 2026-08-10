@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { z } from "zod";
 import { createLogger } from "@/lib/error-logger";
@@ -28,6 +28,8 @@ export const NewsletterSubscribeFooter = () => {
   const [errors, setErrors] = useState<{name?: string; email?: string}>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isOffline, setIsOffline] = useState(false);
+  const [honeypot, setHoneypot] = useState("");
+  const mountedAt = useRef<number>(Date.now());
 
   // Check online status and update state
   useEffect(() => {
@@ -144,7 +146,7 @@ export const NewsletterSubscribeFooter = () => {
       
       // Attempt to invoke the edge function with timeout
       const responsePromise = supabase.functions.invoke("newsletter-subscribe", {
-        body: { name: subscriberName, email: subscriberEmail }
+        body: { name: subscriberName, email: subscriberEmail, hp: honeypot, t: mountedAt.current }
       });
       
       // Race between the response and the timeout
@@ -244,6 +246,19 @@ export const NewsletterSubscribeFooter = () => {
       </p>
       
       <form onSubmit={handleSubmit} className="space-y-3">
+        {/* Anti-spam honeypot: hidden from humans, filled by bots */}
+        <div aria-hidden="true" className="absolute left-[-9999px] h-0 w-0 overflow-hidden">
+          <label htmlFor="footer-website">Website</label>
+          <input
+            id="footer-website"
+            name="website"
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+            value={honeypot}
+            onChange={(e) => setHoneypot(e.target.value)}
+          />
+        </div>
         <div className="space-y-2">
           <Label htmlFor="footer-name" className="text-sm text-gray-600">
             Nom
