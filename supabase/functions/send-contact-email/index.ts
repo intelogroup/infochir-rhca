@@ -1,6 +1,7 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { corsHeaders, handleCors } from "../_shared/cors.ts";
+import { guardSubmission, blockedResponse, escapeHtml } from "../_shared/anti-spam.ts";
 import { sendEmail } from "../_shared/email-sender.ts";
 
 // Email notification recipients - multiple admin emails
@@ -155,12 +156,12 @@ async function sendAdminNotifications(data: ContactRequest): Promise<{success: b
           
           <div style="background-color: #f4f4f4; padding: 15px; border-radius: 5px; margin: 20px 0;">
             <h3 style="margin-top: 0;">Informations de contact:</h3>
-            <p><strong>Nom:</strong> ${data.name}</p>
-            <p><strong>Email:</strong> ${data.email}</p>
-            ${data.phone ? `<p><strong>Téléphone:</strong> ${data.phone}</p>` : ''}
+            <p><strong>Nom:</strong> ${escapeHtml(data.name)}</p>
+            <p><strong>Email:</strong> ${escapeHtml(data.email)}</p>
+            ${data.phone ? `<p><strong>Téléphone:</strong> ${escapeHtml(data.phone)}</p>` : ''}
             
             <h3>Message:</h3>
-            <p style="white-space: pre-line;">${data.message}</p>
+            <p style="white-space: pre-line;">${escapeHtml(data.message)}</p>
           </div>
           
           <p style="color: #666; font-size: 12px;">Ceci est une notification automatique de votre site InfoChir.</p>
@@ -263,18 +264,18 @@ async function sendUserAcknowledgment(data: ContactRequest): Promise<{success: b
                       <p style="font-size: 16px; margin: 15px 0; font-weight: 500; color: #1E40AF;">Nous vous répondrons dans les plus brefs délais.</p>
                   </div>
                   
-                  <p style="font-size: 16px;">Bonjour <strong>${data.name}</strong>,</p>
+                  <p style="font-size: 16px;">Bonjour <strong>${escapeHtml(data.name)}</strong>,</p>
                   
                   <p>Nous avons bien reçu votre message envoyé le ${contactTime}.</p>
                   
                   <div class="info-box">
                       <h3 style="margin-top: 0; color: #1E40AF;">📋 Récapitulatif de votre message</h3>
-                      <p><strong>Nom :</strong> ${data.name}</p>
-                      <p><strong>Email :</strong> ${data.email}</p>
-                      ${data.phone ? `<p><strong>Téléphone :</strong> ${data.phone}</p>` : ''}
+                      <p><strong>Nom :</strong> ${escapeHtml(data.name)}</p>
+                      <p><strong>Email :</strong> ${escapeHtml(data.email)}</p>
+                      ${data.phone ? `<p><strong>Téléphone :</strong> ${escapeHtml(data.phone)}</p>` : ''}
                       <p><strong>Message :</strong></p>
                       <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 10px;">
-                          <p style="margin: 0; white-space: pre-line; font-style: italic;">${data.message}</p>
+                          <p style="margin: 0; white-space: pre-line; font-style: italic;">${escapeHtml(data.message)}</p>
                       </div>
                   </div>
                   
