@@ -39,7 +39,6 @@ export const TableHeader = ({ sortField, sortDirection, onSort }: TableHeaderPro
         </div>
       </TableHead>
       
-      <TableHead className="w-24 font-semibold">Photo</TableHead>
       
       <TableHead 
         onClick={() => onSort('name')}

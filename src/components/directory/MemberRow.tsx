@@ -1,7 +1,6 @@
 
 import { TableCell } from "@/components/ui/table";
 import { Mail, Phone, Lock } from "lucide-react";
-import { MemberAvatar } from "./MemberAvatar";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -44,12 +43,6 @@ export const MemberRow = ({ member, canViewContact = false }: MemberRowProps) =>
         <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-semibold">
           {member.id}
         </span>
-      </TableCell>
-
-      <TableCell className="relative py-4">
-        <div className="transform group-hover:scale-105 transition-transform duration-300">
-          <MemberAvatar avatarUrl={member.avatar_url} name={member.name} />
-        </div>
       </TableCell>
 
       <TableCell className="relative py-4">
