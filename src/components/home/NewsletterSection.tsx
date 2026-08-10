@@ -29,6 +29,8 @@ type ContactFormValues = z.infer<typeof contactFormSchema>;
 
 export const NewsletterSection = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [honeypot, setHoneypot] = useState("");
+  const mountedAt = useRef<number>(Date.now());
   
   // Initialize form with zod resolver
   const form = useForm<ContactFormValues>({
@@ -46,10 +48,27 @@ export const NewsletterSection = () => {
     const toastId = toast.loading("Envoi en cours...");
 
     try {
-      logger.log("Submitting contact form:", values);
-      
-      // First, save to database
-      const { data: dbData, error: dbError } = await supabase
+      logger.log("Submitting contact form");
+
+      // Send email notification via the edge function first (it runs the
+      // anti-spam checks), then persist the message only if it was accepted.
+      const { data, error } = await supabase.functions.invoke('send-contact-email', {
+        body: { 
+          name: values.name,
+          email: values.email,
+          phone: values.phone || null,
+          message: values.message,
+          hp: honeypot,
+          t: mountedAt.current
+        }
+      });
+
+      if (error) {
+        logger.error("Contact form submission error:", error);
+        throw new Error(`Email sending error: ${error.message}`);
+      }
+
+      const { error: dbError } = await supabase
         .from('contact_messages')
         .insert([
           { 
@@ -60,28 +79,10 @@ export const NewsletterSection = () => {
           }
         ]);
 
-      // Log database response for debugging
       if (dbError) {
         logger.error("Contact form database error:", dbError);
-        throw new Error(`Database error: ${dbError.message}`);
-      } else {
-        logger.log("Database insert successful:", dbData);
       }
 
-      // Send email notification using the edge function
-      const { data, error } = await supabase.functions.invoke('send-contact-email', {
-        body: { 
-          name: values.name,
-          email: values.email,
-          phone: values.phone || null,
-          message: values.message
-        }
-      });
-
-      if (error) {
-        logger.error("Contact form submission error:", error);
-        throw new Error(`Email sending error: ${error.message}`);
-      }
 
       logger.log("Contact form submission response:", data);
       
