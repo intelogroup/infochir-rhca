@@ -6,9 +6,15 @@ import { EditorialHeader } from "@/components/editorial/EditorialHeader";
 import { EditorialMission } from "@/components/editorial/EditorialMission";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { SEO } from "@/components/seo/SEO";
 
 const EditorialCommittee = () => (
   <MainLayout>
+      <SEO
+        title="Comité éditorial | Info CHIR"
+        description="Découvrez les membres du comité éditorial d'Info CHIR qui assurent la relecture scientifique de la RHCA et de l'IGM."
+        path="/editorial-committee"
+      />
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <Button 
         variant="ghost" 

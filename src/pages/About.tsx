@@ -6,12 +6,18 @@ import { motion } from "framer-motion";
 import { BookOpen, Target, Users, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { SEO } from "@/components/seo/SEO";
 
 const About = () => {
   const navigate = useNavigate();
 
   return (
     <MainLayout>
+      <SEO
+        title="À propos d'Info CHIR | Mission et publications"
+        description="Découvrez Info CHIR : notre mission, nos objectifs et nos publications scientifiques (RHCA, IGM) au service de la santé en Haïti."
+        path="/about"
+      />
       <div className="min-h-screen bg-gradient-to-br from-white to-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-[30px]">
           <Button 

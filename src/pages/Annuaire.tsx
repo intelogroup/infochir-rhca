@@ -3,12 +3,18 @@ import { MainLayout } from "@/components/layouts/MainLayout";
 import { DirectoryList } from "@/components/directory/DirectoryList";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { PageHeader } from "@/components/ui/page-header";
+import { SEO } from "@/components/seo/SEO";
 
 const Annuaire = () => {
   useScrollToTop();
 
   return (
     <MainLayout>
+      <SEO
+        title="Annuaire des membres | Info CHIR"
+        description="Annuaire des chirurgiens et professionnels de santé membres d'Info CHIR, avec spécialités et affiliations."
+        path="/annuaire"
+      />
       <div className="relative min-h-screen bg-background">
         <div className="pt-[88px]">
           <PageHeader

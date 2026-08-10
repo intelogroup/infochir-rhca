@@ -10,6 +10,7 @@ import { createCheckoutSession } from "@/lib/stripe";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { DonationAmountSelector } from "@/components/donate/form/DonationAmountSelector";
+import { SEO } from "@/components/seo/SEO";
 
 const BackButton = () => {
   return (
@@ -81,6 +82,11 @@ const Donate = () => {
 
   return (
     <MainLayout>
+      <SEO
+        title="Faire un don | Soutenir Info CHIR"
+        description="Soutenez la publication scientifique médicale en Haïti : votre don finance la RHCA, l'IGM et l'Atlas de diagnostic."
+        path="/donate"
+      />
       <div className="relative min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50">
         {/* Content */}
         <div className="relative max-w-6xl mx-auto px-4 py-12">
