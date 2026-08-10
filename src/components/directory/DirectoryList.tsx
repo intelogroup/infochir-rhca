@@ -46,28 +46,28 @@ const DirectoryList: FC<DirectoryListProps> = () => {
 
 
   const { data: members, isLoading } = useQuery({
-    queryKey: ['members'],
+    queryKey: ['members', isAuthenticated],
     queryFn: async () => {
-      console.time('Fetch Members');
       const { data: { session } } = await supabase.auth.getSession();
 
-      // Try the admin-only full table first; fall back to the redacted public view
-      // for non-admin/authenticated and anonymous visitors.
-      let { data, error } = await supabase.from('members').select('*').order('name');
-      if (error || !data) {
-        const fallback = await supabase.from('members_public_view').select('*').order('name');
-        data = fallback.data as any;
-        error = fallback.error;
+      // Signed-in users get the full record (contact info included).
+      // Anonymous visitors only ever receive the redacted public view:
+      // no email, no phone leaves the database for them.
+      if (session) {
+        const { data, error } = await supabase.from('members').select('*').order('name');
+        if (!error && data && data.length > 0) return data as any[];
       }
-      void session;
 
+      const { data, error } = await supabase
+        .from('members_public_view' as any)
+        .select('id, name, titre, avatar_url')
+        .order('name');
 
-      console.timeEnd('Fetch Members');
-      
       if (error) throw error;
       return (data as any[]) || [];
     },
   });
+
 
   const filteredMembers = useMemo(() => {
     console.time('Filter Members');
