@@ -76,7 +76,19 @@ function emailHtml(opts: {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
+  // Only an authenticated admin, or the internal database trigger presenting the
+  // shared trigger secret, may fan out email to every subscriber.
+  const triggerSecret = Deno.env.get('NEWSLETTER_TRIGGER_SECRET') ?? '';
+  const providedSecret = req.headers.get('x-newsletter-trigger-secret') ?? '';
+  const isInternalTrigger = triggerSecret.length > 0 && providedSecret === triggerSecret;
+
+  if (!isInternalTrigger) {
+    const adminCheck = await requireAdmin(req);
+    if (!adminCheck.ok) return denyResponse(adminCheck, corsHeaders);
+  }
+
   try {
+
     const { contentId, contentType } = await req.json();
     if (!contentId) {
       return new Response(JSON.stringify({ ok: false, error: 'contentId required' }), {
