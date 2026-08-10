@@ -33,35 +33,21 @@ const IndexMedicus = () => {
 
   return (
     <MainLayout>
-      <div className="min-h-screen bg-gradient-to-b from-[#F1F0FB] to-white">
-        <div className="container max-w-[1920px] mx-auto px-3 sm:px-6 lg:px-8 py-4 lg:py-8 pt-[100px] sm:pt-[120px]">
-          <div className="mb-4">
-            <Link to="/">
-              <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary-light">
-                <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
-                Retour
-              </Button>
-            </Link>
-          </div>
+      <div className="min-h-screen bg-background">
+        <div className="pt-[88px]">
+          <PageHeader
+            backLink="/"
+            logoSrc="/lovable-uploads/f2409464-47cf-4348-ada0-e328e86be01b.png"
+            logoAlt="Index Medicus Logo"
+            title="Index Medicus"
+            description="Base de données bibliographique de la littérature médicale haïtienne."
+            variant="brand"
+          />
+        </div>
 
+        <div className="container max-w-[1920px] mx-auto px-3 sm:px-6 lg:px-8 pb-8">
           <div className="flex flex-col">
-            <div className="order-2 mb-6 sm:mb-8 lg:mb-12 animate-fade-up">
-              <div className="inline-flex rounded-full p-1 sm:p-2 mb-4 sm:mb-6">
-                <div className="flex items-center justify-center h-14 w-14 sm:h-16 sm:w-16 lg:h-24 lg:w-24 bg-white rounded-full p-3 sm:p-4 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
-                  <img 
-                    src="/lovable-uploads/f2409464-47cf-4348-ada0-e328e86be01b.png"
-                    alt="Index Medicus Logo"
-                    className="h-full w-full object-contain"
-                  />
-                </div>
-              </div>
-              <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2 sm:mb-4">
-                Index Medicus
-              </h1>
-              <p className="text-sm sm:text-base lg:text-lg text-gray-600 max-w-3xl mx-auto mb-4 sm:mb-6 px-2 font-medium">
-                Base de données bibliographique de la littérature médicale haïtienne.
-              </p>
-            </div>
+
 
             <div className="order-1 mb-4 sm:mb-6">
               <Tabs value={activeTab} onValueChange={handleTabChange} className="mb-4 sm:mb-6">
