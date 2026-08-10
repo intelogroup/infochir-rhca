@@ -130,6 +130,21 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    // Anti-spam guard: honeypot, timing, gibberish/obfuscation, per-IP throttle
+    const guard = await guardSubmission(req, {
+      form: "newsletter",
+      name,
+      email,
+      phone,
+      hp: (data as any).hp,
+      t: (data as any).t,
+    });
+    if (!guard.ok) {
+      return blockedResponse(corsHeaders);
+    }
+
+
+
     // Test service role key length
     if (!serviceRoleKey || serviceRoleKey.length < 10) {
       console.error("Invalid service role key");

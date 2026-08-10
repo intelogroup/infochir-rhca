@@ -55,6 +55,22 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    // Anti-spam guard: honeypot, timing, link stuffing, per-IP throttle
+    const guard = await guardSubmission(req, {
+      form: "contact",
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      message: data.message,
+      hp: (data as any).hp,
+      t: (data as any).t,
+    });
+    if (!guard.ok) {
+      return blockedResponse(corsHeaders);
+    }
+
+
+
     // Send admin notifications to all admin emails with delays
     const adminNotificationResults = await sendAdminNotifications(data);
     
