@@ -1,6 +1,8 @@
 
 import { MainLayout } from "@/components/layouts/MainLayout";
+import { PageHeader } from "@/components/ui/page-header";
 import { ArticleGrid } from "@/components/index-medicus/ArticleGrid";
+
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, BookOpen, Info } from "lucide-react";
 import { Link } from "react-router-dom";
