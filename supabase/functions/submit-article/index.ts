@@ -242,7 +242,7 @@ serve(async (req) => {
       console.error("- Error details:", JSON.stringify(error, null, 2));
       
       return createErrorResponse(
-        error.message,
+        'Unable to save your submission. Please try again later.',
         500, 
         corsHeaders, 
         error

@@ -25,7 +25,7 @@ const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // OpenAI API key
-const openAIApiKey = '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';
+const openAIApiKey = Deno.env.get('OPENAI_API_KEY') ?? '';
 
 const extractInfoFromFilename = (filename: string) => {
   // Extract volume, issue, and date from filename pattern: IGM_vol_XX_no_YY_DD_MM_YY.pdf

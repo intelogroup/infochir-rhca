@@ -37,7 +37,7 @@ const extractInfoFromFilename = (filename: string) => {
 };
 
 const generateRHCAContent = async (filename: string, volume: string, issue: string): Promise<Partial<RHCAArticleData>> => {
-  const openAIApiKey = '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';
+  const openAIApiKey = Deno.env.get('OPENAI_API_KEY') ?? '';
   
   try {
     if (!openAIApiKey) {
