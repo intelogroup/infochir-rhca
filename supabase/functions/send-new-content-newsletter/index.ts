@@ -4,7 +4,7 @@ import { requireAdmin, denyResponse } from '../_shared/require-admin.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-newsletter-trigger-secret',
 };
 
 // Verified domain in Resend: info-chir.org
