@@ -1,4 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.48.1';
+import { requireAdmin, denyResponse } from '../_shared/require-admin.ts';
+
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
