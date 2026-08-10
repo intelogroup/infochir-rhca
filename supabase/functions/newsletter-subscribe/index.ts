@@ -1,6 +1,7 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { corsHeaders, handleCors } from "../_shared/cors.ts";
+import { guardSubmission, blockedResponse, escapeHtml } from "../_shared/anti-spam.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.48.1";
 import { sendEmail } from "../_shared/email-sender.ts";
 
@@ -128,6 +129,21 @@ const handler = async (req: Request): Promise<Response> => {
         }
       );
     }
+
+    // Anti-spam guard: honeypot, timing, gibberish/obfuscation, per-IP throttle
+    const guard = await guardSubmission(req, {
+      form: "newsletter",
+      name,
+      email,
+      phone,
+      hp: (data as any).hp,
+      t: (data as any).t,
+    });
+    if (!guard.ok) {
+      return blockedResponse(corsHeaders);
+    }
+
+
 
     // Test service role key length
     if (!serviceRoleKey || serviceRoleKey.length < 10) {
@@ -328,9 +344,9 @@ async function sendAdminNotification(
         
         <div style="background-color: #f4f4f4; padding: 15px; border-radius: 5px; margin: 20px 0;">
           <h3 style="margin-top: 0;">Subscriber Information:</h3>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          ${phone ? `<p><strong>Phone:</strong> ${phone}</p>` : ''}
+          <p><strong>Name:</strong> ${escapeHtml(name)}</p>
+          <p><strong>Email:</strong> ${escapeHtml(email)}</p>
+          ${phone ? `<p><strong>Phone:</strong> ${escapeHtml(phone)}</p>` : ''}
           <p><strong>Status:</strong> ${isDuplicate ? 'Already subscribed' : 'New subscription'}</p>
         </div>
         
@@ -437,7 +453,7 @@ async function sendUserConfirmation(
                       }</p>
                   </div>
                   
-                  <p style="font-size: 16px;">Bonjour <strong>${name}</strong>,</p>
+                  <p style="font-size: 16px;">Bonjour <strong>${escapeHtml(name)}</strong>,</p>
                   
                   <p>${isDuplicate ? 
                     'Bonne nouvelle : vous êtes déjà abonné(e) à notre newsletter Info-Chir ! Pas besoin de vous réinscrire.' :
