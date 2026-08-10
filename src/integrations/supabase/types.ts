@@ -537,6 +537,36 @@ export type Database = {
         }
         Relationships: []
       }
+      form_submission_log: {
+        Row: {
+          created_at: string
+          email: string | null
+          form: string
+          id: string
+          ip: string | null
+          outcome: string
+          reason: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          form: string
+          id?: string
+          ip?: string | null
+          outcome?: string
+          reason?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          form?: string
+          id?: string
+          ip?: string | null
+          outcome?: string
+          reason?: string | null
+        }
+        Relationships: []
+      }
       founders: {
         Row: {
           achievements: string[] | null
