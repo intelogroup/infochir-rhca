@@ -5,10 +5,17 @@ import { IGMHeader } from "@/components/igm/components/IGMHeader";
 import { IGMSidebar } from "@/components/igm/components/IGMSidebar";
 import { IssuesGridLayout } from "@/components/igm/components/layout/IssuesGridLayout";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
+import { SEO, collectionPageSchema } from "@/components/seo/SEO";
 
 const IGM = () => {
   return (
     <MainLayout>
+      <SEO
+        title="Info Gazette Médicale (IGM) | Archives et numéros"
+        description="Consultez tous les numéros de l'Info Gazette Médicale : actualités médicales, articles et archives téléchargeables en PDF."
+        path="/igm"
+      jsonLd={collectionPageSchema("Info Gazette Médicale", "Tous les numéros de l'Info Gazette Médicale publiés par Info CHIR.", "/igm")}
+      />
       <div className="min-h-screen bg-[#F1F0FB] pt-[15px]">
         <IGMHeader />
 

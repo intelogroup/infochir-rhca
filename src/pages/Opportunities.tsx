@@ -4,10 +4,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Briefcase, GraduationCap, Users, Globe, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
+import { SEO } from "@/components/seo/SEO";
 
 const Opportunities = () => {
   return (
     <MainLayout>
+      <SEO
+        title="Opportunités et bourses | Info CHIR"
+        description="Opportunités de formation, bourses, congrès et appels à communication pour les professionnels de santé en Haïti."
+        path="/opportunities"
+      />
       <div className="container mx-auto px-4 py-8 pt-[50px]">
         <Link to="/">
           <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary-light mb-6">

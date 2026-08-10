@@ -214,7 +214,7 @@ export const HeroSection = () => {
               className="bg-transparent hover:bg-white/10 text-white border-white border text-xs sm:text-sm md:text-base py-1.5 sm:py-2 w-full sm:w-auto"
               onClick={() => navigate('/about')}
             >
-              En savoir plus
+              Découvrir notre mission
             </Button>
           </div>
         </div>

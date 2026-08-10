@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Suspense, useState, useEffect } from "react";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { SourceFilterType } from "@/components/index-medicus/SourceFilter";
+import { SEO, collectionPageSchema } from "@/components/seo/SEO";
 
 const IndexMedicus = () => {
   const [sourceFilter, setSourceFilter] = useState<SourceFilterType>('all');
@@ -35,6 +36,12 @@ const IndexMedicus = () => {
 
   return (
     <MainLayout>
+      <SEO
+        title="Index Medicus | Base d'articles médicaux haïtiens"
+        description="Recherchez dans l'Index Medicus haïtien : milliers d'articles médicaux et chirurgicaux indexés par auteur, thème et année."
+        path="/index-medicus"
+      jsonLd={collectionPageSchema("Index Medicus", "Base de données d'articles médicaux et chirurgicaux haïtiens.", "/index-medicus")}
+      />
       <div className="min-h-screen bg-background">
         <div className="pt-[88px]">
           <PageHeader

@@ -7,10 +7,16 @@ import { ManuscriptPreparation } from "@/components/directives/ManuscriptPrepara
 import { ReviewProcess } from "@/components/directives/ReviewProcess";
 import { ContactSupport } from "@/components/directives/ContactSupport";
 import { DirectivesActions } from "@/components/directives/DirectivesActions";
+import { SEO } from "@/components/seo/SEO";
 
 const Directives = () => {
   return (
     <MainLayout>
+      <SEO
+        title="Directives aux auteurs | Info CHIR"
+        description="Directives de soumission Info CHIR : format des manuscrits, normes de citation et critères d'évaluation pour la RHCA et l'IGM."
+        path="/directives"
+      />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <DirectivesHeader 
           title="Directives pour les auteurs"

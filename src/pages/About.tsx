@@ -6,12 +6,18 @@ import { motion } from "framer-motion";
 import { BookOpen, Target, Users, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { SEO } from "@/components/seo/SEO";
 
 const About = () => {
   const navigate = useNavigate();
 
   return (
     <MainLayout>
+      <SEO
+        title="À propos d'Info CHIR | Mission et publications"
+        description="Découvrez Info CHIR : notre mission, nos objectifs et nos publications scientifiques (RHCA, IGM) au service de la santé en Haïti."
+        path="/about"
+      />
       <div className="min-h-screen bg-gradient-to-br from-white to-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-[30px]">
           <Button 
@@ -59,7 +65,7 @@ const About = () => {
                   <div className="flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mx-auto mb-4">
                     <BookOpen className="w-8 h-8 text-primary" />
                   </div>
-                  <h3 className="text-xl font-semibold text-primary mb-3">Notre Mission</h3>
+                  <h2 className="text-xl font-semibold text-primary mb-3">Notre Mission</h2>
                   <p className="text-gray-600">
                     Créer et publier des revues scientifiques pour documenter et partager les connaissances 
                     médicales en chirurgie et anesthésiologie.
@@ -76,7 +82,7 @@ const About = () => {
                   <div className="flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mx-auto mb-4">
                     <Target className="w-8 h-8 text-primary" />
                   </div>
-                  <h3 className="text-xl font-semibold text-primary mb-3">Nos Objectifs</h3>
+                  <h2 className="text-xl font-semibold text-primary mb-3">Nos Objectifs</h2>
                   <p className="text-gray-600">
                     Offrir une plateforme d'expression pour les professionnels de la santé et 
                     contribuer à l'avancement de la médecine en Haïti.
@@ -93,7 +99,7 @@ const About = () => {
                   <div className="flex items-center justify-center w-16 h-16 bg-primary/10 rounded-full mx-auto mb-4">
                     <Users className="w-8 h-8 text-primary" />
                   </div>
-                  <h3 className="text-xl font-semibold text-primary mb-3">Notre Communauté</h3>
+                  <h2 className="text-xl font-semibold text-primary mb-3">Notre Communauté</h2>
                   <p className="text-gray-600">
                     Rassembler éducateurs, praticiens et chercheurs pour créer une communauté 
                     médicale forte et collaborative.
@@ -125,7 +131,7 @@ const About = () => {
                 
                 <div className="grid md:grid-cols-2 gap-8 mt-12">
                   <div className="bg-white p-6 rounded-lg shadow-sm">
-                    <h3 className="text-xl font-semibold text-primary mb-4">RHCA</h3>
+                    <h2 className="text-xl font-semibold text-primary mb-4">RHCA</h2>
                     <p className="text-gray-600 mb-3">Publication trimestrielle</p>
                     <p className="text-sm text-gray-500">
                       Articles médicaux, diaporamas, dossiers et informations scientifiques
@@ -133,7 +139,7 @@ const About = () => {
                   </div>
                   
                   <div className="bg-white p-6 rounded-lg shadow-sm">
-                    <h3 className="text-xl font-semibold text-primary mb-4">IGM</h3>
+                    <h2 className="text-xl font-semibold text-primary mb-4">IGM</h2>
                     <p className="text-gray-600 mb-3">L'Info Gazette Médicale</p>
                     <p className="text-sm text-gray-500">
                       Publication mensuelle lancée en décembre 2020

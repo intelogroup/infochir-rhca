@@ -5,17 +5,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>InfoChir — Revue Haitienne de Chirurgie</title>
-    <meta name="description" content="Plateforme haïtienne de chirurgie : Index Medicus, RHCA, Atlas de diagnostic, directives cliniques, annuaire des membres et publications." />
+    <meta data-react-helmet="true" name="description" content="Plateforme haïtienne de chirurgie : Index Medicus, RHCA, Atlas de diagnostic, directives cliniques, annuaire des membres et publications." />
 
-    <!-- Canonical & social -->
-    <link rel="canonical" href="https://info-chir.org/" />
-    <meta property="og:title" content="InfoChir — Revue Haitienne de Chirurgie" />
-    <meta property="og:description" content="Plateforme haïtienne de chirurgie : publications, atlas, directives et annuaire des membres." />
+    <!-- Sitewide social fallback (per-route tags are set by src/components/seo/SEO.tsx) -->
+    <meta data-react-helmet="true" property="og:title" content="InfoChir — Revue Haitienne de Chirurgie" />
+    <meta data-react-helmet="true" property="og:description" content="Plateforme haïtienne de chirurgie : publications, atlas, directives et annuaire des membres." />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://info-chir.org/" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="InfoChir — Revue Haitienne de Chirurgie" />
-    <meta name="twitter:description" content="Plateforme haïtienne de chirurgie : publications, atlas, directives et annuaire des membres." />
+    <meta data-react-helmet="true" property="og:url" content="https://info-chir.org/" />
+    <meta property="og:site_name" content="Info CHIR" />
+    <meta data-react-helmet="true" property="og:image" content="https://info-chir.org/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png" />
+    <meta data-react-helmet="true" name="twitter:card" content="summary_large_image" />
+    <meta data-react-helmet="true" name="twitter:title" content="InfoChir — Revue Haitienne de Chirurgie" />
+    <meta data-react-helmet="true" name="twitter:description" content="Plateforme haïtienne de chirurgie : publications, atlas, directives et annuaire des membres." />
+    <meta data-react-helmet="true" name="twitter:image" content="https://info-chir.org/lovable-uploads/cb9e38f1-3a2c-4310-a9eb-e65ee5c932a8.png" />
 
     <!-- Security headers -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://js.stripe.com https://m.stripe.network https://cdn.gpteng.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com; frame-src 'self' https://js.stripe.com; object-src 'none'; base-uri 'self';" />

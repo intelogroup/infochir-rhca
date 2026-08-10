@@ -8,6 +8,7 @@ import { useSearchParams } from "react-router-dom";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
 import { createLogger } from '@/lib/error-logger';
 import { useAdminAuth } from "@/hooks/use-admin-auth";
+import { SEO, collectionPageSchema } from "@/components/seo/SEO";
 
 const logger = createLogger('RHCAPage');
 
@@ -31,6 +32,12 @@ const RHCA: React.FC = () => {
 
   return (
     <MainLayout>
+      <SEO
+        title="RHCA | Revue Haïtienne de Chirurgie et d'Anesthésiologie"
+        description="Tous les volumes de la Revue Haïtienne de Chirurgie et d'Anesthésiologie (RHCA) : articles évalués par les pairs, en accès libre."
+        path="/rhca"
+        jsonLd={collectionPageSchema("Revue Haïtienne de Chirurgie et d'Anesthésiologie", "Archives complètes de la RHCA publiées par Info CHIR.", "/rhca")}
+      />
       <div className="bg-gray-50/50 pt-[50px]">
         <RHCAHeader />
         

@@ -21,6 +21,7 @@ import { FileUploadsSection } from "@/components/submission/FileUploadsSection";
 import { SubmissionFormActions } from "@/components/submission/SubmissionFormActions";
 import { ErrorSummarySection } from "@/components/submission/ErrorSummarySection";
 import { NotesField } from "@/components/submission/NotesField";
+import { SEO } from "@/components/seo/SEO";
 
 const Submission = () => {
   const [articleFiles, setArticleFiles] = useState<string[]>([]);
@@ -81,6 +82,11 @@ const Submission = () => {
 
   return (
     <MainLayout>
+      <SEO
+        title="Soumettre un article | Info CHIR"
+        description="Soumettez votre article scientifique à la RHCA ou à l'Info Gazette Médicale via notre formulaire de soumission en ligne."
+        path="/submission"
+      />
       {isSubmitting && (
         <LoadingSpinner 
           fullScreen

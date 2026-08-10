@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { formatDate } from "@/lib/utils";
+import { SEO, SITE_URL } from "@/components/seo/SEO";
 
 const ArticleDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -174,6 +175,29 @@ const ArticleDetail = () => {
 
   return (
     <MainLayout>
+      {article && (
+        <SEO
+          title={article.title.length > 60 ? `${article.title.slice(0, 57)}...` : article.title}
+          description={(article.abstract || article.title).replace(/\s+/g, " ").slice(0, 155)}
+          path={`/articles/${article.id}`}
+          type="article"
+          image={article.imageUrl || undefined}
+          jsonLd={{
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: article.title,
+            description: article.abstract || undefined,
+            author: (Array.isArray(article.authors) ? article.authors : []).map((name: string) => ({
+              "@type": "Person",
+              name,
+            })),
+            datePublished: article.publicationDate || undefined,
+            isPartOf: article.source || undefined,
+            url: `${SITE_URL}/articles/${article.id}`,
+            publisher: { "@type": "Organization", name: "Info CHIR", url: SITE_URL },
+          }}
+        />
+      )}
       <div className="container mx-auto px-4 py-8">
         <Button
           variant="ghost"

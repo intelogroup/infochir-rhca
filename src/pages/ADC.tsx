@@ -19,6 +19,7 @@ import { AtlasTableOfContents } from '@/components/atlas/AtlasTableOfContents';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
+import { SEO, collectionPageSchema } from "@/components/seo/SEO";
 
 const logger = createLogger('ADCPage');
 
@@ -75,6 +76,12 @@ const ADC = () => {
 
   return (
     <MainLayout>
+      <SEO
+        title="Atlas de Diagnostic Chirurgical | Info CHIR"
+        description="Atlas de diagnostic chirurgical : cas cliniques illustrés et chapitres de référence pour les professionnels de santé."
+        path="/adc"
+      jsonLd={collectionPageSchema("Atlas de Diagnostic Chirurgical", "Chapitres et cas cliniques illustrés de l'Atlas de Diagnostic Chirurgical.", "/adc")}
+      />
       <div className="min-h-screen bg-[#F1F0FB] pt-[15px]">
         <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 lg:py-8">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">

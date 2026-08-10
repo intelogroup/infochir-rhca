@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { createLogger } from "@/lib/error-logger";
 import { ErrorBoundary } from "@/components/error-boundary/ErrorBoundary";
+import { SEO, organizationSchema, websiteSchema } from "@/components/seo/SEO";
 
 const logger = createLogger('HomePage');
 
@@ -135,6 +136,13 @@ const Home = () => {
 
   return (
     <>
+      <SEO
+        title="Info CHIR | Publications médicales et chirurgicales d'Haïti"
+        description="Info CHIR publie la RHCA, l'Info Gazette Médicale, l'Atlas de diagnostic et l'Index Medicus haïtien pour les professionnels de santé."
+        path="/"
+        jsonLd={[organizationSchema, websiteSchema]}
+      />
+
       <ErrorBoundary name="home-hero">
         <HeroSection />
       </ErrorBoundary>
