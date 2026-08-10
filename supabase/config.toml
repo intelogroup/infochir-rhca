@@ -18,9 +18,6 @@ verify_jwt = false
 [functions.ai-extract-issue-metadata]
 verify_jwt = false
 
-[functions.send-admin-notification]
-verify_jwt = false
-
 
 
 
