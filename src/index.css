@@ -145,7 +145,63 @@
   }
 }
 
+@layer components {
+  /* Type scale — use these instead of ad-hoc text-3xl/4xl combos */
+  .text-display {
+    @apply text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.1];
+  }
+  .text-h1 {
+    @apply text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight leading-tight;
+  }
+  .text-h2 {
+    @apply text-xl sm:text-2xl lg:text-3xl font-semibold tracking-tight leading-snug;
+  }
+  .text-h3 {
+    @apply text-lg sm:text-xl font-semibold leading-snug;
+  }
+  .text-lead {
+    @apply text-base sm:text-lg text-muted-foreground leading-relaxed;
+  }
+  .text-meta {
+    @apply text-xs sm:text-sm text-muted-foreground;
+  }
+}
+
 @layer utilities {
+  .bg-gradient-brand {
+    background-image: var(--gradient-brand);
+  }
+  .bg-gradient-primary {
+    background-image: var(--gradient-primary);
+  }
+  .bg-gradient-secondary {
+    background-image: var(--gradient-secondary);
+  }
+  .bg-gradient-surface {
+    background-image: var(--gradient-surface);
+  }
+  .text-gradient-brand {
+    background-image: var(--gradient-brand);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+  .shadow-elevated {
+    box-shadow: var(--shadow-elevated);
+  }
+  .shadow-elegant {
+    box-shadow: var(--shadow-elegant);
+  }
+  .transition-base {
+    transition: all var(--transition-base);
+  }
+}
+
+@layer utilities {
+
   .touch-manipulation {
     touch-action: manipulation;
   }
