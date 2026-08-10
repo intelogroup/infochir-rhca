@@ -61,70 +61,83 @@ export const MemberRow = ({ member, canViewContact = false }: MemberRowProps) =>
             <div className="text-sm text-gray-600 italic truncate">{member.titre}</div>
           )}
           <div className="md:hidden space-y-1">
-            {hasPhone && (
-              <div className="flex items-center gap-2 text-gray-600 text-sm min-w-0">
-                <Phone className="h-3 w-3 text-primary/70 flex-shrink-0" />
-                {canViewContact ? (
-                  <span className="truncate">{member.phone}</span>
-                ) : (
+            <div className="flex items-center gap-2 text-gray-600 text-sm min-w-0">
+              {canViewContact ? (
+                hasPhone && (
+                  <>
+                    <Phone className="h-3 w-3 text-primary/70 flex-shrink-0" />
+                    <span className="truncate">{member.phone}</span>
+                  </>
+                )
+              ) : (
+                <>
+                  <Lock className="h-3 w-3 text-primary/70 flex-shrink-0" />
                   <MaskedValue value={member.phone} fallback="+000 0000 0000" />
-                )}
-              </div>
-            )}
-            {hasEmail && (
-              <div className="flex items-center gap-2 text-gray-600 text-sm min-w-0">
-                <Mail className="h-3 w-3 text-primary/70 flex-shrink-0" />
-                {canViewContact ? (
-                  <a
-                    href={`mailto:${member.email}`}
-                    className="hover:text-primary transition-colors truncate"
-                  >
-                    {member.email}
-                  </a>
-                ) : (
+                </>
+              )}
+            </div>
+            <div className="flex items-center gap-2 text-gray-600 text-sm min-w-0">
+              {canViewContact ? (
+                hasEmail && (
+                  <>
+                    <Mail className="h-3 w-3 text-primary/70 flex-shrink-0" />
+                    <a
+                      href={`mailto:${member.email}`}
+                      className="hover:text-primary transition-colors truncate"
+                    >
+                      {member.email}
+                    </a>
+                  </>
+                )
+              ) : (
+                <>
+                  <Lock className="h-3 w-3 text-primary/70 flex-shrink-0" />
                   <MaskedValue value={member.email} fallback="membre@exemple.com" />
-                )}
-              </div>
-            )}
+                </>
+              )}
+            </div>
           </div>
+
         </div>
       </TableCell>
 
       <TableCell className="hidden sm:table-cell relative py-4">
-        {hasPhone && (
-          <div className="flex items-center gap-2 text-gray-600 min-w-0">
-            <Phone className="h-4 w-4 text-primary/70 flex-shrink-0" />
-            {canViewContact ? (
+        {canViewContact ? (
+          hasPhone && (
+            <div className="flex items-center gap-2 text-gray-600 min-w-0">
+              <Phone className="h-4 w-4 text-primary/70 flex-shrink-0" />
               <span className="truncate">{member.phone}</span>
-            ) : (
-              <MaskedValue value={member.phone} fallback="+000 0000 0000" />
-            )}
+            </div>
+          )
+        ) : (
+          <div className="flex items-center gap-2 text-gray-600 min-w-0">
+            <Lock className="h-4 w-4 text-primary/70 flex-shrink-0" />
+            <MaskedValue value={member.phone} fallback="+000 0000 0000" />
           </div>
         )}
       </TableCell>
 
       <TableCell className="hidden md:table-cell relative py-4">
-        {hasEmail && (
+        {canViewContact ? (
+          hasEmail && (
+            <div className="flex items-center gap-2 text-gray-600 min-w-0">
+              <Mail className="h-4 w-4 text-primary/70 flex-shrink-0" />
+              <a
+                href={`mailto:${member.email}`}
+                className="hover:text-primary transition-colors truncate"
+              >
+                {member.email}
+              </a>
+            </div>
+          )
+        ) : (
           <div className="flex items-center gap-2 text-gray-600 min-w-0">
-            {canViewContact ? (
-              <>
-                <Mail className="h-4 w-4 text-primary/70 flex-shrink-0" />
-                <a
-                  href={`mailto:${member.email}`}
-                  className="hover:text-primary transition-colors truncate"
-                >
-                  {member.email}
-                </a>
-              </>
-            ) : (
-              <>
-                <Lock className="h-4 w-4 text-primary/70 flex-shrink-0" />
-                <MaskedValue value={member.email} fallback="membre@exemple.com" />
-              </>
-            )}
+            <Lock className="h-4 w-4 text-primary/70 flex-shrink-0" />
+            <MaskedValue value={member.email} fallback="membre@exemple.com" />
           </div>
         )}
       </TableCell>
+
     </motion.tr>
   );
 };
