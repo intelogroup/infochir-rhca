@@ -81,13 +81,13 @@ export const PageHeader = ({
             </div>
           )}
 
-          <h1 className={cn("text-display", titleClass[variant])}>{title}</h1>
+          <h1 className={cn("type-display", titleClass[variant])}>{title}</h1>
 
           {subtitle && (
-            <p className="text-h3 text-foreground/80 max-w-3xl">{subtitle}</p>
+            <p className="type-h3 text-foreground/80 max-w-3xl">{subtitle}</p>
           )}
           {description && (
-            <p className={cn("text-lead max-w-3xl", centered && "mx-auto")}>{description}</p>
+            <p className={cn("type-lead max-w-3xl", centered && "mx-auto")}>{description}</p>
           )}
           {children}
         </motion.div>
