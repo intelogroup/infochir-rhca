@@ -119,6 +119,7 @@ export async function guardSubmission(req: Request, input: GuardInput): Promise<
         .from("form_submission_log")
         .select("id", { count: "exact", head: true })
         .eq("ip", ip)
+        .eq("outcome", "accepted")
         .gte("created_at", hourAgo);
       if ((hourCount || 0) >= 3) return await fail("rate_limited_hour");
 
@@ -126,6 +127,7 @@ export async function guardSubmission(req: Request, input: GuardInput): Promise<
         .from("form_submission_log")
         .select("id", { count: "exact", head: true })
         .eq("ip", ip)
+        .eq("outcome", "accepted")
         .gte("created_at", dayAgo);
       if ((dayCount || 0) >= 8) return await fail("rate_limited_day");
     }
