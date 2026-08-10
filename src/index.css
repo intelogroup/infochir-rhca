@@ -89,11 +89,15 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 212 80% 55%;
+    --primary-foreground: 212 82% 12%;
+    --primary-light: 212 80% 66%;
+    --primary-dark: 212 82% 30%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 144 46% 45%;
+    --secondary-foreground: 0 0% 100%;
+    --secondary-light: 122 39% 55%;
+
 
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
