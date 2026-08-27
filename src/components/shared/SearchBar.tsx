@@ -59,12 +59,12 @@ export const SearchBar = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && onSearch) {
+    if (e.key === 'Enter') {
       if (searchTimeout) {
         window.clearTimeout(searchTimeout);
         setSearchTimeout(null);
       }
-      onSearch(value);
+      onSearch?.(value);
       if (value.trim().length >= 2) {
         void trackSearch(value.trim().slice(0, 200), 0, { context: analyticsContext });
       }
