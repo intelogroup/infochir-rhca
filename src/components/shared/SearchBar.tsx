@@ -40,17 +40,15 @@ export const SearchBar = ({
       window.clearTimeout(searchTimeout);
     }
     
-    // Set a new timeout
-    if (onSearch) {
-      const timeoutId = window.setTimeout(() => {
-        onSearch(newValue);
-        if (newValue.trim().length >= 2) {
-          void trackSearch(newValue.trim().slice(0, 200), 0, { context: analyticsContext });
-        }
-      }, debounceTime);
+    // Set a new timeout — tracking runs even when no onSearch handler is provided
+    const timeoutId = window.setTimeout(() => {
+      onSearch?.(newValue);
+      if (newValue.trim().length >= 2) {
+        void trackSearch(newValue.trim().slice(0, 200), 0, { context: analyticsContext });
+      }
+    }, debounceTime);
 
-      setSearchTimeout(timeoutId);
-    }
+    setSearchTimeout(timeoutId);
   };
 
   const handleClear = () => {
@@ -61,12 +59,12 @@ export const SearchBar = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && onSearch) {
+    if (e.key === 'Enter') {
       if (searchTimeout) {
         window.clearTimeout(searchTimeout);
         setSearchTimeout(null);
       }
-      onSearch(value);
+      onSearch?.(value);
       if (value.trim().length >= 2) {
         void trackSearch(value.trim().slice(0, 200), 0, { context: analyticsContext });
       }
