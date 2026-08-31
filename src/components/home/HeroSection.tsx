@@ -149,7 +149,7 @@ export const HeroSection = () => {
   return (
     <section 
       ref={sectionRef} 
-      className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(70vh-4rem)] sm:min-h-[calc(80vh-4rem-30px)] pt-16 sm:pt-20 md:pt-28 z-0 content-visibility-auto"
+      className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[520px] sm:min-h-[560px] lg:min-h-[620px] flex items-center pt-20 sm:pt-24 z-0 content-visibility-auto"
     >
       {/* Flat ink field — no gradients */}
       <div className="absolute inset-0 bg-secondary z-0" />
@@ -163,7 +163,7 @@ export const HeroSection = () => {
           
           {/* Current hero image */}
           <motion.div 
-            className="absolute bottom-0 right-0 w-[85%] sm:w-[75%] h-[calc(4/5*120%-30px)] md:h-[calc(3/4*120%-30px)] lg:h-[calc(2/3*120%-30px)] z-2"
+            className="absolute bottom-0 right-0 hidden md:block w-[46%] h-[92%] z-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -173,8 +173,8 @@ export const HeroSection = () => {
               backgroundSize: 'contain',
               backgroundPosition: 'right bottom',
               backgroundRepeat: 'no-repeat',
-              opacity: 0.9,
-              right: '5%',
+              opacity: 0.85,
+              right: '2%',
               willChange: 'opacity',
               transform: 'translateZ(0)', // Force hardware acceleration
             }}
