@@ -1,34 +1,37 @@
 import { AtlasChapter } from '@/components/atlas/types';
 
-// Missing chapters that should show as "Coming Soon"
-const MISSING_CHAPTERS = [10, 11, 13, 21, 22, 23];
+// All 24 official chapters now exist as database rows (published or "coming"),
+// so no client-side placeholders are needed.
+const MISSING_CHAPTERS: number[] = [];
 
-// Complete chapter definitions with expected content
+// Official ADC taxonomy (Introduction, mise à jour août 2026): Tome I = ch. 1-14, Tome II = ch. 15-24
 const PLANNED_CHAPTERS: Partial<AtlasChapter>[] = [
-  { chapterNumber: 1, title: "Introduction à la Chirurgie", specialty: "Chirurgie Générale" },
-  { chapterNumber: 2, title: "Anatomie Chirurgicale", specialty: "Anatomie" },
-  { chapterNumber: 3, title: "Techniques de Base", specialty: "Chirurgie Générale" },
-  { chapterNumber: 4, title: "Chirurgie d'Urgence", specialty: "Urgences" },
-  { chapterNumber: 5, title: "Chirurgie Orthopédique", specialty: "Orthopédie" },
-  { chapterNumber: 6, title: "Chirurgie Pédiatrique", specialty: "Pédiatrie" },
-  { chapterNumber: 7, title: "Chirurgie Cardiovasculaire", specialty: "Cardiologie" },
-  { chapterNumber: 8, title: "Neurochirurgie", specialty: "Neurologie" },
-  { chapterNumber: 9, title: "Chirurgie Thoracique", specialty: "Pneumologie", status: 'coming-soon' },
-  { chapterNumber: 10, title: "Chirurgie Digestive", specialty: "Gastro-entérologie", status: 'coming-soon' },
-  { chapterNumber: 11, title: "Chirurgie Urologique", specialty: "Urologie", status: 'coming-soon' },
-  { chapterNumber: 12, title: "Chirurgie Gynécologique", specialty: "Gynécologie" },
-  { chapterNumber: 13, title: "Chirurgie Plastique", specialty: "Chirurgie Plastique", status: 'coming-soon' },
-  { chapterNumber: 14, title: "Anesthésie Chirurgicale", specialty: "Anesthésie" },
-  { chapterNumber: 15, title: "Soins Post-opératoires", specialty: "Soins Intensifs" },
-  { chapterNumber: 16, title: "Complications Chirurgicales", specialty: "Chirurgie Générale" },
-  { chapterNumber: 17, title: "Chirurgie Ambulatoire", specialty: "Chirurgie Générale" },
-  { chapterNumber: 18, title: "Chirurgie Robotique", specialty: "Technologie Médicale" },
-  { chapterNumber: 19, title: "Échographie Chirurgicale", specialty: "Imagerie" },
-  { chapterNumber: 20, title: "Endoscopie Chirurgicale", specialty: "Endoscopie" },
-  { chapterNumber: 21, title: "Transplantation", specialty: "Transplantation", status: 'coming-soon' },
-  { chapterNumber: 22, title: "Recherche Chirurgicale", specialty: "Recherche", status: 'coming-soon' },
-  { chapterNumber: 23, title: "Éthique en Chirurgie", specialty: "Éthique Médicale", status: 'coming-soon' }
+  { chapterNumber: 1, title: "Traumatismes – Plaies", specialty: "Traumatologie" },
+  { chapterNumber: 2, title: "Peau et Tissus sous-cutanés", specialty: "Dermatologie chirurgicale" },
+  { chapterNumber: 3, title: "Sein", specialty: "Pathologie mammaire" },
+  { chapterNumber: 4, title: "Cou", specialty: "Chirurgie cervicale" },
+  { chapterNumber: 5, title: "Thorax", specialty: "Chirurgie thoracique" },
+  { chapterNumber: 6, title: "Diaphragme ; de l'Œsophage à l'Iléon", specialty: "Chirurgie digestive" },
+  { chapterNumber: 7, title: "De l'Appendice au Rectum", specialty: "Chirurgie colorectale", status: 'coming-soon' },
+  { chapterNumber: 8, title: "Foie – Voies biliaires – Pancréas – Rate", specialty: "Chirurgie hépato-bilio-pancréatique" },
+  { chapterNumber: 9, title: "Cavité abdominale – Omentum – Mésentère", specialty: "Chirurgie abdominale", status: 'coming-soon' },
+  { chapterNumber: 10, title: "Paroi abdominale – Hernies – Éventration", specialty: "Chirurgie pariétale" },
+  { chapterNumber: 11, title: "Périnée – Fesses", specialty: "Chirurgie périnéale" },
+  { chapterNumber: 12, title: "Corps étrangers", specialty: "Chirurgie générale", status: 'coming-soon' },
+  { chapterNumber: 13, title: "Brûlures thermiques et électriques", specialty: "Brûlures", status: 'coming-soon' },
+  { chapterNumber: 14, title: "Challenges et Gigantismes", specialty: "Chirurgie générale" },
+  { chapterNumber: 15, title: "Neurochirurgie – Crâne, Moelle épinière, Nerfs périphériques", specialty: "Neurochirurgie" },
+  { chapterNumber: 16, title: "Ophtalmologie", specialty: "Ophtalmologie" },
+  { chapterNumber: 17, title: "ORL – Maxillo-facial", specialty: "ORL – Maxillo-facial" },
+  { chapterNumber: 18, title: "Vasculaire artériel – Anévrismes", specialty: "Chirurgie vasculaire" },
+  { chapterNumber: 19, title: "Vasculaire veineux et lymphatique", specialty: "Chirurgie vasculaire" },
+  { chapterNumber: 20, title: "Chirurgie pédiatrique", specialty: "Chirurgie pédiatrique" },
+  { chapterNumber: 21, title: "Urologie et appareil génital de l'homme", specialty: "Urologie" },
+  { chapterNumber: 22, title: "Appareil génital de la femme", specialty: "Gynécologie chirurgicale" },
+  { chapterNumber: 23, title: "Orthopédie – Appareil loco-moteur", specialty: "Orthopédie" },
+  { chapterNumber: 24, title: "Chirurgie reconstructive", specialty: "Chirurgie reconstructive", status: 'coming-soon' }
 ];
+
 
 /**
  * Creates placeholder entries for missing Atlas chapters
@@ -72,5 +75,5 @@ export const createMissingChapterPlaceholders = (): AtlasChapter[] => {
  * Gets the complete Atlas chapter order including placeholders
  */
 export const getCompleteChapterOrder = (): number[] => {
-  return Array.from({ length: 23 }, (_, i) => i + 1);
+  return Array.from({ length: 24 }, (_, i) => i + 1);
 };
