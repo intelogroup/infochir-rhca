@@ -75,5 +75,5 @@ export const createMissingChapterPlaceholders = (): AtlasChapter[] => {
  * Gets the complete Atlas chapter order including placeholders
  */
 export const getCompleteChapterOrder = (): number[] => {
-  return Array.from({ length: 23 }, (_, i) => i + 1);
+  return Array.from({ length: 24 }, (_, i) => i + 1);
 };
