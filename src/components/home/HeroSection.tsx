@@ -184,26 +184,28 @@ export const HeroSection = () => {
       
       
       {/* Content section */}
-      <div className="relative max-w-7xl mx-auto text-left z-10">
+      <div className="relative max-w-7xl mx-auto text-left z-10 pb-16 sm:pb-20">
         <div className="max-w-xl lg:max-w-3xl">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 animate-fade-up tracking-tight md:whitespace-nowrap whitespace-normal mt-2 sm:mt-0">
-            Votre espace scientifique<br className="md:hidden" /> en ligne
+          <p className="type-eyebrow text-secondary-foreground/60 mb-4">Info Chir · Haïti</p>
+          <div className="rule-gold mb-6" />
+          <h1 className="type-display text-secondary-foreground mb-5 sm:mb-6 animate-fade-up">
+            Votre espace scientifique<br className="hidden sm:block" /> en ligne
           </h1>
-          <p className="text-sm sm:text-base md:text-lg text-white/90 mb-6 sm:mb-8 animate-fade-up leading-relaxed">
+          <p className="type-lead text-secondary-foreground/75 max-w-xl mb-8 animate-fade-up">
             La plateforme de référence pour tous les professionnels de la santé, étudiants en médecine et le grand public.
           </p>
-          <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 items-start w-[40%]">
-            <Button 
-              size="default"
-              variant="secondary" 
-              className="group bg-white hover:bg-white/90 text-[#122db0] font-medium text-xs sm:text-sm md:text-base py-1.5 sm:py-2 w-full sm:w-auto"
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 items-start">
+            <Button
+              size="lg"
+              className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary-light rounded-md"
               onClick={() => navigate('/submission')}
             >
               Soumettre votre article
             </Button>
-            <Button 
-              size="default"
-              className="bg-transparent hover:bg-white/10 text-white border-white border text-xs sm:text-sm md:text-base py-1.5 sm:py-2 w-full sm:w-auto"
+            <Button
+              size="lg"
+              variant="outline"
+              className="w-full sm:w-auto bg-transparent text-secondary-foreground border-secondary-foreground/30 hover:bg-secondary-foreground/10 hover:text-secondary-foreground rounded-md"
               onClick={() => navigate('/about')}
             >
               Découvrir notre mission
