@@ -104,7 +104,6 @@ const IndexMedicus = () => {
             </div>
 
             <div className="order-3 bg-card rounded-xl p-4 sm:p-6 lg:p-8 shadow-md border border-border hover:shadow-lg transition-shadow mt-6 sm:mt-8 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gold"></div>
               
               <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
                 <Info className="h-6 w-6 sm:h-8 sm:w-8 text-primary mt-1 flex-shrink-0" />

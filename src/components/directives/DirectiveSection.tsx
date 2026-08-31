@@ -10,7 +10,6 @@ interface DirectiveSectionProps {
 export const DirectiveSection = ({ title, children, icon }: DirectiveSectionProps) => {
   return (
     <div className="bg-card rounded-xl p-8 shadow-md border border-border hover:shadow-lg transition-shadow relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-1 bg-gold"></div>
       
       <div className="flex items-start gap-4">
         {icon && <div className="flex-shrink-0 mt-1">{icon}</div>}
