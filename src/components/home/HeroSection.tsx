@@ -8,16 +8,13 @@ import { useNavigate } from "react-router-dom";
 // Hero images with their optimized versions
 const heroImages = [
   {
-    src: '/lovable-uploads/75589792-dc14-4d53-9aae-5796c76a3b39.png',
-    gradient: 'from-[#1E40AF] via-[#348d57] to-[#348d57]'
+    src: '/lovable-uploads/75589792-dc14-4d53-9aae-5796c76a3b39.png'
   },
   {
-    src: '/lovable-uploads/4e3c1f79-c9cc-4d01-8520-1af84d350a2a.png',
-    gradient: 'from-[#1E3A8A] via-[#2e7d4b] to-[#2e7d4b]'
+    src: '/lovable-uploads/4e3c1f79-c9cc-4d01-8520-1af84d350a2a.png'
   },
   {
-    src: '/lovable-uploads/745435b6-9abc-4051-b168-cf77c96ed9a0.png',
-    gradient: 'from-[#0C4A6E] via-[#307045] to-[#307045]'
+    src: '/lovable-uploads/745435b6-9abc-4051-b168-cf77c96ed9a0.png'
   }
 ];
 
@@ -147,7 +144,6 @@ export const HeroSection = () => {
     }
   }, [cycleCount]);
 
-  const currentGradient = heroImages[currentIndex].gradient;
   const currentImageSrc = heroImages[currentIndex].src;
 
   return (
