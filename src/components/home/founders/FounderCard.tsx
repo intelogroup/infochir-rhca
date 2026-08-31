@@ -50,7 +50,7 @@ export const FounderCard = ({ founder, onClick, memorialStyle = false }: Founder
               }}
             />
           ) : (
-            <AvatarFallback className="text-2xl bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
+            <AvatarFallback className="text-2xl bg-muted text-foreground">
               {initials}
             </AvatarFallback>
           )}

@@ -9,7 +9,7 @@ export const StatsDetails = () => {
       transition={{ duration: 0.5 }}
       className="text-center mb-10"
     >
-      <h2 className="text-3xl font-bold text-gray-800 mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+      <h2 className="type-h1 text-foreground mb-4">
         Nos chiffres clés
       </h2>
       <p className="text-gray-600 max-w-2xl mx-auto">

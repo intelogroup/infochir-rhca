@@ -44,7 +44,7 @@ export const FounderModal = ({ founder, isOpen, onClose }: FounderModalProps) =>
               alt={founder.name}
               className="object-cover" 
             />
-            <AvatarFallback className="text-2xl sm:text-3xl bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
+            <AvatarFallback className="text-2xl sm:text-3xl bg-muted text-foreground">
               {initials}
             </AvatarFallback>
           </Avatar>

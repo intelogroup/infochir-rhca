@@ -9,7 +9,7 @@ interface StatsErrorProps {
 
 export const StatsError: React.FC<StatsErrorProps> = ({ onRetry }) => {
   return (
-    <section className="py-16 bg-gradient-to-b from-white to-gray-50" aria-label="Erreur de chargement">
+    <section className="section border-t border-border bg-muted/40" aria-label="Erreur de chargement">
       <div className="container mx-auto px-4">
         <Alert variant="destructive" className="flex items-center justify-between">
           <div className="flex items-start gap-2">

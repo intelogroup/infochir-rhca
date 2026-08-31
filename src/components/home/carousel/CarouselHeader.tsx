@@ -8,7 +8,7 @@ export const CarouselHeader = () => {
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="text-4xl font-bold bg-gradient-to-r from-[#1E40AF] via-[#41b06e] to-[#41b06e] bg-clip-text text-transparent mb-4"
+        className="type-h1 text-foreground mb-4"
       >
         À la Une
       </motion.h2>

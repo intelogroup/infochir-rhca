@@ -4,7 +4,7 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 export const StatsLoading = () => {
   return (
-    <section className="py-16 bg-gradient-to-b from-white to-gray-50" aria-label="Statistiques">
+    <section className="section border-t border-border bg-muted/40" aria-label="Statistiques">
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
           <LoadingSpinner variant="primary" text="Chargement des statistiques" />
