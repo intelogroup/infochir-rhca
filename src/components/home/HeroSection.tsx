@@ -186,7 +186,6 @@ export const HeroSection = () => {
       {/* Content section */}
       <div className="relative max-w-7xl mx-auto text-left z-10 pb-16 sm:pb-20 pr-12 md:pr-24">
         <div className="max-w-xl">
-          <p className="type-eyebrow text-secondary-foreground/60 mb-4">Info Chir · Haïti</p>
           <div className="rule-gold mb-6" />
           <h1 className="type-display text-secondary-foreground mb-5 sm:mb-6 animate-fade-up">
             Votre espace scientifique<br className="hidden sm:block" /> en ligne
