@@ -93,7 +93,7 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue }) => {
           <div className="flex min-h-0 flex-1 flex-col p-4">
             <IssueCardContent issue={issue} />
 
-            <div className="mt-auto flex items-center justify-between gap-2 border-t border-border pt-2">
+            <div className="mt-auto flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t border-border pt-2">
               <span className="shrink-0 whitespace-nowrap text-xs text-muted-foreground">
                 {getTotalPages === "- Pages" || getTotalPages === "1 Pages"
                   ? ""

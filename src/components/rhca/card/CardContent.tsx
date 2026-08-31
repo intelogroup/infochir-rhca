@@ -59,7 +59,7 @@ export const CardContent: React.FC<CardContentProps> = ({ article, pdfUrl }) => 
         </p>
       )}
 
-      <div className="mt-auto flex items-center justify-between gap-2 border-t border-border pt-2">
+      <div className="mt-auto flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t border-border pt-2">
         <span className="shrink-0 whitespace-nowrap text-xs text-muted-foreground">
           {totalPages && totalPages > 1 ? `${totalPages} pages` : ''}
         </span>

@@ -8,6 +8,9 @@ export const formatIssueTitle = (raw?: string | null): string => {
 
   let title = raw.trim();
 
+  // Remove redundant acronym parentheticals, e.g. "(IGM)", "(RHCA)"
+  title = title.replace(/\s*\((?:IGM|RHCA|ADC)\)\s*/gi, " ").replace(/\s{2,}/g, " ").trim();
+
   // Remove trailing volume / issue reference
   title = title.replace(/[\s,·\-–|]*vol\.?\s*0*\d+\s*[,·\-–]?\s*(no|n°|num[eé]ro)?\.?\s*0*\d+\s*$/i, "");
   title = title.trim().replace(/[\s,·\-–|]+$/, "");
