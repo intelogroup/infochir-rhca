@@ -186,47 +186,31 @@ export const HeroSection = () => {
       {/* Content section */}
       <div className="relative max-w-7xl mx-auto text-left z-10 pb-16 sm:pb-20">
         <div className="max-w-xl lg:max-w-3xl">
-          <p className="type-eyebrow text-secondary-foreground/60 mb-4">
-            Port-au-Prince, Haïti · Publication médicale en libre accès
-          </p>
+          <p className="type-eyebrow text-secondary-foreground/60 mb-4">Info Chir · Haïti</p>
           <div className="rule-gold mb-6" />
           <h1 className="type-display text-secondary-foreground mb-5 sm:mb-6 animate-fade-up">
-            La production chirurgicale<br className="hidden sm:block" /> haïtienne, publiée et archivée
+            Votre espace scientifique<br className="hidden sm:block" /> en ligne
           </h1>
           <p className="type-lead text-secondary-foreground/75 max-w-xl mb-8 animate-fade-up">
-            Quatre collections de référence — RHCA, Info Gazette Médicale, Atlas de Diagnostic
-            Chirurgical et Index Medicus — consultables et téléchargeables sans abonnement.
+            La plateforme de référence pour tous les professionnels de la santé, étudiants en médecine et le grand public.
           </p>
           <div className="flex flex-col sm:flex-row flex-wrap gap-3 items-start">
             <Button
               size="lg"
               className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary-light rounded-md"
-              onClick={() => navigate('/rhca')}
+              onClick={() => navigate('/submission')}
             >
-              Consulter les parutions
+              Soumettre votre article
             </Button>
             <Button
               size="lg"
               variant="outline"
               className="w-full sm:w-auto bg-transparent text-secondary-foreground border-secondary-foreground/30 hover:bg-secondary-foreground/10 hover:text-secondary-foreground rounded-md"
-              onClick={() => navigate('/submission')}
+              onClick={() => navigate('/about')}
             >
-              Soumettre un article
+              Découvrir notre mission
             </Button>
           </div>
-
-          <dl className="mt-10 grid max-w-lg grid-cols-3 gap-6 border-t border-secondary-foreground/15 pt-6">
-            {[
-              { v: "4", l: "Collections" },
-              { v: "24", l: "Chapitres Atlas" },
-              { v: "Libre", l: "Accès intégral" },
-            ].map((item) => (
-              <div key={item.l}>
-                <dt className="font-serif text-2xl text-secondary-foreground">{item.v}</dt>
-                <dd className="type-eyebrow mt-1 text-secondary-foreground/60">{item.l}</dd>
-              </div>
-            ))}
-          </dl>
 
         </div>
       </div>
