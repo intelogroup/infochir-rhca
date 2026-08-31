@@ -249,24 +249,21 @@ export const NewsletterSection = () => {
                 )}
               />
 
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="pt-4"
-              >
-                <Button 
-                  variant="secondary" 
-                  type="submit" 
-                  className="w-full bg-white text-primary hover:bg-white/90 transition-all duration-300 py-6 text-lg font-medium shadow-lg"
+              <div className="pt-4">
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="w-full rounded-md bg-primary text-primary-foreground hover:bg-primary-light"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Envoi en cours..." : "Envoyer"}
+                  {isSubmitting ? "Envoi en cours…" : "Envoyer le message"}
                 </Button>
-              </motion.div>
-              
-              <p className="text-secondary-foreground/60 text-sm text-center mt-4">
-                * Champs obligatoires
+              </div>
+
+              <p className="mt-4 text-sm text-secondary-foreground/50">
+                * Champs obligatoires. Vos coordonnées ne servent qu'à vous répondre.
               </p>
+
             </form>
           </Form>
         </div>
