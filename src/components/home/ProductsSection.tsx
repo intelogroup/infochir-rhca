@@ -4,17 +4,16 @@ import { motion } from "framer-motion";
 import { products } from "./products/ProductsData";
 
 export const ProductsSection = () => (
-  <section className="py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-    <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] opacity-5" />
-    <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
-    
-    <div className="max-w-7xl mx-auto relative">
-      {/* Added section header */}
-      <div className="text-center mb-12">
-        <h2 className="text-2xl md:text-3xl font-bold text-primary mb-4">
+  <section className="section border-t border-border bg-background px-4 sm:px-6 lg:px-8">
+    <div className="max-w-7xl mx-auto">
+      <div className="mb-12 max-w-2xl">
+        <p className="type-eyebrow mb-3">Nos publications</p>
+        <h2 className="type-h1 text-foreground">
           Accédez aux différentes revues d'INFOCHIR/RHCA
         </h2>
+        <div className="rule-gold mt-5" />
       </div>
+      
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 auto-rows-fr">
         {products.map((product, index) => (
