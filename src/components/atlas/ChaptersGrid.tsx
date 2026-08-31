@@ -18,11 +18,15 @@ export const ChaptersGrid = () => {
   const sortedChapters = React.useMemo(() => {
     if (!chapters) return chapters;
     
-    return [...chapters].sort((a, b) => {
-      const aNum = a.chapterNumber || parseInt(a.pageNumber || '999', 10) || 999;
-      const bNum = b.chapterNumber || parseInt(b.pageNumber || '999', 10) || 999;
-      return aNum - bNum;
-    });
+    const getOrder = (chapter: AtlasChapter) => {
+      if (chapter.title?.toLowerCase().includes('introduction')) return 0;
+      const fromIssue = chapter.issue ? parseInt(chapter.issue, 10) : NaN;
+      if (!isNaN(fromIssue)) return fromIssue;
+      if (chapter.chapterNumber) return chapter.chapterNumber;
+      const fromPage = parseInt(chapter.pageNumber || '', 10);
+      return isNaN(fromPage) ? 999 : fromPage;
+    };
+    return [...chapters].sort((a, b) => getOrder(a) - getOrder(b));
   }, [chapters]);
   
   const filteredChapters = React.useMemo(() => {
