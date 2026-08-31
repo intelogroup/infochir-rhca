@@ -24,7 +24,7 @@ export interface PageHeaderProps {
 const titleClass: Record<NonNullable<PageHeaderProps["variant"]>, string> = {
   primary: "text-primary",
   secondary: "text-secondary",
-  brand: "text-gradient-brand",
+  brand: "text-foreground",
 };
 
 export const PageHeader = ({
@@ -44,7 +44,7 @@ export const PageHeader = ({
 
   return (
     <header className={cn("relative overflow-hidden", className)}>
-      <div className="absolute inset-0 -z-10 bg-gradient-surface" />
+      <div className="absolute inset-0 -z-10 border-b border-border bg-background" />
       <div
         className={cn(
           "relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14",
@@ -67,7 +67,7 @@ export const PageHeader = ({
           className={cn("space-y-4", centered && "flex flex-col items-center")}
         >
           {(logoSrc || icon) && (
-            <div className="mb-2 flex items-center justify-center h-20 w-20 sm:h-24 sm:w-24 rounded-2xl bg-card shadow-card p-3">
+            <div className="mb-2 flex items-center justify-center h-20 w-20 sm:h-24 sm:w-24 rounded-md border border-border bg-card p-3">
               {logoSrc ? (
                 <img
                   src={logoSrc}
@@ -82,6 +82,7 @@ export const PageHeader = ({
           )}
 
           <h1 className={cn("type-display", titleClass[variant])}>{title}</h1>
+          <div className={cn("rule-gold", centered && "mx-auto")} />
 
           {subtitle && (
             <p className="type-h3 text-foreground/80 max-w-3xl">{subtitle}</p>

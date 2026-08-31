@@ -80,9 +80,9 @@ export const NavLinks = () => {
               className={`
                 group relative flex h-9 md:h-10 w-auto px-2 md:px-3 items-center justify-center 
                 transition-all duration-300 
-                ${isActive 
-                  ? 'text-primary' 
-                  : 'text-gray-600 hover:text-primary'
+                ${isActive
+                  ? 'text-primary'
+                  : 'text-muted-foreground hover:text-foreground'
                 }
                 focus:outline-none
               `}
@@ -109,7 +109,7 @@ export const NavLinks = () => {
                   <TooltipTrigger asChild>
                     <ButtonComponent />
                   </TooltipTrigger>
-                  <TooltipContent side="bottom" className="bg-gray-900 text-white border-gray-700 max-w-xs text-center">
+                  <TooltipContent side="bottom" className="max-w-xs text-center">
                     <p className="text-sm font-medium">{fullName}</p>
                   </TooltipContent>
                 </Tooltip>
@@ -124,12 +124,12 @@ export const NavLinks = () => {
           onClick={handleDonateClick}
           className={`
             group relative
-            flex h-9 md:h-10 px-4 md:px-5 items-center justify-center rounded-full
-            bg-gradient-to-r from-secondary to-secondary-light
-            text-white shadow-lg hover:shadow-xl transition-all duration-300
-            ml-2 md:ml-3 space-x-2 focus:outline-none focus:ring-2
-            focus:ring-secondary/30 hover:scale-105
-            ${location.pathname === '/donate' ? 'ring-2 ring-secondary' : ''}
+            flex h-9 md:h-10 px-4 md:px-5 items-center justify-center rounded-md
+            bg-secondary text-secondary-foreground hover:bg-secondary-light
+            transition-colors duration-200
+            ml-2 md:ml-3 space-x-2 focus:outline-none focus-visible:ring-2
+            focus-visible:ring-ring
+            ${location.pathname === '/donate' ? 'ring-2 ring-ring' : ''}
           `}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
@@ -140,7 +140,7 @@ export const NavLinks = () => {
           <span className="text-sm md:text-[0.9375rem] font-medium whitespace-nowrap">Faire un don</span>
           <div className="relative">
             <Heart 
-              className="h-4 md:h-4.5 w-4 md:w-4.5 text-white fill-white transition-all duration-300 group-hover:fill-[#ea384c] group-hover:text-[#ea384c] group-hover:animate-[shake_0.5s_ease-in-out_infinite]" 
+              className="h-4 md:h-4.5 w-4 md:w-4.5 fill-current transition-all duration-300 group-hover:fill-gold group-hover:text-gold group-hover:animate-[shake_0.5s_ease-in-out_infinite]" 
               aria-hidden="true" 
             />
             <motion.div
@@ -161,7 +161,7 @@ export const NavLinks = () => {
                   }}
                 >
                   <Heart 
-                    className="h-3 w-3 text-[#ea384c] fill-[#ea384c]"
+                    className="h-3 w-3 text-gold fill-gold"
                     aria-hidden="true"
                   />
                 </motion.div>
