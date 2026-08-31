@@ -162,29 +162,31 @@
 }
 
 @layer components {
-  /* Type scale — use these instead of ad-hoc text-3xl/4xl combos */
+  /* Type scale — Libre Baskerville headings, IBM Plex Sans body */
   .type-display {
-    @apply text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-[-0.02em] leading-[1.08];
+    @apply font-serif text-[2rem] sm:text-4xl lg:text-[3.25rem] font-normal tracking-[-0.015em] leading-[1.08];
   }
   .type-h1 {
-    @apply text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-[-0.02em] leading-tight;
+    @apply font-serif text-2xl sm:text-3xl lg:text-[2.5rem] font-normal tracking-[-0.015em] leading-[1.15];
   }
   .type-h2 {
-    @apply text-xl sm:text-2xl font-semibold tracking-[-0.015em] leading-snug;
+    @apply font-serif text-xl sm:text-2xl font-normal tracking-[-0.01em] leading-snug;
   }
   .type-h3 {
-    @apply text-base sm:text-lg font-semibold leading-snug;
+    @apply font-serif text-base sm:text-lg font-bold leading-snug;
   }
   .type-lead {
-    @apply text-base sm:text-lg text-muted-foreground leading-relaxed;
+    @apply text-base sm:text-lg text-muted-foreground leading-relaxed font-light;
   }
   .type-meta {
     @apply text-[13px] text-muted-foreground;
   }
-  /* Editorial serif for journal titles / prose */
+  /* Small caps eyebrow label */
+  .type-eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground;
+  }
   .type-serif {
-    font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
-    letter-spacing: -0.01em;
+    @apply font-serif;
   }
 
   /* Standard section rhythm */
@@ -193,6 +195,10 @@
   }
   .container-content {
     @apply mx-auto w-full max-w-[72rem] px-4 sm:px-6 lg:px-8;
+  }
+  /* Thin editorial rule */
+  .rule-gold {
+    @apply h-px w-10 bg-gold;
   }
   /* Hairline card — replaces heavy shadow cards */
   .surface-card {
