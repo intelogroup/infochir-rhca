@@ -87,7 +87,7 @@ const Donate = () => {
         description="Soutenez la publication scientifique médicale en Haïti : votre don finance la RHCA, l'IGM et l'Atlas de diagnostic."
         path="/donate"
       />
-      <div className="relative min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50">
+      <div className="relative min-h-screen bg-background">
         {/* Content */}
         <div className="relative max-w-6xl mx-auto px-4 py-12">
           <div className="mb-8">

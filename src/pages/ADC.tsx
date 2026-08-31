@@ -82,7 +82,7 @@ const ADC = () => {
         path="/adc"
       jsonLd={collectionPageSchema("Atlas de Diagnostic Chirurgical", "Chapitres et cas cliniques illustrés de l'Atlas de Diagnostic Chirurgical.", "/adc")}
       />
-      <div className="min-h-screen bg-[#F1F0FB] pt-[15px]">
+      <div className="min-h-screen bg-background pt-[15px]">
         <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 lg:py-8">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
             <Breadcrumb>

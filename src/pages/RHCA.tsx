@@ -38,7 +38,7 @@ const RHCA: React.FC = () => {
         path="/rhca"
         jsonLd={collectionPageSchema("Revue Haïtienne de Chirurgie et d'Anesthésiologie", "Archives complètes de la RHCA publiées par Info CHIR.", "/rhca")}
       />
-      <div className="bg-gray-50/50 pt-[50px]">
+      <div className="bg-background pt-[50px]">
         <RHCAHeader />
         
         <div className="container mx-auto px-4 py-8 md:py-12 mb-20 sm:mb-16 md:mb-0">

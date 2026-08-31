@@ -16,7 +16,7 @@ const IGM = () => {
         path="/igm"
       jsonLd={collectionPageSchema("Info Gazette Médicale", "Tous les numéros de l'Info Gazette Médicale publiés par Info CHIR.", "/igm")}
       />
-      <div className="min-h-screen bg-[#F1F0FB] pt-[15px]">
+      <div className="min-h-screen bg-background pt-[15px]">
         <IGMHeader />
 
         <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 lg:py-8">
