@@ -1,56 +1,36 @@
-## Telemetry & Observability Audit
+# Update the Atlas (ADC) with the new chapter versions
 
-### What's working today
-- **Page views / article views**: `useAnalytics` hook + `trackPageView` is mounted in `MainLayout` and writes to `user_events` via `track_user_event` RPC. ✅ 5,238 `view` rows exist.
-- **Downloads (legacy path)**: `src/lib/analytics/download/index.ts` writes to `download_events` from PDF download flows. 2,839 rows exist (RHCA/IGM/article).
-- **Admin dashboards**: `/admin/analytics` reads from views (`admin_analytics_summary`, `popular_articles_view`, `daily_activity_view`, `analytics_dashboard`) — all exist.
-- **Session IDs**: Persisted via `getSessionId()` in localStorage.
+The 10 uploaded PDFs are the source of truth. Their own cover pages give the official numbering, and the Introduction PDF (Août 2026) lists the definitive taxonomy: **2 tomes, 24 chapters**. The database today does not follow that list — chapter numbers and titles were assigned ad hoc (e.g. "Cou" is stored as chapter 06 but the PDF says CHAPITRE IV; several rows are still called "Atlas Digital de Chirurgie - Chapitre 16"), and 4 rows point to a PDF that doesn't exist or to another chapter's file.
 
-### Gaps found (with evidence)
+So: realign the Atlas to the PDFs, ingest the 10 new versions, and keep every old file in the bucket untouched.
 
-| # | Gap | Evidence |
-|---|-----|----------|
-| 1 | **`page_view` events never recorded** — only `view` exists in DB | `SELECT DISTINCT event_type FROM user_events` returns only `view`/`download`. Either `trackPageView` is gated by `import.meta.env.PROD` and the published build isn't firing it, or the `page_view` event_type is being dropped. |
-| 2 | **Downloads stopped May–Oct 2025**, while views still grow | `download_events` MAX = 2025-10-01; `user_events` MAX = 2026-01-02. The download buttons on RHCA/IGM/Article cards likely lost the `trackDownload` wiring during a refactor. |
-| 3 | **Share tracking only wired on ADC modal** | Only `ModalActions.tsx` calls `trackShare`. RHCA / IGM / Article share buttons never fire it → 0 `share` events in DB. |
-| 4 | **`performance_metrics` table empty** | No client code writes to it. Web Vitals (LCP, CLS, INP, TTFB) are not being captured. |
-| 5 | **`error_events` table empty** | No client error handler posts to it. Runtime errors are only console-logged. |
-| 6 | **No search tracking** | `trackSearch` exists but is not called from any search input. |
-| 7 | **No click-through tracking on cards** | `trackClick` defined but unused. We can't compute "card impression → article open" conversion. |
-| 8 | **Dev-mode blocking** | `useAnalytics` skips tracking unless `PROD` or `VITE_DEBUG_ANALYTICS=true`. Acceptable, but should be documented. |
-| 9 | **No funnel / engagement metrics** | No time-on-page, scroll-depth, or session duration captured. |
-| 10 | **Donations & contact form submissions not tracked as events** | We have rows in `donations`/`contact_messages` but no `user_events` link for funnel analysis. |
+## What the uploaded files map to
 
-### Plan to fix (build mode)
+| Uploaded PDF | Official chapter | Updated | Pages |
+|---|---|---|---|
+| INTRODUCTION_A_L_ATLAS_27_08_26 | Introduction (00) | Août 2026 | 3 |
+| ADC_Chapitre_I_12_4_24_Traumatisme | 1 — Traumatismes – plaies | 12 avr. 2024 | 11 |
+| ADC_28_10_25_Chapitre_II_part_1_Peau… | 2 — Peau et tissus sous-cutanés (part 1) | 28 oct. 2025 | 34 |
+| ADC_CHAPITRE_III_SEIN_13_12_25 | 3 — Sein | 13 déc. 2025 | 32 |
+| ADC_CHAPITRE_IV_COU_26_03_26 | 4 — Cou | 12 fév. 2026 | 30 |
+| ADC_CHAPITRE_V_THORAX_18_09_25 | 5 — Thorax | 18 sep. 2025 | 12 |
+| ADC_Chapitre_VI…diaphragme_de_oesophage_à_iléon | 6 — Diaphragme ; de l'œsophage à l'iléon | 20 sep. 2025 | 16 |
+| ADC_C_VIII_Foie_Voies_biliaires_Pancreas_Rate_11_12_25 | 8 — Foie – VBEH – Pancréas – Rate | 5 déc. 2025 | 10 |
+| ADC_Ch_X_Paroi_abdominale_Hernies_eventrations_4_01_24 | 10 — Paroi abdominale – Hernies – Éventration | 4 jan. 2024 | 14 |
+| ADC_Ch_XI_Périnée_et_fesses_5_10_21 | 11 — Périnée – Fesses | 5 oct. 2021 | 10 |
 
-**Phase 1 — Restore broken tracking (high value, low risk)**
-1. Audit every PDF download button (`DownloadAction`, `AtlasActions`, RHCA card, IGM card, Article card) and ensure `trackDownload` is invoked on click with the correct `documentType` + `documentId`.
-2. Wire `trackShare` into the shared `ShareAction` component so RHCA/IGM/Article shares are captured.
-3. Add `trackSearch` to the global search bar and the RHCA/IGM list filters.
-4. Add `trackClick` to article/issue card clicks so we measure CTR from listing pages.
+## Steps
 
-**Phase 2 — Add observability**
-5. Add a tiny `webVitals.ts` using `web-vitals` package → POST CLS/LCP/INP/FCP/TTFB to `performance_metrics`.
-6. Wire `window.onerror` + `window.onunhandledrejection` + React `ErrorBoundary` to insert into `error_events` (debounced, sampled).
-7. Track donation completion and contact form submit as `user_events` (`event_type='conversion'`).
+1. **Ingest the 10 PDFs** — rename to the existing convention `ADC_ch_<N>_maj_<DD_MM_YY>.pdf` (intro: `ADC_intro_maj_27_08_26.pdf`), render page 1 at 150 dpi to a matching `.png` cover, and upload both to `atlas-pdfs` / `atlas_covers` through the service-role edge function. Old files stay in the buckets; nothing is deleted.
+2. **Realign the `articles` rows** — for each of the 10 chapters, update the existing ADC row (matched by content, not by current number) to the official chapter number, official title, real contributor list from the PDF, updated publication date, page count, and the new PDF + cover filenames/URLs. Where no row exists for an official chapter, insert one.
+3. **Audit the remaining chapters** — the other rows (currently issues 07, 09, 12–20) keep their PDFs but get retitled to the official chapter names, and their chapter numbers are corrected by opening each stored PDF's page 1 to read its real "CHAPITRE …" heading. Rows whose `pdf_filename` is null or points to another chapter's file (Urologique, Pédiatrique, Plastique, Digestive) are converted to "coming soon" instead of pointing at wrong files.
+4. **Fix the front-end chapter list** — replace the hardcoded 23-entry list in `useAtlasArticles.ts` and the invented placeholder titles in `missingChapters.ts` ("Chirurgie Robotique", "Éthique en Chirurgie"…) with the real 24-chapter taxonomy split into Tome I / Tome II, so coming-soon cards show actual titles (Corps étrangers, Gigantismes, ORL-CMF…).
+5. **Verify** — query the ADC rows, confirm each `pdf_filename`/`cover_image_filename` resolves to a real public object, then load `/adc` and the home carousel to confirm covers render and the chapters read 1→24 in order.
 
-**Phase 3 — Admin visibility**
-8. Extend `/admin/analytics` with three new cards: **Web Vitals (p75)**, **JS errors (24h)**, **Conversions (donations / contacts / subscriptions)**.
-9. Add per-source breakdown (RHCA vs IGM vs ADC vs Index Medicus) on the daily activity chart.
-10. Add a "data freshness" indicator showing the timestamp of the most recent event, so future regressions are caught quickly.
+## Technical notes
 
-**Phase 4 — Hygiene**
-11. Document `VITE_DEBUG_ANALYTICS=true` in README so we can validate tracking on preview.
-12. Add a Playwright smoke test that loads `/`, clicks a download, and asserts a row appears in `user_events`.
-
-### Technical notes
-- All inserts go through the existing `track_user_event` RPC — no schema changes required for Phase 1.
-- Phase 2 uses the existing `performance_metrics` and `error_events` tables (already have anon-insert RLS with length guards).
-- Sampling: cap `performance_metrics` at 1 record per session per metric; cap `error_events` at 10 per session to avoid runaway inserts.
-- Keep `service_role` out of the client — all inserts remain anon via the existing RLS policies.
-
-### Out of scope (ask before doing)
-- Third-party analytics (GA4, Plausible, PostHog) — not needed if the in-house pipeline is healthy.
-- Cookie consent banner — only needed if we add third-party tracking.
-
-Approve and I'll start with Phase 1 (the highest-impact fixes: restoring download/share/search tracking).
+- Titles standardise to `Atlas de Diagnostic Chirurgical (ADC) - Chapitre N : <Titre officiel>`, matching the pattern already used for IGM/RHCA.
+- Uploads go through a service-role edge function (RLS on `atlas-pdfs` blocks anon writes); if the existing `upload-igm-issue`/`upload-cover` functions need a bucket parameter, they get one rather than a new clone.
+- Chapter number lives in `articles.issue` (zero-padded 2 digits, `00` for the intro), which is what the Atlas sort and routing already read.
+- The newsletter trigger fires on publish for ADC rows too, so updates use `UPDATE` of existing published rows where possible to avoid re-broadcasting 10 emails. If a broadcast is wanted for the new versions, it can be triggered deliberately afterwards.
+- No database schema change is needed — data and storage only.
