@@ -80,20 +80,22 @@ export const RhcaCard: React.FC<RhcaCardProps> = ({ article }) => {
   
   return (
     <>
-      <Card 
-        className={`overflow-hidden transition-all hover:shadow-md flex ${isMobile ? 'flex-col' : 'flex-col md:flex-row'} min-h-[180px] ${isMobile ? 'max-h-none' : 'max-h-[240px] md:min-h-[220px] md:max-h-[240px]'} w-full md:max-w-[480px] cursor-pointer`}
+      <Card
+        className="group flex w-full cursor-pointer flex-col overflow-hidden rounded-none border border-border bg-card transition-colors hover:border-primary/40 md:max-w-[520px] md:flex-row"
         onClick={handleCardClick}
       >
-        <div className={`${isMobile ? 'w-full h-[140px]' : 'w-full md:w-[35%] min-h-[140px]'} md:h-auto flex-shrink-0 p-2 flex items-center justify-center`}>
-          <CoverImage 
-            article={article} 
-            coverUrl={coverUrl} 
-            pdfUrl={pdfUrl} 
-            imageLoading={imageLoading} 
-          />
+        <div className="w-full flex-shrink-0 md:w-[38%]">
+          <div className="aspect-[3/4] w-full md:h-full">
+            <CoverImage
+              article={article}
+              coverUrl={coverUrl}
+              pdfUrl={pdfUrl}
+              imageLoading={imageLoading}
+            />
+          </div>
         </div>
-        
-        <CardContentUI className={`p-3 w-full ${isMobile ? '' : 'md:w-[65%]'} flex-grow flex flex-col overflow-hidden`}>
+
+        <CardContentUI className="flex w-full flex-grow flex-col overflow-hidden p-4 md:w-[62%]">
           <CardContent article={article} pdfUrl={pdfUrl} />
         </CardContentUI>
       </Card>

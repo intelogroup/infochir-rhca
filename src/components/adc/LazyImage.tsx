@@ -82,11 +82,11 @@ const LazyImage = ({
   if (hasError) {
     return (
       <div 
-        className={`${className} bg-gray-100 flex items-center justify-center`} 
+        className={`${className} bg-muted flex items-center justify-center`} 
         style={dimensionStyle}
         aria-label={`Image ${alt} not available`}
       >
-        <span className="text-gray-400 text-xs">Image indisponible</span>
+        <span className="text-muted-foreground text-xs">Image indisponible</span>
       </div>
     );
   }

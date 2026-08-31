@@ -12,8 +12,8 @@ export const IGMEditorialCommittee = () => {
       transition={{ duration: 0.6 }}
       className="space-y-8"
     >
-      <Card className="overflow-hidden bg-white shadow-md hover:shadow-lg transition-all duration-300 p-8 relative">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-secondary to-primary"></div>
+      <Card className="overflow-hidden bg-card shadow-md hover:shadow-lg transition-all duration-300 p-8 relative">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gold"></div>
         
         <div className="flex items-center gap-3 mb-8">
           <Award className="h-8 w-8 text-primary flex-shrink-0" />
@@ -21,9 +21,9 @@ export const IGMEditorialCommittee = () => {
         </div>
         
         <div className="pl-11 mb-8">
-          <p className="text-xl font-medium text-gray-800">
+          <p className="text-xl font-medium text-foreground">
             {unifiedEditorInChief.name}
-            <span className="text-gray-500 ml-2 text-base italic font-normal">
+            <span className="text-muted-foreground ml-2 text-base italic font-normal">
               {unifiedEditorInChief.role}
             </span>
           </p>
@@ -40,10 +40,10 @@ export const IGMEditorialCommittee = () => {
               <div className="space-y-3 pl-11">
                 {section.members.map((member) => (
                   <div key={member.id} className="flex flex-col">
-                    <p className={`${member.isCoordinator ? "font-medium text-gray-800" : "text-gray-700"}`}>
+                    <p className={`${member.isCoordinator ? "font-medium text-foreground" : "text-foreground/80"}`}>
                       {member.name}
                       {member.role && (
-                        <span className={`ml-2 italic ${member.isCoordinator ? "text-primary/70" : "text-gray-500"}`}>
+                        <span className={`ml-2 italic ${member.isCoordinator ? "text-primary/70" : "text-muted-foreground"}`}>
                           {member.role}
                         </span>
                       )}

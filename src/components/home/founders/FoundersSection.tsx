@@ -1,8 +1,8 @@
 
-import { Star } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { FounderCard } from "./FounderCard";
+import { FoundersSectionHeader } from "./FoundersSectionHeader";
 import { FounderModal } from "./FounderModal";
 import { useFounders } from "@/hooks/useFounders";
 import type { Founder } from "@/hooks/useFounders";
@@ -16,8 +16,8 @@ export const FoundersSection = () => {
     return (
       <section className="py-24 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="text-xl text-red-500">Une erreur est survenue lors du chargement des fondateurs</div>
-          <p className="mt-2 text-gray-600">{error.message}</p>
+          <div className="text-xl text-destructive">Une erreur est survenue lors du chargement des fondateurs</div>
+          <p className="mt-2 text-muted-foreground">{error.message}</p>
           <button 
             onClick={() => window.location.reload()} 
             className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary-light transition-colors"
@@ -31,41 +31,11 @@ export const FoundersSection = () => {
 
   return (
     <section 
-      className="py-24 relative overflow-hidden"
+      className="section"
       aria-label="Membres fondateurs"
     >
-      
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <div className="text-center mb-16">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex items-center justify-center gap-2 mb-4"
-          >
-            <Star 
-              className="w-8 h-8 text-[#1E40AF] animate-pulse" 
-              aria-hidden="true"
-            />
-            <h2 className="type-h1 text-foreground">
-              Membres Fondateurs
-            </h2>
-            <Star 
-              className="w-8 h-8 text-[#1E40AF] animate-pulse" 
-              aria-hidden="true"
-            />
-          </motion.div>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-lg text-gray-600 max-w-3xl mx-auto"
-          >
-            En 2011, ces médecins visionnaires se sont réunis pour créer Info CHIR, donnant naissance à une organisation dédiée à l'avancement de la chirurgie et de l'anesthésiologie en Haïti.
-          </motion.p>
-        </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <FoundersSectionHeader />
 
         {loading ? (
           <div 
@@ -74,7 +44,7 @@ export const FoundersSection = () => {
             aria-label="Chargement des membres fondateurs"
           >
             {Array(4).fill(0).map((_, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div key={index} className="bg-card rounded-lg shadow-md overflow-hidden">
                 <div className="aspect-w-1 aspect-h-1 w-full">
                   <Skeleton className="h-64 w-full" />
                 </div>
@@ -114,7 +84,7 @@ export const FoundersSection = () => {
             {/* Show deceased founders in a separate section */}
             {founders.filter(founder => founder.isDeceased).length > 0 && (
               <div className="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-4 mt-16">
-                <h3 className="text-2xl font-semibold text-center mb-8 text-gray-700">In Memoriam</h3>
+                <h3 className="type-h2 mb-8 text-center text-foreground/80">In Memoriam</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                   {founders
                     .filter(founder => founder.isDeceased)

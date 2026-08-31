@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export const IssueCardSkeleton = () => {
   return (
-    <Card className="h-full bg-white border border-gray-100">
+    <Card className="h-full bg-card border border-border">
       <div className="flex flex-col sm:flex-row h-full animate-pulse">
         <div className="w-full sm:w-24 md:w-28 lg:w-32 flex-shrink-0">
           <div className="aspect-[3/4] bg-gray-200 rounded-l" />

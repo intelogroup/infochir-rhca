@@ -58,12 +58,12 @@ const RHCA: React.FC = () => {
                   <span className="text-xl">!</span>
                 </div>
                 <h3 className="text-xl font-semibold">Erreur de chargement</h3>
-                <p className="text-gray-600 max-w-md mx-auto">
+                <p className="text-muted-foreground max-w-md mx-auto">
                   Une erreur est survenue lors du chargement des articles. Veuillez réessayer ultérieurement.
                 </p>
                 <button 
                   onClick={() => window.location.reload()} 
-                  className="mt-4 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+                  className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
                 >
                   Réessayer
                 </button>

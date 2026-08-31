@@ -33,7 +33,7 @@ export const ArticleDetailsFields = ({ form, hasSubmissionAttempt = false }: Art
                 placeholder="Entrez le titre de votre article" 
                 {...field}
                 className={cn(
-                  "bg-white/50 backdrop-blur-sm",
+                  "bg-card/50 backdrop-blur-sm",
                   hasSubmissionAttempt && fieldState.error && "border-destructive ring-destructive focus:ring-destructive"
                 )}
               />
@@ -58,7 +58,7 @@ export const ArticleDetailsFields = ({ form, hasSubmissionAttempt = false }: Art
                 placeholder="Noms des auteurs (séparés par des virgules)" 
                 {...field}
                 className={cn(
-                  "bg-white/50 backdrop-blur-sm",
+                  "bg-card/50 backdrop-blur-sm",
                   hasSubmissionAttempt && fieldState.error && "border-destructive ring-destructive focus:ring-destructive"
                 )}
               />
@@ -86,7 +86,7 @@ export const ArticleDetailsFields = ({ form, hasSubmissionAttempt = false }: Art
                 placeholder="Nom du département ou de l'institution" 
                 {...field}
                 className={cn(
-                  "bg-white/50 backdrop-blur-sm",
+                  "bg-card/50 backdrop-blur-sm",
                   hasSubmissionAttempt && fieldState.error && "border-destructive ring-destructive focus:ring-destructive"
                 )}
               />
@@ -111,7 +111,7 @@ export const ArticleDetailsFields = ({ form, hasSubmissionAttempt = false }: Art
                 placeholder="3 à 5 mots clés séparés par des virgules" 
                 {...field}
                 className={cn(
-                  "bg-white/50 backdrop-blur-sm",
+                  "bg-card/50 backdrop-blur-sm",
                   hasSubmissionAttempt && fieldState.error && "border-destructive ring-destructive focus:ring-destructive"
                 )}
               />

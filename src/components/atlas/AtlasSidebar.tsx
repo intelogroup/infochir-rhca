@@ -88,12 +88,12 @@ const SidebarCard = ({
   );
 
   return (
-    <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+    <div className="bg-card rounded-lg p-4 shadow-sm border border-border hover:shadow-md transition-shadow">
       <div className="flex items-center gap-3 mb-3">
         {icon}
-        <h3 className="font-semibold text-gray-900">{title}</h3>
+        <h3 className="font-semibold text-foreground">{title}</h3>
       </div>
-      <p className="text-sm text-gray-600 mb-4">
+      <p className="text-sm text-muted-foreground mb-4">
         {description}
       </p>
       {customContent}

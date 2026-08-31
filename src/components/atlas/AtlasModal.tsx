@@ -31,7 +31,7 @@ export const AtlasModal = ({ chapter, category, open, onOpenChange }: AtlasModal
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl p-0 overflow-hidden bg-white/80 backdrop-blur-xl">
+      <DialogContent className="max-w-2xl p-0 overflow-hidden bg-card/80 backdrop-blur-xl">
         <VisuallyHidden>
           <DialogTitle>{chapter.title}</DialogTitle>
         </VisuallyHidden>

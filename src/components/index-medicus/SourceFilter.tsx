@@ -30,7 +30,7 @@ export const SourceFilter: React.FC<SourceFilterProps> = ({
   ];
 
   return (
-    <div className="bg-white rounded-lg p-3 sm:p-4 border border-gray-100 shadow-sm mb-4">
+    <div className="bg-card rounded-lg p-3 sm:p-4 border border-border shadow-sm mb-4">
       <div className="flex flex-wrap gap-2 sm:gap-3">
         {sources.map((source) => (
           <Button
@@ -41,8 +41,8 @@ export const SourceFilter: React.FC<SourceFilterProps> = ({
             className={`
               flex items-center gap-2 transition-all duration-200
               ${selectedSource === source.key 
-                ? 'bg-primary text-white shadow-md' 
-                : 'hover:bg-gray-50 border-gray-200'
+                ? 'bg-primary text-primary-foreground shadow-md' 
+                : 'hover:bg-muted border-border'
               }
             `}
           >
@@ -53,8 +53,8 @@ export const SourceFilter: React.FC<SourceFilterProps> = ({
                 className={`
                   text-xs px-1.5 py-0.5 min-w-[20px] h-5
                   ${selectedSource === source.key 
-                    ? 'bg-white/20 text-white border-white/30' 
-                    : 'bg-gray-100 text-gray-600 border-gray-200'
+                    ? 'bg-card/20 text-primary-foreground border-white/30' 
+                    : 'bg-muted text-muted-foreground border-border'
                   }
                 `}
               >

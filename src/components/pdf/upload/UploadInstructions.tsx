@@ -30,14 +30,14 @@ export const UploadInstructions = ({
             : "Cliquez ou déposez vos fichiers ici"}
       </p>
       {currentFileCount >= maxFiles && (
-        <p className="text-xs text-red-500">
+        <p className="text-xs text-destructive">
           Nombre maximum de fichiers atteint
         </p>
       )}
       {helperText && (
-        <p className="text-xs text-gray-500">{helperText}</p>
+        <p className="text-xs text-muted-foreground">{helperText}</p>
       )}
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-muted-foreground">
         {type === 'image' 
           ? "Vous pouvez aussi coller une image depuis le presse-papier" 
           : "Vous pouvez aussi coller un fichier depuis le presse-papier"}

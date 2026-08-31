@@ -46,10 +46,10 @@ export const AdminLayout: React.FC = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-gray-50">
+      <div className="min-h-screen flex w-full bg-muted">
         <AppSidebar />
         <SidebarInset className="flex-1">
-          <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-white px-4 shadow-sm">
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-card px-4 shadow-sm">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumbs items={getBreadcrumbs()} />

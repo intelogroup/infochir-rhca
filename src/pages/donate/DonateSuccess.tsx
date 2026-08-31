@@ -66,15 +66,15 @@ const DonateSuccess = () => {
     <MainLayout>
       <div className="min-h-screen bg-background pt-[50px]">
         <div className="max-w-4xl mx-auto px-4 py-12">
-          <Card className="shadow-lg backdrop-blur-sm bg-white/80 border-gray-100/20">
+          <Card className="shadow-lg backdrop-blur-sm bg-card/80 border-border/20">
             <CardContent className="flex flex-col items-center justify-center p-8 space-y-6">
               {isVerified ? (
                 <>
                   <CheckCircle2 className="h-16 w-16 text-green-500" />
-                  <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+                  <h1 className="text-3xl font-bold text-center text-primary">
                     Thank You for Your Donation!
                   </h1>
-                  <p className="text-center text-gray-600 max-w-md">
+                  <p className="text-center text-muted-foreground max-w-md">
                     Your support helps us continue our mission. We've sent you a confirmation email with the details of your donation.
                   </p>
                 </>
@@ -84,7 +84,7 @@ const DonateSuccess = () => {
                   <h1 className="text-3xl font-bold text-center text-amber-600">
                     Payment Verification Pending
                   </h1>
-                  <p className="text-center text-gray-600 max-w-md">
+                  <p className="text-center text-muted-foreground max-w-md">
                     We're still processing your donation. If you've completed the payment, it should be verified shortly. Please contact us if you have any questions.
                   </p>
                 </>

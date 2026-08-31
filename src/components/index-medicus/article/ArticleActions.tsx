@@ -14,7 +14,7 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({ article }) => {
   };
 
   return (
-    <div className="flex items-center gap-2 flex-wrap" onClick={handleActionsClick}>
+    <div className="flex items-center justify-end gap-1" onClick={handleActionsClick}>
       <ShareAction 
         articleId={article.id} 
         articleTitle={article.title}

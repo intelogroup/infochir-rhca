@@ -95,12 +95,12 @@ export const AtlasCard = ({ chapter }: AtlasCardProps) => {
   
   return (
     <Card 
-      className="overflow-hidden cursor-pointer hover:shadow-md transition-all flex flex-col h-full bg-white"
+      className="overflow-hidden cursor-pointer hover:shadow-md transition-all flex flex-col h-full bg-card"
       onClick={handleCardClick}
     >
       <div className="relative h-40 overflow-hidden">
         {!imageLoaded && !imageError && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+          <div className="absolute inset-0 flex items-center justify-center bg-muted">
             <Skeleton className="h-full w-full" />
           </div>
         )}
@@ -117,9 +117,9 @@ export const AtlasCard = ({ chapter }: AtlasCardProps) => {
             loading="lazy"
           />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100">
-            <AlertCircle className="h-8 w-8 text-gray-400 mb-2" />
-            <span className="text-sm text-gray-500">Image non disponible</span>
+          <div className="w-full h-full flex flex-col items-center justify-center bg-muted">
+            <AlertCircle className="h-8 w-8 text-muted-foreground mb-2" />
+            <span className="text-sm text-muted-foreground">Image non disponible</span>
           </div>
         )}
         
@@ -136,7 +136,7 @@ export const AtlasCard = ({ chapter }: AtlasCardProps) => {
         {chapter.category && (
           <Badge 
             variant="secondary" 
-            className="absolute top-2 right-2 bg-secondary text-white"
+            className="absolute top-2 right-2 bg-secondary text-primary-foreground"
           >
             {chapter.category}
           </Badge>
@@ -156,7 +156,7 @@ export const AtlasCard = ({ chapter }: AtlasCardProps) => {
           </h3>
           
           {(chapter.lastUpdate || chapter.lastUpdated) && (
-            <div className="flex items-center text-xs text-gray-500 mt-1">
+            <div className="flex items-center text-xs text-muted-foreground mt-1">
               <Calendar className="h-3 w-3 mr-1" />
               Mis à jour le {chapter.lastUpdated || chapter.lastUpdate}
             </div>

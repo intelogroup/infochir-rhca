@@ -29,7 +29,7 @@ export const FileUploadsSection: React.FC<FileUploadsSectionProps> = ({
           <Info className="h-4 w-4 text-blue-500 mt-1" />
         </div>
         
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+        <div className="bg-muted border border-border rounded-lg p-3 text-sm text-foreground/80">
           <p className="font-medium mb-1">📎 Système d'attachements par email</p>
           <p>Les fichiers uploadés seront automatiquement envoyés en pièces jointes dans l'email de notification aux administrateurs.</p>
         </div>
@@ -67,7 +67,7 @@ export const FileUploadsSection: React.FC<FileUploadsSectionProps> = ({
           <Info className="h-4 w-4 text-blue-500 mt-1" />
         </div>
         
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+        <div className="bg-muted border border-border rounded-lg p-3 text-sm text-foreground/80">
           <p>Les images et annexes seront également incluses comme pièces jointes dans l'email de notification.</p>
         </div>
         

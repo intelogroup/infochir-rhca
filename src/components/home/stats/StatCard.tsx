@@ -20,7 +20,7 @@ export const StatCard = ({ title, value, description, icon, iconClassName, index
   >
     <motion.div
       layout
-      className="relative overflow-hidden bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
+      className="relative overflow-hidden bg-card rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
     >
       
       <div className="relative p-4">

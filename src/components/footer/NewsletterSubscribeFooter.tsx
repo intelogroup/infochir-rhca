@@ -238,10 +238,10 @@ export const NewsletterSubscribeFooter = () => {
     <div className="space-y-4">
       <div className="flex items-center space-x-2">
         <Mail className="h-5 w-5 text-primary" />
-        <h3 className="font-semibold text-gray-900">Notre Newsletter</h3>
+        <h3 className="font-semibold text-foreground">Notre Newsletter</h3>
       </div>
       
-      <p className="text-sm text-gray-600">
+      <p className="text-sm text-muted-foreground">
         Inscrivez-vous pour recevoir nos dernières actualités et publications
       </p>
       
@@ -260,7 +260,7 @@ export const NewsletterSubscribeFooter = () => {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="footer-name" className="text-sm text-gray-600">
+          <Label htmlFor="footer-name" className="text-sm text-muted-foreground">
             Nom
           </Label>
           <Input
@@ -268,7 +268,7 @@ export const NewsletterSubscribeFooter = () => {
             name="footer-name"
             type="text"
             placeholder="Votre nom"
-            className={`bg-white/80 border-gray-200 focus:border-primary ${errors.name ? "border-red-500" : ""}`}
+            className={`bg-card/80 border-border focus:border-primary ${errors.name ? "border-red-500" : ""}`}
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
@@ -276,11 +276,11 @@ export const NewsletterSubscribeFooter = () => {
             autoComplete="name"
             onBlur={() => validateForm()}
           />
-          {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+          {errors.name && <p className="text-destructive text-xs mt-1">{errors.name}</p>}
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="footer-email" className="text-sm text-gray-600">
+          <Label htmlFor="footer-email" className="text-sm text-muted-foreground">
             Email
           </Label>
           <Input
@@ -288,7 +288,7 @@ export const NewsletterSubscribeFooter = () => {
             name="footer-email"
             type="email"
             placeholder="Votre adresse email"
-            className={`bg-white/80 border-gray-200 focus:border-primary ${errors.email ? "border-red-500" : ""}`}
+            className={`bg-card/80 border-border focus:border-primary ${errors.email ? "border-red-500" : ""}`}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -296,7 +296,7 @@ export const NewsletterSubscribeFooter = () => {
             autoComplete="email"
             onBlur={() => validateForm()}
           />
-          {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+          {errors.email && <p className="text-destructive text-xs mt-1">{errors.email}</p>}
         </div>
 
         {isOffline && (

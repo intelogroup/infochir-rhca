@@ -18,15 +18,15 @@ export const ResourceCard = ({ title, description, icon: Icon, href }: ResourceC
         whileTap={{ scale: 0.98 }}
         className="h-full"
       >
-        <Card className="h-full bg-white hover:shadow-lg transition-shadow duration-300">
+        <Card className="h-full bg-card hover:shadow-lg transition-shadow duration-300">
           <CardHeader>
             <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
               <Icon className="w-6 h-6 text-primary" />
             </div>
-            <CardTitle className="text-xl font-semibold text-gray-900">
+            <CardTitle className="text-xl font-semibold text-foreground">
               {title}
             </CardTitle>
-            <CardDescription className="text-gray-600">
+            <CardDescription className="text-muted-foreground">
               {description}
             </CardDescription>
           </CardHeader>

@@ -19,13 +19,13 @@ export const FooterLogo = () => {
           />
         </motion.div>
         <div className="flex flex-col">
-          <span className="bg-gradient-to-r from-primary to-ocean bg-clip-text text-transparent text-xl font-bold transition-colors duration-300 group-hover:text-primary">
+          <span className="text-primary text-xl font-bold transition-colors duration-300 group-hover:text-primary">
             INFOCHIR/RHCA
           </span>
-          <span className="text-xs text-gray-500">Publication scientifique</span>
+          <span className="text-xs text-muted-foreground">Publication scientifique</span>
         </div>
       </Link>
-      <p className="text-gray-600 text-sm leading-relaxed">
+      <p className="text-muted-foreground text-sm leading-relaxed">
         Une plateforme de premier plan pour la recherche médicale et les connaissances chirurgicales en Haïti.
       </p>
       <motion.div
@@ -34,10 +34,10 @@ export const FooterLogo = () => {
       >
         <Link
           to="/donate"
-          className="inline-flex items-center px-4 py-2 text-sm rounded-full bg-gradient-to-r from-primary to-ocean hover:from-ocean hover:to-primary transition-all duration-500 text-white shadow-sm hover:shadow-md"
+          className="inline-flex items-center px-4 py-2 text-sm rounded-full bg-primary hover:bg-primary/90 transition-all duration-500 text-primary-foreground shadow-sm hover:shadow-md"
         >
           Faire un don
-          <Heart className="ml-2 h-4 w-4 text-white fill-white/20" />
+          <Heart className="ml-2 h-4 w-4 text-primary-foreground fill-white/20" />
         </Link>
       </motion.div>
     </div>

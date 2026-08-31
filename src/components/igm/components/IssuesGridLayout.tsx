@@ -29,12 +29,12 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue, isSelected, onClick
             className="rounded-md object-cover shadow-sm"
           />
         ) : (
-          <div className="bg-gray-100 rounded-md flex items-center justify-center">
-            <span className="text-gray-500">No Cover</span>
+          <div className="bg-muted rounded-md flex items-center justify-center">
+            <span className="text-muted-foreground">No Cover</span>
           </div>
         )}
       </div>
-      <div className="absolute bottom-0 left-0 w-full bg-black/50 text-white p-2 rounded-b-md text-sm">
+      <div className="absolute bottom-0 left-0 w-full bg-black/50 text-primary-foreground p-2 rounded-b-md text-sm">
         {issue.title}
       </div>
     </div>

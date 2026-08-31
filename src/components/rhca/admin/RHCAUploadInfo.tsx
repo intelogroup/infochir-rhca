@@ -35,7 +35,7 @@ export const RHCAUploadInfo: React.FC<RHCAUploadInfoProps> = ({
           coverFilesList={coverFilesList}
         />
         
-        <p className="text-xs mt-1 text-gray-500">
+        <p className="text-xs mt-1 text-muted-foreground">
           Assurez-vous que les noms de fichiers correspondent aux volumes et numéros dans la base de données.
         </p>
       </AlertDescription>

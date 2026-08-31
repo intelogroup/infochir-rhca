@@ -82,37 +82,24 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue }) => {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        whileHover={{ y: -2 }}
         className="h-full flex"
       >
-        <Card 
-          className="overflow-hidden group cursor-pointer h-full flex flex-col w-full border border-gray-200 hover:shadow-md transition-all max-w-[280px]"
+        <Card
+          className="group flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-none border border-border bg-card transition-colors hover:border-primary/40"
           onClick={handleCardClick}
         >
-          <div className="h-24 w-full">
-            <IssueCardCover coverImage={issue.coverImage} title={issue.title} />
-          </div>
-          
-          <div className="flex-1 flex flex-col p-1.5 min-h-0">
-            <div className="flex-1 min-h-0">
-              <IssueCardContent issue={issue} />
-            </div>
-            
-            {/* Actions and page info section */}
-            <div className="mt-1">
-              <div className="flex items-center justify-between gap-1">
-                <span className="bg-amber-50 px-1 py-0.5 rounded border border-amber-200 font-medium text-[9px] text-amber-700">
-                  {getTotalPages}
-                </span>
-                
-                <div className="flex justify-end">
-                  <IssueCardActions 
-                    pdfUrl={issue.pdfUrl} 
-                    id={issue.id}
-                    title={issue.title}
-                  />
-                </div>
-              </div>
+          <IssueCardCover coverImage={issue.coverImage} title={issue.title} />
+
+          <div className="flex min-h-0 flex-1 flex-col p-4">
+            <IssueCardContent issue={issue} />
+
+            <div className="mt-auto flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-t border-border pt-2">
+              <span className="shrink-0 whitespace-nowrap text-xs text-muted-foreground">
+                {getTotalPages === "- Pages" || getTotalPages === "1 Pages"
+                  ? ""
+                  : getTotalPages.replace("Pages", "pages")}
+              </span>
+              <IssueCardActions pdfUrl={issue.pdfUrl} id={issue.id} title={issue.title} />
             </div>
           </div>
         </Card>

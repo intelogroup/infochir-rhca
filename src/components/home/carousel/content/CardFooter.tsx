@@ -6,7 +6,7 @@ interface CardFooterProps {
 
 export const CardFooter = ({ date, author }: CardFooterProps) => {
   return (
-    <div className="flex items-center justify-between text-sm text-gray-500 w-full">
+    <div className="flex items-center justify-between text-sm text-muted-foreground w-full">
       {date && (
         <span className="flex items-center gap-1 min-w-0 max-w-[60%]">
           <span className="w-1.5 h-1.5 rounded-full bg-primary/60 flex-shrink-0" />

@@ -80,7 +80,7 @@ export const ModalActions = ({ chapter }: ModalActionsProps) => {
       <Button
         variant="outline"
         size="sm"
-        className="h-8 text-xs gap-1.5 hover:bg-gray-100/80 transition-colors"
+        className="h-8 text-xs gap-1.5 hover:bg-muted/80 transition-colors"
         onClick={handleShare}
       >
         <Share2 className="w-3 h-3" />
@@ -89,7 +89,7 @@ export const ModalActions = ({ chapter }: ModalActionsProps) => {
       <Button
         variant="outline"
         size="sm"
-        className="h-8 text-xs gap-1.5 hover:bg-gray-100/80 transition-colors"
+        className="h-8 text-xs gap-1.5 hover:bg-muted/80 transition-colors"
         onClick={handleOpenPdf}
         disabled={!chapter.pdfUrl}
       >
@@ -99,7 +99,7 @@ export const ModalActions = ({ chapter }: ModalActionsProps) => {
       <Button
         variant="outline"
         size="sm"
-        className="h-8 text-xs gap-1.5 hover:bg-gray-100/80 transition-colors"
+        className="h-8 text-xs gap-1.5 hover:bg-muted/80 transition-colors"
         onClick={handleDownload}
         disabled={!chapter.pdfUrl || isDownloading}
       >

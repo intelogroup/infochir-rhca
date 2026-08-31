@@ -55,11 +55,11 @@ export function IssuesSearch({
   };
 
   return (
-    <div className="bg-white rounded-lg sm:rounded-xl border border-gray-200 p-4 sm:p-6 shadow-sm mb-6">
+    <div className="bg-card rounded-lg sm:rounded-xl border border-border p-4 sm:p-6 shadow-sm mb-6">
       <div className="space-y-4">
         <div className="grid gap-4 md:grid-cols-[1fr,auto,auto]">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
               type="text"
               placeholder="Rechercher un numéro..."
@@ -93,7 +93,7 @@ export function IssuesSearch({
         {availableCategories.length > 0 && (
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="categories">
-              <AccordionTrigger className="text-sm font-medium text-gray-900">
+              <AccordionTrigger className="text-sm font-medium text-foreground">
                 Catégories ({selectedCategories.length > 0 ? `${selectedCategories.length} sélectionnées` : "Filtrer par catégorie"})
               </AccordionTrigger>
               <AccordionContent>

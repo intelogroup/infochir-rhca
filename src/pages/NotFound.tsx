@@ -24,7 +24,7 @@ const NotFound = () => {
           
           <h1 className="text-3xl font-bold tracking-tight mb-3">Page non trouvée</h1>
           
-          <p className="text-gray-600 mb-8">
+          <p className="text-muted-foreground mb-8">
             Il semble que vous ayez suivi un lien cassé ou entré une URL qui n'existe pas sur ce site.
           </p>
           

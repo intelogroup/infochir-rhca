@@ -21,7 +21,7 @@ export const DiagnosticCard: React.FC<DiagnosticCardProps> = ({ diagnosticCase }
   };
 
   return (
-    <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 rounded-xl border border-gray-200/50 hover:border-primary/20">
+    <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 rounded-xl border border-border/50 hover:border-primary/20">
       <div className="aspect-[4/3] relative overflow-hidden">
         <img
           src={diagnosticCase.imageUrl}
@@ -37,7 +37,7 @@ export const DiagnosticCard: React.FC<DiagnosticCardProps> = ({ diagnosticCase }
           </CardTitle>
           <Badge 
             variant="secondary" 
-            className="bg-white/90 text-primary text-[10px] whitespace-nowrap backdrop-blur-sm"
+            className="bg-card/90 text-primary text-[10px] whitespace-nowrap backdrop-blur-sm"
           >
             {diagnosticCase.specialty}
           </Badge>
@@ -45,7 +45,7 @@ export const DiagnosticCard: React.FC<DiagnosticCardProps> = ({ diagnosticCase }
         <CardDescription className="text-[10px]">{diagnosticCase.date}</CardDescription>
       </CardHeader>
       <CardContent className="p-4 pt-0 space-y-4">
-        <p className="text-[10px] text-gray-600 mb-1 line-clamp-2 group-hover:text-gray-900 transition-colors">
+        <p className="text-[10px] text-muted-foreground mb-1 line-clamp-2 group-hover:text-foreground transition-colors">
           {diagnosticCase.description}
         </p>
         <p className="text-[10px] font-semibold">
@@ -55,7 +55,7 @@ export const DiagnosticCard: React.FC<DiagnosticCardProps> = ({ diagnosticCase }
           <Button 
             variant="outline" 
             size="sm" 
-            className="flex-1 h-7 text-[10px] hover:bg-primary hover:text-white transition-all duration-300"
+            className="flex-1 h-7 text-[10px] hover:bg-primary hover:text-primary-foreground transition-all duration-300"
             onClick={handleDownload}
           >
             <Download className="h-3 w-3 mr-1" />
@@ -64,7 +64,7 @@ export const DiagnosticCard: React.FC<DiagnosticCardProps> = ({ diagnosticCase }
           <Button 
             variant="outline" 
             size="sm" 
-            className="flex-1 h-7 text-[10px] hover:bg-primary hover:text-white transition-all duration-300"
+            className="flex-1 h-7 text-[10px] hover:bg-primary hover:text-primary-foreground transition-all duration-300"
             onClick={handleShare}
           >
             <Share2 className="h-3 w-3 mr-1" />

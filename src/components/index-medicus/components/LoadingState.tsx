@@ -21,21 +21,21 @@ export const LoadingSkeleton = () => {
         <div 
           key={i} 
           className={cn(
-            "relative overflow-hidden rounded-lg group hover:shadow-md transition-all duration-300 border border-gray-100",
+            "relative overflow-hidden rounded-lg group hover:shadow-md transition-all duration-300 border border-border",
             highlightedIndex === i ? "scale-[1.02] shadow-md border-ocean/30" : ""
           )}
         >
           <Skeleton className={cn(
             "w-full h-32",
             highlightedIndex === i 
-              ? "bg-gradient-to-r from-ocean/20 via-primary/10 to-ocean/20 animate-pulse" 
-              : "bg-gradient-to-r from-gray-50 via-gray-100 to-gray-50 animate-pulse"
+              ? "bg-muted animate-pulse" 
+              : "bg-muted animate-pulse"
           )} />
           <div className={cn(
             "absolute left-0 top-0 h-full w-1.5",
             highlightedIndex === i 
-              ? "bg-gradient-to-b from-ocean via-primary to-ocean animate-pulse" 
-              : "bg-gradient-to-b from-primary/60 to-ocean/60"
+              ? "bg-primary animate-pulse" 
+              : "bg-border"
           )}></div>
           <div className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center">

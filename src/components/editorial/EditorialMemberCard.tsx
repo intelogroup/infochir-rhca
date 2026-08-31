@@ -13,13 +13,13 @@ export const EditorialMemberCard = ({ member }: EditorialMemberCardProps) => (
       <div className="flex flex-col items-center text-center mb-6">
         <Avatar className="h-24 w-24 mb-4 ring-4 ring-primary/20">
           <AvatarImage src={member.image} alt={member.name} className="object-cover" />
-          <AvatarFallback className="bg-primary text-white">
+          <AvatarFallback className="bg-primary text-primary-foreground">
             <UserRound className="h-12 w-12" />
           </AvatarFallback>
         </Avatar>
-        <h3 className="text-xl font-semibold text-gray-900 mb-1">{member.name}</h3>
+        <h3 className="text-xl font-semibold text-foreground mb-1">{member.name}</h3>
         <p className="text-primary font-medium mb-2">{member.role}</p>
-        <div className="flex items-center gap-2 text-sm text-gray-600">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <GraduationCap className="h-4 w-4" />
           <span>{member.title}</span>
         </div>
@@ -28,7 +28,7 @@ export const EditorialMemberCard = ({ member }: EditorialMemberCardProps) => (
       <div className="space-y-3 text-sm">
         <div className="flex items-start gap-2">
           <Stethoscope className="h-4 w-4 text-primary mt-1" />
-          <p className="text-gray-600">{member.specialty}</p>
+          <p className="text-muted-foreground">{member.specialty}</p>
         </div>
         {member.email && (
           <div className="flex items-start gap-2">

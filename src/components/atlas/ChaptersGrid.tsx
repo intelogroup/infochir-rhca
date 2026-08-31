@@ -72,7 +72,7 @@ export const ChaptersGrid = () => {
       <div className="text-center py-16 space-y-4">
         <AlertTriangle className="mx-auto h-12 w-12 text-yellow-500" />
         <h3 className="text-xl font-semibold">Erreur de chargement</h3>
-        <p className="text-gray-600 max-w-md mx-auto">
+        <p className="text-muted-foreground max-w-md mx-auto">
           Une erreur est survenue lors du chargement des chapitres. Veuillez réessayer ultérieurement.
         </p>
         <Button 
@@ -90,7 +90,7 @@ export const ChaptersGrid = () => {
     return (
       <div className="text-center py-16">
         <h3 className="text-xl font-semibold">Aucun chapitre disponible</h3>
-        <p className="text-gray-600 mt-2">
+        <p className="text-muted-foreground mt-2">
           Les chapitres seront disponibles prochainement.
         </p>
       </div>
@@ -119,12 +119,12 @@ export const ChaptersGrid = () => {
               size="sm"
               onClick={toggleViewMode}
               aria-label={viewMode === "grid" ? "Switch to table view" : "Switch to grid view"}
-              className="sm:ml-2 h-9 px-2.5 py-1.5 border-gray-200 hover:bg-gray-50 transition-colors flex-shrink-0"
+              className="sm:ml-2 h-9 px-2.5 py-1.5 border-border hover:bg-muted transition-colors flex-shrink-0"
             >
               {viewMode === "grid" ? (
-                <List className="h-4 w-4 text-gray-600" />
+                <List className="h-4 w-4 text-muted-foreground" />
               ) : (
-                <Grid2X2 className="h-4 w-4 text-gray-600" />
+                <Grid2X2 className="h-4 w-4 text-muted-foreground" />
               )}
             </Button>
           </div>
@@ -148,15 +148,15 @@ export const ChaptersGrid = () => {
 const AtlasSidebar = () => {
   return (
     <div className="space-y-4">
-      <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+      <div className="bg-card rounded-lg p-4 shadow-sm border border-border hover:shadow-md transition-shadow">
         <div className="flex items-center gap-3 mb-3">
           <AtlasTableOfContents />
         </div>
       </div>
       
-      <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+      <div className="bg-card rounded-lg p-4 shadow-sm border border-border hover:shadow-md transition-shadow">
         <div className="flex items-center gap-3 mb-3">
-          <h3 className="font-semibold text-gray-900">Légende</h3>
+          <h3 className="font-semibold text-foreground">Légende</h3>
         </div>
         <ul className="space-y-2 text-sm">
           <li className="flex items-center gap-2">

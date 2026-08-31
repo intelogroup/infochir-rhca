@@ -23,12 +23,12 @@ export const ImageFallback = ({
 
   return (
     <div 
-      className={`${className} bg-gray-100 flex items-center justify-center text-center rounded`} 
+      className={`${className} bg-muted flex items-center justify-center text-center rounded`} 
       style={style}
       aria-label={`${alt} - ${fallbackText}`}
     >
       <div className="px-2">
-        <span className="text-gray-400 text-xs">{fallbackText}</span>
+        <span className="text-muted-foreground text-xs">{fallbackText}</span>
       </div>
     </div>
   );

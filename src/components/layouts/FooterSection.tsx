@@ -42,13 +42,13 @@ const socialLinks: SocialLink[] = [
 
 export const FooterSection = ({ title, links }: { title: string; links: FooterLink[] }) => (
   <div>
-    <h3 className="font-semibold text-gray-900 mb-4">{title}</h3>
+    <h3 className="font-semibold text-foreground mb-4">{title}</h3>
     <ul className="space-y-3">
       {links.map((link) => (
         <li key={link.name}>
           <Link
             to={link.href}
-            className="text-gray-600 hover:text-primary text-sm transition-colors duration-200"
+            className="text-muted-foreground hover:text-primary text-sm transition-colors duration-200"
           >
             {link.name}
           </Link>

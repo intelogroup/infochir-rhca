@@ -7,7 +7,7 @@ export const ManuscriptPreparation = () => {
       <div className="grid md:grid-cols-2 gap-8">
         <div>
           <h3 className="font-semibold text-secondary mb-4">Format standard</h3>
-          <ul className="space-y-3 text-gray-600">
+          <ul className="space-y-3 text-muted-foreground">
             <ChecklistItem text="Police Times New Roman, taille 12" />
             <ChecklistItem text="Interligne double" />
             <ChecklistItem text="Marges de 2.5 cm" />
@@ -16,7 +16,7 @@ export const ManuscriptPreparation = () => {
         </div>
         <div>
           <h3 className="font-semibold text-secondary mb-4">Structure recommandée</h3>
-          <ul className="space-y-3 text-gray-600">
+          <ul className="space-y-3 text-muted-foreground">
             <ChecklistItem text="Titre concis et informatif" />
             <ChecklistItem text="Résumé (Abstract) et mots-clés" />
             <ChecklistItem text="Introduction, Méthodes, Résultats, Discussion" />

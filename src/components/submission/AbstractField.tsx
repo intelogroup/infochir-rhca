@@ -33,7 +33,7 @@ export const AbstractField = ({ form, hasSubmissionAttempt = false, hasError = f
               name="abstract"
               placeholder="Entrez le résumé de votre article (max 3000 mots)" 
               className={cn(
-                "min-h-[250px] bg-white/50 backdrop-blur-sm",
+                "min-h-[250px] bg-card/50 backdrop-blur-sm",
                 hasSubmissionAttempt && (fieldState.error || hasError) && "border-destructive ring-destructive focus:ring-destructive"
               )}
               {...field}

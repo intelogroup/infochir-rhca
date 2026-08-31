@@ -80,7 +80,7 @@ export const RhcaArticleList: React.FC<RhcaArticleListProps> = ({ articles }) =>
     
     if (!article.pdfFileName) {
       toast.error("Le fichier PDF n'est pas disponible pour cet article", {
-        icon: <AlertCircle className="h-5 w-5 text-red-500" />
+        icon: <AlertCircle className="h-5 w-5 text-destructive" />
       });
       return;
     }
@@ -89,7 +89,7 @@ export const RhcaArticleList: React.FC<RhcaArticleListProps> = ({ articles }) =>
     if (fileExistsMap[article.id] === false) {
       toast.error(`Le fichier "${article.pdfFileName}" n'existe pas dans la bibliothèque`, {
         description: "Contactez l'administrateur pour assistance",
-        icon: <AlertCircle className="h-5 w-5 text-red-500" />
+        icon: <AlertCircle className="h-5 w-5 text-destructive" />
       });
       return;
     }
@@ -137,7 +137,7 @@ export const RhcaArticleList: React.FC<RhcaArticleListProps> = ({ articles }) =>
         return (
           <Card 
             key={article.id}
-            className="w-full overflow-hidden transition-all duration-300 hover:shadow-md cursor-pointer group border border-gray-200"
+            className="w-full overflow-hidden transition-all duration-300 hover:shadow-md cursor-pointer group border border-border"
             onClick={() => handleArticleClick(article.id)}
           >
             <CardContent className="p-0">
@@ -145,7 +145,7 @@ export const RhcaArticleList: React.FC<RhcaArticleListProps> = ({ articles }) =>
                 {/* Cover Image Section */}
                 {coverImageUrl && (
                   <div className="md:w-1/4 relative">
-                    <div className="w-full aspect-[4/3] md:h-full overflow-hidden bg-gray-100">
+                    <div className="w-full aspect-[4/3] md:h-full overflow-hidden bg-muted">
                       <ImageOptimizer
                         src={coverImageUrl}
                         alt={`Couverture du volume ${article.volume}, numéro ${article.issue}`}
@@ -166,7 +166,7 @@ export const RhcaArticleList: React.FC<RhcaArticleListProps> = ({ articles }) =>
                         {article.title}
                       </h3>
                       
-                      <div className="flex flex-wrap items-center text-sm text-gray-500 gap-y-1 mt-2">
+                      <div className="flex flex-wrap items-center text-sm text-muted-foreground gap-y-1 mt-2">
                         <div className="flex items-center mr-3">
                           {article.volume && article.issue ? (
                             <span>Volume {article.volume} • No. {article.issue}</span>
@@ -184,7 +184,7 @@ export const RhcaArticleList: React.FC<RhcaArticleListProps> = ({ articles }) =>
                       </div>
                     </div>
                     
-                    <p className="text-sm text-gray-600 line-clamp-2">
+                    <p className="text-sm text-muted-foreground line-clamp-2">
                       {article.abstract}
                     </p>
                     
@@ -197,7 +197,7 @@ export const RhcaArticleList: React.FC<RhcaArticleListProps> = ({ articles }) =>
                         )}
                       </div>
                       
-                      <div className="flex items-center space-x-4 text-sm text-gray-500">
+                      <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                         <button 
                           className={`flex items-center ${
                             fileExists === false 

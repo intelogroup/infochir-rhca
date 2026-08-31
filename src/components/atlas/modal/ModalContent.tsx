@@ -17,7 +17,7 @@ export const ModalContent = ({ chapter }: ModalContentProps) => {
         className="prose prose-sm max-w-none"
       >
         {chapter.description && (
-          <p className="text-sm text-gray-600 leading-relaxed">{chapter.description}</p>
+          <p className="text-sm text-muted-foreground leading-relaxed">{chapter.description}</p>
         )}
         {chapter.tags && chapter.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-3">
@@ -25,7 +25,7 @@ export const ModalContent = ({ chapter }: ModalContentProps) => {
               <Badge 
                 key={index} 
                 variant="outline" 
-                className="text-xs px-2 py-0.5 bg-gray-50/50 hover:bg-gray-100/50 transition-colors"
+                className="text-xs px-2 py-0.5 bg-muted/50 hover:bg-muted/50 transition-colors"
               >
                 {tag}
               </Badge>

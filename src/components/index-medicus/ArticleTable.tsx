@@ -27,7 +27,7 @@ export const ArticleTable: React.FC<ArticleTableProps> = ({
 
   if (!articles.length) {
     return (
-      <div className="text-center py-8 text-gray-500">
+      <div className="text-center py-8 text-muted-foreground">
         Aucun article trouvé
       </div>
     );
@@ -37,20 +37,20 @@ export const ArticleTable: React.FC<ArticleTableProps> = ({
     <div className="overflow-x-auto">
       <table className="w-full border-collapse">
         <thead>
-          <tr className="border-b border-gray-200 bg-gray-50">
-            <th className="text-left py-2 px-3 text-sm font-semibold text-gray-900">
+          <tr className="border-b border-border bg-muted">
+            <th className="text-left py-2 px-3 text-sm font-semibold text-foreground">
               Titre
             </th>
-            <th className="text-left py-2 px-3 text-sm font-semibold text-gray-900 hidden md:table-cell">
+            <th className="text-left py-2 px-3 text-sm font-semibold text-foreground hidden md:table-cell">
               Auteur(s)
             </th>
-            <th className="text-left py-2 px-3 text-sm font-semibold text-gray-900 hidden lg:table-cell">
+            <th className="text-left py-2 px-3 text-sm font-semibold text-foreground hidden lg:table-cell">
               Source
             </th>
-            <th className="text-left py-2 px-3 text-sm font-semibold text-gray-900 hidden xl:table-cell">
+            <th className="text-left py-2 px-3 text-sm font-semibold text-foreground hidden xl:table-cell">
               Date
             </th>
-            <th className="text-right py-2 px-3 text-sm font-semibold text-gray-900">
+            <th className="text-right py-2 px-3 text-sm font-semibold text-foreground">
               Actions
             </th>
           </tr>

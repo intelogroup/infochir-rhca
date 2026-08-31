@@ -111,7 +111,7 @@ const Submission = () => {
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <motion.div 
-                  className="space-y-8 bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-gray-100"
+                  className="space-y-8 bg-card/80 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-border"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}

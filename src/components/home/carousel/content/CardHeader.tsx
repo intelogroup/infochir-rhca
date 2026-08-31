@@ -21,7 +21,7 @@ export const CardHeader = ({ image, title, category, isModal = false }: CardHead
       
       {category && (
         <div className="absolute top-2 left-2">
-          <Badge variant="secondary" className="bg-white/90 text-primary hover:bg-white/80">
+          <Badge variant="secondary" className="bg-card/90 text-primary hover:bg-card/80">
             {category}
           </Badge>
         </div>

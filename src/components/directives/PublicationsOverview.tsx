@@ -20,7 +20,7 @@ export const PublicationsOverview = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-sm text-muted-foreground mb-4">
               Articles cliniques, expérimentaux et historiques en chirurgie et anesthésiologie.
             </p>
             <Link to="/rhca/directives">
@@ -43,7 +43,7 @@ export const PublicationsOverview = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-sm text-muted-foreground mb-4">
               Actualités médicales, santé publique et informations socio-culturelles.
             </p>
             <Link to="/igm/directives">
@@ -66,7 +66,7 @@ export const PublicationsOverview = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-sm text-muted-foreground mb-4">
               Documentation illustrée et guides de diagnostic chirurgical.
             </p>
             <Link to="/adc">

@@ -44,7 +44,7 @@ export const LoadingSpinner = ({
   };
 
   const variantClasses = {
-    default: "text-gray-500",
+    default: "text-muted-foreground",
     primary: "text-ocean",
     secondary: "text-secondary",
     medical: "text-primary",
@@ -59,7 +59,7 @@ export const LoadingSpinner = ({
   };
 
   const containerClasses = fullScreen
-    ? "fixed inset-0 flex items-center justify-center bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm z-50"
+    ? "fixed inset-0 flex items-center justify-center bg-card/80 dark:bg-gray-900/80 backdrop-blur-sm z-50"
     : "flex items-center justify-center";
 
   return (

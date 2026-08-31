@@ -45,7 +45,7 @@ export const IssuesGridLayout = ({ viewMode = "grid" }: IssuesGridLayoutProps) =
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center p-8 bg-white rounded-lg shadow-sm">
+      <div className="flex flex-col items-center justify-center p-8 bg-card rounded-lg shadow-sm">
         <Loader2 className="w-10 h-10 text-primary animate-spin mb-4" />
         <p className="text-lg font-medium">Chargement des numéros...</p>
       </div>

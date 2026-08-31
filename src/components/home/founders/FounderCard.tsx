@@ -1,10 +1,7 @@
-
-import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Founder } from "@/hooks/useFounders";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 interface FounderCardProps {
   founder: Founder;
@@ -13,75 +10,66 @@ interface FounderCardProps {
 }
 
 export const FounderCard = ({ founder, onClick, memorialStyle = false }: FounderCardProps) => {
-  const isMobile = useIsMobile();
-  
-  // Generate initials from name
   const initials = founder.name
     .split(' ')
     .map(part => part[0])
     .join('')
     .substring(0, 2)
     .toUpperCase();
-  
+
   return (
-    <Card 
-      className={cn(
-        "h-full cursor-pointer overflow-hidden transition-all hover:shadow-lg relative",
-        memorialStyle ? "border-gray-300 opacity-80 hover:opacity-100" : "hover:border-blue-500",
-        "touch-manipulation"
-      )}
+    <button
+      type="button"
       onClick={onClick}
+      className={cn(
+        "group flex h-full w-full flex-col items-center gap-4 rounded-lg border border-border bg-card p-6 text-center transition-colors hover:border-primary/40",
+        memorialStyle && "opacity-80 hover:opacity-100"
+      )}
     >
-      <div className="flex flex-col items-center p-2 sm:p-6 text-center gap-1 sm:gap-4">
-        <Avatar className={cn(
-          "border-2 border-white shadow-md",
-          isMobile ? "h-16 w-16" : "h-28 w-28 sm:h-32 sm:w-32"
-        )}>
-          {founder.image ? (
-            <AvatarImage 
-              src={founder.image} 
-              alt={founder.name} 
-              className="object-cover"
-              onError={(e) => {
-                console.log(`Failed to load avatar for ${founder.name} from ${founder.image}`);
-                const target = e.target as HTMLImageElement;
-                // Remove src to show the fallback
-                target.src = "";
-              }}
-            />
-          ) : (
-            <AvatarFallback className="text-2xl bg-muted text-foreground">
-              {initials}
-            </AvatarFallback>
-          )}
-        </Avatar>
-        
-        <CardContent className="p-0 space-y-1 sm:space-y-2">
-          <h3 className={cn(
-            "font-bold text-sm sm:text-xl", 
-            memorialStyle ? "text-gray-700" : "text-blue-800"
-          )}>
-            {founder.name}
-          </h3>
-          <p className="text-gray-600 font-medium text-xs sm:text-base">{founder.title}</p>
-          <p className="text-xs text-gray-500">{founder.role}</p>
-          
-          {founder.specialties && founder.specialties.length > 0 && (
-            <div className="pt-1 sm:pt-2 flex flex-wrap justify-center gap-1">
-              {founder.specialties.slice(0, isMobile ? 1 : 2).map((specialty, index) => (
-                <Badge key={index} variant="secondary" className="text-xs px-1 py-0 sm:px-2 sm:py-0.5">
-                  {specialty}
-                </Badge>
-              ))}
-              {founder.specialties.length > (isMobile ? 1 : 2) && (
-                <Badge variant="outline" className="text-xs px-1 py-0 sm:px-2 sm:py-0.5">
-                  +{founder.specialties.length - (isMobile ? 1 : 2)}
-                </Badge>
-              )}
-            </div>
-          )}
-        </CardContent>
+      <Avatar className="h-20 w-20 border border-border sm:h-24 sm:w-24">
+        {founder.image ? (
+          <AvatarImage
+            src={founder.image}
+            alt={founder.name}
+            className="object-cover"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = "";
+            }}
+          />
+        ) : (
+          <AvatarFallback className="bg-muted text-lg text-foreground">{initials}</AvatarFallback>
+        )}
+      </Avatar>
+
+      <div className="w-full space-y-1.5">
+        <h3 className="type-h3 break-words text-foreground">{founder.name}</h3>
+        {founder.title && (
+          <p className="text-sm text-foreground/70">{founder.title}</p>
+        )}
+        {founder.role && (
+          <p className="text-xs leading-relaxed text-muted-foreground">{founder.role}</p>
+        )}
       </div>
-    </Card>
+
+      {founder.specialties && founder.specialties.length > 0 && (
+        <div className="flex flex-wrap justify-center gap-1.5">
+          {founder.specialties.slice(0, 2).map((specialty, index) => (
+            <Badge
+              key={index}
+              variant="outline"
+              className="max-w-full whitespace-normal border-border text-[11px] font-normal text-muted-foreground"
+            >
+              {specialty}
+            </Badge>
+          ))}
+          {founder.specialties.length > 2 && (
+            <Badge variant="outline" className="border-border text-[11px] font-normal text-muted-foreground">
+              +{founder.specialties.length - 2}
+            </Badge>
+          )}
+        </div>
+      )}
+    </button>
   );
 };

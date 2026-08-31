@@ -66,10 +66,10 @@ export const DiagnosticGrid: React.FC = () => {
             {relatedCases.map((relatedCase) => (
               <div 
                 key={relatedCase.id}
-                className="p-4 rounded-lg border border-gray-200 hover:border-primary/50 transition-colors"
+                className="p-4 rounded-lg border border-border hover:border-primary/50 transition-colors"
               >
                 <h4 className="font-medium">{relatedCase.title}</h4>
-                <p className="text-sm text-gray-500 mt-2">{relatedCase.description}</p>
+                <p className="text-sm text-muted-foreground mt-2">{relatedCase.description}</p>
               </div>
             ))}
           </div>

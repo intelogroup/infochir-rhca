@@ -185,7 +185,7 @@ const RhcaArticleDetail: React.FC = () => {
               </Button>
             </div>
           ) : article ? (
-            <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="bg-card rounded-lg shadow-md p-6">
               <h1 className="text-2xl font-bold mb-4">{article.title}</h1>
               
               <div className="flex flex-wrap gap-2 mb-6">
@@ -202,40 +202,40 @@ const RhcaArticleDetail: React.FC = () => {
               {article.abstract && (
                 <div className="mb-6">
                   <h2 className="text-lg font-semibold mb-2">Résumé</h2>
-                  <p className="text-gray-700 whitespace-pre-line">{article.abstract}</p>
+                  <p className="text-foreground/80 whitespace-pre-line">{article.abstract}</p>
                 </div>
               )}
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 {article.volume && (
                   <div>
-                    <h3 className="font-medium text-gray-500">Volume</h3>
+                    <h3 className="font-medium text-muted-foreground">Volume</h3>
                     <p>{article.volume}</p>
                   </div>
                 )}
                 {article.issue && (
                   <div>
-                    <h3 className="font-medium text-gray-500">Numéro</h3>
+                    <h3 className="font-medium text-muted-foreground">Numéro</h3>
                     <p>{article.issue}</p>
                   </div>
                 )}
                 {article.publicationDate && (
                   <div>
-                    <h3 className="font-medium text-gray-500">Date de publication</h3>
+                    <h3 className="font-medium text-muted-foreground">Date de publication</h3>
                     <p>{new Date(article.publicationDate).toLocaleDateString('fr-FR')}</p>
                   </div>
                 )}
                 {article.pageNumber && (
                   <div>
-                    <h3 className="font-medium text-gray-500">Pages</h3>
+                    <h3 className="font-medium text-muted-foreground">Pages</h3>
                     <p>{article.pageNumber}</p>
                   </div>
                 )}
               </div>
               
-              <div className="mt-6 pt-4 border-t border-gray-100">
+              <div className="mt-6 pt-4 border-t border-border">
                 <div className="flex justify-between items-center">
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-muted-foreground">
                     <span className="mr-4">{article.views || 0} vue{article.views !== 1 ? 's' : ''}</span>
                     <span>{article.downloads || 0} téléchargement{article.downloads !== 1 ? 's' : ''}</span>
                   </div>

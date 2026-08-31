@@ -102,8 +102,8 @@ export const FileUploadArea = ({
       className={`
         border-2 border-dashed rounded-lg p-6 text-center cursor-pointer
         transition-all duration-200 
-        ${isDragActive ? 'border-secondary bg-secondary/10 shadow-lg' : 'border-gray-300 hover:bg-gray-50'} 
-        ${isUploading ? 'bg-gray-50 cursor-not-allowed' : ''}
+        ${isDragActive ? 'border-secondary bg-secondary/10 shadow-lg' : 'border-border hover:bg-muted'} 
+        ${isUploading ? 'bg-muted cursor-not-allowed' : ''}
       `}
     >
       <input {...getInputProps()} capture={isMobile && type === 'image' ? "environment" : undefined} />

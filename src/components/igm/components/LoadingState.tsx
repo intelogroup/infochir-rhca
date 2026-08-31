@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 export const LoadingState = () => {
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-center p-4 bg-white/50 rounded-xl">
+      <div className="flex items-center justify-center p-4 bg-card/50 rounded-xl">
         <div className="flex items-center gap-3 text-primary">
           <Loader2 className="h-5 w-5 animate-spin" />
           <p className="text-sm font-medium">Chargement des numéros...</p>
@@ -12,8 +12,8 @@ export const LoadingState = () => {
       </div>
       
       {[1, 2].map((i) => (
-        <div key={i} className="space-y-4 bg-white rounded-xl p-6 border border-gray-100">
-          <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+        <div key={i} className="space-y-4 bg-card rounded-xl p-6 border border-border">
+          <div className="flex items-center justify-between border-b border-border pb-4">
             <div className="flex items-center gap-3">
               <Skeleton className="h-10 w-10 rounded-lg" />
               <div className="space-y-2">

@@ -10,7 +10,7 @@ interface IssueModalMetadataProps {
 
 export const IssueModalMetadata = ({ issue }: IssueModalMetadataProps) => {
   return (
-    <div className="flex items-center gap-4 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] text-gray-500 flex-wrap">
+    <div className="flex items-center gap-4 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] text-muted-foreground flex-wrap">
       <div className="flex items-center gap-2">
         <Calendar className="h-4 w-4" />
         {format(new Date(issue.date), 'dd MMMM yyyy', { locale: fr })}

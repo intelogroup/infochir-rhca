@@ -39,7 +39,7 @@ export const AuthorField = ({
               placeholder={placeholder}
               {...field}
               className={cn(
-                "bg-white/50 backdrop-blur-sm",
+                "bg-card/50 backdrop-blur-sm",
                 hasSubmissionAttempt && fieldState.error && "border-destructive ring-destructive focus:ring-destructive"
               )}
             />

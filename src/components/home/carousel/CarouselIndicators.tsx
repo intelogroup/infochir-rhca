@@ -44,7 +44,7 @@ export const CarouselIndicators = ({
       </div>
       
       {/* Pagination text indicator */}
-      <div className="text-sm text-gray-600 mt-2" aria-live="polite">
+      <div className="text-sm text-muted-foreground mt-2" aria-live="polite">
         {currentIndex + 1} of {items.length}
       </div>
     </div>

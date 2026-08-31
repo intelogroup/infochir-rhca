@@ -33,10 +33,10 @@ export const ArticleMetadata: React.FC<ArticleMetadataProps> = ({
     : undefined;
   
   return (
-    <div className="flex flex-wrap items-center text-xs text-gray-500 gap-x-4 gap-y-1">
+    <div className="flex flex-wrap items-center text-xs text-muted-foreground gap-x-4 gap-y-1">
       {authors && authors.length > 0 && (
         <div className="flex items-center gap-1">
-          <User className="h-3 w-3 text-gray-400" />
+          <User className="h-3 w-3 text-muted-foreground" />
           <span className="line-clamp-1">
             {authors.join(', ')}
           </span>
@@ -45,45 +45,45 @@ export const ArticleMetadata: React.FC<ArticleMetadataProps> = ({
       
       {date && (
         <div className="flex items-center gap-1">
-          <Calendar className="h-3 w-3 text-gray-400" />
+          <Calendar className="h-3 w-3 text-muted-foreground" />
           <span>{new Date(date).toLocaleDateString()}</span>
         </div>
       )}
       
       {views !== undefined && (
         <div className="flex items-center gap-1">
-          <Eye className="h-3 w-3 text-gray-400" />
+          <Eye className="h-3 w-3 text-muted-foreground" />
           <span>{views}</span>
         </div>
       )}
       
       {citations !== undefined && (
         <div className="flex items-center gap-1">
-          <FileText className="h-3 w-3 text-gray-400" />
+          <FileText className="h-3 w-3 text-muted-foreground" />
           <span>{citations}</span>
         </div>
       )}
       
       {volume && issue && (
         <div className="flex items-center gap-1">
-          <BookOpen className="h-3 w-3 text-gray-400" />
+          <BookOpen className="h-3 w-3 text-muted-foreground" />
           <span>Vol. {volume}, N° {issue}</span>
         </div>
       )}
       
       {pageNumberString && (
         <div className="flex items-center gap-1">
-          <BookMarked className="h-3 w-3 text-gray-400" />
+          <BookMarked className="h-3 w-3 text-muted-foreground" />
           <span>Page {pageNumberString}</span>
         </div>
       )}
       
       {downloads !== undefined && (
-        <span className="text-gray-500">{downloads} téléchargements</span>
+        <span className="text-muted-foreground">{downloads} téléchargements</span>
       )}
       
       {shares !== undefined && (
-        <span className="text-gray-500">{shares} partages</span>
+        <span className="text-muted-foreground">{shares} partages</span>
       )}
     </div>
   );

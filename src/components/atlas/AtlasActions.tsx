@@ -73,7 +73,7 @@ export const AtlasActions: React.FC<AtlasActionsProps> = ({
       <Button
         variant="outline"
         size="sm"
-        className="gap-2 bg-white hover:bg-gray-50"
+        className="gap-2 bg-card hover:bg-muted"
         onClick={handleShare}
         disabled={isSharing}
       >
@@ -83,7 +83,7 @@ export const AtlasActions: React.FC<AtlasActionsProps> = ({
       <Button
         variant="outline"
         size="sm"
-        className="gap-2 bg-white hover:bg-gray-50"
+        className="gap-2 bg-card hover:bg-muted"
         onClick={handleDownload}
         disabled={isDownloading || !pdfUrl}
       >

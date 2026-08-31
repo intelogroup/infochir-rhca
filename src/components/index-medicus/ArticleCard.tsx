@@ -43,7 +43,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick, s
         transition={{ duration: 0.2 }}
       >
         <Card 
-          className="hover:shadow-lg transition-shadow overflow-hidden group rounded-xl cursor-pointer bg-white border-gray-100"
+          className="hover:shadow-lg transition-shadow overflow-hidden group rounded-xl cursor-pointer bg-card border-border"
           onClick={handleCardClick}
         >
           <div className="flex flex-col md:flex-row">
@@ -58,7 +58,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick, s
                 />
               </div>
             ) : (
-              <div className="md:w-48 h-48 md:h-auto bg-gradient-to-br from-primary/5 to-secondary/5 flex items-center justify-center">
+              <div className="md:w-48 h-48 md:h-auto bg-muted flex items-center justify-center">
                 <User className="h-12 w-12 text-primary/20" />
               </div>
             )}
@@ -66,7 +66,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick, s
               <CardHeader>
                 <div className="flex justify-between items-start gap-4">
                   <div>
-                    <CardTitle className="text-xl mb-2 text-gray-900 group-hover:text-primary transition-colors line-clamp-2">
+                    <CardTitle className="text-xl mb-2 text-foreground group-hover:text-primary transition-colors line-clamp-2">
                       {article.title}
                     </CardTitle>
                     <ArticleMetadata 
@@ -89,7 +89,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onTagClick, s
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600 mb-4 line-clamp-2">
+                <p className="text-muted-foreground mb-4 line-clamp-2">
                   {article.abstract}
                 </p>
                 <div className="mb-4">

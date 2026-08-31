@@ -113,7 +113,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   }, [isLoading]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#f8fafc] to-white">
+    <div className="min-h-screen bg-background">
       <div ref={navbarRef}>
         <Navbar />
       </div>

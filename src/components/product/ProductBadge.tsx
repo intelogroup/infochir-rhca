@@ -35,7 +35,7 @@ export const ProductBadge = () => {
       {/* Badge text with proper padding */}
       <Badge 
         variant="secondary" 
-        className="bg-white text-primary group-hover:bg-primary group-hover:text-white transition-colors flex items-center gap-1 px-2 py-0.5 text-[10px] rounded-full shadow-sm"
+        className="bg-card text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors flex items-center gap-1 px-2 py-0.5 text-[10px] rounded-full shadow-sm"
       >
         <span className="whitespace-nowrap">Mise à jour</span>
         <Bell 
