@@ -163,7 +163,7 @@ export const HeroSection = () => {
           
           {/* Current hero image */}
           <motion.div 
-            className="absolute bottom-0 right-0 hidden md:block w-[46%] h-[92%] z-2"
+            className="absolute bottom-0 right-0 hidden md:block w-[40%] h-[92%] z-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -174,7 +174,7 @@ export const HeroSection = () => {
               backgroundPosition: 'right bottom',
               backgroundRepeat: 'no-repeat',
               opacity: 0.85,
-              right: '2%',
+              right: '1%',
               willChange: 'opacity',
               transform: 'translateZ(0)', // Force hardware acceleration
             }}
@@ -184,8 +184,8 @@ export const HeroSection = () => {
       
       
       {/* Content section */}
-      <div className="relative max-w-7xl mx-auto text-left z-10 pb-16 sm:pb-20">
-        <div className="max-w-xl lg:max-w-3xl">
+      <div className="relative max-w-7xl mx-auto text-left z-10 pb-16 sm:pb-20 pr-12 md:pr-24">
+        <div className="max-w-xl">
           <p className="type-eyebrow text-secondary-foreground/60 mb-4">Info Chir · Haïti</p>
           <div className="rule-gold mb-6" />
           <h1 className="type-display text-secondary-foreground mb-5 sm:mb-6 animate-fade-up">
