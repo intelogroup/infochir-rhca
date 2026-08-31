@@ -94,8 +94,10 @@ export const IssueCard: React.FC<IssueCardProps> = ({ issue }) => {
             <IssueCardContent issue={issue} />
 
             <div className="mt-auto flex items-center justify-between gap-2 border-t border-border pt-2">
-              <span className="text-xs text-muted-foreground">
-                {getTotalPages === "- Pages" ? "" : getTotalPages.replace("Pages", "pages")}
+              <span className="shrink-0 whitespace-nowrap text-xs text-muted-foreground">
+                {getTotalPages === "- Pages" || getTotalPages === "1 Pages"
+                  ? ""
+                  : getTotalPages.replace("Pages", "pages")}
               </span>
               <IssueCardActions pdfUrl={issue.pdfUrl} id={issue.id} title={issue.title} />
             </div>

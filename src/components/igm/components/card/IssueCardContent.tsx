@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { Issue } from "../../types";
+import { formatIssueTitle } from "@/lib/format/issue-title";
 
 interface IssueCardContentProps {
   issue: Issue;
@@ -28,7 +29,7 @@ export const IssueCardContent = ({ issue }: IssueCardContentProps) => {
       </p>
 
       <h3 className="mt-1.5 font-serif text-base leading-snug text-foreground line-clamp-2">
-        {issue.title || "Sans titre"}
+        {formatIssueTitle(issue.title)}
       </h3>
 
       {formattedDate && (

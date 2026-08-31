@@ -1,6 +1,7 @@
 import React from 'react';
 import { CardActions } from "./CardActions";
 import type { RhcaArticle } from "../types";
+import { formatIssueTitle } from "@/lib/format/issue-title";
 
 interface CardContentProps {
   article: RhcaArticle;
@@ -45,7 +46,7 @@ export const CardContent: React.FC<CardContentProps> = ({ article, pdfUrl }) => 
       )}
 
       <h3 className="mt-1.5 font-serif text-base leading-snug text-foreground line-clamp-2">
-        {article.title}
+        {formatIssueTitle(article.title)}
       </h3>
 
       {formattedDate && (
@@ -59,8 +60,8 @@ export const CardContent: React.FC<CardContentProps> = ({ article, pdfUrl }) => 
       )}
 
       <div className="mt-auto flex items-center justify-between gap-2 border-t border-border pt-2">
-        <span className="text-xs text-muted-foreground">
-          {totalPages ? `${totalPages} pages` : ''}
+        <span className="shrink-0 whitespace-nowrap text-xs text-muted-foreground">
+          {totalPages && totalPages > 1 ? `${totalPages} pages` : ''}
         </span>
         <CardActions article={article} pdfUrl={pdfUrl} />
       </div>
