@@ -125,6 +125,14 @@ export const AtlasCard = ({ chapter }: AtlasCardProps) => {
         
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         
+        {(chapter.status === 'coming' || chapter.status === 'coming-soon' || chapter.status === 'unavailable') && (
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+            <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 text-sm px-3 py-1">
+              Bientôt disponible
+            </Badge>
+          </div>
+        )}
+        
         {chapter.category && (
           <Badge 
             variant="secondary" 
