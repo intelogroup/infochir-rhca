@@ -23,8 +23,8 @@ export const NavbarLogo = () => {
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
       />
-      <span className="bg-gradient-to-r from-primary via-primary-light to-secondary bg-clip-text text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-transparent whitespace-nowrap transition-all duration-300">
-        INFOCHIR/RHCA
+      <span className="font-serif text-base sm:text-lg md:text-xl lg:text-[1.375rem] font-bold tracking-[-0.01em] text-foreground whitespace-nowrap">
+        INFOCHIR<span className="text-primary">/</span>RHCA
       </span>
     </button>
   );
