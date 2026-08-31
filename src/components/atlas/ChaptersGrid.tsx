@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { AtlasCard } from './AtlasCard';
+import type { AtlasChapter } from './types';
 import { useAtlasArticles } from './hooks/useAtlasArticles';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { AlertTriangle, Grid2X2, List } from 'lucide-react';
