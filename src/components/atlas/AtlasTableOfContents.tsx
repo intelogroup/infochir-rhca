@@ -27,12 +27,16 @@ export const AtlasTableOfContents = () => {
     );
   }
 
-  // Sort chapters by issue/chapter number
-  const sortedChapters = [...chapters].sort((a, b) => {
-    const aNum = a.chapterNumber || parseInt(a.pageNumber || '999', 10) || 999;
-    const bNum = b.chapterNumber || parseInt(b.pageNumber || '999', 10) || 999;
-    return aNum - bNum;
-  });
+  // Sort chapters: Introduction first, then by chapter/issue number
+  const getOrder = (chapter: AtlasChapter) => {
+    if (chapter.title?.toLowerCase().includes('introduction')) return 0;
+    const fromIssue = chapter.issue ? parseInt(chapter.issue, 10) : NaN;
+    if (!isNaN(fromIssue)) return fromIssue;
+    if (chapter.chapterNumber) return chapter.chapterNumber;
+    const fromPage = parseInt(chapter.pageNumber || '', 10);
+    return isNaN(fromPage) ? 999 : fromPage;
+  };
+  const sortedChapters = [...chapters].sort((a, b) => getOrder(a) - getOrder(b));
 
   const getStatusIcon = (status?: string) => {
     switch (status) {
@@ -77,7 +81,7 @@ export const AtlasTableOfContents = () => {
           <h4 className="text-sm font-medium text-blue-900">Atlas des Décisions Cliniques</h4>
         </div>
         <p className="text-xs text-blue-700">
-          {chapters.length} chapitre{chapters.length > 1 ? 's' : ''} disponible{chapters.length > 1 ? 's' : ''}
+          {chapters.length} chapitre{chapters.length > 1 ? 's' : ''} au total · {chapters.filter(c => c.status === 'available').length} disponible{chapters.filter(c => c.status === 'available').length > 1 ? 's' : ''}
         </p>
       </div>
 
