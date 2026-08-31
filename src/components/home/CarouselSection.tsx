@@ -24,13 +24,11 @@ export const CarouselSection = () => {
   return (
     <section 
       ref={sectionRef}
-      className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
+      className="section border-t border-border bg-muted/30 px-4 sm:px-6 lg:px-8 relative"
       aria-labelledby="carousel-section-title"
     >
-      
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
-      
       <div className="max-w-7xl mx-auto relative">
+
         <CarouselHeader />
         <CarouselContentSection data={displayData} sectionRef={sectionRef} />
       </div>

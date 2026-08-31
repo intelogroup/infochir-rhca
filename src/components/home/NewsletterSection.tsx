@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { SectionHeading } from "./SectionHeading";
 import { supabase } from "@/integrations/supabase/client";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
@@ -119,9 +120,8 @@ export const NewsletterSection = () => {
   };
 
   return (
-    <section className="relative py-24 overflow-hidden">
+    <section className="section relative overflow-hidden">
       <div className="absolute inset-0 bg-secondary" />
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
       
       <motion.div 
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative"
@@ -129,29 +129,22 @@ export const NewsletterSection = () => {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <div className="text-center mb-16">
-          <h2 className="type-h1 mb-4 text-secondary-foreground">
-            Contactez-nous
-          </h2>
-          
-          <p className="text-lg text-secondary-foreground/80 mb-4 max-w-2xl mx-auto">
-            Envoyez-nous un message pour toute question, suggestion ou collaboration
-          </p>
-        </div>
+        <SectionHeading
+          tone="inverted"
+          align="center"
+          eyebrow="Écrire à la rédaction"
+          title="Une question, un manuscrit, une correction ?"
+          description="La rédaction répond aux auteurs, lecteurs et institutions. Réponse sous quelques jours ouvrables."
+        />
         
         <div className="max-w-2xl mx-auto">
-          <div className="flex flex-col items-center text-center mb-8">
-            <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 shadow-lg">
-              <Mail className="h-8 w-8 text-secondary-foreground" />
-            </div>
-            
-            <h3 className="font-serif text-2xl mb-2 text-secondary-foreground">
-              Envoyez-nous un message
-            </h3>
+          <div className="mb-6 flex items-center gap-3">
+            <Mail className="h-5 w-5 text-secondary-foreground/70" aria-hidden="true" />
+            <span className="type-eyebrow text-secondary-foreground/60">Formulaire de contact</span>
           </div>
           
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 backdrop-blur-sm bg-white/5 p-8 rounded-2xl border border-white/10 shadow-xl">
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 rounded-lg border border-secondary-foreground/15 bg-secondary-foreground/[0.04] p-6 sm:p-8">
               {/* Anti-spam honeypot: hidden from humans, filled by bots */}
               <div aria-hidden="true" className="absolute left-[-9999px] h-0 w-0 overflow-hidden">
                 <label htmlFor="contact-website">Website</label>
@@ -179,12 +172,12 @@ export const NewsletterSection = () => {
                         <Input
                           {...field}
                           placeholder="Votre nom"
-                          className="bg-white/10 border-white/20 text-white placeholder:text-secondary-foreground/60 focus:bg-white/20"
+                          className="bg-transparent border-secondary-foreground/25 text-secondary-foreground placeholder:text-secondary-foreground/40 rounded-md"
                           disabled={isSubmitting}
                           autoComplete="name"
                         />
                       </FormControl>
-                      <FormMessage className="text-red-200" />
+                      <FormMessage className="text-destructive-foreground" />
                     </FormItem>
                   )}
                 />
@@ -201,12 +194,12 @@ export const NewsletterSection = () => {
                         <Input
                           {...field}
                           placeholder="Votre numéro"
-                          className="bg-white/10 border-white/20 text-white placeholder:text-secondary-foreground/60 focus:bg-white/20"
+                          className="bg-transparent border-secondary-foreground/25 text-secondary-foreground placeholder:text-secondary-foreground/40 rounded-md"
                           disabled={isSubmitting}
                           autoComplete="tel"
                         />
                       </FormControl>
-                      <FormMessage className="text-red-200" />
+                      <FormMessage className="text-destructive-foreground" />
                     </FormItem>
                   )}
                 />
@@ -225,12 +218,12 @@ export const NewsletterSection = () => {
                         {...field}
                         type="email"
                         placeholder="Votre adresse email"
-                        className="bg-white/10 border-white/20 text-white placeholder:text-secondary-foreground/60 focus:bg-white/20"
+                        className="bg-transparent border-secondary-foreground/25 text-secondary-foreground placeholder:text-secondary-foreground/40 rounded-md"
                         disabled={isSubmitting}
                         autoComplete="email"
                       />
                     </FormControl>
-                    <FormMessage className="text-red-200" />
+                    <FormMessage className="text-destructive-foreground" />
                   </FormItem>
                 )}
               />
@@ -247,33 +240,30 @@ export const NewsletterSection = () => {
                       <Textarea
                         {...field}
                         placeholder="Votre message"
-                        className="bg-white/10 border-white/20 text-white placeholder:text-secondary-foreground/60 focus:bg-white/20 min-h-[120px]"
+                        className="bg-transparent border-secondary-foreground/25 text-secondary-foreground placeholder:text-secondary-foreground/40 rounded-md min-h-[120px]"
                         disabled={isSubmitting}
                       />
                     </FormControl>
-                    <FormMessage className="text-red-200" />
+                    <FormMessage className="text-destructive-foreground" />
                   </FormItem>
                 )}
               />
 
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="pt-4"
-              >
-                <Button 
-                  variant="secondary" 
-                  type="submit" 
-                  className="w-full bg-white text-primary hover:bg-white/90 transition-all duration-300 py-6 text-lg font-medium shadow-lg"
+              <div className="pt-4">
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="w-full rounded-md bg-primary text-primary-foreground hover:bg-primary-light"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Envoi en cours..." : "Envoyer"}
+                  {isSubmitting ? "Envoi en cours…" : "Envoyer le message"}
                 </Button>
-              </motion.div>
-              
-              <p className="text-secondary-foreground/60 text-sm text-center mt-4">
-                * Champs obligatoires
+              </div>
+
+              <p className="mt-4 text-sm text-secondary-foreground/50">
+                * Champs obligatoires. Vos coordonnées ne servent qu'à vous répondre.
               </p>
+
             </form>
           </Form>
         </div>

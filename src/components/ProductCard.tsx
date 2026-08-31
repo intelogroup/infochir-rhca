@@ -16,10 +16,10 @@ interface ProductCardProps {
 }
 
 const DEFAULT_FEATURES: Record<string, string[]> = {
-  RHCA: ["Publication d'articles", "Diffusion des connaissances", "Communauté médicale"],
-  IGM: ["Actualités médicales", "Tendances cliniques", "Perspective unique sur la médecine"],
-  "Atlas ADC": ["Documentation illustrée", "Guide de diagnostic", "Accessible en ligne 24/7"],
-  "Index Medicus": ["Repérer par auteur", "Repérer par titre", "Base de données scientifique"],
+  RHCA: ["Comité de lecture", "Articles originaux", "Archives complètes"],
+  IGM: ["Actualités du milieu", "Éditoriaux", "Parution régulière"],
+  "Atlas ADC": ["24 chapitres", "Iconographie clinique", "Consultable en ligne"],
+  "Index Medicus": ["Par auteur", "Par titre et thème", "Références haïtiennes"],
 };
 
 const FULL_NAMES: Record<string, string> = {

@@ -147,20 +147,20 @@ const Home = () => {
         <HeroSection />
       </ErrorBoundary>
       
-      <ErrorBoundary name="home-products">
-        <ProductsSection />
-      </ErrorBoundary>
-      
       <ErrorBoundary name="home-carousel">
         <CarouselSection />
       </ErrorBoundary>
-      
-      <ErrorBoundary name="home-sponsors">
-        <SponsorsSection />
+
+      <ErrorBoundary name="home-products">
+        <ProductsSection />
       </ErrorBoundary>
-      
+
       <ErrorBoundary name="home-stats">
         <StatsSection />
+      </ErrorBoundary>
+
+      <ErrorBoundary name="home-sponsors">
+        <SponsorsSection />
       </ErrorBoundary>
       
       <ErrorBoundary name="home-newsletter">
