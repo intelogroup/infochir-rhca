@@ -6,11 +6,7 @@ import { SectionHeading } from "./SectionHeading";
 export const ProductsSection = () => (
   <section className="section border-t border-border bg-background px-4 sm:px-6 lg:px-8">
     <div className="max-w-7xl mx-auto">
-      <SectionHeading
-        eyebrow="Collections"
-        title="Quatre publications, un seul point d'accès"
-        description="Chaque collection est archivée intégralement : consultez en ligne, téléchargez le PDF, citez la référence."
-      />
+      <SectionHeading title="Accédez aux différentes revues d'INFOCHIR/RHCA" />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 auto-rows-fr">
         {products.map((product, index) => (
