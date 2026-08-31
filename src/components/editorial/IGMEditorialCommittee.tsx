@@ -13,7 +13,6 @@ export const IGMEditorialCommittee = () => {
       className="space-y-8"
     >
       <Card className="overflow-hidden bg-card shadow-md hover:shadow-lg transition-all duration-300 p-8 relative">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gold"></div>
         
         <div className="flex items-center gap-3 mb-8">
           <Award className="h-8 w-8 text-primary flex-shrink-0" />
