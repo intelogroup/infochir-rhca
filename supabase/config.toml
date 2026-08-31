@@ -22,3 +22,6 @@ verify_jwt = false
 
 
 
+
+[functions.ingest-atlas-chapter]
+verify_jwt = false
