@@ -86,7 +86,7 @@ export const SearchBar = ({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-3 sm:p-4 md:p-6 border border-gray-100">
+    <div className="bg-card rounded-xl shadow-sm p-3 sm:p-4 md:p-6 border border-border">
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="search-filters" className="border-none">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">

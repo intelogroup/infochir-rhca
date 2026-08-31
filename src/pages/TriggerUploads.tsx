@@ -115,7 +115,7 @@ const TriggerUploads = () => {
                   }`}>
                     <div className={`p-3 border-b ${
                       result.status === 'success' ? 'bg-green-50' :
-                      result.status === 'skipped' ? 'bg-blue-50' :
+                      result.status === 'skipped' ? 'bg-muted' :
                       'bg-red-50'
                     }`}>
                       <p className="font-medium truncate" title={result.destination}>
@@ -123,14 +123,14 @@ const TriggerUploads = () => {
                       </p>
                     </div>
                     <div className="p-3 space-y-1">
-                      <p className="text-sm text-gray-700">
+                      <p className="text-sm text-foreground/80">
                         <span className="font-medium">Source:</span> {result.source.split('/').pop()}
                       </p>
-                      <p className="text-sm text-gray-700">
+                      <p className="text-sm text-foreground/80">
                         <span className="font-medium">Status:</span>{' '}
                         <span className={
                           result.status === 'success' ? 'text-green-600' :
-                          result.status === 'skipped' ? 'text-blue-600' :
+                          result.status === 'skipped' ? 'text-primary' :
                           'text-red-600'
                         }>
                           {result.status === 'success' ? 'Succès' :
@@ -138,7 +138,7 @@ const TriggerUploads = () => {
                            'Erreur'}
                         </span>
                       </p>
-                      <p className="text-sm text-gray-700">
+                      <p className="text-sm text-foreground/80">
                         <span className="font-medium">Message:</span> {result.message}
                       </p>
                     </div>

@@ -19,17 +19,17 @@ export const ArticleContent: React.FC<ArticleContentProps> = ({ article }) => {
         <div className="text-sm font-medium text-emerald-600/80 mt-1">
           {article.volume ? `Volume ${article.volume}` : 'Volume -'} • {article.issue ? `No. ${article.issue}` : 'No. -'}
         </div>
-        <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
           <Calendar className="h-4 w-4 flex-shrink-0" />
           <span className="truncate">
             {format(new Date(article.date), 'dd MMMM yyyy', { locale: fr })}
           </span>
         </div>
       </div>
-      <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+      <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
         {article.abstract}
       </p>
-      <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
+      <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
         <span className="bg-emerald-50 px-3 py-1 rounded-full font-medium text-emerald-600">
           {article.specialty}
         </span>

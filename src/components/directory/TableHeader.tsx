@@ -22,13 +22,13 @@ export const TableHeader = ({ sortField, sortDirection, onSort }: TableHeaderPro
     <ArrowUpDown 
       className={cn(
         "h-4 w-4 transition-colors",
-        sortField === field ? "text-primary" : "text-gray-400"
+        sortField === field ? "text-primary" : "text-muted-foreground"
       )}
     />
   );
 
   return (
-    <TableRow className="border-b border-gray-200 bg-gray-50/80">
+    <TableRow className="border-b border-border bg-muted/80">
       <TableHead 
         onClick={() => onSort('id')}
         className={cn("w-20", headerClasses('id'))}

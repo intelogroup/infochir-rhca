@@ -29,10 +29,10 @@ export const ArticleTableRow: React.FC<ArticleTableRowProps> = ({
   };
 
   return (
-    <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors h-12">
+    <tr className="border-b border-border hover:bg-muted transition-colors h-12">
       <td className="py-1 px-3">
         <div className="space-y-1">
-          <h3 className="font-medium text-gray-900 text-sm leading-tight line-clamp-2">
+          <h3 className="font-medium text-foreground text-sm leading-tight line-clamp-2">
             {article.title}
           </h3>
           {article.tags && article.tags.length > 0 && (
@@ -46,10 +46,10 @@ export const ArticleTableRow: React.FC<ArticleTableRowProps> = ({
       </td>
       
       <td className="py-1 px-3 hidden md:table-cell">
-        <div className="text-sm text-gray-600 line-clamp-2">
+        <div className="text-sm text-muted-foreground line-clamp-2">
           {getFirstAuthor()}
           {article.authors && article.authors.length > 1 && (
-            <span className="text-gray-400 ml-1">
+            <span className="text-muted-foreground ml-1">
               +{article.authors.length - 1}
             </span>
           )}
@@ -62,7 +62,7 @@ export const ArticleTableRow: React.FC<ArticleTableRowProps> = ({
         </span>
       </td>
       
-      <td className="py-1 px-3 text-sm text-gray-500 hidden xl:table-cell">
+      <td className="py-1 px-3 text-sm text-muted-foreground hidden xl:table-cell">
         {formatDate(article.publicationDate || article.date || '')}
       </td>
       

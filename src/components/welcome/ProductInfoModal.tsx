@@ -65,12 +65,12 @@ export const ProductInfoModal = () => {
           <DialogTitle className="text-lg sm:text-xl text-center font-bold text-primary">
             Bienvenue sur Infochir-RHCA
           </DialogTitle>
-          <DialogDescription className="text-center text-gray-600">
+          <DialogDescription className="text-center text-muted-foreground">
             Votre Espace Scientifique En Ligne
           </DialogDescription>
         </DialogHeader>
         
-        <div className="mt-4 space-y-4 text-gray-700 text-sm sm:text-base">
+        <div className="mt-4 space-y-4 text-foreground/80 text-sm sm:text-base">
           <p className="leading-relaxed">
             Chères visiteuses, chers visiteurs, INFOCHIR/RHCA vous salue très cordialement et vous annonce le changement de présentation de notre site web.
           </p>

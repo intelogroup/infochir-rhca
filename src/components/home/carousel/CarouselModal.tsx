@@ -89,7 +89,7 @@ export const CarouselModal = ({
         aria-describedby="modal-description"
       >
         {/* Header with close button */}
-        <DialogHeader className="px-4 py-3 border-b sticky top-0 bg-white z-10 flex flex-row items-center justify-between">
+        <DialogHeader className="px-4 py-3 border-b sticky top-0 bg-card z-10 flex flex-row items-center justify-between">
           <DialogTitle className="text-xl font-bold text-primary truncate pr-2" id="modal-title">
             {item.title}
           </DialogTitle>
@@ -115,17 +115,17 @@ export const CarouselModal = ({
                   {item.category}
                 </span>
               )}
-              {item.date && <span className="text-gray-500 text-sm">{item.date}</span>}
+              {item.date && <span className="text-muted-foreground text-sm">{item.date}</span>}
             </div>
             
             {item.author && (
-              <div className="mt-1 mb-3 text-sm text-gray-600 font-medium">
+              <div className="mt-1 mb-3 text-sm text-muted-foreground font-medium">
                 Par {item.author}
               </div>
             )}
             
             {/* Featured image */}
-            <div className="relative rounded-lg overflow-hidden aspect-video mb-4 bg-gray-100">
+            <div className="relative rounded-lg overflow-hidden aspect-video mb-4 bg-muted">
               <ImageOptimizer
                 src={item.image}
                 alt={item.title}
@@ -139,8 +139,8 @@ export const CarouselModal = ({
             {/* Article abstract */}
             {item.abstract && (
               <div className="prose prose-sm max-w-none mb-4">
-                <h4 className="font-semibold mb-2 text-gray-800">Résumé</h4>
-                <p className="text-gray-700 whitespace-pre-line leading-relaxed">
+                <h4 className="font-semibold mb-2 text-foreground">Résumé</h4>
+                <p className="text-foreground/80 whitespace-pre-line leading-relaxed">
                   {item.abstract}
                 </p>
               </div>
@@ -149,7 +149,7 @@ export const CarouselModal = ({
             {/* Fallback to description if no abstract */}
             {!item.abstract && item.description && (
               <div className="prose prose-sm max-w-none mb-4">
-                <p className="text-gray-700 whitespace-pre-line">
+                <p className="text-foreground/80 whitespace-pre-line">
                   {item.description}
                 </p>
               </div>
@@ -158,7 +158,7 @@ export const CarouselModal = ({
         </ScrollArea>
         
         {/* Footer with navigation and article link */}
-        <DialogFooter className="p-4 border-t bg-gray-50 flex justify-between items-center flex-wrap gap-2">
+        <DialogFooter className="p-4 border-t bg-muted flex justify-between items-center flex-wrap gap-2">
           {/* Navigation buttons */}
           <div className="flex space-x-2">
             {hasPrevious && onPrevious && (

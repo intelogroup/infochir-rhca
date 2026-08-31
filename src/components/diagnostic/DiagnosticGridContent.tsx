@@ -16,7 +16,7 @@ export const DiagnosticGridContent = ({
   if (filteredCases.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Aucun cas trouvé</p>
+        <p className="text-muted-foreground">Aucun cas trouvé</p>
       </div>
     );
   }

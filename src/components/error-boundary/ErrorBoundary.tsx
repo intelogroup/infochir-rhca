@@ -88,7 +88,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
             </Button>
           </div>
           {isDebugMode() && error.stack && (
-            <div className="mt-4 p-2 bg-gray-100 rounded text-xs font-mono overflow-auto">
+            <div className="mt-4 p-2 bg-muted rounded text-xs font-mono overflow-auto">
               <pre>{error.stack}</pre>
             </div>
           )}

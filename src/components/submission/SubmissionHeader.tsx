@@ -1,21 +1,19 @@
 import { motion } from "framer-motion";
-import { FileText } from "lucide-react";
+
 export const SubmissionHeader = () => {
-  return <div className="text-center mb-12">
-      <motion.div initial={{
-      opacity: 0,
-      y: 20
-    }} animate={{
-      opacity: 1,
-      y: 0
-    }} className="space-y-4">
-        <div className="mx-auto w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center">
-          <FileText className="w-8 h-8 text-white" />
-        </div>
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          Soumettre un Article
-        </h1>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">Veuillez remplir ce formulaire pour soumettre votre article à la RHCA, L'ATLAS ou à l'IGM</p>
-      </motion.div>
-    </div>;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="mb-12 space-y-4"
+    >
+      <p className="type-eyebrow">Soumission</p>
+      <h1 className="type-display text-foreground">Soumettre un article</h1>
+      <div className="rule-gold" />
+      <p className="type-lead max-w-2xl">
+        Veuillez remplir ce formulaire pour soumettre votre article à la RHCA, à l'Atlas ou à l'IGM.
+      </p>
+    </motion.div>
+  );
 };

@@ -41,9 +41,9 @@ export const RHCAFileStatus: React.FC<RHCAFileStatusProps> = ({
       {pdfFilesList.length > 0 && (
         <div className="mt-3">
           <strong className="text-sm">Fichiers PDF disponibles:</strong>
-          <div className="text-xs mt-1 bg-gray-50 p-2 rounded max-h-24 overflow-y-auto">
+          <div className="text-xs mt-1 bg-muted p-2 rounded max-h-24 overflow-y-auto">
             {pdfFilesList.map(file => (
-              <div key={file} className="mb-1 pb-1 border-b border-gray-100 last:border-0">
+              <div key={file} className="mb-1 pb-1 border-b border-border last:border-0">
                 {file}
               </div>
             ))}
@@ -54,9 +54,9 @@ export const RHCAFileStatus: React.FC<RHCAFileStatusProps> = ({
       {coverFilesList.length > 0 && (
         <div className="mt-3">
           <strong className="text-sm">Images de couverture disponibles:</strong>
-          <div className="text-xs mt-1 bg-gray-50 p-2 rounded max-h-24 overflow-y-auto">
+          <div className="text-xs mt-1 bg-muted p-2 rounded max-h-24 overflow-y-auto">
             {coverFilesList.map(file => (
-              <div key={file} className="mb-1 pb-1 border-b border-gray-100 last:border-0">
+              <div key={file} className="mb-1 pb-1 border-b border-border last:border-0">
                 {file}
               </div>
             ))}

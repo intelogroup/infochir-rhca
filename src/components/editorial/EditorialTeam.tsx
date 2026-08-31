@@ -1,64 +1,51 @@
-
 import { motion } from "framer-motion";
-import { Users, Star, Award } from "lucide-react";
 import { unifiedEditorialData, unifiedEditorInChief } from "./unifiedEditorialData";
 
 export const EditorialTeam = () => (
-  <div className="space-y-12">
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 0.2 }}
-      className="bg-white rounded-xl p-8 shadow-md border border-gray-100 hover:shadow-lg transition-shadow relative overflow-hidden"
+  <div className="space-y-14">
+    <motion.section
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      viewport={{ once: true }}
+      className="space-y-4"
     >
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-secondary to-primary"></div>
-      <div className="flex items-center gap-3 mb-6">
-        <Award className="h-8 w-8 text-primary flex-shrink-0" />
-        <h2 className="text-2xl font-bold text-primary">Éditeur en chef</h2>
-      </div>
-      <div className="pl-11">
-        <p className="text-xl font-medium text-gray-800">
-          {unifiedEditorInChief.name}
-          <span className="text-gray-500 ml-2 text-base italic font-normal">
+      <p className="type-eyebrow">Éditeur en chef</p>
+      <div className="h-px w-full bg-border" />
+      <p className="type-h3 text-foreground">
+        {unifiedEditorInChief.name}
+        {unifiedEditorInChief.role && (
+          <span className="ml-2 text-sm font-normal text-muted-foreground">
             {unifiedEditorInChief.role}
           </span>
-        </p>
-      </div>
-    </motion.div>
+        )}
+      </p>
+    </motion.section>
 
     {unifiedEditorialData.map((section, index) => (
-      <motion.div
+      <motion.section
         key={section.title}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 * index }}
-        className="bg-white rounded-xl p-8 shadow-md border border-gray-100 hover:shadow-lg transition-shadow relative overflow-hidden"
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.05 * index }}
+        viewport={{ once: true }}
+        className="space-y-4"
       >
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-secondary to-primary"></div>
-        <div className="flex items-center gap-3 mb-6">
-          {section.title === "Conception et réalisation" ? (
-            <Star className="h-7 w-7 text-primary flex-shrink-0" />
-          ) : (
-            <Users className="h-7 w-7 text-primary flex-shrink-0" />
-          )}
-          <h2 className="text-xl font-bold text-primary">{section.title}</h2>
-        </div>
-
-        <div className="space-y-4 pl-11">
+        <p className="type-eyebrow">{section.title}</p>
+        <div className="h-px w-full bg-border" />
+        <ul className="grid gap-x-10 gap-y-3 sm:grid-cols-2">
           {section.members.map((member) => (
-            <div key={member.id} className="flex flex-col">
-              <p className={`${member.isCoordinator ? "font-medium text-gray-800" : "text-gray-700"}`}>
+            <li key={member.id} className="text-sm leading-relaxed">
+              <span className={member.isCoordinator ? "font-medium text-foreground" : "text-foreground/85"}>
                 {member.name}
-                {member.role && (
-                  <span className={`ml-2 italic ${member.isCoordinator ? "text-primary/70" : "text-gray-500"}`}>
-                    {member.role}
-                  </span>
-                )}
-              </p>
-            </div>
+              </span>
+              {member.role && (
+                <span className="ml-2 text-muted-foreground">{member.role}</span>
+              )}
+            </li>
           ))}
-        </div>
-      </motion.div>
+        </ul>
+      </motion.section>
     ))}
   </div>
 );

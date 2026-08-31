@@ -18,7 +18,7 @@ export const PullToRefreshIndicator: React.FC<PullToRefreshIndicatorProps> = ({
       data-pull-indicator
       className={`
         fixed top-0 left-1/2 transform -translate-x-1/2 z-50
-        bg-primary text-white px-4 py-2 rounded-b-lg shadow-lg
+        bg-primary text-primary-foreground px-4 py-2 rounded-b-lg shadow-lg
         transition-all duration-300 ease-out
         ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full'}
       `}

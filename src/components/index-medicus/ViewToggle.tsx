@@ -22,14 +22,14 @@ export const ViewToggle: React.FC<ViewToggleProps> = ({ viewMode, toggleViewMode
             ? "Switch to list view" 
             : "Switch to grid view"
       }
-      className="h-9 px-2.5 py-1.5 border-gray-200 hover:bg-gray-50 transition-colors"
+      className="h-9 px-2.5 py-1.5 border-border hover:bg-muted transition-colors"
     >
       {viewMode === "grid" ? (
-        <TableIcon className="h-4 w-4 text-gray-600" />
+        <TableIcon className="h-4 w-4 text-muted-foreground" />
       ) : viewMode === "table" ? (
-        <List className="h-4 w-4 text-gray-600" />
+        <List className="h-4 w-4 text-muted-foreground" />
       ) : (
-        <Grid2X2 className="h-4 w-4 text-gray-600" />
+        <Grid2X2 className="h-4 w-4 text-muted-foreground" />
       )}
     </Button>
   );

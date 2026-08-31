@@ -62,7 +62,7 @@ export const DocumentModal = <T extends DocumentMetadata>({
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="w-[95vw] max-w-4xl h-[95vh] max-h-[95vh] p-0 overflow-hidden bg-white/95 backdrop-blur-sm flex flex-col">
+      <DialogContent className="w-[95vw] max-w-4xl h-[95vh] max-h-[95vh] p-0 overflow-hidden bg-card/95 backdrop-blur-sm flex flex-col">
         {renderHeader ? (
           renderHeader(document)
         ) : (
@@ -73,7 +73,7 @@ export const DocumentModal = <T extends DocumentMetadata>({
               </DialogTitle>
             </div>
             {document.description && (
-              <DialogDescription className="text-sm sm:text-base text-gray-600 mt-2 break-words">
+              <DialogDescription className="text-sm sm:text-base text-muted-foreground mt-2 break-words">
                 {document.description}
               </DialogDescription>
             )}
@@ -88,7 +88,7 @@ export const DocumentModal = <T extends DocumentMetadata>({
             transition={{ delay: 0.2 }}
           >
             <div className="flex items-center justify-between flex-wrap gap-4">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
                   {format(new Date(document.date), 'dd MMMM yyyy', { locale: fr })}

@@ -112,7 +112,7 @@ export const RHCAAdminPanel: React.FC<RHCAAdminPanelProps> = ({ isAdmin, isDebug
   }
 
   return (
-    <div className="mb-8 p-6 bg-white shadow-sm rounded-lg border border-gray-200">
+    <div className="mb-8 p-6 bg-card shadow-sm rounded-lg border border-border">
       <h2 className="text-xl font-semibold mb-4">Admin: Upload RHCA Files</h2>
       
       {isDebug && <RHCADebugTools />}

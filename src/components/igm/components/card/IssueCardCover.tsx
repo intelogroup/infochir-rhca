@@ -1,5 +1,3 @@
-
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
 
 interface IssueCardCoverProps {
@@ -9,14 +7,14 @@ interface IssueCardCoverProps {
 
 export const IssueCardCover = ({ coverImage, title }: IssueCardCoverProps) => {
   return (
-    <div className="w-full h-full overflow-hidden rounded-t-lg bg-muted/10">
+    <div className="w-full aspect-[3/4] overflow-hidden bg-muted border-b border-border">
       <ImageOptimizer
         src={coverImage}
         alt={`Couverture ${title}`}
-        width={200}
-        height={128}
-        className="w-full h-full object-cover object-top transition-all duration-300 group-hover:scale-105"
-        fallbackText="Image non disponible"
+        width={300}
+        height={400}
+        className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
+        fallbackText="Couverture non disponible"
       />
     </div>
   );

@@ -37,9 +37,9 @@ export const MemberRow = ({ member, canViewContact = false }: MemberRowProps) =>
       initial={{ opacity: 0, y: 5 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -5 }}
-      className="group relative hover:bg-gray-50/80 transition-colors"
+      className="group relative hover:bg-muted/80 transition-colors"
     >
-      <TableCell className="relative py-4 font-medium text-gray-900">
+      <TableCell className="relative py-4 font-medium text-foreground">
         <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-semibold">
           {member.id}
         </span>
@@ -47,14 +47,14 @@ export const MemberRow = ({ member, canViewContact = false }: MemberRowProps) =>
 
       <TableCell className="relative py-4">
         <div className="space-y-1 min-w-0 max-w-full">
-          <div className="font-semibold text-gray-900 group-hover:text-primary transition-colors duration-300 truncate">
+          <div className="font-semibold text-foreground group-hover:text-primary transition-colors duration-300 truncate">
             {member.name}
           </div>
           {member.titre && (
-            <div className="text-sm text-gray-600 italic truncate">{member.titre}</div>
+            <div className="text-sm text-muted-foreground italic truncate">{member.titre}</div>
           )}
           <div className="md:hidden space-y-1">
-            <div className="flex items-center gap-2 text-gray-600 text-sm min-w-0">
+            <div className="flex items-center gap-2 text-muted-foreground text-sm min-w-0">
               {canViewContact ? (
                 hasPhone && (
                   <>
@@ -69,7 +69,7 @@ export const MemberRow = ({ member, canViewContact = false }: MemberRowProps) =>
                 </>
               )}
             </div>
-            <div className="flex items-center gap-2 text-gray-600 text-sm min-w-0">
+            <div className="flex items-center gap-2 text-muted-foreground text-sm min-w-0">
               {canViewContact ? (
                 hasEmail && (
                   <>
@@ -97,13 +97,13 @@ export const MemberRow = ({ member, canViewContact = false }: MemberRowProps) =>
       <TableCell className="hidden sm:table-cell relative py-4">
         {canViewContact ? (
           hasPhone && (
-            <div className="flex items-center gap-2 text-gray-600 min-w-0">
+            <div className="flex items-center gap-2 text-muted-foreground min-w-0">
               <Phone className="h-4 w-4 text-primary/70 flex-shrink-0" />
               <span className="truncate">{member.phone}</span>
             </div>
           )
         ) : (
-          <div className="flex items-center gap-2 text-gray-600 min-w-0">
+          <div className="flex items-center gap-2 text-muted-foreground min-w-0">
             <Lock className="h-4 w-4 text-primary/70 flex-shrink-0" />
             <MaskedValue value={member.phone} fallback="+000 0000 0000" />
           </div>
@@ -113,7 +113,7 @@ export const MemberRow = ({ member, canViewContact = false }: MemberRowProps) =>
       <TableCell className="hidden md:table-cell relative py-4">
         {canViewContact ? (
           hasEmail && (
-            <div className="flex items-center gap-2 text-gray-600 min-w-0">
+            <div className="flex items-center gap-2 text-muted-foreground min-w-0">
               <Mail className="h-4 w-4 text-primary/70 flex-shrink-0" />
               <a
                 href={`mailto:${member.email}`}
@@ -124,7 +124,7 @@ export const MemberRow = ({ member, canViewContact = false }: MemberRowProps) =>
             </div>
           )
         ) : (
-          <div className="flex items-center gap-2 text-gray-600 min-w-0">
+          <div className="flex items-center gap-2 text-muted-foreground min-w-0">
             <Lock className="h-4 w-4 text-primary/70 flex-shrink-0" />
             <MaskedValue value={member.email} fallback="membre@exemple.com" />
           </div>

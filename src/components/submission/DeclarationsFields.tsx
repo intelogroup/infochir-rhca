@@ -24,9 +24,9 @@ export const DeclarationsFields = ({ form, hasSubmissionAttempt = false, hasErro
         Déclarations (optionnel)
       </h3>
       
-      <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-        <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-        <p className="text-sm text-blue-800">
+      <div className="flex items-start gap-2 p-3 bg-muted border border-border rounded-lg">
+        <Info className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+        <p className="text-sm text-foreground/80">
           Toute déclaration non cochée sera interprétée comme "non". Ces déclarations sont facultatives mais recommandées pour maintenir les standards éthiques et scientifiques.
         </p>
       </div>

@@ -41,7 +41,7 @@ export const SearchAndSort = ({
   return (
     <div className={cn("flex flex-col sm:flex-row gap-4", className)}>
       <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           type="text"
           placeholder="Rechercher..."
@@ -61,7 +61,7 @@ export const SearchAndSort = ({
         )}
 
         <Select value={sortBy} onValueChange={onSort} disabled={disabled}>
-          <SelectTrigger className="w-full sm:w-[180px] bg-white">
+          <SelectTrigger className="w-full sm:w-[180px] bg-card">
             <SelectValue placeholder="Trier par" />
           </SelectTrigger>
           <SelectContent>

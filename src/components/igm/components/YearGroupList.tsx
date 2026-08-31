@@ -45,8 +45,8 @@ export const YearGroupList = ({ issuesByYear = {}, sortedYears = [] }: YearGroup
   if (!issuesByYear || Object.keys(issuesByYear).length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500 text-lg">Aucun numéro trouvé</p>
-        <p className="text-gray-400 text-sm mt-2">
+        <p className="text-muted-foreground text-lg">Aucun numéro trouvé</p>
+        <p className="text-muted-foreground text-sm mt-2">
           Essayez de modifier vos critères de recherche
         </p>
       </div>
@@ -68,18 +68,18 @@ export const YearGroupList = ({ issuesByYear = {}, sortedYears = [] }: YearGroup
         return (
           <div key={year} className="mb-10">
             <div 
-              className="flex items-center justify-between mb-4 bg-gray-50 p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+              className="flex items-center justify-between mb-4 bg-muted p-2 rounded-lg hover:bg-muted transition-colors cursor-pointer"
               onClick={() => toggleYearCollapse(year)}
             >
               <div className="flex items-center gap-2">
                 <h3 className="text-lg font-semibold">{year}</h3>
                 {!hasIssues && (
-                  <span className="text-xs text-gray-500 px-2 py-1 bg-gray-200 rounded-full">
+                  <span className="text-xs text-muted-foreground px-2 py-1 bg-gray-200 rounded-full">
                     Aucun numéro
                   </span>
                 )}
                 {hasIssues && (
-                  <span className="text-xs text-gray-500 px-2 py-1 bg-gray-200 rounded-full">
+                  <span className="text-xs text-muted-foreground px-2 py-1 bg-gray-200 rounded-full">
                     {issueCount === 1 ? "1 numéro" : `${issueCount} numéros`}
                   </span>
                 )}
@@ -92,7 +92,7 @@ export const YearGroupList = ({ issuesByYear = {}, sortedYears = [] }: YearGroup
                   onClick={(e) => handleShareYear(year, e)}
                   aria-label={`Partager les numéros de ${year}`}
                 >
-                  <Share2 className="h-4 w-4 text-gray-600" />
+                  <Share2 className="h-4 w-4 text-muted-foreground" />
                 </Button>
                 <Button 
                   variant="ghost" 
@@ -105,9 +105,9 @@ export const YearGroupList = ({ issuesByYear = {}, sortedYears = [] }: YearGroup
                   aria-label={collapsedYears[year] ? "Expand year" : "Collapse year"}
                 >
                   {collapsedYears[year] ? (
-                    <ChevronDown className="h-5 w-5 text-gray-600" />
+                    <ChevronDown className="h-5 w-5 text-muted-foreground" />
                   ) : (
-                    <ChevronUp className="h-5 w-5 text-gray-600" />
+                    <ChevronUp className="h-5 w-5 text-muted-foreground" />
                   )}
                 </Button>
               </div>
@@ -122,9 +122,9 @@ export const YearGroupList = ({ issuesByYear = {}, sortedYears = [] }: YearGroup
                     ))}
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-lg border border-gray-100">
-                    <AlertCircle className="h-10 w-10 text-gray-400 mb-2" />
-                    <p className="text-gray-500 text-center">
+                  <div className="flex flex-col items-center justify-center p-6 bg-muted rounded-lg border border-border">
+                    <AlertCircle className="h-10 w-10 text-muted-foreground mb-2" />
+                    <p className="text-muted-foreground text-center">
                       Aucun numéro publié pour {year}
                     </p>
                   </div>

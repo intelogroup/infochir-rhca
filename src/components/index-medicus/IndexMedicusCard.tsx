@@ -140,7 +140,7 @@ export const IndexMedicusCard: React.FC<IndexMedicusCardProps> = ({
         )}
       >
         <Card
-          className="h-full flex flex-col border-gray-200 hover:border-primary/30 cursor-pointer transition-all duration-200 overflow-hidden group"
+          className="h-full flex flex-col border-border hover:border-primary/30 cursor-pointer transition-all duration-200 overflow-hidden group"
           onClick={handleCardClick}
         >
           <CardContent className="flex-grow flex flex-col p-3 sm:p-4 space-y-3">
@@ -150,16 +150,16 @@ export const IndexMedicusCard: React.FC<IndexMedicusCardProps> = ({
             </h3>
 
             {/* Authors */}
-            <div className="flex items-center gap-1 text-xs text-gray-600">
-              <User className="h-3 w-3 text-gray-400 flex-shrink-0" />
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <User className="h-3 w-3 text-muted-foreground flex-shrink-0" />
               <span className="truncate">
                 {article.authors?.join(", ") || "Unknown authors"}
               </span>
             </div>
 
             {/* Date */}
-            <div className="flex items-center gap-1 text-xs text-gray-600">
-              <Calendar className="h-3 w-3 text-gray-400 flex-shrink-0" />
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Calendar className="h-3 w-3 text-muted-foreground flex-shrink-0" />
               <span>{formattedDate || "Date inconnue"}</span>
             </div>
 
@@ -167,15 +167,15 @@ export const IndexMedicusCard: React.FC<IndexMedicusCardProps> = ({
             {article.tags && article.tags.length > 0 && (
               <div className="pt-1">
                 <div className="flex items-center gap-1 mb-1">
-                  <Tag className="h-3 w-3 text-gray-400" />
-                  <span className="text-xs text-gray-600">Tags:</span>
+                  <Tag className="h-3 w-3 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground">Tags:</span>
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {article.tags.slice(0, isMobile ? 2 : 3).map((tag) => (
                     <Badge
                       key={tag}
                       variant="outline"
-                      className="text-xs bg-gray-50 hover:bg-gray-100 cursor-pointer px-2 py-0.5"
+                      className="text-xs bg-muted hover:bg-muted cursor-pointer px-2 py-0.5"
                       data-tag={tag}
                       onClick={(e) => handleTagClick(e, tag)}
                     >
@@ -183,7 +183,7 @@ export const IndexMedicusCard: React.FC<IndexMedicusCardProps> = ({
                     </Badge>
                   ))}
                   {article.tags.length > (isMobile ? 2 : 3) && (
-                    <Badge variant="outline" className="text-xs bg-gray-50 px-2 py-0.5">
+                    <Badge variant="outline" className="text-xs bg-muted px-2 py-0.5">
                       +{article.tags.length - (isMobile ? 2 : 3)}
                     </Badge>
                   )}

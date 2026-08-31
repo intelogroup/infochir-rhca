@@ -40,7 +40,7 @@ export const YearNavigation = ({
   return (
     <motion.div 
       className={cn(
-        "flex flex-wrap items-center gap-2 bg-white rounded-lg border border-gray-200 p-2 shadow-sm transition-shadow hover:shadow-md",
+        "flex flex-wrap items-center gap-2 bg-card rounded-lg border border-border p-2 shadow-sm transition-shadow hover:shadow-md",
         className
       )}
       initial={{ opacity: 0, y: -10 }}
@@ -64,7 +64,7 @@ export const YearNavigation = ({
         animate={{ scale: 1 }}
         transition={{ duration: 0.2 }}
       >
-        <Calendar className="hidden sm:block h-4 w-4 text-gray-500" aria-hidden="true" />
+        <Calendar className="hidden sm:block h-4 w-4 text-muted-foreground" aria-hidden="true" />
         <Select
           value={currentYear.toString()}
           onValueChange={(value) => onYearChange(parseInt(value))}

@@ -23,7 +23,7 @@ export const AtlasTableOfContents = () => {
   if (!chapters || chapters.length === 0) {
     return (
       <div className="text-center py-2">
-        <p className="text-sm text-gray-500">Aucun chapitre disponible</p>
+        <p className="text-sm text-muted-foreground">Aucun chapitre disponible</p>
       </div>
     );
   }
@@ -47,7 +47,7 @@ export const AtlasTableOfContents = () => {
       case 'coming':
         return <Clock className="w-3 h-3 text-yellow-600" />;
       default:
-        return <AlertCircle className="w-3 h-3 text-red-500" />;
+        return <AlertCircle className="w-3 h-3 text-destructive" />;
     }
   };
 
@@ -76,12 +76,12 @@ export const AtlasTableOfContents = () => {
 
   return (
     <div className="w-full">
-      <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+      <div className="mb-4 p-3 bg-muted border border-border rounded-lg">
         <div className="flex items-center gap-2 mb-2">
-          <FileText className="w-4 h-4 text-blue-600" />
+          <FileText className="w-4 h-4 text-primary" />
           <h4 className="text-sm font-medium text-blue-900">Atlas des Décisions Cliniques</h4>
         </div>
-        <p className="text-xs text-blue-700">
+        <p className="text-xs text-primary">
           {chapters.length} chapitre{chapters.length > 1 ? 's' : ''} au total · {chapters.filter(c => c.status === 'available').length} disponible{chapters.filter(c => c.status === 'available').length > 1 ? 's' : ''}
         </p>
       </div>
@@ -90,7 +90,7 @@ export const AtlasTableOfContents = () => {
         <ul className="space-y-1">
           {sortedChapters.map((chapter) => (
             <li key={chapter.id} className="group">
-              <div className="flex items-start gap-3 py-3 px-3 rounded-md hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0">
+              <div className="flex items-start gap-3 py-3 px-3 rounded-md hover:bg-muted transition-colors border-b border-border last:border-b-0">
                 <div className="flex items-center gap-2 flex-shrink-0 mt-0.5">
                   {getStatusIcon(chapter.status)}
                 </div>
@@ -100,7 +100,7 @@ export const AtlasTableOfContents = () => {
                     to={`/adc/chapters/${chapter.id}`}
                     className="block group-hover:text-secondary transition-colors"
                   >
-                    <h5 className="text-sm font-medium text-gray-900 group-hover:text-secondary mb-1 leading-tight">
+                    <h5 className="text-sm font-medium text-foreground group-hover:text-secondary mb-1 leading-tight">
                       {formatTitle(chapter.title, chapter.chapterNumber)}
                     </h5>
                   </Link>
@@ -116,20 +116,20 @@ export const AtlasTableOfContents = () => {
       </div>
 
       {/* Legend */}
-      <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
-        <h5 className="text-xs font-medium text-gray-700 mb-2">Légende</h5>
+      <div className="mt-4 p-3 bg-muted border border-border rounded-lg">
+        <h5 className="text-xs font-medium text-foreground/80 mb-2">Légende</h5>
         <div className="grid grid-cols-1 gap-1 text-xs">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-3 h-3 text-green-600" />
-            <span className="text-gray-600">Chapitre disponible</span>
+            <span className="text-muted-foreground">Chapitre disponible</span>
           </div>
           <div className="flex items-center gap-2">
             <Clock className="w-3 h-3 text-yellow-600" />
-            <span className="text-gray-600">En préparation</span>
+            <span className="text-muted-foreground">En préparation</span>
           </div>
           <div className="flex items-center gap-2">
-            <AlertCircle className="w-3 h-3 text-red-500" />
-            <span className="text-gray-600">Non disponible</span>
+            <AlertCircle className="w-3 h-3 text-destructive" />
+            <span className="text-muted-foreground">Non disponible</span>
           </div>
         </div>
       </div>

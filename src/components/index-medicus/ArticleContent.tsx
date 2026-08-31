@@ -60,8 +60,8 @@ export const ArticleContent: React.FC<ArticleContentProps> = ({
     if (articles.length === 0) {
       return (
         <div className="text-center py-12">
-          <p className="text-gray-500 text-lg">Aucun article trouvé</p>
-          <p className="text-gray-400 text-sm mt-2">
+          <p className="text-muted-foreground text-lg">Aucun article trouvé</p>
+          <p className="text-muted-foreground text-sm mt-2">
             Essayez de modifier vos critères de recherche
           </p>
         </div>

@@ -16,7 +16,7 @@ export const ADCSubmission = () => {
     toast.info("Recherche en cours...");
     // Search functionality will be implemented here
   };
-  return <div className="bg-gradient-to-b from-secondary/5 to-white py-24">
+  return <div className="bg-background py-24">
       <motion.div initial={{
       opacity: 0,
       y: 20
@@ -35,12 +35,12 @@ export const ADCSubmission = () => {
         delay: 0.2
       }} onSubmit={handleSearch} className="max-w-2xl mx-auto mb-12">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
             
           </div>
         </motion.form>
 
-        <div className="bg-white rounded-2xl p-12 shadow-xl border border-gray-100">
+        <div className="bg-card rounded-2xl p-12 shadow-xl border border-border">
           <div className="max-w-3xl mx-auto text-center">
             <motion.div initial={{
             scale: 0.8,
@@ -75,7 +75,7 @@ export const ADCSubmission = () => {
             y: 0
           }} transition={{
             delay: 0.3
-          }} className="text-xl text-gray-600 mb-12">
+          }} className="text-xl text-muted-foreground mb-12">
               Partagez vos cas cliniques et contribuez à l'enrichissement de notre base de connaissances collective.
             </motion.p>
 
@@ -87,10 +87,10 @@ export const ADCSubmission = () => {
             }} className="space-y-6">
                 <div className="p-6 bg-secondary/5 rounded-xl transition-all duration-300 hover:bg-secondary/10">
                   <BookOpen className="h-8 w-8 text-secondary mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  <h3 className="text-xl font-semibold text-foreground mb-2">
                     Soumettre un cas
                   </h3>
-                  <p className="text-gray-600 mb-6">
+                  <p className="text-muted-foreground mb-6">
                     Partagez vos observations et expériences cliniques avec la communauté médicale.
                   </p>
                   <Link to="/submission">
@@ -109,10 +109,10 @@ export const ADCSubmission = () => {
             }} className="space-y-6">
                 <div className="p-6 bg-secondary/5 rounded-xl transition-all duration-300 hover:bg-secondary/10">
                   <FileText className="h-8 w-8 text-secondary mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  <h3 className="text-xl font-semibold text-foreground mb-2">
                     Instructions aux auteurs
                   </h3>
-                  <p className="text-gray-600 mb-6">
+                  <p className="text-muted-foreground mb-6">
                     Consultez nos directives pour la préparation et la soumission de vos cas cliniques.
                   </p>
                   <Link to="/rhca/directives">

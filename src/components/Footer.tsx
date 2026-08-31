@@ -7,9 +7,9 @@ import { NewsletterSubscribeFooter } from "./footer/NewsletterSubscribeFooter";
 
 export const Footer = () => {
   return (
-    <footer className="relative overflow-hidden border-t border-gray-200/50">
+    <footer className="relative overflow-hidden border-t border-border/50">
       {/* Modern gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-gray-50/50 to-gray-100/80" />
+      <div className="absolute inset-0 bg-background" />
       
       {/* Decorative elements */}
       <div className="absolute -left-16 -top-16 h-32 w-32 rounded-full bg-primary/5 blur-3xl"></div>
@@ -59,19 +59,19 @@ export const Footer = () => {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="mt-16 pt-8 border-t border-gray-200/50 flex flex-col md:flex-row md:justify-between md:items-center gap-4"
+          className="mt-16 pt-8 border-t border-border/50 flex flex-col md:flex-row md:justify-between md:items-center gap-4"
         >
           <div className="text-center md:text-left">
-            <p className="text-gray-500 text-sm">
+            <p className="text-muted-foreground text-sm">
               © {new Date().getFullYear()} InfoChir. Tous droits réservés.
             </p>
           </div>
           <div className="flex items-center justify-center md:justify-end space-x-3">
-            <Link to="/privacy" className="text-xs text-gray-500 hover:text-primary transition-colors">
+            <Link to="/privacy" className="text-xs text-muted-foreground hover:text-primary transition-colors">
               Politique de confidentialité
             </Link>
-            <span className="text-gray-400">•</span>
-            <Link to="/terms" className="text-xs text-gray-500 hover:text-primary transition-colors">
+            <span className="text-muted-foreground">•</span>
+            <Link to="/terms" className="text-xs text-muted-foreground hover:text-primary transition-colors">
               Conditions d'utilisation
             </Link>
           </div>

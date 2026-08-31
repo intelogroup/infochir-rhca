@@ -37,7 +37,7 @@ export const ADCMission = () => {
   ];
 
   return (
-    <div className="py-24 bg-gradient-to-b from-white to-secondary/5">
+    <div className="py-24 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -45,8 +45,8 @@ export const ADCMission = () => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-secondary to-green-500 bg-clip-text text-transparent mb-4">Notre Mission</h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <h2 className="text-3xl font-bold text-foreground mb-4">Notre Mission</h2>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Fournir aux professionnels de santé les outils et ressources nécessaires pour exceller dans leur pratique quotidienne.
           </p>
         </motion.div>
@@ -61,16 +61,16 @@ export const ADCMission = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white rounded-xl p-8 shadow-md border border-gray-100 hover:shadow-lg transition-shadow relative overflow-hidden"
+                className="bg-card rounded-xl p-8 shadow-md border border-border hover:shadow-lg transition-shadow relative overflow-hidden"
               >
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-secondary via-green-400 to-secondary"></div>
+                <div className="absolute top-0 left-0 w-full h-1 bg-gold"></div>
                 <div className="flex items-start gap-3">
                   <div className="mt-1 flex-shrink-0">
                     <Icon className="h-6 w-6 text-secondary" />
                   </div>
                   <div>
                     <h3 className="text-xl font-semibold text-secondary mb-3">{feature.title}</h3>
-                    <p className="text-gray-600">{feature.description}</p>
+                    <p className="text-muted-foreground">{feature.description}</p>
                   </div>
                 </div>
               </motion.div>

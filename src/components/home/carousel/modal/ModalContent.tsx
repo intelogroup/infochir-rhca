@@ -59,15 +59,15 @@ export const ModalContent = ({
       <ScrollArea className="max-h-[calc(90vh-250px)] overflow-y-auto">
         <div className="p-6 space-y-6">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2 break-words">
+            <h2 className="text-2xl font-bold text-foreground mb-2 break-words">
               {highlight.title}
             </h2>
             
             {/* Article abstract */}
             {highlight.abstract && (
               <div className="prose prose-sm max-w-none mb-4">
-                <h4 className="font-semibold mb-2 text-gray-800">Résumé</h4>
-                <p className="text-gray-600 whitespace-pre-line leading-relaxed">
+                <h4 className="font-semibold mb-2 text-foreground">Résumé</h4>
+                <p className="text-muted-foreground whitespace-pre-line leading-relaxed">
                   {highlight.abstract}
                 </p>
               </div>
@@ -75,13 +75,13 @@ export const ModalContent = ({
             
             {/* Fallback to description if no abstract */}
             {!highlight.abstract && highlight.description && (
-              <p className="text-gray-600 whitespace-pre-line break-words">
+              <p className="text-muted-foreground whitespace-pre-line break-words">
                 {highlight.description}
               </p>
             )}
           </div>
 
-          <div className="flex items-center justify-between text-sm text-gray-500 border-y border-gray-100 py-4">
+          <div className="flex items-center justify-between text-sm text-muted-foreground border-y border-border py-4">
             {highlight.date && (
               <span className="flex items-center gap-1">
                 <Calendar className="h-4 w-4 flex-shrink-0" />
@@ -117,14 +117,14 @@ export const ModalContent = ({
                   {articleDetails.abstract && (
                     <div className="prose prose-sm max-w-none break-words">
                       <h4 className="font-semibold mb-2">Résumé</h4>
-                      <p className="text-gray-600 whitespace-pre-line">{articleDetails.abstract}</p>
+                      <p className="text-muted-foreground whitespace-pre-line">{articleDetails.abstract}</p>
                     </div>
                   )}
                   
                   {articleDetails.institution && (
                     <div className="border-t pt-4">
                       <h4 className="font-semibold mb-2">Institution</h4>
-                      <p className="text-gray-600 break-words">{articleDetails.institution}</p>
+                      <p className="text-muted-foreground break-words">{articleDetails.institution}</p>
                     </div>
                   )}
                 </>
@@ -137,7 +137,7 @@ export const ModalContent = ({
       </ScrollArea>
       
       {/* Bottom actions */}
-      <div className="p-4 border-t bg-gray-50 flex justify-end gap-2">
+      <div className="p-4 border-t bg-muted flex justify-end gap-2">
         {highlight.pdfUrl && (
           <Button 
             className="gap-2"

@@ -224,7 +224,7 @@ const ArticleDetail = () => {
             </Button>
           </div>
         ) : article ? (
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-card rounded-lg shadow-md p-6">
             <h1 className="text-2xl font-bold mb-4">{article.title}</h1>
             
             <div className="flex flex-wrap gap-2 mb-6">
@@ -240,27 +240,27 @@ const ArticleDetail = () => {
             
             <div className="mb-6">
               <h2 className="text-lg font-semibold mb-2">Résumé</h2>
-              <p className="text-gray-700 whitespace-pre-line">{article.abstract}</p>
+              <p className="text-foreground/80 whitespace-pre-line">{article.abstract}</p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div>
-                <h3 className="font-medium text-gray-500">Source</h3>
+                <h3 className="font-medium text-muted-foreground">Source</h3>
                 <p>{article.source}</p>
               </div>
               <div>
-                <h3 className="font-medium text-gray-500">Date de publication</h3>
+                <h3 className="font-medium text-muted-foreground">Date de publication</h3>
                 <p>{formatDate(article.publicationDate)}</p>
               </div>
               {article.volume && article.issue && (
                 <div>
-                  <h3 className="font-medium text-gray-500">Volume/Issue</h3>
+                  <h3 className="font-medium text-muted-foreground">Volume/Issue</h3>
                   <p>{article.volume}, {article.issue}</p>
                 </div>
               )}
               {article.pageNumber && (
                 <div>
-                  <h3 className="font-medium text-gray-500">Pages</h3>
+                  <h3 className="font-medium text-muted-foreground">Pages</h3>
                   <p>{article.pageNumber}</p>
                 </div>
               )}
@@ -276,7 +276,7 @@ const ArticleDetail = () => {
               {article.tags && article.tags.map((tag, index) => (
                 <span 
                   key={index} 
-                  className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm"
+                  className="bg-muted text-foreground px-3 py-1 rounded-full text-sm"
                 >
                   #{tag}
                 </span>
@@ -317,7 +317,7 @@ const ArticleDetail = () => {
                 )}
               </div>
               
-              <div className="flex justify-between mt-6 text-sm text-gray-500">
+              <div className="flex justify-between mt-6 text-sm text-muted-foreground">
                 <span>{article.views} vue{article.views !== 1 ? 's' : ''}</span>
                 <span>{article.downloads} téléchargement{article.downloads !== 1 ? 's' : ''}</span>
                 <span>{article.citations} citation{article.citations !== 1 ? 's' : ''}</span>

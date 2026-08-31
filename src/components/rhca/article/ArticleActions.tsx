@@ -200,7 +200,7 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
       <Button
         variant="outline"
         size="sm"
-        className="flex-1 lg:flex-none gap-2 bg-white"
+        className="flex-1 lg:flex-none gap-2 bg-card"
         disabled
         aria-label="Vérification de la disponibilité du PDF"
       >
@@ -217,7 +217,7 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
         <Button
           variant="outline"
           size="sm"
-          className="flex-1 lg:flex-none gap-2 bg-white text-gray-400 border-gray-200 cursor-not-allowed"
+          className="flex-1 lg:flex-none gap-2 bg-card text-muted-foreground border-border cursor-not-allowed"
           disabled
           aria-label="PDF non disponible"
         >
@@ -234,7 +234,7 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
           )}
         </Button>
         {error && (
-          <p className="text-xs text-red-500 truncate max-w-[200px]" title={error}>
+          <p className="text-xs text-destructive truncate max-w-[200px]" title={error}>
             {error}
           </p>
         )}
@@ -249,7 +249,7 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
           <Button
             variant="outline"
             size="sm"
-            className="flex-1 lg:flex-none gap-2 bg-white hover:bg-gray-50"
+            className="flex-1 lg:flex-none gap-2 bg-card hover:bg-muted"
             disabled={isLoading}
             aria-label="Options PDF"
           >
@@ -273,7 +273,7 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
         </DropdownMenuContent>
       </DropdownMenu>
       {error && (
-        <p className="text-xs text-red-500 truncate max-w-[200px]" title={error}>
+        <p className="text-xs text-destructive truncate max-w-[200px]" title={error}>
           {error}
         </p>
       )}

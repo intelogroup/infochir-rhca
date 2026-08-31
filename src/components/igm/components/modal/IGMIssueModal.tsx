@@ -55,14 +55,14 @@ export const IGMIssueModal = ({ issue, open, onClose }: IGMIssueModalProps) => {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="w-[95vw] max-w-4xl h-[95vh] max-h-[95vh] p-0 overflow-hidden bg-white/95 backdrop-blur-sm flex flex-col">
+      <DialogContent className="w-[95vw] max-w-4xl h-[95vh] max-h-[95vh] p-0 overflow-hidden bg-card/95 backdrop-blur-sm flex flex-col">
         <DialogHeader className="p-6 pb-0 flex-shrink-0">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
               <DialogTitle className="text-xl md:text-2xl font-bold text-primary line-clamp-2 leading-tight mb-2">
                 {issue.title}
               </DialogTitle>
-              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-3">
+              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-3">
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
                   {formatDate(issue.date)}
@@ -80,7 +80,7 @@ export const IGMIssueModal = ({ issue, open, onClose }: IGMIssueModalProps) => {
           </div>
           
           {issue.abstract && (
-            <DialogDescription className="text-sm text-gray-600 leading-relaxed">
+            <DialogDescription className="text-sm text-muted-foreground leading-relaxed">
               {issue.abstract}
             </DialogDescription>
           )}
@@ -94,24 +94,24 @@ export const IGMIssueModal = ({ issue, open, onClose }: IGMIssueModalProps) => {
             transition={{ delay: 0.2 }}
           >
             {/* Statistics Section */}
-            <div className="bg-gray-50 rounded-lg p-4">
+            <div className="bg-muted rounded-lg p-4">
               <h3 className="text-lg font-semibold text-primary mb-3">Statistiques</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-primary">{issue.articles?.length || 0}</div>
-                  <div className="text-sm text-gray-600">Articles</div>
+                  <div className="text-sm text-muted-foreground">Articles</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-600">{(issue.downloads || issue.downloadCount) || 0}</div>
-                  <div className="text-sm text-gray-600">Téléchargements</div>
+                  <div className="text-sm text-muted-foreground">Téléchargements</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-600">{(issue.shares || issue.shareCount) || 0}</div>
-                  <div className="text-sm text-gray-600">Partages</div>
+                  <div className="text-2xl font-bold text-primary">{(issue.shares || issue.shareCount) || 0}</div>
+                  <div className="text-sm text-muted-foreground">Partages</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-purple-600">{getTotalPages()}</div>
-                  <div className="text-sm text-gray-600">Pages</div>
+                  <div className="text-sm text-muted-foreground">Pages</div>
                 </div>
               </div>
             </div>
@@ -127,21 +127,21 @@ export const IGMIssueModal = ({ issue, open, onClose }: IGMIssueModalProps) => {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}
-                      className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-sm transition-shadow"
+                      className="bg-card rounded-lg border border-border p-4 hover:shadow-sm transition-shadow"
                     >
                       <div className="flex justify-between items-start gap-4">
                         <div className="flex-1">
-                          <h4 className="font-medium text-gray-900 mb-2 leading-tight">
+                          <h4 className="font-medium text-foreground mb-2 leading-tight">
                             {article.title}
                           </h4>
                           {article.authors && article.authors.length > 0 && (
-                            <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                               <Users className="h-3 w-3" />
                               {article.authors.join(", ")}
                             </div>
                           )}
                           {article.abstract && (
-                            <p className="text-sm text-gray-600 leading-relaxed line-clamp-2">
+                            <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
                               {article.abstract}
                             </p>
                           )}
@@ -160,7 +160,7 @@ export const IGMIssueModal = ({ issue, open, onClose }: IGMIssueModalProps) => {
                           )}
                         </div>
                         {article.pageNumber && (
-                          <div className="text-sm text-gray-500 font-medium">
+                          <div className="text-sm text-muted-foreground font-medium">
                             Page {article.pageNumber}
                           </div>
                         )}
@@ -172,7 +172,7 @@ export const IGMIssueModal = ({ issue, open, onClose }: IGMIssueModalProps) => {
             )}
 
             {/* Actions Section */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200">
+            <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-border">
               <ShareAction
                 id={issue.id}
                 title={issue.title}

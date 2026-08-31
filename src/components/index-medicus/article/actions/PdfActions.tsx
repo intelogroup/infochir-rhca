@@ -126,7 +126,7 @@ export const PdfActions: React.FC<PdfActionsProps> = ({ article, pdfUrl }) => {
     <Button 
       variant="default" 
       size="sm"
-      className="h-9 px-4 bg-green-500 hover:bg-green-600 text-white font-medium transition-colors duration-200"
+      className="h-9 px-4 bg-green-500 hover:bg-green-600 text-primary-foreground font-medium transition-colors duration-200"
       onClick={handleDownload}
       disabled={!pdfUrl}
     >

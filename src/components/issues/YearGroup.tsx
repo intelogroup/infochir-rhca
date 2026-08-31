@@ -12,14 +12,14 @@ interface YearGroupProps {
 export const YearGroup = ({ year, issues }: YearGroupProps) => {
   return (
     <motion.div 
-      className="space-y-6 bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+      className="space-y-6 bg-card rounded-xl p-4 sm:p-6 shadow-sm border border-border hover:shadow-md transition-shadow"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
       role="region"
       aria-labelledby={`year-heading-${year}`}
     >
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-200 pb-4 gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border pb-4 gap-3">
         <div className="flex items-center gap-3">
           <div className="bg-primary/5 p-2 rounded-lg">
             <Calendar className="h-5 w-5 text-primary" aria-hidden="true" />

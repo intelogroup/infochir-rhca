@@ -52,15 +52,15 @@ export const ModalHeader = ({ chapter, category }: ModalHeaderProps) => {
     <div className="relative">
       <div className="relative h-40 overflow-hidden">
         {isImageLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+          <div className="absolute inset-0 flex items-center justify-center bg-muted">
             <div className="animate-pulse h-full w-full bg-gray-200"></div>
           </div>
         )}
         
         {imageError ? (
-          <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100">
-            <ImageOff className="h-8 w-8 text-gray-400 mb-2" />
-            <span className="text-sm text-gray-500">Image unavailable</span>
+          <div className="w-full h-full flex flex-col items-center justify-center bg-muted">
+            <ImageOff className="h-8 w-8 text-muted-foreground mb-2" />
+            <span className="text-sm text-muted-foreground">Image unavailable</span>
           </div>
         ) : (
           <ImageOptimizer
@@ -81,10 +81,10 @@ export const ModalHeader = ({ chapter, category }: ModalHeaderProps) => {
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="absolute bottom-0 left-0 right-0 p-4 text-white"
+        className="absolute bottom-0 left-0 right-0 p-4 text-primary-foreground"
       >
         {category && (
-          <Badge variant="secondary" className="mb-2 text-xs backdrop-blur-sm bg-white/10">
+          <Badge variant="secondary" className="mb-2 text-xs backdrop-blur-sm bg-card/10">
             <BookOpen className="w-3 h-3 mr-1" />
             {category.title}
           </Badge>

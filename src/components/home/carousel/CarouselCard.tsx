@@ -18,17 +18,17 @@ export const CarouselCard = ({ highlight, index, onSelect }: CarouselCardProps) 
   const [imageError, setImageError] = useState(false);
   
   const getCategoryColor = (category?: string) => {
-    if (!category) return "bg-gray-500";
+    if (!category) return "bg-muted0";
     
     const categories: Record<string, string> = {
-      "IGM": "bg-blue-500",
+      "IGM": "bg-muted0",
       "RHCA": "bg-green-500",
       "ADC": "bg-purple-500",
       "Événement": "bg-orange-500",
       "Formation": "bg-red-500"
     };
     
-    return categories[category] || "bg-gray-500";
+    return categories[category] || "bg-muted0";
   };
 
   const handleImageError = () => {
@@ -49,12 +49,12 @@ export const CarouselCard = ({ highlight, index, onSelect }: CarouselCardProps) 
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="bg-white h-full rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col border border-gray-100 cursor-pointer"
+      className="bg-card h-full rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col border border-border cursor-pointer"
     >
       <div className="h-[30%] relative overflow-hidden">
         {imageError ? (
-          <div className="w-full h-full bg-gray-100 flex flex-col items-center justify-center">
-            <span className="text-sm text-gray-500">Image non disponible</span>
+          <div className="w-full h-full bg-muted flex flex-col items-center justify-center">
+            <span className="text-sm text-muted-foreground">Image non disponible</span>
           </div>
         ) : (
           <ImageOptimizer
@@ -70,12 +70,12 @@ export const CarouselCard = ({ highlight, index, onSelect }: CarouselCardProps) 
         
         <div className="absolute top-0 left-0 right-0 p-4 flex justify-between z-10">
           {highlight.category && (
-            <span className={cn("text-xs font-semibold px-2 py-1 rounded-full text-white", getCategoryColor(highlight.category))}>
+            <span className={cn("text-xs font-semibold px-2 py-1 rounded-full text-primary-foreground", getCategoryColor(highlight.category))}>
               {highlight.category}
             </span>
           )}
           {highlight.date && (
-            <span className="text-xs font-medium px-2 py-1 rounded-full bg-white/80 backdrop-blur-sm">
+            <span className="text-xs font-medium px-2 py-1 rounded-full bg-card/80 backdrop-blur-sm">
               {highlight.date}
             </span>
           )}
@@ -84,13 +84,13 @@ export const CarouselCard = ({ highlight, index, onSelect }: CarouselCardProps) 
       
       <div className="p-5 flex flex-col flex-grow">
         <h3 className="font-bold text-xl mb-2 line-clamp-2 text-left">{highlight.title}</h3>
-        <p className="text-gray-600 text-sm line-clamp-2 mb-4 flex-grow text-left">
+        <p className="text-muted-foreground text-sm line-clamp-2 mb-4 flex-grow text-left">
           {highlight.description}
         </p>
         
         <div className="mt-auto">
           {highlight.author && (
-            <p className="text-xs text-gray-500 mb-3 line-clamp-2 text-left">
+            <p className="text-xs text-muted-foreground mb-3 line-clamp-2 text-left">
               Par {highlight.author}
             </p>
           )}

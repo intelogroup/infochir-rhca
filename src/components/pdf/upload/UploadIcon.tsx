@@ -7,8 +7,8 @@ interface UploadIconProps {
 
 export const UploadIcon = ({ type = 'document' }: UploadIconProps) => {
   return type === 'image' ? (
-    <ImageIcon className="h-8 w-8 mx-auto text-gray-400" />
+    <ImageIcon className="h-8 w-8 mx-auto text-muted-foreground" />
   ) : (
-    <FileText className="h-8 w-8 mx-auto text-gray-400" />
+    <FileText className="h-8 w-8 mx-auto text-muted-foreground" />
   );
 };

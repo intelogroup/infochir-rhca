@@ -50,14 +50,14 @@ export const FounderModal = ({ founder, isOpen, onClose }: FounderModalProps) =>
           </Avatar>
           
           <div className="text-center">
-            <h3 className="font-bold text-lg sm:text-xl text-blue-800">
+            <h3 className="font-bold text-lg sm:text-xl text-foreground/80">
               {founder.name}
             </h3>
-            <p className="text-gray-600 font-medium text-sm sm:text-base">{founder.title}</p>
-            <p className="text-xs sm:text-sm text-gray-500">{founder.role}</p>
+            <p className="text-muted-foreground font-medium text-sm sm:text-base">{founder.title}</p>
+            <p className="text-xs sm:text-sm text-muted-foreground">{founder.role}</p>
             
             {founder.location && (
-              <p className="text-xs sm:text-sm text-gray-500 mt-2">
+              <p className="text-xs sm:text-sm text-muted-foreground mt-2">
                 {founder.location}
               </p>
             )}
@@ -67,15 +67,15 @@ export const FounderModal = ({ founder, isOpen, onClose }: FounderModalProps) =>
         <div className="md:col-span-2 space-y-3 sm:space-y-4">
           {founder.bio && (
             <div>
-              <h4 className="font-semibold text-gray-700 mb-1 sm:mb-2">Bio</h4>
-              <p className="text-sm sm:text-base text-gray-600">{founder.bio}</p>
+              <h4 className="font-semibold text-foreground/80 mb-1 sm:mb-2">Bio</h4>
+              <p className="text-sm sm:text-base text-muted-foreground">{founder.bio}</p>
             </div>
           )}
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 mt-3 sm:mt-4">
             {founder.specialties && founder.specialties.length > 0 && (
               <div>
-                <h4 className="font-semibold text-gray-700 mb-1 sm:mb-2">SPÉCIALITÉ</h4>
+                <h4 className="font-semibold text-foreground/80 mb-1 sm:mb-2">SPÉCIALITÉ</h4>
                 <div className="flex flex-wrap gap-1">
                   {founder.specialties.map((specialty, index) => (
                     <Badge key={index} variant="secondary" className="text-xs sm:text-sm">
@@ -88,8 +88,8 @@ export const FounderModal = ({ founder, isOpen, onClose }: FounderModalProps) =>
             
             {founder.achievements && founder.achievements.length > 0 && (
               <div>
-                <h4 className="font-semibold text-gray-700 mb-1 sm:mb-2">Achievements</h4>
-                <ul className="list-disc pl-5 text-sm sm:text-base text-gray-600">
+                <h4 className="font-semibold text-foreground/80 mb-1 sm:mb-2">Achievements</h4>
+                <ul className="list-disc pl-5 text-sm sm:text-base text-muted-foreground">
                   {founder.achievements.map((achievement, index) => (
                     <li key={index}>{achievement}</li>
                   ))}
@@ -102,8 +102,8 @@ export const FounderModal = ({ founder, isOpen, onClose }: FounderModalProps) =>
                 "mt-3 sm:mt-4",
                 (founder.specialties?.length > 0 || founder.achievements?.length > 0) ? "lg:col-span-2" : ""
               )}>
-                <h4 className="font-semibold text-gray-700 mb-1 sm:mb-2">Responsibilities</h4>
-                <ul className="list-disc pl-5 text-sm sm:text-base text-gray-600">
+                <h4 className="font-semibold text-foreground/80 mb-1 sm:mb-2">Responsibilities</h4>
+                <ul className="list-disc pl-5 text-sm sm:text-base text-muted-foreground">
                   {founder.responsibilities.map((responsibility, index) => (
                     <li key={index}>{responsibility}</li>
                   ))}

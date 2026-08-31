@@ -57,7 +57,7 @@ export const RhcaGrid: React.FC<RhcaGridProps> = ({
             
             return (
               <AccordionItem key={year} value={year.toString()} className="border rounded-lg overflow-hidden">
-                <AccordionTrigger className="px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-gray-50">
+                <AccordionTrigger className="px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-muted">
                   <div className="flex items-center">
                     <span className="text-base sm:text-lg font-semibold">{year}</span>
                     <span className="ml-2 text-xs sm:text-sm text-muted-foreground">

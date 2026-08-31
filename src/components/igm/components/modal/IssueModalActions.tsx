@@ -37,7 +37,7 @@ export const IssueModalActions = ({ issue }: IssueModalActionsProps) => {
       }
       
       toast.success("Lien copié dans le presse-papier", {
-        className: "bg-secondary text-white",
+        className: "bg-secondary text-primary-foreground",
       });
     } catch (error) {
       logger.error('Error sharing:', error);

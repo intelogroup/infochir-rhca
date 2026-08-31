@@ -1,30 +1,14 @@
-
 import { useState } from "react";
 import { MainLayout } from "@/components/layouts/MainLayout";
 import { motion } from "framer-motion";
-import { DonateHeader } from "@/components/donate/DonateHeader";
 import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Heart } from "lucide-react";
 import { createCheckoutSession } from "@/lib/stripe";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { DonationAmountSelector } from "@/components/donate/form/DonationAmountSelector";
+import { PageHeader } from "@/components/ui/page-header";
 import { SEO } from "@/components/seo/SEO";
-
-const BackButton = () => {
-  return (
-    <Button 
-      variant="ghost" 
-      size="sm" 
-      className="gap-2 text-primary hover:text-primary-light"
-      onClick={() => window.history.back()}
-    >
-      <ArrowLeft className="h-4 w-4" />
-      Retour
-    </Button>
-  );
-};
 
 const Donate = () => {
   useScrollToTop();
@@ -37,44 +21,41 @@ const Donate = () => {
   const handleDonation = async () => {
     try {
       if (!email) {
-        toast.error("Please enter your email address");
+        toast.error("Veuillez saisir votre adresse e-mail");
         return;
       }
 
-      // Input validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        toast.error("Please enter a valid email address");
+        toast.error("Veuillez saisir une adresse e-mail valide");
         return;
       }
 
       const amount = customAmount ? Number(customAmount) : selectedAmount;
       if (!amount || amount <= 0) {
-        toast.error("Please select or enter a donation amount");
+        toast.error("Veuillez choisir ou saisir un montant");
         return;
       }
 
-      // Prevent very large amounts as a protection measure
       if (amount > 50000) {
-        toast.error("Please contact us directly for large donations");
+        toast.error("Pour les dons importants, veuillez nous contacter directement");
         return;
       }
 
       setIsProcessing(true);
 
-      // Use the secure helper function
       await createCheckoutSession(amount, {
         donor_info: {
           name,
           email,
           is_anonymous: !name,
-          message: '' // Include empty message field
+          message: '',
         }
       });
 
     } catch (error: any) {
       console.error('[Donate] Payment error:', error);
-      toast.error(error.message || "Failed to process donation");
+      toast.error(error.message || "Le traitement du don a échoué");
     } finally {
       setIsProcessing(false);
     }
@@ -87,87 +68,83 @@ const Donate = () => {
         description="Soutenez la publication scientifique médicale en Haïti : votre don finance la RHCA, l'IGM et l'Atlas de diagnostic."
         path="/donate"
       />
-      <div className="relative min-h-screen bg-background">
-        {/* Content */}
-        <div className="relative max-w-6xl mx-auto px-4 py-12">
-          <div className="mb-8">
-            <BackButton />
-          </div>
-          
-          <div className="max-w-2xl mx-auto">
-            <DonateHeader />
-            
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="mt-12 space-y-8 bg-white p-8 rounded-2xl shadow-lg border border-gray-100"
-            >
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="donor-email" className="text-sm font-medium mb-1 block">Email (required)</label>
-                  <Input
-                    id="donor-email"
-                    name="donor-email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email"
-                    required
-                    autoComplete="email"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="donor-name" className="text-sm font-medium mb-1 block">Name (optional)</label>
-                  <Input
-                    id="donor-name"
-                    name="donor-name"
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Enter your name"
-                    autoComplete="name"
-                  />
-                </div>
-              </div>
+      <PageHeader
+        backLink="/"
+        align="left"
+        variant="brand"
+        title="Soutenir INFOCHIR/RHCA"
+        description="Votre don finance la publication scientifique médicale haïtienne : la RHCA, l'Info Gazette Médicale et l'Atlas de diagnostic."
+      />
 
+      <section className="section">
+        <div className="container-content">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="mx-auto max-w-2xl space-y-8 rounded-lg border border-border bg-card p-8"
+          >
+            <div className="space-y-4">
               <div>
-                <label htmlFor="donation-amount" className="text-sm font-medium mb-4 block">Select amount</label>
-                <DonationAmountSelector
-                  selectedAmount={selectedAmount}
-                  customAmount={customAmount}
-                  onAmountChange={(amount) => {
-                    setSelectedAmount(amount);
-                    setCustomAmount("");
-                  }}
-                  onCustomAmountChange={(e) => {
-                    setCustomAmount(e.target.value);
-                    setSelectedAmount(0);
-                  }}
+                <label htmlFor="donor-email" className="mb-1 block text-sm font-medium">
+                  E-mail (requis)
+                </label>
+                <Input
+                  id="donor-email"
+                  name="donor-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="votre@email.com"
+                  required
+                  autoComplete="email"
                 />
               </div>
+              <div>
+                <label htmlFor="donor-name" className="mb-1 block text-sm font-medium">
+                  Nom (facultatif)
+                </label>
+                <Input
+                  id="donor-name"
+                  name="donor-name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Votre nom"
+                  autoComplete="name"
+                />
+              </div>
+            </div>
 
-              <Button
-                onClick={handleDonation}
-                disabled={isProcessing}
-                className="w-full h-14 text-lg bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white relative overflow-hidden group"
-              >
-                {isProcessing ? (
-                  <span className="flex items-center gap-2">
-                    <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Processing...
-                  </span>
-                ) : (
-                  <span className="flex items-center justify-center gap-2">
-                    Continue to Payment
-                    <Heart className="h-4 w-4" />
-                  </span>
-                )}
-              </Button>
-            </motion.div>
-          </div>
+            <div>
+              <label htmlFor="custom-amount" className="mb-4 block text-sm font-medium">
+                Choisir un montant
+              </label>
+              <DonationAmountSelector
+                selectedAmount={selectedAmount}
+                customAmount={customAmount}
+                onAmountChange={(amount) => {
+                  setSelectedAmount(amount);
+                  setCustomAmount("");
+                }}
+                onCustomAmountChange={(e) => {
+                  setCustomAmount(e.target.value);
+                  setSelectedAmount(0);
+                }}
+              />
+            </div>
+
+            <Button
+              onClick={handleDonation}
+              disabled={isProcessing}
+              size="lg"
+              className="w-full"
+            >
+              {isProcessing ? "Traitement en cours…" : "Continuer vers le paiement"}
+            </Button>
+          </motion.div>
         </div>
-      </div>
+      </section>
     </MainLayout>
   );
 };

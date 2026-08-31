@@ -12,11 +12,11 @@ interface CarouselControlsProps {
 export const CarouselControls = ({ current, itemsCount, api }: CarouselControlsProps) => {
   return (
     <>
-      <CarouselPrevious className="hidden md:flex -left-12 lg:-left-16 h-12 w-12 border-2 border-primary/20 bg-white/80 hover:bg-white">
+      <CarouselPrevious className="hidden md:flex -left-12 lg:-left-16 h-12 w-12 border-2 border-primary/20 bg-card/80 hover:bg-card">
         <ChevronLeft className="h-6 w-6 text-primary" />
       </CarouselPrevious>
       
-      <CarouselNext className="hidden md:flex -right-12 lg:-right-16 h-12 w-12 border-2 border-primary/20 bg-white/80 hover:bg-white">
+      <CarouselNext className="hidden md:flex -right-12 lg:-right-16 h-12 w-12 border-2 border-primary/20 bg-card/80 hover:bg-card">
         <ChevronRight className="h-6 w-6 text-primary" />
       </CarouselNext>
 

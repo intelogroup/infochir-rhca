@@ -49,7 +49,7 @@ export const ArticleTableRow: React.FC<ArticleTableRowProps> = ({ article }) => 
               {article.volume && article.issue && !isMobile && (
                 <>
                   <span className="text-gray-300 hidden sm:inline">•</span>
-                  <div className="hidden sm:flex items-center gap-1.5 text-gray-500">
+                  <div className="hidden sm:flex items-center gap-1.5 text-muted-foreground">
                     <BookOpen className="h-3.5 w-3.5 flex-shrink-0" />
                     Vol. {article.volume}, No. {article.issue}
                   </div>
@@ -58,7 +58,7 @@ export const ArticleTableRow: React.FC<ArticleTableRowProps> = ({ article }) => 
               {article.pageNumber && !isMobile && (
                 <>
                   <span className="text-gray-300 hidden sm:inline">•</span>
-                  <div className="hidden sm:flex items-center gap-1.5 text-gray-500">
+                  <div className="hidden sm:flex items-center gap-1.5 text-muted-foreground">
                     <FileText className="h-3.5 w-3.5 flex-shrink-0" />
                     Page {article.pageNumber}
                   </div>

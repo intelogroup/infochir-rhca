@@ -19,7 +19,7 @@ export const IssueModalHeader = ({ issue }: IssueModalHeaderProps) => {
           {issue.title}
         </DialogTitle>
       </motion.div>
-      <DialogDescription className="text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] text-gray-600 mt-2 leading-relaxed">
+      <DialogDescription className="text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] text-muted-foreground mt-2 leading-relaxed">
         {issue.abstract}
       </DialogDescription>
     </DialogHeader>

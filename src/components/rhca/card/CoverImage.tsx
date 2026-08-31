@@ -1,7 +1,5 @@
-
 import React from 'react';
 import { OptimizedImageLoader } from "../../shared/OptimizedImageLoader";
-import { PdfStatusIndicator } from "../../shared/PdfStatusIndicator";
 import type { RhcaArticle } from "../types";
 
 interface CoverImageProps {
@@ -11,32 +9,21 @@ interface CoverImageProps {
   imageLoading: boolean;
 }
 
-export const CoverImage: React.FC<CoverImageProps> = ({ 
-  article, 
-  coverUrl, 
-  pdfUrl,
-  imageLoading 
+export const CoverImage: React.FC<CoverImageProps> = ({
+  article,
+  coverUrl,
 }) => {
   return (
-    <div className="relative w-full h-full flex items-center justify-center">
-      <div className="w-full h-full max-h-[180px] flex items-center justify-center bg-gray-50 rounded-md overflow-hidden">
-        <OptimizedImageLoader
-          src={coverUrl || ''}
-          alt={article.title}
-          width={150}
-          height={200}
-          className="w-auto h-auto max-w-full max-h-full object-contain object-top"
-          fallbackText={article.title}
-          loading="eager"
-          priority
-        />
-      </div>
-      
-      {/* PDF indicator is hidden by default now */}
-      <PdfStatusIndicator 
-        status={pdfUrl ? "available" : "unavailable"} 
-        className="absolute top-2 right-2"
-        showStatusIcon={false}
+    <div className="w-full h-full overflow-hidden bg-muted">
+      <OptimizedImageLoader
+        src={coverUrl || ''}
+        alt={`Couverture ${article.title}`}
+        width={300}
+        height={400}
+        className="w-full h-full object-cover object-top"
+        fallbackText="Couverture non disponible"
+        loading="eager"
+        priority
       />
     </div>
   );

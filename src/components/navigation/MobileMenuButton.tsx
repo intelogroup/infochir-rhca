@@ -10,7 +10,7 @@ export const MobileMenuButton = ({ isOpen, onClick }: MobileMenuButtonProps) => 
   return (
     <motion.button
       onClick={onClick}
-      className="md:hidden p-3 rounded-lg hover:bg-gray-100/80 active:bg-gray-200/80 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 touch-manipulation shadow-sm hover:shadow-md"
+      className="md:hidden p-3 rounded-lg hover:bg-muted/80 active:bg-gray-200/80 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50 touch-manipulation shadow-sm hover:shadow-md"
       aria-label={isOpen ? "Close menu" : "Open menu"}
       aria-expanded={isOpen}
       aria-controls="mobile-menu"

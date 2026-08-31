@@ -23,12 +23,12 @@ const ExpandableText: React.FC<ExpandableTextProps> = ({ text, maxLength = 100 }
   const [isExpanded, setIsExpanded] = useState(false);
   
   if (!text || text.length <= maxLength) {
-    return <p className="text-sm text-gray-600">{text}</p>;
+    return <p className="text-sm text-muted-foreground">{text}</p>;
   }
   
   return (
     <div>
-      <p className="text-sm text-gray-600">
+      <p className="text-sm text-muted-foreground">
         {isExpanded ? text : `${text.substring(0, maxLength)}...`}
       </p>
       <Button 
@@ -118,7 +118,7 @@ export const ArticleCompactList: React.FC<ArticleCompactListProps> = ({
   if (articles.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-500">Aucun article trouvé.</p>
+        <p className="text-muted-foreground">Aucun article trouvé.</p>
       </div>
     );
   }
@@ -126,7 +126,7 @@ export const ArticleCompactList: React.FC<ArticleCompactListProps> = ({
   return (
     <div className="space-y-3">
       {articles.map((article) => (
-        <Card key={article.id} className="p-3 border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+        <Card key={article.id} className="p-3 border-border shadow-sm hover:shadow-md transition-shadow">
           <div className="flex flex-col gap-3">
             <div>
               <h3 className="font-semibold text-base leading-tight mb-1 text-primary line-clamp-2">
@@ -134,7 +134,7 @@ export const ArticleCompactList: React.FC<ArticleCompactListProps> = ({
               </h3>
               
               <div className="flex flex-col gap-1 mb-2">
-                <div className="text-xs text-gray-600 flex items-center">
+                <div className="text-xs text-muted-foreground flex items-center">
                   <span className="font-medium mr-2">Auteurs:</span>
                   <ExpandableText 
                     text={article.authors?.join(", ") || "Unknown authors"} 
@@ -142,7 +142,7 @@ export const ArticleCompactList: React.FC<ArticleCompactListProps> = ({
                   />
                 </div>
                 
-                <div className="flex items-center gap-1 text-xs text-gray-600">
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
                   <span className="font-medium">Date:</span>
                   <span>
                     {article.date ? new Date(article.date).getFullYear() : "Date inconnue"}

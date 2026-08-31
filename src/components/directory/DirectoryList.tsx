@@ -15,7 +15,7 @@ const LoadingSkeleton: FC = () => (
       <LoadingSpinner size="lg" variant="primary" text="Chargement de l'annuaire..." />
     </div>
     {Array.from({ length: 5 }).map((_, i) => (
-      <Skeleton key={i} className="w-full h-16 bg-gradient-to-r from-gray-100/50 via-gray-100 to-gray-100/50" />
+      <Skeleton key={i} className="w-full h-16 bg-muted" />
     ))}
   </div>
 );
@@ -128,12 +128,12 @@ const DirectoryList: FC<DirectoryListProps> = () => {
       <SearchBar value={searchTerm} onChange={handleSearch} />
 
       {!isAuthenticated && (
-        <p className="text-sm text-gray-500 text-center">
+        <p className="text-sm text-muted-foreground text-center">
           Les coordonnées des membres sont masquées. Connectez-vous pour y accéder.
         </p>
       )}
 
-      <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
+      <div className="bg-card rounded-xl shadow-md border border-border overflow-hidden">
         <Table>
           <TableHeader 
             sortField={sortField}
@@ -150,12 +150,12 @@ const DirectoryList: FC<DirectoryListProps> = () => {
         
         {sortedMembers.length === 0 && (
           <div className="p-8 text-center">
-            <p className="text-gray-500">Aucun membre trouvé</p>
+            <p className="text-muted-foreground">Aucun membre trouvé</p>
           </div>
         )}
       </div>
       
-      <div className="text-right text-sm text-gray-500">
+      <div className="text-right text-sm text-muted-foreground">
         {sortedMembers.length} membre{sortedMembers.length !== 1 ? 's' : ''} trouvé{sortedMembers.length !== 1 ? 's' : ''}
       </div>
     </div>

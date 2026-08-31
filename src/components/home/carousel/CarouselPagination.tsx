@@ -8,7 +8,7 @@ interface CarouselPaginationProps {
 
 export const CarouselPagination = ({ current, total }: CarouselPaginationProps) => {
   return (
-    <div className="hidden md:flex items-center justify-center mt-4 text-sm text-gray-600">
+    <div className="hidden md:flex items-center justify-center mt-4 text-sm text-muted-foreground">
       <span>{current + 1} of {total}</span>
     </div>
   );

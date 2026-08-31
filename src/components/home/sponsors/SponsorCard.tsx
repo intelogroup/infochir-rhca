@@ -28,14 +28,14 @@ export const SponsorCard = ({ sponsor, index }: SponsorCardProps) => {
           className="w-full h-full object-contain mix-blend-multiply filter transition-all duration-300"
           loading="eager"
         />
-        <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 rounded-xl transition-all duration-300" />
+        <div className="absolute inset-0 bg-card/0 group-hover:bg-card/10 rounded-xl transition-all duration-300" />
       </div>
       <motion.div 
         initial={{ opacity: 0 }}
         whileHover={{ opacity: 1 }}
         className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap"
       >
-        <span className="text-sm text-gray-600 font-medium">{sponsor.name}</span>
+        <span className="text-sm text-muted-foreground font-medium">{sponsor.name}</span>
       </motion.div>
     </motion.div>
   );

@@ -97,7 +97,7 @@ export const IssueCard = ({
                   <div className="text-lg font-medium text-secondary/80 truncate">
                     {volume} • {issue}
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-500 mt-1 flex-wrap">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1 flex-wrap">
                     <Calendar className="h-4 w-4 flex-shrink-0" />
                     <span className="truncate">
                       {format(new Date(date), 'dd MMMM yyyy', { locale: fr })}
@@ -110,11 +110,11 @@ export const IssueCard = ({
                     )}
                   </div>
                   {description && (
-                    <p className="text-sm text-gray-600 mt-2 line-clamp-1">
+                    <p className="text-sm text-muted-foreground mt-2 line-clamp-1">
                       Édité par: {description}
                     </p>
                   )}
-                  <p className="text-sm text-gray-600 mt-2 line-clamp-2">
+                  <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
                     {abstract}
                   </p>
                 </div>
@@ -164,7 +164,7 @@ export const IssueCard = ({
         onClose={() => setIsModalOpen(false)}
         renderContent={(document) => (
           <div className="space-y-4">
-            <p className="text-gray-600 leading-relaxed">{abstract}</p>
+            <p className="text-muted-foreground leading-relaxed">{abstract}</p>
             <div className="text-lg font-medium text-secondary/80">
               {volume} • {issue}
             </div>

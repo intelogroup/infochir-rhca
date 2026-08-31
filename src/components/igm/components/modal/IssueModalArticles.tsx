@@ -15,8 +15,8 @@ export const IssueModalArticles = ({ issue }: IssueModalArticlesProps) => {
     return (
       <div className="space-y-4">
         <h3 className="text-[clamp(1.125rem,1.075rem+0.25vw,1.25rem)] font-semibold text-primary">Table des matières</h3>
-        <div className="p-4 rounded-lg bg-white shadow-sm">
-          <p className="text-gray-500 text-center">Aucun article disponible pour ce numéro.</p>
+        <div className="p-4 rounded-lg bg-card shadow-sm">
+          <p className="text-muted-foreground text-center">Aucun article disponible pour ce numéro.</p>
         </div>
       </div>
     );
@@ -31,12 +31,12 @@ export const IssueModalArticles = ({ issue }: IssueModalArticlesProps) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
-          className="p-4 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
+          className="p-4 rounded-lg bg-card shadow-sm hover:shadow-md transition-shadow"
         >
-          <h4 className="font-medium text-[clamp(1rem,0.95rem+0.25vw,1.125rem)] text-gray-900 mb-2">
+          <h4 className="font-medium text-[clamp(1rem,0.95rem+0.25vw,1.125rem)] text-foreground mb-2">
             {article.title}
           </h4>
-          <div className="flex flex-wrap gap-4 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] text-gray-500">
+          <div className="flex flex-wrap gap-4 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] text-muted-foreground">
             {article.pageNumber && (
               <div className="flex items-center gap-2">
                 <span>Page {article.pageNumber}</span>
@@ -49,7 +49,7 @@ export const IssueModalArticles = ({ issue }: IssueModalArticlesProps) => {
             )}
           </div>
           {article.abstract && (
-            <p className="mt-2 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] text-gray-600 leading-relaxed">
+            <p className="mt-2 text-[clamp(0.875rem,0.825rem+0.25vw,1rem)] text-muted-foreground leading-relaxed">
               {article.abstract}
             </p>
           )}

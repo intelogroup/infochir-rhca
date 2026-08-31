@@ -35,17 +35,17 @@ export const DiagnosticTable: React.FC<DiagnosticTableProps> = ({ cases }) => {
       {cases.map((item) => (
         <div 
           key={item.id}
-          className="bg-white/80 backdrop-blur-sm p-4 rounded-lg border border-gray-100 transition-all duration-300 hover:shadow-md hover:border-secondary/20"
+          className="bg-card/80 backdrop-blur-sm p-4 rounded-lg border border-border transition-all duration-300 hover:shadow-md hover:border-secondary/20"
         >
           <div className="flex justify-between items-start gap-4">
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-gray-900 mb-1 truncate group-hover:text-secondary transition-colors">
+              <h3 className="font-semibold text-foreground mb-1 truncate group-hover:text-secondary transition-colors">
                 {item.title}
               </h3>
-              <p className="text-sm text-gray-600 mb-2 line-clamp-1">
+              <p className="text-sm text-muted-foreground mb-2 line-clamp-1">
                 {item.description}
               </p>
-              <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
+              <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                 <span className="inline-flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
                   {formatDate(item.date)}
@@ -62,7 +62,7 @@ export const DiagnosticTable: React.FC<DiagnosticTableProps> = ({ cases }) => {
               <Button 
                 variant="ghost" 
                 size="sm"
-                className="h-8 text-gray-600 hover:text-secondary"
+                className="h-8 text-muted-foreground hover:text-secondary"
                 onClick={() => handleShare(item.id)}
               >
                 <Share2 className="h-3.5 w-3.5" />
@@ -70,7 +70,7 @@ export const DiagnosticTable: React.FC<DiagnosticTableProps> = ({ cases }) => {
               <Button 
                 variant="ghost" 
                 size="sm"
-                className="h-8 text-gray-600 hover:text-secondary"
+                className="h-8 text-muted-foreground hover:text-secondary"
               >
                 <FileText className="h-3.5 w-3.5" />
               </Button>

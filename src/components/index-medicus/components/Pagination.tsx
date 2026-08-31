@@ -20,10 +20,10 @@ export const Pagination = ({ currentPage, totalPages, onPageChange }: Pagination
         className="gap-2"
       >
         <ChevronLeft className="h-4 w-4" />
-        Previous
+        Précédent
       </Button>
-      <span className="flex items-center">
-        Page {currentPage + 1} of {totalPages}
+      <span className="flex items-center text-sm text-muted-foreground">
+        Page {currentPage + 1} sur {totalPages}
       </span>
       <Button
         variant="outline"
@@ -31,7 +31,7 @@ export const Pagination = ({ currentPage, totalPages, onPageChange }: Pagination
         disabled={currentPage >= totalPages - 1}
         className="gap-2"
       >
-        Next
+        Suivant
         <ChevronRight className="h-4 w-4" />
       </Button>
     </div>

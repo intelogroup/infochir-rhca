@@ -11,7 +11,7 @@ export const StatsLoading = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="p-6 bg-white shadow-sm rounded-xl">
+            <div key={i} className="p-6 bg-card shadow-sm rounded-xl">
               <Skeleton className="h-12 w-12 rounded-full mx-auto mb-4" />
               <Skeleton className="h-8 w-24 mx-auto mb-2" />
               <Skeleton className="h-4 w-32 mx-auto" />
