@@ -42,13 +42,13 @@ export const ShareAction: React.FC<ShareActionProps> = ({ articleId, articleTitl
 
   return (
     <Button
-      variant="outline"
+      variant="ghost"
       size="sm"
-      className="bg-muted px-1 py-0.5 rounded text-primary hover:bg-blue-100 transition-all duration-200 text-[10px] font-medium h-5"
+      className="h-8 rounded-none px-2 text-xs font-medium text-foreground/70 hover:bg-transparent hover:text-primary"
       onClick={handleShare}
       disabled={isSharing}
     >
-      <Share2 className="mr-0.5 h-2 w-2" />
+      <Share2 className="mr-1.5 h-3.5 w-3.5" />
       Partager
     </Button>
   );

@@ -13,7 +13,7 @@ export const TableHeader = () => {
         <TableHead className="hidden sm:table-cell">Source</TableHead>
         <TableHead className="hidden md:table-cell">Catégorie</TableHead>
         <TableHead className="hidden md:table-cell">Tags</TableHead>
-        <TableHead className="text-right w-[80px]">Actions</TableHead>
+        <TableHead className="text-right w-[160px]">Actions</TableHead>
       </TableRow>
     </TableHeaderBase>
   );
