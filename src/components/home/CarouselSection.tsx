@@ -24,7 +24,7 @@ export const CarouselSection = () => {
   return (
     <section 
       ref={sectionRef}
-      className="section border-t border-border bg-muted/30 px-4 sm:px-6 lg:px-8 relative"
+      className="section border-t border-border bg-background px-4 sm:px-6 lg:px-8 relative"
       aria-labelledby="carousel-section-title"
     >
       <div className="max-w-7xl mx-auto relative">
