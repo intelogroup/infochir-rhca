@@ -20,7 +20,7 @@ export const FoundersSection = () => {
           <p className="mt-2 text-gray-600">{error.message}</p>
           <button 
             onClick={() => window.location.reload()} 
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+            className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary-light transition-colors"
           >
             Réessayer
           </button>
@@ -34,7 +34,7 @@ export const FoundersSection = () => {
       className="py-24 relative overflow-hidden"
       aria-label="Membres fondateurs"
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#41b06e] to-[#41b06e] opacity-5" />
+      
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -49,7 +49,7 @@ export const FoundersSection = () => {
               className="w-8 h-8 text-[#1E40AF] animate-pulse" 
               aria-hidden="true"
             />
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-[#1E40AF] via-[#41b06e] to-[#41b06e] bg-clip-text text-transparent">
+            <h2 className="type-h1 text-foreground">
               Membres Fondateurs
             </h2>
             <Star 

@@ -120,7 +120,7 @@ export const NewsletterSection = () => {
 
   return (
     <section className="relative py-24 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-primary-light opacity-95" />
+      <div className="absolute inset-0 bg-secondary" />
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
       
       <motion.div 
@@ -130,11 +130,11 @@ export const NewsletterSection = () => {
         transition={{ duration: 0.6 }}
       >
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4 text-white bg-clip-text">
+          <h2 className="type-h1 mb-4 text-secondary-foreground">
             Contactez-nous
           </h2>
           
-          <p className="text-lg text-white/90 mb-4 max-w-2xl mx-auto">
+          <p className="text-lg text-secondary-foreground/80 mb-4 max-w-2xl mx-auto">
             Envoyez-nous un message pour toute question, suggestion ou collaboration
           </p>
         </div>
@@ -142,10 +142,10 @@ export const NewsletterSection = () => {
         <div className="max-w-2xl mx-auto">
           <div className="flex flex-col items-center text-center mb-8">
             <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 shadow-lg">
-              <Mail className="h-8 w-8 text-white" />
+              <Mail className="h-8 w-8 text-secondary-foreground" />
             </div>
             
-            <h3 className="text-2xl font-bold mb-2 text-white">
+            <h3 className="font-serif text-2xl mb-2 text-secondary-foreground">
               Envoyez-nous un message
             </h3>
           </div>
@@ -172,14 +172,14 @@ export const NewsletterSection = () => {
                   name="name"
                   render={({ field }) => (
                     <FormItem className="space-y-2">
-                      <FormLabel className="text-white/90 text-sm font-medium">
+                      <FormLabel className="text-secondary-foreground/80 text-sm font-medium">
                         Nom*
                       </FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           placeholder="Votre nom"
-                          className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white/20"
+                          className="bg-white/10 border-white/20 text-white placeholder:text-secondary-foreground/60 focus:bg-white/20"
                           disabled={isSubmitting}
                           autoComplete="name"
                         />
@@ -194,14 +194,14 @@ export const NewsletterSection = () => {
                   name="phone"
                   render={({ field }) => (
                     <FormItem className="space-y-2">
-                      <FormLabel className="text-white/90 text-sm font-medium">
+                      <FormLabel className="text-secondary-foreground/80 text-sm font-medium">
                         Téléphone
                       </FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           placeholder="Votre numéro"
-                          className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white/20"
+                          className="bg-white/10 border-white/20 text-white placeholder:text-secondary-foreground/60 focus:bg-white/20"
                           disabled={isSubmitting}
                           autoComplete="tel"
                         />
@@ -217,7 +217,7 @@ export const NewsletterSection = () => {
                 name="email"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel className="text-white/90 text-sm font-medium">
+                    <FormLabel className="text-secondary-foreground/80 text-sm font-medium">
                       Email*
                     </FormLabel>
                     <FormControl>
@@ -225,7 +225,7 @@ export const NewsletterSection = () => {
                         {...field}
                         type="email"
                         placeholder="Votre adresse email"
-                        className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white/20"
+                        className="bg-white/10 border-white/20 text-white placeholder:text-secondary-foreground/60 focus:bg-white/20"
                         disabled={isSubmitting}
                         autoComplete="email"
                       />
@@ -240,14 +240,14 @@ export const NewsletterSection = () => {
                 name="message"
                 render={({ field }) => (
                   <FormItem className="space-y-2">
-                    <FormLabel className="text-white/90 text-sm font-medium">
+                    <FormLabel className="text-secondary-foreground/80 text-sm font-medium">
                       Message*
                     </FormLabel>
                     <FormControl>
                       <Textarea
                         {...field}
                         placeholder="Votre message"
-                        className="bg-white/10 border-white/20 text-white placeholder:text-white/60 focus:bg-white/20 min-h-[120px]"
+                        className="bg-white/10 border-white/20 text-white placeholder:text-secondary-foreground/60 focus:bg-white/20 min-h-[120px]"
                         disabled={isSubmitting}
                       />
                     </FormControl>
@@ -271,7 +271,7 @@ export const NewsletterSection = () => {
                 </Button>
               </motion.div>
               
-              <p className="text-white/60 text-sm text-center mt-4">
+              <p className="text-secondary-foreground/60 text-sm text-center mt-4">
                 * Champs obligatoires
               </p>
             </form>

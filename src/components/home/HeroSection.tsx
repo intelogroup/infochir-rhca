@@ -8,16 +8,13 @@ import { useNavigate } from "react-router-dom";
 // Hero images with their optimized versions
 const heroImages = [
   {
-    src: '/lovable-uploads/75589792-dc14-4d53-9aae-5796c76a3b39.png',
-    gradient: 'from-[#1E40AF] via-[#348d57] to-[#348d57]'
+    src: '/lovable-uploads/75589792-dc14-4d53-9aae-5796c76a3b39.png'
   },
   {
-    src: '/lovable-uploads/4e3c1f79-c9cc-4d01-8520-1af84d350a2a.png',
-    gradient: 'from-[#1E3A8A] via-[#2e7d4b] to-[#2e7d4b]'
+    src: '/lovable-uploads/4e3c1f79-c9cc-4d01-8520-1af84d350a2a.png'
   },
   {
-    src: '/lovable-uploads/745435b6-9abc-4051-b168-cf77c96ed9a0.png',
-    gradient: 'from-[#0C4A6E] via-[#307045] to-[#307045]'
+    src: '/lovable-uploads/745435b6-9abc-4051-b168-cf77c96ed9a0.png'
   }
 ];
 
@@ -147,31 +144,26 @@ export const HeroSection = () => {
     }
   }, [cycleCount]);
 
-  const currentGradient = heroImages[currentIndex].gradient;
   const currentImageSrc = heroImages[currentIndex].src;
 
   return (
     <section 
       ref={sectionRef} 
-      className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(70vh-4rem)] sm:min-h-[calc(80vh-4rem-30px)] pt-16 sm:pt-20 md:pt-28 z-0 content-visibility-auto"
+      className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[520px] sm:min-h-[560px] lg:min-h-[620px] flex items-center pt-20 sm:pt-24 z-0 content-visibility-auto"
     >
-      {/* Static background gradient that's always visible */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#348d57] to-[#348d57] opacity-90 z-0"></div>
-      
-      {/* Animated gradient and image */}
+      {/* Flat ink field — no gradients */}
+      <div className="absolute inset-0 bg-secondary z-0" />
+
       <AnimatePresence mode="wait">
         <div
           key={currentIndex}
           className="absolute inset-0 z-1"
         >
-          {/* Current gradient background */}
-          <div 
-            className={`absolute inset-0 bg-gradient-to-br ${currentGradient} opacity-70 z-0`}
-          />
+          
           
           {/* Current hero image */}
           <motion.div 
-            className="absolute bottom-0 right-0 w-[85%] sm:w-[75%] h-[calc(4/5*120%-30px)] md:h-[calc(3/4*120%-30px)] lg:h-[calc(2/3*120%-30px)] z-2"
+            className="absolute bottom-0 right-0 hidden md:block w-[46%] h-[92%] z-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -181,8 +173,8 @@ export const HeroSection = () => {
               backgroundSize: 'contain',
               backgroundPosition: 'right bottom',
               backgroundRepeat: 'no-repeat',
-              opacity: 0.9,
-              right: '5%',
+              opacity: 0.85,
+              right: '2%',
               willChange: 'opacity',
               transform: 'translateZ(0)', // Force hardware acceleration
             }}
@@ -192,26 +184,28 @@ export const HeroSection = () => {
       
       
       {/* Content section */}
-      <div className="relative max-w-7xl mx-auto text-left z-10">
+      <div className="relative max-w-7xl mx-auto text-left z-10 pb-16 sm:pb-20">
         <div className="max-w-xl lg:max-w-3xl">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 animate-fade-up tracking-tight md:whitespace-nowrap whitespace-normal mt-2 sm:mt-0">
-            Votre espace scientifique<br className="md:hidden" /> en ligne
+          <p className="type-eyebrow text-secondary-foreground/60 mb-4">Info Chir · Haïti</p>
+          <div className="rule-gold mb-6" />
+          <h1 className="type-display text-secondary-foreground mb-5 sm:mb-6 animate-fade-up">
+            Votre espace scientifique<br className="hidden sm:block" /> en ligne
           </h1>
-          <p className="text-sm sm:text-base md:text-lg text-white/90 mb-6 sm:mb-8 animate-fade-up leading-relaxed">
+          <p className="type-lead text-secondary-foreground/75 max-w-xl mb-8 animate-fade-up">
             La plateforme de référence pour tous les professionnels de la santé, étudiants en médecine et le grand public.
           </p>
-          <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 items-start w-[40%]">
-            <Button 
-              size="default"
-              variant="secondary" 
-              className="group bg-white hover:bg-white/90 text-[#122db0] font-medium text-xs sm:text-sm md:text-base py-1.5 sm:py-2 w-full sm:w-auto"
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 items-start">
+            <Button
+              size="lg"
+              className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary-light rounded-md"
               onClick={() => navigate('/submission')}
             >
               Soumettre votre article
             </Button>
-            <Button 
-              size="default"
-              className="bg-transparent hover:bg-white/10 text-white border-white border text-xs sm:text-sm md:text-base py-1.5 sm:py-2 w-full sm:w-auto"
+            <Button
+              size="lg"
+              variant="outline"
+              className="w-full sm:w-auto bg-transparent text-secondary-foreground border-secondary-foreground/30 hover:bg-secondary-foreground/10 hover:text-secondary-foreground rounded-md"
               onClick={() => navigate('/about')}
             >
               Découvrir notre mission

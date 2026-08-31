@@ -16,10 +16,10 @@ export const ProductFeatures = ({ features, className }: ProductFeaturesProps) =
           initial={{ opacity: 0, x: -10 }}
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ delay: index * 0.1 }}
-          className="flex items-center gap-2 text-gray-600 group"
+          className="flex items-center gap-2 text-muted-foreground group"
         >
           <div className="w-1.5 h-1.5 rounded-full bg-primary/60 group-hover:bg-primary/80 transition-colors flex-shrink-0" />
-          <span className="text-sm group-hover:text-gray-800 transition-colors line-clamp-1">{feature}</span>
+          <span className="text-sm group-hover:text-foreground transition-colors line-clamp-1">{feature}</span>
         </motion.div>
       ))}
     </div>

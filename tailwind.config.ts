@@ -18,6 +18,10 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['"IBM Plex Sans"', "ui-sans-serif", "system-ui", "sans-serif"],
+        serif: ['"Libre Baskerville"', "Georgia", '"Times New Roman"', "serif"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -34,6 +38,10 @@ export default {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
           light: "hsl(var(--secondary-light))",
+        },
+        gold: {
+          DEFAULT: "hsl(var(--gold))",
+          foreground: "hsl(var(--gold-foreground))",
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
@@ -55,18 +63,27 @@ export default {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
+        surface: {
+          inset: "hsl(var(--surface-inset))",
+        },
+        /* Legacy alias — mapped onto the brand so stray usages stay on-palette */
         ocean: {
-          DEFAULT: "#0EA5E9",
-          hover: "#0C8BC7",
-          light: "#38BDF8",
-          dark: "#0369A1",
+          DEFAULT: "hsl(var(--primary))",
+          hover: "hsl(var(--primary-dark))",
+          light: "hsl(var(--primary-light))",
+          dark: "hsl(var(--primary-dark))",
         },
       },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+      boxShadow: {
+        sm: "var(--shadow-sm)",
+        pop: "var(--shadow-pop)",
       },
+      borderRadius: {
+        lg: "var(--radius-lg)",
+        md: "var(--radius)",
+        sm: "var(--radius-sm)",
+      },
+
 
       keyframes: {
         "fade-up": {

@@ -15,7 +15,7 @@ export const FoundersSectionHeader = () => {
           className="w-8 h-8 text-[#1E40AF] animate-pulse" 
           aria-hidden="true"
         />
-        <h2 className="text-4xl font-bold bg-gradient-to-r from-[#1E40AF] via-[#41b06e] to-[#41b06e] bg-clip-text text-transparent">
+        <h2 className="type-h1 text-foreground">
           Membres Fondateurs
         </h2>
         <Star 

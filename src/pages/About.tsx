@@ -111,7 +111,7 @@ const About = () => {
         </section>
 
         {/* About RHCA Section */}
-        <section className="py-16 bg-gray-50">
+        <section className="section bg-muted/40 border-t border-border">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto text-center">
               <motion.div

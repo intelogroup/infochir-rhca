@@ -22,7 +22,7 @@ export const StatCard = ({ title, value, description, icon, iconClassName, index
       layout
       className="relative overflow-hidden bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-[#F8FAFC] to-white opacity-50" />
+      
       <div className="relative p-4">
         <StatsCard
           icon={icon}

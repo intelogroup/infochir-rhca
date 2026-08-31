@@ -64,7 +64,7 @@ const DonateSuccess = () => {
 
   return (
     <MainLayout>
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-[50px]">
+      <div className="min-h-screen bg-background pt-[50px]">
         <div className="max-w-4xl mx-auto px-4 py-12">
           <Card className="shadow-lg backdrop-blur-sm bg-white/80 border-gray-100/20">
             <CardContent className="flex flex-col items-center justify-center p-8 space-y-6">

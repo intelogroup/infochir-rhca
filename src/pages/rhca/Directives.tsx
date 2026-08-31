@@ -19,7 +19,7 @@ const RHCADirectives = () => {
         <div className="space-y-8">
           {/* Contact Information */}
           <DirectiveSection title="Informations de contact" icon={<Users className="h-6 w-6 text-secondary" />}>
-            <div className="bg-gray-50 rounded-lg p-6">
+            <div className="bg-muted rounded-lg p-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <h3 className="font-semibold text-secondary mb-4">Coordonnées Info CHIR</h3>

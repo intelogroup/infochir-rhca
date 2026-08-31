@@ -1,11 +1,8 @@
-import { LucideIcon } from "lucide-react";
+import { LucideIcon, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ProductBadge } from "./product/ProductBadge";
-import { ProductIcon } from "./product/ProductIcon";
+import { Card } from "@/components/ui/card";
 import { ProductFeatures } from "./product/ProductFeatures";
-import { motion } from "framer-motion";
+
 interface ProductCardProps {
   title: string;
   description: string;
@@ -17,116 +14,72 @@ interface ProductCardProps {
   fullName?: string;
   link?: string;
 }
+
+const DEFAULT_FEATURES: Record<string, string[]> = {
+  RHCA: ["Publication d'articles", "Diffusion des connaissances", "Communauté médicale"],
+  IGM: ["Actualités médicales", "Tendances cliniques", "Perspective unique sur la médecine"],
+  "Atlas ADC": ["Documentation illustrée", "Guide de diagnostic", "Accessible en ligne 24/7"],
+  "Index Medicus": ["Repérer par auteur", "Repérer par titre", "Base de données scientifique"],
+};
+
+const FULL_NAMES: Record<string, string> = {
+  RHCA: "Revue Haïtienne de Chirurgie et d'Anesthésiologie",
+  IGM: "Info Gazette Médicale",
+  "Atlas ADC": "Atlas de Diagnostic Chirurgical",
+  "Index Medicus": "Index Medicus",
+};
+
 export const ProductCard = ({
   title,
-  description,
   icon,
   href,
   onClick,
   logo,
   features = [],
   fullName,
-  link
+  link,
 }: ProductCardProps) => {
-  const getProductFeatures = (title: string) => {
-    switch (title) {
-      case "RHCA":
-        return ["Publication d'articles", "Diffusion des connaissances", "Communauté médicale"];
-      case "IGM":
-        return ["Actualités médicales", "Tendances cliniques", "Perspective unique sur la médecine"];
-      case "Atlas ADC":
-        return ["Documentation illustrée", "Guide de diagnostic", "Accessible en ligne 24/7"];
-      case "Index Medicus":
-        return ["Repérer par auteur", "Repérer par titre", "Base de données scientifique"];
-      default:
-        return features;
-    }
-  };
-  const getHoverColor = (title: string) => {
-    if (title === "Atlas ADC" || title === "RHCA") {
-      return "hover:bg-[#41b06e]/90";
-    }
-    return "hover:bg-[#1E40AF]/90";
-  };
-  const shouldShowBadge = (title: string) => {
-    return true; // Now showing badge on all cards, including Index Medicus
-  };
+  const Icon = icon;
+  const resolvedFeatures = DEFAULT_FEATURES[title] ?? features;
+  const name = fullName ?? FULL_NAMES[title] ?? title;
 
-  // Get the full display name for the product
-  const getFullProductName = (title: string) => {
-    if (fullName) return fullName;
-    switch (title) {
-      case "RHCA":
-        return "Revue Haïtienne de Chirurgie et d'Anesthésiologie";
-      case "IGM":
-        return "Info Gazette Médicale";
-      case "Atlas ADC":
-        return "Atlas de Diagnostic Chirurgical";
-      case "Index Medicus":
-        return "Index Medicus";
-      default:
-        return title;
-    }
-  };
-  const CardComponent = () => <motion.div className="h-[440px] perspective-1000" whileHover={{
-    scale: 1.03
-  }} transition={{
-    type: "spring",
-    stiffness: 300
-  }}>
-      <Card className="group h-full relative overflow-hidden border-0 flex flex-col">
-        {/* Gradient background overlay */}
-        <motion.div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF]/80 via-[#41b06e]/70 to-[#41b06e]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500" initial={{
-        opacity: 0
-      }} whileHover={{
-        opacity: 1
-      }} />
-        
-        {/* Glass effect background */}
-        <div className="absolute inset-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-[2px] group-hover:backdrop-blur-[4px] transition-all duration-500" />
-        
-        <div className="relative z-10 flex flex-col h-full p-6">
-          <CardHeader className="space-y-3 flex-shrink-0 pb-2 p-0">
-            {shouldShowBadge(title) && <motion.div className="absolute top-0 right-0 p-3" whileHover={{
-            rotate: 5
-          }}>
-                <ProductBadge />
-              </motion.div>}
-            <motion.div className="flex justify-center h-20 mb-4" whileHover={{
-            scale: 1.1
-          }} transition={{
-            type: "spring",
-            stiffness: 400
-          }}>
-              {logo ? <img src={logo} alt={`${title} logo`} className="object-contain h-16 w-auto max-w-full" /> : <ProductIcon icon={icon} logo={logo} title={title} />}
-            </motion.div>
-            <CardTitle className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#1E40AF] via-[#41b06e] to-[#41b06e] text-left truncate min-h-[2rem] flex items-center">
-              {getFullProductName(title)}
-            </CardTitle>
-            
-          </CardHeader>
-          
-          <div className="flex-grow mt-3 mb-4 overflow-hidden">
-            <ProductFeatures features={getProductFeatures(title)} />
-          </div>
-          
-          <div className="mt-auto pt-2">
-            <Button variant="ghost" className={`w-full group/button relative overflow-hidden bg-gradient-to-r from-[#1E40AF] via-[#41b06e] to-[#41b06e] text-white opacity-90 hover:opacity-100 ${getHoverColor(title)}`}>
-              <motion.span className="relative z-10" whileHover={{
-              scale: 1.05
-            }} transition={{
-              type: "spring",
-              stiffness: 400
-            }}>
-                Découvrir
-              </motion.span>
-            </Button>
-          </div>
+  const CardComponent = () => (
+    <Card className="group h-full flex flex-col rounded-lg border border-border bg-card p-6 text-left shadow-none transition-colors duration-200 hover:border-primary/50">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-md border border-border bg-background">
+          {logo ? (
+            <img src={logo} alt={`Logo ${title}`} className="h-9 w-auto object-contain" loading="lazy" />
+          ) : (
+            <Icon className="h-6 w-6 text-primary" aria-hidden="true" />
+          )}
         </div>
-      </Card>
-    </motion.div>;
+        <span className="type-eyebrow pt-1">{title}</span>
+      </div>
+
+      <h3 className="mt-5 font-serif text-lg leading-snug text-foreground">{name}</h3>
+      <div className="mt-4 h-px w-full bg-border" />
+
+      <div className="mt-4 flex-grow">
+        <ProductFeatures features={resolvedFeatures} />
+      </div>
+
+      <span className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-primary">
+        Découvrir
+        <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true" />
+      </span>
+    </Card>
+  );
+
   if (onClick) {
-    return <button onClick={onClick} className="w-full"><CardComponent /></button>;
+    return (
+      <button onClick={onClick} className="block h-full w-full text-left">
+        <CardComponent />
+      </button>
+    );
   }
-  return <Link to={href || link || "#"} className="block w-full"><CardComponent /></Link>;
+  return (
+    <Link to={href || link || "#"} className="block h-full w-full">
+      <CardComponent />
+    </Link>
+  );
 };

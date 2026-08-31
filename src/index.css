@@ -20,119 +20,126 @@
 
 @layer base {
   /* ==========================================================================
-     Design system — "Clinical Editorial"
-     Paper + Ink, one brand blue, green demoted to status/accent.
-     No gradients. Hairlines instead of shadows.
+     Design system — "Emerald Prestige"
+     Paper #FAF9F6 · Ink #0E1A14 · Emerald #1F8A54 · Gold #C9A84C
+     Flat surfaces, hairline borders, no gradients.
      ========================================================================== */
   :root {
     /* Surfaces */
-    --background: 240 20% 99%;      /* Paper  #FCFCFD */
-    --foreground: 220 49% 8%;       /* Ink    #0B1220 */
+    --background: 45 29% 97%;        /* Paper  #FAF9F6 */
+    --foreground: 150 30% 8%;        /* Ink    #0E1A14 */
 
     --card: 0 0% 100%;
-    --card-foreground: 220 49% 8%;
+    --card-foreground: 150 30% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 49% 8%;
+    --popover-foreground: 150 30% 8%;
 
-    --surface-inset: 220 20% 97%;   /* table headers, filter bars */
+    --surface-inset: 45 20% 95%;     /* table headers, filter bars */
 
-    /* Brand: InfoChir blue — links + primary actions */
-    --primary: 212 87% 33%;         /* #0B4F9C */
-    --primary-foreground: 0 0% 100%;
-    --primary-light: 212 80% 45%;
-    --primary-dark: 212 88% 22%;
+    /* Brand: RHCA emerald — primary actions, links */
+    --primary: 150 63% 33%;          /* #1F8A54 */
+    --primary-foreground: 45 29% 97%;
+    --primary-light: 150 50% 42%;
+    --primary-dark: 150 66% 22%;
 
-    /* RHCA green — status / badges only, never large fills */
-    --secondary: 150 63% 33%;       /* #1F8A54 */
-    --secondary-foreground: 0 0% 100%;
-    --secondary-light: 150 50% 44%;
+    /* Ink as the secondary surface (dark bands, inverse buttons) */
+    --secondary: 150 30% 8%;
+    --secondary-foreground: 45 29% 97%;
+    --secondary-light: 150 20% 18%;
 
-    --muted: 220 20% 97%;
-    --muted-foreground: 215 12% 40%; /* #5A6472 — AA at 14px on Paper */
+    /* Editorial gold — rules, small marks, never large fills */
+    --gold: 44 54% 54%;              /* #C9A84C */
+    --gold-foreground: 150 30% 8%;
 
-    --accent: 220 20% 96%;
-    --accent-foreground: 212 87% 33%;
+    --muted: 45 20% 95%;
+    --muted-foreground: 150 8% 36%;  /* AA on Paper at 13px */
 
-    --destructive: 0 72% 45%;
-    --destructive-foreground: 0 0% 100%;
+    --accent: 45 20% 94%;
+    --accent-foreground: 150 30% 8%;
 
-    --border: 220 15% 92%;          /* Line #E8EAEE */
-    --input: 220 15% 88%;
-    --ring: 212 87% 33%;
+    --destructive: 4 66% 44%;
+    --destructive-foreground: 45 29% 97%;
 
-    /* Radii */
-    --radius: 0.625rem;             /* 10px */
-    --radius-sm: 0.375rem;          /* 6px  */
-    --radius-lg: 0.875rem;          /* 14px */
+    --border: 45 14% 88%;
+    --input: 45 14% 84%;
+    --ring: 150 63% 33%;
+
+    /* Radii — near-square, editorial */
+    --radius: 0.375rem;              /* 6px */
+    --radius-sm: 0.25rem;            /* 4px */
+    --radius-lg: 0.5rem;             /* 8px */
 
     /* Elevation — two steps only */
-    --shadow-sm: 0 1px 2px hsl(220 49% 8% / 0.04);
-    --shadow-pop: 0 8px 24px -12px hsl(220 49% 8% / 0.18);
+    --shadow-sm: 0 1px 2px hsl(150 30% 8% / 0.04);
+    --shadow-pop: 0 8px 24px -12px hsl(150 30% 8% / 0.18);
 
-    /* Legacy aliases kept so existing utilities stay flat, not gradient */
+    /* Legacy aliases kept so old utilities render flat, not gradient */
     --shadow-card: var(--shadow-sm);
     --shadow-elevated: var(--shadow-pop);
     --shadow-elegant: var(--shadow-pop);
 
     --transition-base: 180ms cubic-bezier(0.4, 0, 0.2, 1);
 
-    --sidebar-background: 220 20% 98%;
-    --sidebar-foreground: 215 12% 32%;
-    --sidebar-primary: 212 87% 33%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 20% 95%;
-    --sidebar-accent-foreground: 220 49% 8%;
-    --sidebar-border: 220 15% 92%;
-    --sidebar-ring: 212 87% 33%;
+    --sidebar-background: 45 20% 96%;
+    --sidebar-foreground: 150 8% 30%;
+    --sidebar-primary: 150 63% 33%;
+    --sidebar-primary-foreground: 45 29% 97%;
+    --sidebar-accent: 45 20% 92%;
+    --sidebar-accent-foreground: 150 30% 8%;
+    --sidebar-border: 45 14% 88%;
+    --sidebar-ring: 150 63% 33%;
   }
 
 
   .dark {
-    --background: 220 40% 6%;
-    --foreground: 220 20% 96%;
+    --background: 150 28% 6%;
+    --foreground: 45 20% 95%;
 
-    --card: 220 36% 9%;
-    --card-foreground: 220 20% 96%;
+    --card: 150 24% 9%;
+    --card-foreground: 45 20% 95%;
 
-    --popover: 220 36% 9%;
-    --popover-foreground: 220 20% 96%;
+    --popover: 150 24% 9%;
+    --popover-foreground: 45 20% 95%;
 
-    --surface-inset: 220 32% 12%;
+    --surface-inset: 150 20% 12%;
 
-    --primary: 212 80% 62%;
-    --primary-foreground: 220 49% 8%;
-    --primary-light: 212 80% 72%;
-    --primary-dark: 212 82% 34%;
+    --primary: 150 48% 48%;
+    --primary-foreground: 150 30% 8%;
+    --primary-light: 150 44% 60%;
+    --primary-dark: 150 60% 26%;
 
-    --secondary: 150 48% 46%;
-    --secondary-foreground: 220 49% 8%;
-    --secondary-light: 150 44% 58%;
+    --secondary: 45 20% 95%;
+    --secondary-foreground: 150 30% 8%;
+    --secondary-light: 45 14% 82%;
 
-    --muted: 220 30% 13%;
-    --muted-foreground: 215 14% 66%;
+    --gold: 44 50% 60%;
+    --gold-foreground: 150 30% 8%;
 
-    --accent: 220 30% 15%;
-    --accent-foreground: 220 20% 96%;
+    --muted: 150 18% 13%;
+    --muted-foreground: 45 10% 68%;
 
-    --destructive: 0 62% 45%;
-    --destructive-foreground: 0 0% 100%;
+    --accent: 150 18% 15%;
+    --accent-foreground: 45 20% 95%;
 
-    --border: 220 24% 17%;
-    --input: 220 24% 20%;
-    --ring: 212 80% 62%;
+    --destructive: 4 58% 46%;
+    --destructive-foreground: 45 20% 95%;
+
+    --border: 150 14% 17%;
+    --input: 150 14% 20%;
+    --ring: 150 48% 48%;
 
     --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.4);
     --shadow-pop: 0 8px 24px -12px hsl(0 0% 0% / 0.6);
 
-    --sidebar-background: 220 36% 9%;
-    --sidebar-foreground: 220 20% 92%;
-    --sidebar-primary: 212 80% 62%;
-    --sidebar-primary-foreground: 220 49% 8%;
-    --sidebar-accent: 220 30% 15%;
-    --sidebar-accent-foreground: 220 20% 96%;
-    --sidebar-border: 220 24% 17%;
-    --sidebar-ring: 212 80% 62%;
+    --sidebar-background: 150 24% 9%;
+    --sidebar-foreground: 45 20% 92%;
+    --sidebar-primary: 150 48% 48%;
+    --sidebar-primary-foreground: 150 30% 8%;
+    --sidebar-accent: 150 18% 15%;
+    --sidebar-accent-foreground: 45 20% 95%;
+    --sidebar-border: 150 14% 17%;
+    --sidebar-ring: 150 48% 48%;
   }
 
   * {
@@ -155,29 +162,31 @@
 }
 
 @layer components {
-  /* Type scale — use these instead of ad-hoc text-3xl/4xl combos */
+  /* Type scale — Libre Baskerville headings, IBM Plex Sans body */
   .type-display {
-    @apply text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-[-0.02em] leading-[1.08];
+    @apply font-serif text-[2rem] sm:text-4xl lg:text-[3.25rem] font-normal tracking-[-0.015em] leading-[1.16];
   }
   .type-h1 {
-    @apply text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-[-0.02em] leading-tight;
+    @apply font-serif text-2xl sm:text-3xl lg:text-[2.5rem] font-normal tracking-[-0.015em] leading-[1.15];
   }
   .type-h2 {
-    @apply text-xl sm:text-2xl font-semibold tracking-[-0.015em] leading-snug;
+    @apply font-serif text-xl sm:text-2xl font-normal tracking-[-0.01em] leading-snug;
   }
   .type-h3 {
-    @apply text-base sm:text-lg font-semibold leading-snug;
+    @apply font-serif text-base sm:text-lg font-bold leading-snug;
   }
   .type-lead {
-    @apply text-base sm:text-lg text-muted-foreground leading-relaxed;
+    @apply text-base sm:text-lg text-muted-foreground leading-relaxed font-light;
   }
   .type-meta {
     @apply text-[13px] text-muted-foreground;
   }
-  /* Editorial serif for journal titles / prose */
+  /* Small caps eyebrow label */
+  .type-eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground;
+  }
   .type-serif {
-    font-family: Georgia, "Iowan Old Style", "Times New Roman", serif;
-    letter-spacing: -0.01em;
+    @apply font-serif;
   }
 
   /* Standard section rhythm */
@@ -186,6 +195,10 @@
   }
   .container-content {
     @apply mx-auto w-full max-w-[72rem] px-4 sm:px-6 lg:px-8;
+  }
+  /* Thin editorial rule */
+  .rule-gold {
+    @apply h-px w-10 bg-gold;
   }
   /* Hairline card — replaces heavy shadow cards */
   .surface-card {
