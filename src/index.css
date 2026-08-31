@@ -164,7 +164,7 @@
 @layer components {
   /* Type scale — Libre Baskerville headings, IBM Plex Sans body */
   .type-display {
-    @apply font-serif text-[2rem] sm:text-4xl lg:text-[3.25rem] font-normal tracking-[-0.015em] leading-[1.08];
+    @apply font-serif text-[2rem] sm:text-4xl lg:text-[3.25rem] font-normal tracking-[-0.015em] leading-[1.16];
   }
   .type-h1 {
     @apply font-serif text-2xl sm:text-3xl lg:text-[2.5rem] font-normal tracking-[-0.015em] leading-[1.15];
