@@ -132,9 +132,8 @@ export const NewsletterSection = () => {
         <SectionHeading
           tone="inverted"
           align="center"
-          eyebrow="Écrire à la rédaction"
-          title="Une question, un manuscrit, une correction ?"
-          description="La rédaction répond aux auteurs, lecteurs et institutions. Réponse sous quelques jours ouvrables."
+          title="Contactez-nous"
+          description="Envoyez-nous un message pour toute question, suggestion ou collaboration"
         />
         
         <div className="max-w-2xl mx-auto">

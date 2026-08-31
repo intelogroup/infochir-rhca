@@ -81,9 +81,7 @@ const SponsorsSection: FC<SponsorsSectionProps> = () => {
         {/* Partners Section */}
         <div className="mb-16">
           <SectionHeading
-            eyebrow="Partenaires"
-            title="Les institutions qui portent Info Chir"
-            description="Sociétés savantes, facultés et hôpitaux associés à la diffusion de nos publications."
+            title="Nos Partenaires"
           />
           <div 
             className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
@@ -101,9 +99,7 @@ const SponsorsSection: FC<SponsorsSectionProps> = () => {
         {/* Sponsors Section */}
         <div>
           <SectionHeading
-            eyebrow="Sponsors"
-            title="Ils financent l'accès libre"
-            description="Le soutien de ces partenaires permet de publier et d'archiver sans frais pour les lecteurs."
+            title="Nos Sponsors"
           />
           <div 
             className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
