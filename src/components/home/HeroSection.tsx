@@ -151,19 +151,15 @@ export const HeroSection = () => {
       ref={sectionRef} 
       className="relative px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[calc(70vh-4rem)] sm:min-h-[calc(80vh-4rem-30px)] pt-16 sm:pt-20 md:pt-28 z-0 content-visibility-auto"
     >
-      {/* Static background gradient that's always visible */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#1E40AF] via-[#348d57] to-[#348d57] opacity-90 z-0"></div>
-      
-      {/* Animated gradient and image */}
+      {/* Flat ink field — no gradients */}
+      <div className="absolute inset-0 bg-secondary z-0" />
+
       <AnimatePresence mode="wait">
         <div
           key={currentIndex}
           className="absolute inset-0 z-1"
         >
-          {/* Current gradient background */}
-          <div 
-            className={`absolute inset-0 bg-gradient-to-br ${currentGradient} opacity-70 z-0`}
-          />
+          
           
           {/* Current hero image */}
           <motion.div 
