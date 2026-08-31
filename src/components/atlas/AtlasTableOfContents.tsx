@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { useAtlasArticles } from "./hooks/useAtlasArticles";
+import type { AtlasChapter } from "./types";
 import { Link } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
