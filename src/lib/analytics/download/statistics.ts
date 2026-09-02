@@ -91,35 +91,42 @@ export const getDailyDownloadStats = async (daysBack = 7) => {
 };
 
 /**
- * Get all download statistics aggregated with document type breakdown
- * Now using the overall_download_stats_view for more efficient queries
+ * Get all download statistics aggregated with document type breakdown.
+ * Uses the aggregate-only RPC so public visitors get real totals
+ * (the underlying view is blocked by row level security for anonymous users).
  */
 export const getOverallDownloadStats = async () => {
   try {
-    const { data, error } = await supabase
-      .from('overall_download_stats_view')
-      .select('*')
-      .single();
-      
+    const { data, error } = await (supabase as any).rpc('get_public_download_stats');
+
     if (error) {
       logger.error('Error fetching overall download stats:', error);
       return null;
     }
-    
-    // Process document_types if needed
-    if (data && data.document_types_stats) {
-      // If document_types_stats is a string (JSON), parse it
-      if (typeof data.document_types_stats === 'string') {
-        try {
-          data.document_types_stats = JSON.parse(data.document_types_stats);
-        } catch (e) {
-          logger.error('Error parsing document_types_stats:', e);
-          data.document_types_stats = {};
-        }
+
+    const row = Array.isArray(data) ? data[0] : data;
+    if (!row) return null;
+
+    let documentTypesStats = row.document_types_stats;
+    if (typeof documentTypesStats === 'string') {
+      try {
+        documentTypesStats = JSON.parse(documentTypesStats);
+      } catch (e) {
+        logger.error('Error parsing document_types_stats:', e);
+        documentTypesStats = {};
       }
     }
-    
-    return data;
+
+    return {
+      total_downloads: Number(row.total_downloads) || 0,
+      successful_downloads: Number(row.successful_downloads) || 0,
+      failed_downloads: Number(row.failed_downloads) || 0,
+      totalDownloads: Number(row.total_downloads) || 0,
+      successfulDownloads: Number(row.successful_downloads) || 0,
+      failedDownloads: Number(row.failed_downloads) || 0,
+      document_types_stats: documentTypesStats || {},
+      documentTypesStats: documentTypesStats || {},
+    };
   } catch (error) {
     logger.error('Exception in getOverallDownloadStats:', error);
     return null;
