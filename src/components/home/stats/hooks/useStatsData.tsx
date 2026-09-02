@@ -40,14 +40,26 @@ export const useStatsData = () => {
       logger.log('Fetching home stats...');
       
       try {
-        // Get articles count
+        // Get articles (views for the readers stat)
         const { data: articles, error: articlesError } = await supabase
           .from('articles')
-          .select('id, views');
+          .select('id, views')
+          .limit(2000);
         
         if (articlesError) {
           logger.error('Error fetching articles:', articlesError);
           throw articlesError;
+        }
+
+        // Count published journal issues / chapters (IGM, RHCA, ADC)
+        const { count: publicationsCount, error: publicationsError } = await supabase
+          .from('articles')
+          .select('id', { count: 'exact', head: true })
+          .eq('status', 'published')
+          .in('source', ['IGM', 'RHCA', 'ADC']);
+
+        if (publicationsError) {
+          logger.error('Error counting publications:', publicationsError);
         }
 
         // Get members count
