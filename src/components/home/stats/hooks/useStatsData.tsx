@@ -83,11 +83,14 @@ export const useStatsData = () => {
           Number(raw?.totalDownloads ?? raw?.total_downloads ?? 0) || 0;
         logger.log('Total downloads:', totalDownloads);
         
-        // Start with default stats
-        const stats = [...defaultStats];
-        
-        // Don't override the first stat value since we've set it statically to 95
-        
+        // Clone default stats so we never mutate the shared module-level array
+        const stats = defaultStats.map((s) => ({ ...s }));
+
+        // Publications (published journal issues / atlas chapters)
+        if (publicationsCount != null) {
+          stats[0].value = String(publicationsCount);
+        }
+
         // Update Members count
         stats[1].value = members?.length?.toString() || "0";
         
