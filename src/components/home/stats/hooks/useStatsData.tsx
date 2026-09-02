@@ -40,14 +40,26 @@ export const useStatsData = () => {
       logger.log('Fetching home stats...');
       
       try {
-        // Get articles count
+        // Get articles (views for the readers stat)
         const { data: articles, error: articlesError } = await supabase
           .from('articles')
-          .select('id, views');
+          .select('id, views')
+          .limit(2000);
         
         if (articlesError) {
           logger.error('Error fetching articles:', articlesError);
           throw articlesError;
+        }
+
+        // Count published journal issues / chapters (IGM, RHCA, ADC)
+        const { count: publicationsCount, error: publicationsError } = await supabase
+          .from('articles')
+          .select('id', { count: 'exact', head: true })
+          .eq('status', 'published')
+          .in('source', ['IGM', 'RHCA', 'ADC']);
+
+        if (publicationsError) {
+          logger.error('Error counting publications:', publicationsError);
         }
 
         // Get members count
@@ -71,11 +83,14 @@ export const useStatsData = () => {
           Number(raw?.totalDownloads ?? raw?.total_downloads ?? 0) || 0;
         logger.log('Total downloads:', totalDownloads);
         
-        // Start with default stats
-        const stats = [...defaultStats];
-        
-        // Don't override the first stat value since we've set it statically to 95
-        
+        // Clone default stats so we never mutate the shared module-level array
+        const stats = defaultStats.map((s) => ({ ...s }));
+
+        // Publications (published journal issues / atlas chapters)
+        if (publicationsCount != null) {
+          stats[0].value = String(publicationsCount);
+        }
+
         // Update Members count
         stats[1].value = members?.length?.toString() || "0";
         
