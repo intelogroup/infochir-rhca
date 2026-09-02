@@ -64,8 +64,8 @@ export const useStatsData = () => {
         const downloadStats = await getOverallDownloadStats();
         logger.log('Download stats fetched:', downloadStats);
         
-        // Extract total downloads with fallback to 0
-        const totalDownloads = downloadStats?.total_downloads || 0;
+        // Extract total downloads with fallback to 0 (getOverallDownloadStats returns camelCase)
+        const totalDownloads = downloadStats?.totalDownloads || 0;
         logger.log('Total downloads:', totalDownloads);
         
         // Start with default stats
