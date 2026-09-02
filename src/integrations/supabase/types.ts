@@ -1602,6 +1602,15 @@ export type Database = {
         }[]
       }
       get_downloads_by_type: { Args: { doc_type: string }; Returns: number }
+      get_public_download_stats: {
+        Args: never
+        Returns: {
+          document_types_stats: Json
+          failed_downloads: number
+          successful_downloads: number
+          total_downloads: number
+        }[]
+      }
       get_total_downloads: { Args: never; Returns: number }
       has_role: {
         Args: { _role: Database["public"]["Enums"]["app_role"] }
