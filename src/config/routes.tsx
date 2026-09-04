@@ -18,6 +18,7 @@ import Opportunities from '@/pages/Opportunities';
 import NotFound from '@/pages/NotFound';
 import TriggerUploads from '@/pages/TriggerUploads';
 import ArticleDetail from '@/pages/articles/ArticleDetail';
+import RhcaArticleDetail from '@/pages/rhca/RhcaArticleDetail';
 import NewsletterUnsubscribe from '@/pages/NewsletterUnsubscribe';
 
 // Admin components
