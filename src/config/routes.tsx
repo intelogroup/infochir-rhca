@@ -56,6 +56,13 @@ export const AppRoutes = () => {
         <Route path="opportunities" element={<Opportunities />} />
         <Route path="trigger-uploads" element={<TriggerUploads />} />
         <Route path="articles/:id" element={<ArticleDetail />} />
+        {/* Shareable deep links for each publication type */}
+        <Route path="rhca/articles/:id" element={<RhcaArticleDetail />} />
+        <Route path="rhca/volumes/:id" element={<RhcaArticleDetail />} />
+        <Route path="igm/issues/:id" element={<ArticleDetail />} />
+        <Route path="adc/chapters/:id" element={<ArticleDetail />} />
+        <Route path="atlas/chapters/:id" element={<ArticleDetail />} />
+        <Route path="index-medicus/articles/:id" element={<ArticleDetail />} />
         <Route path="newsletter/unsubscribe" element={<NewsletterUnsubscribe />} />
       </Route>
 
