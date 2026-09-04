@@ -17,9 +17,10 @@ export const ShareAction: React.FC<ShareActionProps> = ({ articleId, articleTitl
     setIsSharing(true);
 
     try {
+      const shareUrl = `${window.location.origin}/articles/${articleId}`;
       const shareData = {
         title: articleTitle,
-        url: window.location.href,
+        url: shareUrl,
       };
 
       if (navigator.share && navigator.canShare(shareData)) {
@@ -27,7 +28,7 @@ export const ShareAction: React.FC<ShareActionProps> = ({ articleId, articleTitl
         toast.success("Article partagé avec succès");
       } else {
         // Fallback to copying to clipboard
-        await navigator.clipboard.writeText(window.location.href);
+        await navigator.clipboard.writeText(shareUrl);
         toast.success("Lien copié dans le presse-papiers");
       }
     } catch (error) {
