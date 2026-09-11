@@ -101,14 +101,6 @@ const RhcaArticleDetail: React.FC = () => {
         if (article.pdfFileName) {
           const url = getStorageUrl('rhca-pdfs', article.pdfFileName);
           setPdfUrl(url);
-          
-          // Open PDF directly
-          if (url) {
-            window.open(url, '_blank');
-            
-            // Go back to articles list after opening PDF
-            navigate('/rhca');
-          }
         }
       } catch (err) {
         console.error("Error fetching article:", err);
