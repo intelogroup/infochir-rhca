@@ -28,15 +28,22 @@ const DirectoryList: FC<DirectoryListProps> = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState<'id' | 'name' | 'email'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     let active = true;
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (active) setIsAuthenticated(Boolean(session));
-    });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
-      setIsAuthenticated(Boolean(session));
+    const checkAdmin = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        if (active) setIsAdmin(false);
+        return;
+      }
+      const { data } = await supabase.rpc('has_role', { _role: 'admin' });
+      if (active) setIsAdmin(Boolean(data));
+    };
+    checkAdmin();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      checkAdmin();
     });
     return () => {
       active = false;
