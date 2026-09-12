@@ -132,9 +132,9 @@ const DirectoryList: FC<DirectoryListProps> = () => {
     <div className="space-y-6">
       <SearchBar value={searchTerm} onChange={handleSearch} />
 
-      {!isAuthenticated && (
+      {!isAdmin && (
         <p className="text-sm text-muted-foreground text-center">
-          Les coordonnées des membres sont masquées. Connectez-vous pour y accéder.
+          Les coordonnées des membres sont privées et ne sont pas publiées.
         </p>
       )}
 
@@ -147,7 +147,7 @@ const DirectoryList: FC<DirectoryListProps> = () => {
           />
           <TableBody>
             {sortedMembers.map((member) => (
-              <MemberRow key={member.id} member={member} canViewContact={isAuthenticated} />
+              <MemberRow key={member.id} member={member} canViewContact={isAdmin} />
             ))}
           </TableBody>
         </Table>
