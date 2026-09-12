@@ -53,14 +53,12 @@ const DirectoryList: FC<DirectoryListProps> = () => {
 
 
   const { data: members, isLoading } = useQuery({
-    queryKey: ['members', isAuthenticated],
+    queryKey: ['members', isAdmin],
     queryFn: async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-
-      // Signed-in users get the full record (contact info included).
-      // Anonymous visitors only ever receive the redacted public view:
-      // no email, no phone leaves the database for them.
-      if (session) {
+      // Only admins receive full records (contact info included).
+      // Everyone else — visitors and signed-in members alike — only ever
+      // receives the redacted public view: no email, no phone leaves the database.
+      if (isAdmin) {
         const { data, error } = await supabase.from('members').select('*').order('name');
         if (!error && data && data.length > 0) return data as any[];
       }
