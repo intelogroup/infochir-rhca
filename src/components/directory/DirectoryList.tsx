@@ -28,15 +28,22 @@ const DirectoryList: FC<DirectoryListProps> = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState<'id' | 'name' | 'email'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     let active = true;
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (active) setIsAuthenticated(Boolean(session));
-    });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
-      setIsAuthenticated(Boolean(session));
+    const checkAdmin = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        if (active) setIsAdmin(false);
+        return;
+      }
+      const { data } = await supabase.rpc('has_role', { _role: 'admin' });
+      if (active) setIsAdmin(Boolean(data));
+    };
+    checkAdmin();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      checkAdmin();
     });
     return () => {
       active = false;
@@ -46,14 +53,12 @@ const DirectoryList: FC<DirectoryListProps> = () => {
 
 
   const { data: members, isLoading } = useQuery({
-    queryKey: ['members', isAuthenticated],
+    queryKey: ['members', isAdmin],
     queryFn: async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-
-      // Signed-in users get the full record (contact info included).
-      // Anonymous visitors only ever receive the redacted public view:
-      // no email, no phone leaves the database for them.
-      if (session) {
+      // Only admins receive full records (contact info included).
+      // Everyone else — visitors and signed-in members alike — only ever
+      // receives the redacted public view: no email, no phone leaves the database.
+      if (isAdmin) {
         const { data, error } = await supabase.from('members').select('*').order('name');
         if (!error && data && data.length > 0) return data as any[];
       }
@@ -127,9 +132,9 @@ const DirectoryList: FC<DirectoryListProps> = () => {
     <div className="space-y-6">
       <SearchBar value={searchTerm} onChange={handleSearch} />
 
-      {!isAuthenticated && (
+      {!isAdmin && (
         <p className="text-sm text-muted-foreground text-center">
-          Les coordonnées des membres sont masquées. Connectez-vous pour y accéder.
+          Les coordonnées des membres sont privées et ne sont pas publiées.
         </p>
       )}
 
@@ -142,7 +147,7 @@ const DirectoryList: FC<DirectoryListProps> = () => {
           />
           <TableBody>
             {sortedMembers.map((member) => (
-              <MemberRow key={member.id} member={member} canViewContact={isAuthenticated} />
+              <MemberRow key={member.id} member={member} canViewContact={isAdmin} />
             ))}
           </TableBody>
         </Table>
