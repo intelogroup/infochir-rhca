@@ -61,8 +61,8 @@
     --destructive: 4 66% 44%;
     --destructive-foreground: 45 29% 97%;
 
-    --border: 45 14% 88%;
-    --input: 45 14% 84%;
+    --border: 150 14% 88%;
+    --input: 150 14% 84%;
     --ring: 150 63% 33%;
 
     /* Radii — near-square, editorial */
@@ -87,7 +87,7 @@
     --sidebar-primary-foreground: 45 29% 97%;
     --sidebar-accent: 45 20% 92%;
     --sidebar-accent-foreground: 150 30% 8%;
-    --sidebar-border: 45 14% 88%;
+    --sidebar-border: 150 14% 88%;
     --sidebar-ring: 150 63% 33%;
   }
 
