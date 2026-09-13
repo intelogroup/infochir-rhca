@@ -125,7 +125,7 @@ export const NavLinks = () => {
           className={`
             group relative
             flex h-9 md:h-10 px-4 md:px-5 items-center justify-center rounded-md
-            bg-secondary text-secondary-foreground hover:bg-secondary-light
+            bg-secondary-light text-secondary-foreground hover:bg-secondary
             transition-colors duration-200
             ml-2 md:ml-3 space-x-2 focus:outline-none focus-visible:ring-2
             focus-visible:ring-ring
