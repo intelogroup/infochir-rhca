@@ -1435,6 +1435,33 @@ export type Database = {
         }
         Relationships: []
       }
+      public_donations: {
+        Row: {
+          amount: number | null
+          created_at: string | null
+          currency: string | null
+          donor_name: string | null
+          id: string | null
+          message: string | null
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string | null
+          currency?: string | null
+          donor_name?: string | null
+          id?: string | null
+          message?: string | null
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string | null
+          currency?: string | null
+          donor_name?: string | null
+          id?: string | null
+          message?: string | null
+        }
+        Relationships: []
+      }
       rhca_articles_view: {
         Row: {
           abstract: string | null
