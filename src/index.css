@@ -197,9 +197,9 @@
   .container-content {
     @apply mx-auto w-full max-w-[72rem] px-4 sm:px-6 lg:px-8;
   }
-  /* Thin editorial rule */
+  /* Editorial rule removed from UI per design decision */
   .rule-gold {
-    @apply h-px w-10 bg-gold;
+    @apply hidden;
   }
   /* Hairline card — replaces heavy shadow cards */
   .surface-card {
