@@ -9,7 +9,7 @@ const corsHeaders = {
 
 // Verified domain in Resend: info-chir.org
 const FROM_ADDRESS = 'Info Chir <newsletter@info-chir.org>';
-const SITE_URL = 'https://infochir-rhca.lovable.app';
+const SITE_URL = 'https://info-chir.org';
 const REPLY_TO = 'jimkalinov@gmail.com';
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')!;
