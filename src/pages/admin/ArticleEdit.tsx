@@ -42,6 +42,7 @@ const ArticleEdit = () => {
           title: data.title,
           abstract: data.abstract,
           source: data.publicationType,
+          article_type: data.publicationType,
           authors: data.authors,
           category: data.category,
           tags: data.tags,

@@ -72,6 +72,7 @@ export const useSubmissionHandler = ({
           title: values.title,
           abstract: values.abstract,
           source: values.publicationType,
+          article_type: values.publicationType,
           authors: values.authors,
           category: values.category,
           tags: values.tags,
