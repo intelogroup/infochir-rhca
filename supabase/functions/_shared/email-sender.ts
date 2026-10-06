@@ -243,7 +243,7 @@ export async function checkDomainVerification(
  */
 export async function getDomainRecordStatuses(
   domain: string
-): Promise<{ success: boolean; status?: string; records: Array<{ record: string; name: string; type: string; status: string }>; message?: string }> {
+): Promise<{ success: boolean; status?: string; records: Array<{ record: string; name: string; type: string; status: string; value?: string }>; message?: string }> {
   const apiKey = getApiKey();
   if (!apiKey) return { success: false, records: [], message: "Resend API key is not configured" };
   try {
@@ -258,7 +258,7 @@ export async function getDomainRecordStatuses(
     return {
       success: true,
       status: d.status,
-      records: (d.records ?? []).map((r: any) => ({ record: r.record, name: r.name, type: r.type, status: r.status })),
+      records: (d.records ?? []).map((r: any) => ({ record: r.record, name: r.name, type: r.type, status: r.status, value: r.value })),
     };
   } catch (error) {
     return { success: false, records: [], message: error instanceof Error ? error.message : String(error) };
