@@ -1,6 +1,8 @@
 
 import * as React from "react";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,7 +21,26 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+const DAILY_EMAIL_LIMIT = 100; // matches send-email-limit-warning
+
 const EmailSettings = () => {
+  const { data: usage = [] } = useQuery({
+    queryKey: ['admin-email-usage'],
+    queryFn: async () => {
+      const since = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
+      const { data, error } = await supabase
+        .from('email_usage_tracking')
+        .select('date, emails_sent, successful_sends')
+        .gte('date', since);
+      if (error) throw error;
+      return data;
+    },
+  });
+  const today = new Date().toISOString().slice(0, 10);
+  const sentToday = usage.find((u) => u.date === today)?.emails_sent ?? 0;
+  const sent30 = usage.reduce((n, u) => n + (u.emails_sent ?? 0), 0);
+  const ok30 = usage.reduce((n, u) => n + (u.successful_sends ?? 0), 0);
+  const deliveryRate = sent30 ? `${((ok30 / sent30) * 100).toFixed(1)}%` : '—';
   const [smtpHost, setSmtpHost] = useState("smtp.resend.com");
   const [smtpPort, setSmtpPort] = useState("587");
   const [smtpUser, setSmtpUser] = useState("");
@@ -51,7 +72,7 @@ const EmailSettings = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-2xl">85/100</CardTitle>
+            <CardTitle className="text-2xl">{sentToday}/{DAILY_EMAIL_LIMIT}</CardTitle>
             <CardDescription>Emails envoyés aujourd'hui</CardDescription>
           </CardHeader>
           <CardContent>
@@ -61,11 +82,11 @@ const EmailSettings = () => {
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-2xl">98.5%</CardTitle>
-            <CardDescription>Taux de délivrance</CardDescription>
+            <CardTitle className="text-2xl">{deliveryRate}</CardTitle>
+            <CardDescription>Taux de délivrance (30 j)</CardDescription>
           </CardHeader>
           <CardContent>
-            <Badge variant="default" className="bg-green-600">Excellent</Badge>
+            <Badge variant="secondary">{sent30} envoyés (30 j)</Badge>
           </CardContent>
         </Card>
         
