@@ -1,7 +1,7 @@
 
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { corsHeaders, handleCors } from "../_shared/cors.ts";
-import { checkResendApiKey, checkDomainVerification } from "../_shared/email-sender.ts";
+import { checkResendApiKey, checkDomainVerification, getDomainRecordStatuses } from "../_shared/email-sender.ts";
 import { createSuccessResponse, createErrorResponse } from "../_shared/error-logger.ts";
 
 serve(async (req) => {
@@ -24,6 +24,8 @@ serve(async (req) => {
     const primaryDomainStatus = await checkDomainVerification("info-chir.org");
     console.log("[check-email-config] Domain verification result:", primaryDomainStatus);
     
+    const primaryDomainRecords = await getDomainRecordStatuses("info-chir.org");
+
     // Check environment variables
     const envCheck = {
       resend_api_key: !!Deno.env.get("RESEND_API_KEY"),
@@ -37,6 +39,7 @@ serve(async (req) => {
     const configStatus = {
       api_key_status: apiKeyStatus,
       primary_domain_status: primaryDomainStatus,
+      primary_domain_records: primaryDomainRecords,
       environment_variables: envCheck,
       overall_status: apiKeyStatus.valid && envCheck.resend_api_key ? "READY" : "CONFIGURATION_NEEDED",
       recommendations: []

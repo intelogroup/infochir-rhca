@@ -238,6 +238,34 @@ export async function checkDomainVerification(
 }
 
 /**
+ * Read-only: per-record DNS verification status for a domain from Resend.
+ * Returns statuses only (no secrets); never sends email.
+ */
+export async function getDomainRecordStatuses(
+  domain: string
+): Promise<{ success: boolean; status?: string; records: Array<{ record: string; name: string; type: string; status: string }>; message?: string }> {
+  const apiKey = getApiKey();
+  if (!apiKey) return { success: false, records: [], message: "Resend API key is not configured" };
+  try {
+    const headers = { Authorization: `Bearer ${apiKey}` };
+    const list = await fetch('https://api.resend.com/domains', { headers });
+    if (!list.ok) return { success: false, records: [], message: `Failed to list domains: ${list.statusText}` };
+    const found = (await list.json()).data?.find((d: any) => d.name === domain);
+    if (!found) return { success: false, records: [], message: `Domain ${domain} not found in Resend` };
+    const detail = await fetch(`https://api.resend.com/domains/${found.id}`, { headers });
+    if (!detail.ok) return { success: false, records: [], message: `Failed to fetch domain: ${detail.statusText}` };
+    const d = await detail.json();
+    return {
+      success: true,
+      status: d.status,
+      records: (d.records ?? []).map((r: any) => ({ record: r.record, name: r.name, type: r.type, status: r.status })),
+    };
+  } catch (error) {
+    return { success: false, records: [], message: error instanceof Error ? error.message : String(error) };
+  }
+}
+
+/**
  * Validate attachments before sending with enhanced checks
  * @param attachments Array of email attachments
  * @returns Object with validation status and message
