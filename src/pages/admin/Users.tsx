@@ -1,6 +1,8 @@
 
 import * as React from "react";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,7 +20,22 @@ import { assignAdminRole } from "@/lib/admin-utils";
 import { SensitiveAdminGuard } from "@/components/admin/security/SensitiveAdminGuard";
 import { useAdminSecurity } from "@/components/admin/security/AdminSecurityProvider";
 
-const UsersList = () => (
+const useUserRoles = () =>
+  useQuery({
+    queryKey: ['admin-user-roles'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('id, user_id, role, created_at')
+        .order('created_at', { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+const UsersList = () => {
+  const { data: users = [] } = useUserRoles();
+  return (
   <Card>
     <CardHeader>
       <CardTitle>Utilisateurs</CardTitle>
@@ -26,22 +43,18 @@ const UsersList = () => (
     </CardHeader>
     <CardContent>
       <div className="space-y-4">
-        {[
-          { email: "jimkalinov@gmail.com", role: "admin", status: "active" },
-          { email: "user@exemple.com", role: "user", status: "active" },
-          { email: "editor@exemple.com", role: "editor", status: "active" }
-        ].map((user, index) => (
-          <div key={index} className="flex items-center justify-between p-3 border rounded">
+        {users.map((user) => (
+          <div key={user.id} className="flex items-center justify-between p-3 border rounded">
             <div className="flex items-center gap-3">
               <UsersIcon className="h-4 w-4" />
               <div>
-                <p className="font-medium">{user.email}</p>
+                <p className="font-medium font-mono text-sm">{user.user_id}</p>
                 <div className="flex gap-2 mt-1">
                   <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
                     {user.role}
                   </Badge>
-                  <Badge variant="outline" className="text-green-600">
-                    {user.status}
+                  <Badge variant="outline">
+                    {user.created_at?.slice(0, 10)}
                   </Badge>
                 </div>
               </div>
@@ -54,7 +67,8 @@ const UsersList = () => (
       </div>
     </CardContent>
   </Card>
-);
+  );
+};
 
 const AdminRoleAssignment = () => {
   const [adminEmail, setAdminEmail] = useState("");
@@ -128,6 +142,8 @@ const AdminRoleAssignment = () => {
 };
 
 const Users = () => {
+  const { data: roles = [] } = useUserRoles();
+  const adminCount = roles.filter((r) => r.role === 'admin').length;
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -145,8 +161,8 @@ const Users = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-2xl">3</CardTitle>
-            <CardDescription>Utilisateurs totaux</CardDescription>
+            <CardTitle className="text-2xl">{roles.length}</CardTitle>
+            <CardDescription>Rôles attribués</CardDescription>
           </CardHeader>
           <CardContent>
             <Badge variant="default">Actifs</Badge>
@@ -155,7 +171,7 @@ const Users = () => {
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-2xl">1</CardTitle>
+            <CardTitle className="text-2xl">{adminCount}</CardTitle>
             <CardDescription>Administrateurs</CardDescription>
           </CardHeader>
           <CardContent>
@@ -165,8 +181,8 @@ const Users = () => {
         
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-2xl">2</CardTitle>
-            <CardDescription>Utilisateurs standard</CardDescription>
+            <CardTitle className="text-2xl">{roles.length - adminCount}</CardTitle>
+            <CardDescription>Autres rôles</CardDescription>
           </CardHeader>
           <CardContent>
             <Badge variant="outline">Actifs</Badge>
