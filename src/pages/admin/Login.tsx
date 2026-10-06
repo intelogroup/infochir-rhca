@@ -18,9 +18,7 @@ const AdminLogin = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isSignUp, setIsSignUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
 
   // Check if user is already logged in
@@ -74,61 +72,6 @@ const AdminLogin = () => {
     }
   };
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
-
-    if (password !== confirmPassword) {
-      setError("Les mots de passe ne correspondent pas");
-      setIsLoading(false);
-      return;
-    }
-
-    if (password.length < 6) {
-      setError("Le mot de passe doit contenir au moins 6 caractères");
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const redirectUrl = `${window.location.origin}/admin/articles`;
-      
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: redirectUrl
-        }
-      });
-
-      if (error) throw error;
-
-      if (data.user) {
-        toast.success("Compte créé avec succès. Vérifiez votre email pour confirmer votre compte.");
-        setIsSignUp(false);
-      }
-    } catch (error) {
-      const authError = error as AuthError;
-      console.error("Erreur d'inscription:", authError);
-      
-      let errorMessage = "Erreur lors de l'inscription";
-      
-      if (authError.message.includes("User already registered")) {
-        errorMessage = "Un compte avec cet email existe déjà";
-      } else if (authError.message.includes("Password should be at least")) {
-        errorMessage = "Le mot de passe doit contenir au moins 6 caractères";
-      } else {
-        errorMessage = authError.message;
-      }
-      
-      setError(errorMessage);
-      toast.error(errorMessage);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <div className="w-full max-w-md">
@@ -138,17 +81,14 @@ const AdminLogin = () => {
               <Shield className="h-8 w-8 text-primary" />
             </div>
             <CardTitle className="text-2xl">
-              {isSignUp ? "Créer un compte Admin" : "Connexion Admin"}
+              Connexion Admin
             </CardTitle>
             <CardDescription>
-              {isSignUp 
-                ? "Créez votre compte administrateur" 
-                : "Connectez-vous à votre espace d'administration"
-              }
+              Connectez-vous à votre espace d'administration. Les comptes sont créés par un administrateur.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={isSignUp ? handleSignUp : handleSignIn} className="space-y-4">
+            <form onSubmit={handleSignIn} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -191,21 +131,6 @@ const AdminLogin = () => {
                 </div>
               </div>
 
-              {isSignUp && (
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    placeholder="••••••••"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                    disabled={isLoading}
-                  />
-                </div>
-              )}
-
               {error && (
                 <Alert variant="destructive">
                   <AlertDescription>{error}</AlertDescription>
@@ -217,32 +142,9 @@ const AdminLogin = () => {
                 className="w-full" 
                 disabled={isLoading}
               >
-                {isLoading 
-                  ? (isSignUp ? "Création en cours..." : "Connexion en cours...") 
-                  : (isSignUp ? "Créer le compte" : "Se connecter")
-                }
+                {isLoading ? "Connexion en cours..." : "Se connecter"}
               </Button>
             </form>
-
-            <Separator className="my-4" />
-
-            <div className="text-center">
-              <Button
-                variant="link"
-                onClick={() => {
-                  setIsSignUp(!isSignUp);
-                  setError(null);
-                  setPassword("");
-                  setConfirmPassword("");
-                }}
-                disabled={isLoading}
-              >
-                {isSignUp 
-                  ? "Déjà un compte ? Se connecter" 
-                  : "Pas de compte ? S'inscrire"
-                }
-              </Button>
-            </div>
 
             <Separator className="my-4" />
 
