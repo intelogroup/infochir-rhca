@@ -64,9 +64,11 @@ export const useSubmissionHandler = ({
       const primaryPdfUrl = articleFilesUrls.length > 0 ? articleFilesUrls[0] : null;
       const primaryPdfFilename = primaryPdfUrl ? primaryPdfUrl.split('/').pop() : null;
       
+      const { data: { user } } = await supabase.auth.getUser();
       const { data, error } = await supabase
         .from('articles')
         .insert({
+          user_id: user?.id,
           title: values.title,
           abstract: values.abstract,
           source: values.publicationType,

@@ -87,12 +87,14 @@ const ArticleList = () => {
     
     setIsDeleting(true);
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('articles')
         .delete()
-        .eq('id', articleToDelete.id);
+        .eq('id', articleToDelete.id)
+        .select('id');
       
       if (error) throw error;
+      if (!data?.length) throw new Error('Aucune ligne supprimée (droits insuffisants)');
       
       toast.success("Article supprimé avec succès");
       queryClient.invalidateQueries({ queryKey: ['admin-articles'] });

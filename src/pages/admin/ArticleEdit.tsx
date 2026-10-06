@@ -36,7 +36,7 @@ const ArticleEdit = () => {
     if (!id) return;
     
     try {
-      const { error } = await supabase
+      const { data: updated, error } = await supabase
         .from('articles')
         .update({
           title: data.title,
@@ -53,9 +53,11 @@ const ArticleEdit = () => {
           status: data.status,
           updated_at: new Date().toISOString()
         })
-        .eq('id', id);
+        .eq('id', id)
+        .select('id');
 
       if (error) throw error;
+      if (!updated?.length) throw new Error('Aucune ligne modifiée (droits insuffisants)');
       
       toast.success("Article mis à jour avec succès!");
       navigate("/admin/articles");
