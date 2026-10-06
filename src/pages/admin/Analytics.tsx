@@ -15,23 +15,13 @@ import {
   RefreshCw
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchAdminSummary as fetchAnalyticsSummary } from "@/hooks/use-admin-summary";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Button } from "@/components/ui/button";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { ObservabilityPanel } from "@/components/admin/ObservabilityPanel";
-
-// Fetch real analytics summary
-const fetchAnalyticsSummary = async () => {
-  const { data, error } = await supabase
-    .from("admin_analytics_summary")
-    .select("*")
-    .single();
-  
-  if (error) throw error;
-  return data;
-};
 
 // Fetch popular articles
 const fetchPopularArticles = async () => {
