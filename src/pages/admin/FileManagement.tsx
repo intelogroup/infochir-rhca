@@ -6,7 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MultiFileUploader } from "@/components/pdf/MultiFileUploader";
 import { RHCABackfillPanel } from "@/components/admin/RHCABackfillPanel";
-import { AtlasBackfillPanel } from "@/components/admin/AtlasBackfillPanel";
 import { IGMBackfillPanel } from "@/components/admin/IGMBackfillPanel";
 import { 
   FileText, 
@@ -43,7 +42,6 @@ const FileManagement = () => {
 
         <TabsContent value="backfill" className="space-y-6">
           <RHCABackfillPanel />
-          <AtlasBackfillPanel />
           <IGMBackfillPanel />
         </TabsContent>
 
