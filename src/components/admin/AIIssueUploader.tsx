@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Loader2, Sparkles, Upload, FileCheck, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { parseFilename } from "@/lib/issue-filename";
 
 const MAX_PDF_MB = 25;
 const MAX_RENDER_DIM = 1600;
@@ -94,6 +95,7 @@ export const AIIssueUploader: React.FC<{ onPublished?: () => void }> = ({ onPubl
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [coverBlob, setCoverBlob] = useState<Blob | null>(null);
   const [meta, setMeta] = useState<Metadata | null>(null);
+  const [nameError, setNameError] = useState<string | null>(null);
   const [busy, setBusy] = useState<"idle" | "extracting" | "uploading">("idle");
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -102,6 +104,7 @@ export const AIIssueUploader: React.FC<{ onPublished?: () => void }> = ({ onPubl
     setCoverPreview(null);
     setCoverBlob(null);
     setMeta(null);
+    setNameError(null);
     if (fileRef.current) fileRef.current.value = "";
   };
 
@@ -124,6 +127,18 @@ export const AIIssueUploader: React.FC<{ onPublished?: () => void }> = ({ onPubl
       toast.error("Please select a PDF file");
       return;
     }
+    setNameError(null);
+    const parsed = parseFilename(f.name);
+    if (!parsed) {
+      setFile(null);
+      setMeta(null);
+      setCoverPreview(null);
+      setCoverBlob(null);
+      if (fileRef.current) fileRef.current.value = "";
+      setNameError(f.name);
+      toast.error("Nom de fichier invalide — renommez le PDF puis déposez-le à nouveau");
+      return;
+    }
     const sizeMB = f.size / 1024 / 1024;
     if (sizeMB > MAX_PDF_MB) {
       toast.error(`PDF is ${sizeMB.toFixed(1)} MB. Max allowed is ${MAX_PDF_MB} MB.`);
@@ -143,7 +158,16 @@ export const AIIssueUploader: React.FC<{ onPublished?: () => void }> = ({ onPubl
       });
       if (error) throw error;
       if (!data?.ok) throw new Error(data?.error || "AI extraction failed");
-      setMeta(data.metadata as Metadata);
+      // Filename-derived fields override anything the AI guessed.
+      setMeta({
+        ...(data.metadata as Metadata),
+        source: parsed.source,
+        volume: parsed.volume,
+        issue: parsed.issue,
+        publication_date: parsed.publication_date || (data.metadata as Metadata).publication_date,
+        pdf_filename: f.name,
+        cover_filename: parsed.cover_filename,
+      });
       toast.success("Metadata extracted — review and confirm");
     } catch (e: any) {
       toast.error(e.message || "Failed to process PDF");
@@ -250,6 +274,20 @@ export const AIIssueUploader: React.FC<{ onPublished?: () => void }> = ({ onPubl
           {busy === "extracting" && <Loader2 className="h-4 w-4 animate-spin" />}
         </div>
 
+        {nameError && (
+          <div className="rounded border border-destructive/40 bg-destructive/5 p-3 text-sm space-y-2">
+            <div className="flex items-center gap-2 font-medium text-destructive">
+              <AlertTriangle className="h-4 w-4" /> Nom de fichier invalide : <code>{nameError}</code>
+            </div>
+            <p className="text-destructive/90">Renommez le PDF selon la nomenclature, puis déposez-le à nouveau :</p>
+            <ul className="list-disc list-inside space-y-0.5 text-muted-foreground">
+              <li>IGM : <code>IGM_vol_05_no_55_04_10_26.pdf</code> (vol, no, JJ_MM_AA)</li>
+              <li>RHCA : <code>RHCA_vol_12_no_3_15_03_2026.pdf</code> (vol, no, JJ_MM_AAAA)</li>
+              <li>ADC : <code>ADC_ch_13_brulures-thermiques.pdf</code> (chapitre, slug)</li>
+            </ul>
+          </div>
+        )}
+
         {file && (
           <p className="text-sm text-muted-foreground flex items-center gap-2">
             <FileCheck className="h-4 w-4" /> {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
@@ -267,7 +305,7 @@ export const AIIssueUploader: React.FC<{ onPublished?: () => void }> = ({ onPubl
               <div className="grid grid-cols-3 gap-2">
                 <div>
                   <Label>Source</Label>
-                  <Select value={meta.source} onValueChange={(v) => updateMeta("source", v as Metadata["source"])}>
+                  <Select value={meta.source} disabled>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="IGM">IGM</SelectItem>
@@ -278,11 +316,11 @@ export const AIIssueUploader: React.FC<{ onPublished?: () => void }> = ({ onPubl
                 </div>
                 <div>
                   <Label>Volume</Label>
-                  <Input value={meta.volume} onChange={(e) => updateMeta("volume", e.target.value)} />
+                  <Input value={meta.volume} readOnly />
                 </div>
                 <div>
                   <Label>Issue / Chapter</Label>
-                  <Input value={meta.issue} onChange={(e) => updateMeta("issue", e.target.value)} />
+                  <Input value={meta.issue} readOnly />
                 </div>
               </div>
 
@@ -295,6 +333,7 @@ export const AIIssueUploader: React.FC<{ onPublished?: () => void }> = ({ onPubl
                 <Label>Publication date</Label>
                 <Input
                   type="date"
+                  readOnly={meta.source !== "ADC"}
                   value={meta.publication_date}
                   onChange={(e) => updateMeta("publication_date", e.target.value)}
                 />
@@ -312,11 +351,11 @@ export const AIIssueUploader: React.FC<{ onPublished?: () => void }> = ({ onPubl
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <Label>PDF filename</Label>
-                  <Input value={meta.pdf_filename} onChange={(e) => updateMeta("pdf_filename", e.target.value)} />
+                  <Input value={meta.pdf_filename} readOnly />
                 </div>
                 <div>
                   <Label>Cover filename</Label>
-                  <Input value={meta.cover_filename} onChange={(e) => updateMeta("cover_filename", e.target.value)} />
+                  <Input value={meta.cover_filename} readOnly />
                 </div>
               </div>
 
