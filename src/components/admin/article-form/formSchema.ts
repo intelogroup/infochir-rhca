@@ -8,9 +8,9 @@ export const articleFormSchema = z.object({
   publicationType: z.enum(["RHCA", "IGM", "ADC", "INDEX"], {
     required_error: "Veuillez sélectionner un type de publication",
   }),
-  authors: z.array(z.string()).min(1, "Au moins un auteur est requis"),
+  authors: z.array(z.string()),
   category: z.string().min(1, "La catégorie est requise"),
-  tags: z.array(z.string()).min(1, "Au moins un tag est requis"),
+  tags: z.array(z.string()),
   status: z.enum(["draft", "published"], {
     required_error: "Veuillez sélectionner un statut",
   }),
