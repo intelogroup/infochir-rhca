@@ -16,7 +16,9 @@ const MAX_RENDER_DIM = 1600;
 // Render PDF page 1 → PNG cover + JPEG (for AI)
 const renderFirstPage = async (file: File): Promise<{ coverBlob: Blob; jpegBase64: string }> => {
   const pdfjs: any = await import("pdfjs-dist");
-  pdfjs.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+  // Serve the worker from our own domain — the site's security policy blocks third-party CDNs.
+  const { default: workerUrl } = await import("pdfjs-dist/build/pdf.worker.min.mjs?url");
+  pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
   const buf = await file.arrayBuffer();
   const pdf = await pdfjs.getDocument({ data: buf }).promise;
   const page = await pdf.getPage(1);
