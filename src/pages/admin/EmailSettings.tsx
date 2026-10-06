@@ -45,6 +45,8 @@ const EmailSettings = () => {
     retry: false,
   });
   const configReady = config?.overall_status === 'READY';
+  const failedRecords: Array<{ record: string; type: string; name: string; status: string }> =
+    (config?.primary_domain_records?.records ?? []).filter((r: { status: string }) => r.status !== 'verified');
   const today = new Date().toISOString().slice(0, 10);
   const sentToday = usage.find((u) => u.date === today)?.emails_sent ?? 0;
   const sent30 = usage.reduce((n, u) => n + (u.emails_sent ?? 0), 0);
@@ -123,6 +125,20 @@ const EmailSettings = () => {
           </CardContent>
         </Card>
       </div>
+
+      {failedRecords.length > 0 && (
+        <Card className="border-yellow-500">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <AlertCircle className="h-4 w-4 text-yellow-500" />
+              Enregistrements DNS Resend non vérifiés
+            </CardTitle>
+            <CardDescription>
+              {failedRecords.map((r) => `${r.record} ${r.type} ${r.name} (${r.status})`).join(' · ')}
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      )}
 
       <div className="space-y-6">
         <>
