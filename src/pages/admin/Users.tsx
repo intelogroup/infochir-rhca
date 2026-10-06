@@ -12,7 +12,6 @@ import { Badge } from "@/components/ui/badge";
 import { 
   Users as UsersIcon, 
   Shield, 
-  UserPlus,
   Mail
 } from "lucide-react";
 import { toast } from "sonner";
@@ -151,10 +150,6 @@ const Users = () => {
           title="Gestion des utilisateurs" 
           description="Gérez les utilisateurs et leurs rôles"
         />
-        <Button>
-          <UserPlus className="h-4 w-4 mr-2" />
-          Nouvel utilisateur
-        </Button>
       </div>
 
       {/* Stats Overview */}
