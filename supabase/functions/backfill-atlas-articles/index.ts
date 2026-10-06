@@ -248,7 +248,7 @@ serve(async (req) => {
     // Get existing articles with source 'ADC' to avoid duplicates
     const { data: existingArticles, error: articlesError } = await supabase
       .from('articles')
-      .select('pdf_filename')
+      .select('pdf_filename, pdf_url')
       .eq('source', 'ADC');
 
     if (articlesError) {
@@ -256,7 +256,10 @@ serve(async (req) => {
       throw new Error(`Failed to fetch existing articles: ${articlesError.message}`);
     }
 
-    const existingFilenames = new Set(existingArticles?.map(a => a.pdf_filename) || []);
+    // Curated rows may lack pdf_filename, so also match on the basename of pdf_url
+    const existingFilenames = new Set(
+      (existingArticles || []).flatMap(a => [a.pdf_filename, a.pdf_url?.split('/').pop()]).filter(Boolean)
+    );
     console.log(`[Atlas Backfill] Found ${existingFilenames.size} existing ADC articles`);
 
     // Filter out existing files and non-PDF files
