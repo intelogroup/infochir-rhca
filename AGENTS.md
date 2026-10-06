@@ -1,0 +1,1 @@
+- Load third-party browser code (e.g. the PDF reader worker) from the app bundle, never a CDN — the live site's security policy blocks outside script hosts.
