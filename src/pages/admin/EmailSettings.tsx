@@ -36,6 +36,16 @@ const EmailSettings = () => {
       return data;
     },
   });
+  const { data: config } = useQuery({
+    queryKey: ['admin-email-config'],
+    queryFn: async () => {
+      const { data, error } = await supabase.functions.invoke('check-email-config');
+      if (error) throw error;
+      return data?.data ?? data;
+    },
+    retry: false,
+  });
+  const configReady = config?.overall_status === 'READY';
   const today = new Date().toISOString().slice(0, 10);
   const sentToday = usage.find((u) => u.date === today)?.emails_sent ?? 0;
   const sent30 = usage.reduce((n, u) => n + (u.emails_sent ?? 0), 0);
@@ -50,12 +60,17 @@ const EmailSettings = () => {
   const [testEmail, setTestEmail] = useState("");
 
   const handleSaveSettings = () => {
-    toast.success("Paramètres email sauvegardés");
+    toast.info("L'envoi passe par Resend : configurez RESEND_API_KEY dans les secrets Supabase. Ces champs ne sont pas enregistrés.");
   };
 
-  const handleTestEmail = () => {
+  const handleTestEmail = async () => {
     if (!testEmail) {
       toast.error("Veuillez saisir une adresse email de test");
+      return;
+    }
+    const { data, error } = await supabase.functions.invoke('send-test-email', { body: { to: testEmail } });
+    if (error || !data?.success) {
+      toast.error(`Échec de l'envoi : ${data?.error ?? error?.message ?? 'erreur inconnue'}`);
       return;
     }
     toast.success(`Email de test envoyé à ${testEmail}`);
@@ -94,14 +109,18 @@ const EmailSettings = () => {
           <CardHeader className="pb-2">
             <CardTitle className="text-2xl">
               <div className="flex items-center gap-2">
-                <AlertCircle className="h-6 w-6 text-yellow-500" />
-                À configurer
+                {configReady ? (
+                  <CheckCircle className="h-6 w-6 text-green-600" />
+                ) : (
+                  <AlertCircle className="h-6 w-6 text-yellow-500" />
+                )}
+                {configReady ? 'Configuré' : 'À configurer'}
               </div>
             </CardTitle>
             <CardDescription>Statut de la configuration</CardDescription>
           </CardHeader>
           <CardContent>
-            <Badge variant="secondary" className="bg-yellow-600 text-white">En attente</Badge>
+            <Badge variant="secondary" className={configReady ? "bg-green-600 text-white" : "bg-yellow-600 text-white"}>{configReady ? "Prêt" : "En attente"}</Badge>
           </CardContent>
         </Card>
       </div>
