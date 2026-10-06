@@ -5,14 +5,15 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MultiFileUploader } from "@/components/pdf/MultiFileUploader";
-import { AIIssueUploader } from "@/components/admin/AIIssueUploader";
+import { RHCABackfillPanel } from "@/components/admin/RHCABackfillPanel";
+import { AtlasBackfillPanel } from "@/components/admin/AtlasBackfillPanel";
+import { IGMBackfillPanel } from "@/components/admin/IGMBackfillPanel";
 import { 
   FileText, 
   BookOpen, 
   Database,
   Image,
-  Upload,
-  Sparkles
+  Upload
 } from "lucide-react";
 
 
@@ -26,22 +27,24 @@ const FileManagement = () => {
   return (
     <div className="space-y-6">
       <PageHeader 
-        title="Gestion des fichiers" 
-        description="Gérer les uploads de fichiers par type de publication"
-        backLink="/admin/content"
+        title="Import & outils" 
+        description="Outils avancés : uploads par revue et remplissage des articles. Pour publier un numéro, utilisez la page Articles."
+        backLink="/admin/articles"
       />
 
-      <Tabs defaultValue="ai" className="w-full">
+      <Tabs defaultValue="backfill" className="w-full">
         <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="ai" className="gap-1"><Sparkles className="h-3 w-3" />AI Upload</TabsTrigger>
+          <TabsTrigger value="backfill">Backfill</TabsTrigger>
           <TabsTrigger value="rhca">RHCA</TabsTrigger>
           <TabsTrigger value="igm">IGM</TabsTrigger>
           <TabsTrigger value="index">Index Medicus</TabsTrigger>
           <TabsTrigger value="general">Général</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="ai" className="space-y-6">
-          <AIIssueUploader />
+        <TabsContent value="backfill" className="space-y-6">
+          <RHCABackfillPanel />
+          <AtlasBackfillPanel />
+          <IGMBackfillPanel />
         </TabsContent>
 
         <TabsContent value="rhca" className="space-y-6">

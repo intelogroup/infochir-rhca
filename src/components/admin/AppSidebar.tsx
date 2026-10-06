@@ -2,7 +2,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  BarChart3,
   Settings,
   Users,
   FileText,
@@ -11,7 +10,6 @@ import {
   Home,
   Mail,
   TrendingUp,
-  Plus,
   FolderOpen,
   Bug
 } from 'lucide-react';
@@ -35,75 +33,17 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAdminAuth } from '@/hooks/use-admin-auth';
 
 const mainMenuItems = [
-  {
-    title: "Dashboard",
-    icon: BarChart3,
-    href: "/admin/dashboard",
-    description: "Vue d'ensemble"
-  },
-  {
-    title: "Contenu",
-    icon: FileText,
-    href: "/admin/content",
-    description: "Gérer les articles"
-  },
-  {
-    title: "Utilisateurs",
-    icon: Users,
-    href: "/admin/users",
-    description: "Gestion des rôles"
-  },
-  {
-    title: "Analytics",
-    icon: TrendingUp,
-    href: "/admin/analytics",
-    description: "Statistiques"
-  },
-  {
-    title: "Index Medicus",
-    icon: BookOpen,
-    href: "/admin/index-medicus",
-    description: "Base de données"
-  }
+  { title: "Articles", icon: FileText, href: "/admin/articles", description: "Publier et gérer les numéros" },
+  { title: "Utilisateurs", icon: Users, href: "/admin/users", description: "Gestion des rôles" },
+  { title: "Analytics", icon: TrendingUp, href: "/admin/analytics", description: "Statistiques" },
+  { title: "Email", icon: Mail, href: "/admin/email-settings", description: "Envoi et test" },
 ];
 
-const contentMenuItems = [
-  {
-    title: "Nouvel article",
-    icon: Plus,
-    href: "/admin/articles/new",
-    description: "Créer un article"
-  },
-  {
-    title: "Fichiers",
-    icon: FolderOpen,
-    href: "/admin/files",
-    description: "Gérer les uploads"
-  }
-];
-
-const settingsMenuItems = [
-  {
-    title: "Paramètres",
-    icon: Settings,
-    href: "/admin/settings",
-    description: "Configuration"
-  },
-  {
-    title: "Email",
-    icon: Mail,
-    href: "/admin/email-settings",
-    description: "Configuration email"
-  }
-];
-
-const debugMenuItems = [
-  {
-    title: "Debug Console",
-    icon: Bug,
-    href: "/admin/debug",
-    description: "Outils de débogage"
-  }
+const advancedMenuItems = [
+  { title: "Import & outils", icon: FolderOpen, href: "/admin/files", description: "Uploads par revue, backfill" },
+  { title: "Index Medicus", icon: BookOpen, href: "/admin/index-medicus", description: "Entrées de l'index" },
+  { title: "Paramètres", icon: Settings, href: "/admin/settings", description: "Configuration" },
+  { title: "Debug", icon: Bug, href: "/admin/debug", description: "Diagnostic" },
 ];
 
 export const AppSidebar = () => {
@@ -153,7 +93,7 @@ export const AppSidebar = () => {
       <SidebarContent className="p-2">
         <SidebarGroup>
           <SidebarGroupLabel className="px-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Navigation
+            Administration
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -178,15 +118,17 @@ export const AppSidebar = () => {
           </SidebarGroupContent>
         </SidebarGroup>
 
+        
+
         <SidebarSeparator className="my-2" />
 
         <SidebarGroup>
           <SidebarGroupLabel className="px-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Création de contenu
+            Avancé
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {contentMenuItems.map((item) => (
+              {advancedMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild 
@@ -206,61 +148,7 @@ export const AppSidebar = () => {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarSeparator className="my-2" />
-
-        <SidebarGroup>
-          <SidebarGroupLabel className="px-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Configuration
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {settingsMenuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    asChild 
-                    isActive={location.pathname === item.href}
-                  >
-                    <Link to={item.href} className="flex items-center gap-3 p-2">
-                      <item.icon className="h-4 w-4 flex-shrink-0" />
-                      <div className="flex flex-col min-w-0">
-                        <span className="text-sm font-medium truncate">{item.title}</span>
-                        <span className="text-xs text-gray-500 truncate">{item.description}</span>
-                      </div>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarSeparator className="my-2" />
-
-        <SidebarGroup>
-          <SidebarGroupLabel className="px-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Développement
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {debugMenuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    asChild 
-                    isActive={location.pathname === item.href}
-                  >
-                    <Link to={item.href} className="flex items-center gap-3 p-2">
-                      <item.icon className="h-4 w-4 flex-shrink-0" />
-                      <div className="flex flex-col min-w-0">
-                        <span className="text-sm font-medium truncate">{item.title}</span>
-                        <span className="text-xs text-gray-500 truncate">{item.description}</span>
-                      </div>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        
       </SidebarContent>
       
       <SidebarFooter className="border-t border-gray-100 p-2">

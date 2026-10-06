@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layouts/MainLayout';
 import { AdminLayout } from '@/components/layouts/AdminLayout';
 import Home from '@/pages/Home';
@@ -23,14 +23,12 @@ import NewsletterUnsubscribe from '@/pages/NewsletterUnsubscribe';
 
 // Admin components
 import { AdminRouteWrapper } from '@/components/routing/AdminRouteWrapper';
-import AdminDashboard from '@/pages/admin/Dashboard';
 import AdminUsers from '@/pages/admin/Users';
 import AdminSettings from '@/pages/admin/Settings';
 import AdminAnalytics from '@/pages/admin/Analytics';
 import IndexMedicusAdmin from '@/pages/admin/IndexMedicusAdmin';
 import AdminEmailSettings from '@/pages/admin/EmailSettings';
 import AdminLogin from '@/pages/admin/Login';
-import Content from '@/pages/admin/Content';
 import ArticleCreate from '@/pages/admin/ArticleCreate';
 import ArticleList from '@/pages/admin/ArticleList';
 import ArticleEdit from '@/pages/admin/ArticleEdit';
@@ -75,8 +73,9 @@ export const AppRoutes = () => {
           <AdminLayout />
         </AdminRouteWrapper>
       }>
-        <Route path="dashboard" element={<AdminDashboard />} />
-        <Route path="content" element={<Content />} />
+        <Route index element={<Navigate to="/admin/articles" replace />} />
+        <Route path="dashboard" element={<Navigate to="/admin/articles" replace />} />
+        <Route path="content" element={<Navigate to="/admin/articles" replace />} />
         <Route path="articles" element={<ArticleList />} />
         <Route path="articles/new" element={<ArticleCreate />} />
         <Route path="articles/edit/:id" element={<ArticleEdit />} />

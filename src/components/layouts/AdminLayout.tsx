@@ -14,33 +14,26 @@ export const AdminLayout: React.FC = () => {
     const path = location.pathname;
     
     const breadcrumbs = [
-      { label: "Administration", href: "/admin/dashboard" }
+      { label: "Administration", href: "/admin/articles" }
     ];
     
-    if (path === "/admin/dashboard") {
-      breadcrumbs.push({ label: "Dashboard", href: "/admin/dashboard" });
-    } else if (path === "/admin/content") {
-      breadcrumbs.push({ label: "Contenu", href: "/admin/content" });
-    } else if (path === "/admin/articles/new") {
-      breadcrumbs.push({ label: "Contenu", href: "/admin/content" });
-      breadcrumbs.push({ label: "Nouvel Article", href: "/admin/articles/new" });
-    } else if (path === "/admin/files") {
-      breadcrumbs.push({ label: "Contenu", href: "/admin/content" });
-      breadcrumbs.push({ label: "Gestion des Fichiers", href: "/admin/files" });
-    } else if (path === "/admin/users") {
-      breadcrumbs.push({ label: "Utilisateurs", href: "/admin/users" });
-    } else if (path === "/admin/analytics") {
-      breadcrumbs.push({ label: "Analytics", href: "/admin/analytics" });
-    } else if (path === "/admin/index-medicus") {
-      breadcrumbs.push({ label: "Index Medicus", href: "/admin/index-medicus" });
-    } else if (path === "/admin/settings") {
-      breadcrumbs.push({ label: "Paramètres", href: "/admin/settings" });
-    } else if (path === "/admin/email-settings") {
-      breadcrumbs.push({ label: "Paramètres Email", href: "/admin/email-settings" });
-    } else if (path === "/admin/debug") {
-      breadcrumbs.push({ label: "Debug Console", href: "/admin/debug" });
+    const labels: Record<string, string> = {
+      "/admin/articles": "Articles",
+      "/admin/users": "Utilisateurs",
+      "/admin/analytics": "Analytics",
+      "/admin/email-settings": "Email",
+      "/admin/files": "Import & outils",
+      "/admin/index-medicus": "Index Medicus",
+      "/admin/settings": "Paramètres",
+      "/admin/debug": "Debug",
+    };
+    if (path.startsWith("/admin/articles/")) {
+      breadcrumbs.push({ label: "Articles", href: "/admin/articles" });
+      breadcrumbs.push({ label: path === "/admin/articles/new" ? "Nouvel article" : "Modifier", href: path });
+    } else if (labels[path]) {
+      breadcrumbs.push({ label: labels[path], href: path });
     }
-    
+
     return breadcrumbs;
   };
 

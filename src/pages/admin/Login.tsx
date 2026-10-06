@@ -28,7 +28,7 @@ const AdminLogin = () => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate("/admin/dashboard");
+        navigate("/admin/articles");
       }
     };
     checkAuth();
@@ -49,7 +49,7 @@ const AdminLogin = () => {
 
       if (data.user) {
         toast.success("Connexion réussie");
-        navigate("/admin/dashboard");
+        navigate("/admin/articles");
       }
     } catch (error) {
       const authError = error as AuthError;
@@ -92,7 +92,7 @@ const AdminLogin = () => {
     }
 
     try {
-      const redirectUrl = `${window.location.origin}/admin/dashboard`;
+      const redirectUrl = `${window.location.origin}/admin/articles`;
       
       const { data, error } = await supabase.auth.signUp({
         email,
