@@ -65,7 +65,7 @@ export const useSubmissionHandler = ({
       const primaryPdfFilename = primaryPdfUrl ? primaryPdfUrl.split('/').pop() : null;
       
       const { data, error } = await supabase
-        .from('unified_content')
+        .from('articles')
         .insert({
           title: values.title,
           abstract: values.abstract,
@@ -78,9 +78,9 @@ export const useSubmissionHandler = ({
           issue: values.issue,
           page_number: values.pageNumber,
           specialty: values.specialty,
-          pdf_url: primaryPdfUrl,
+          pdf_url: primaryPdfUrl ?? '',
           pdf_filename: primaryPdfFilename,
-          image_url: coverImageUrl || null,
+          image_url: coverImageUrl || '',
           status: values.status
         })
         .select()

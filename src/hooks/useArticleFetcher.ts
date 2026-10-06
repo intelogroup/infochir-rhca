@@ -9,7 +9,7 @@ export const useArticleFetcher = (articleId: string | undefined) => {
       if (!articleId) throw new Error("Article ID is required");
       
       const { data, error } = await supabase
-        .from('unified_content')
+        .from('articles')
         .select('*')
         .eq('id', articleId)
         .maybeSingle();

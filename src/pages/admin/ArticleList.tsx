@@ -47,7 +47,7 @@ const ArticleList = () => {
     queryKey: ['admin-articles'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('unified_content')
+        .from('articles')
         .select('id, title, abstract, source, status, created_at, authors, category, tags, publication_date')
         .order('created_at', { ascending: false });
       
@@ -88,7 +88,7 @@ const ArticleList = () => {
     setIsDeleting(true);
     try {
       const { error } = await supabase
-        .from('unified_content')
+        .from('articles')
         .delete()
         .eq('id', articleToDelete.id);
       

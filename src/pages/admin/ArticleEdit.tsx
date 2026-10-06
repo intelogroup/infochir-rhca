@@ -19,7 +19,7 @@ const ArticleEdit = () => {
       if (!id) throw new Error("Article ID is required");
       
       const { data, error } = await supabase
-        .from('unified_content')
+        .from('articles')
         .select('*')
         .eq('id', id)
         .maybeSingle();
@@ -37,7 +37,7 @@ const ArticleEdit = () => {
     
     try {
       const { error } = await supabase
-        .from('unified_content')
+        .from('articles')
         .update({
           title: data.title,
           abstract: data.abstract,
