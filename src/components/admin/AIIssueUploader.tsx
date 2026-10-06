@@ -89,7 +89,7 @@ type Metadata = {
   cover_filename: string;
 };
 
-export const AIIssueUploader: React.FC = () => {
+export const AIIssueUploader: React.FC<{ onPublished?: () => void }> = ({ onPublished }) => {
   const [file, setFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [coverBlob, setCoverBlob] = useState<Blob | null>(null);
@@ -214,6 +214,7 @@ export const AIIssueUploader: React.FC = () => {
 
       toast.success(`${meta.source} issue published successfully`);
       reset();
+      onPublished?.();
     } catch (e: any) {
       toast.error(e.message || "Upload failed");
       console.error(e);

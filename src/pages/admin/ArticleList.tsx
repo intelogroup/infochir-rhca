@@ -7,7 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Plus, Search, Calendar, User, Trash2 } from "lucide-react";
+import { Edit, Plus, Search, Calendar, User, Trash2, Sparkles } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AIIssueUploader } from "@/components/admin/AIIssueUploader";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { toast } from "sonner";
 import {
@@ -42,6 +44,7 @@ const ArticleList = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [articleToDelete, setArticleToDelete] = useState<ArticleItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [aiOpen, setAiOpen] = useState(false);
 
   const { data: articles, isLoading, error } = useQuery({
     queryKey: ['admin-articles'],
@@ -123,8 +126,8 @@ const ArticleList = () => {
     return (
       <div className="space-y-6">
         <PageHeader 
-          title="Gestion des articles" 
-          description="Gérer et modifier les articles existants"
+          title="Articles" 
+          description="Publier un numéro ou gérer les articles existants"
         />
         <div className="flex justify-center py-12">
           <LoadingSpinner variant="default" size="lg" text="Chargement des articles..." />
@@ -137,8 +140,8 @@ const ArticleList = () => {
     return (
       <div className="space-y-6">
         <PageHeader 
-          title="Gestion des articles" 
-          description="Gérer et modifier les articles existants"
+          title="Articles" 
+          description="Publier un numéro ou gérer les articles existants"
         />
         <Card>
           <CardContent className="p-6">
@@ -152,11 +155,55 @@ const ArticleList = () => {
   return (
     <div className="space-y-6">
       <PageHeader 
-        title="Gestion des articles" 
-        description="Gérer et modifier les articles existants"
+        title="Articles" 
+        description="Publier un numéro ou gérer les articles existants"
       />
 
-      {/* Actions and Filters */}
+      {/* Primary actions */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <button
+          type="button"
+          onClick={() => setAiOpen(true)}
+          className="flex items-start gap-4 rounded-lg border-2 border-primary bg-primary/5 p-5 text-left transition hover:bg-primary/10"
+        >
+          <Sparkles className="mt-1 h-6 w-6 shrink-0 text-primary" />
+          <span>
+            <span className="block text-base font-semibold">Publier un PDF avec l'IA</span>
+            <span className="block text-sm text-muted-foreground">
+              Un numéro complet (IGM, RHCA, ADC) : glissez le PDF, l'IA remplit les champs, vous vérifiez et publiez.
+            </span>
+          </span>
+        </button>
+        <button
+          type="button"
+          onClick={handleCreate}
+          className="flex items-start gap-4 rounded-lg border-2 p-5 text-left transition hover:bg-muted"
+        >
+          <Plus className="mt-1 h-6 w-6 shrink-0" />
+          <span>
+            <span className="block text-base font-semibold">Ajouter manuellement</span>
+            <span className="block text-sm text-muted-foreground">
+              Un seul article : remplissez le formulaire vous-même.
+            </span>
+          </span>
+        </button>
+      </div>
+
+      <Dialog open={aiOpen} onOpenChange={setAiOpen}>
+        <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="sr-only">Publier un PDF avec l'IA</DialogTitle>
+          </DialogHeader>
+          <AIIssueUploader
+            onPublished={() => {
+              setAiOpen(false);
+              queryClient.invalidateQueries({ queryKey: ['admin-articles'] });
+            }}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4 justify-between">
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative">
@@ -182,10 +229,6 @@ const ArticleList = () => {
           </select>
         </div>
 
-        <Button onClick={handleCreate} className="gap-2">
-          <Plus className="h-4 w-4" />
-          Nouvel article
-        </Button>
       </div>
 
       {/* Articles Grid */}
