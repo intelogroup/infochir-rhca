@@ -16,31 +16,6 @@ import {
 import { SensitiveAdminGuard } from "@/components/admin/security/SensitiveAdminGuard";
 import { useAdminSecurity } from "@/components/admin/security/AdminSecurityProvider";
 
-const SystemStatus = () => (
-  <Card>
-    <CardHeader>
-      <CardTitle>État du système</CardTitle>
-      <CardDescription>Statut des services</CardDescription>
-    </CardHeader>
-    <CardContent>
-      <div className="space-y-3">
-        {[
-          { service: "Base de données", status: "Opérationnel" },
-          { service: "Stockage fichiers", status: "Opérationnel" },
-          { service: "Service email", status: "Opérationnel" }
-        ].map((item, index) => (
-          <div key={index} className="flex items-center justify-between">
-            <span className="text-sm font-medium">{item.service}</span>
-            <Badge variant="default" className="bg-green-600">
-              {item.status}
-            </Badge>
-          </div>
-        ))}
-      </div>
-    </CardContent>
-  </Card>
-);
-
 const GeneralSettings = () => (
   <Card>
     <CardHeader>
@@ -172,7 +147,6 @@ const Settings = () => {
           </SensitiveAdminGuard>
         </div>
         <div className="space-y-6">
-          <SystemStatus />
           <QuickActions />
         </div>
       </div>

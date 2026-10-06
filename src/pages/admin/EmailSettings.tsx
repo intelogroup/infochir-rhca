@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Mail, 
   Send, 
@@ -125,14 +124,8 @@ const EmailSettings = () => {
         </Card>
       </div>
 
-      <Tabs defaultValue="smtp" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="smtp">Configuration SMTP</TabsTrigger>
-          <TabsTrigger value="templates">Modèles</TabsTrigger>
-          <TabsTrigger value="logs">Logs</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="smtp" className="space-y-6">
+      <div className="space-y-6">
+        <>
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -261,117 +254,8 @@ const EmailSettings = () => {
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
-
-        <TabsContent value="templates" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Modèles d'email</CardTitle>
-              <CardDescription>
-                Gérez les modèles d'emails automatiques
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {[
-                  { name: "Email de bienvenue", status: "Actif", lastModified: "15 Jan 2024" },
-                  { name: "Notification de soumission", status: "Actif", lastModified: "10 Jan 2024" },
-                  { name: "Rappel de mot de passe", status: "Actif", lastModified: "05 Jan 2024" },
-                  { name: "Newsletter", status: "Brouillon", lastModified: "01 Jan 2024" },
-                ].map((template, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div>
-                      <h4 className="font-medium">{template.name}</h4>
-                      <p className="text-sm text-gray-600">
-                        Modifié le {template.lastModified}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Badge variant={template.status === "Actif" ? "default" : "secondary"}>
-                        {template.status}
-                      </Badge>
-                      <Button variant="outline" size="sm">
-                        Modifier
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="logs" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Logs d'envoi</CardTitle>
-                  <CardDescription>
-                    Historique des emails envoyés
-                  </CardDescription>
-                </div>
-                <Button variant="outline" size="sm">
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Actualiser
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {[
-                  { 
-                    to: "user@exemple.com", 
-                    subject: "Bienvenue sur Infochir-RHCA", 
-                    status: "Délivré", 
-                    time: "Il y a 2h",
-                    statusColor: "text-green-600"
-                  },
-                  { 
-                    to: "admin@exemple.com", 
-                    subject: "Nouvelle soumission d'article", 
-                    status: "Délivré", 
-                    time: "Il y a 4h",
-                    statusColor: "text-green-600"
-                  },
-                  { 
-                    to: "user2@exemple.com", 
-                    subject: "Réinitialisation mot de passe", 
-                    status: "En attente", 
-                    time: "Il y a 6h",
-                    statusColor: "text-yellow-600"
-                  },
-                  { 
-                    to: "invalid@email", 
-                    subject: "Newsletter", 
-                    status: "Échec", 
-                    time: "Il y a 8h",
-                    statusColor: "text-red-600"
-                  },
-                ].map((log, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3">
-                        <Mail className="h-4 w-4 text-gray-400" />
-                        <div>
-                          <p className="font-medium text-sm">{log.subject}</p>
-                          <p className="text-xs text-gray-600">À: {log.to}</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className={`text-sm font-medium ${log.statusColor}`}>
-                        {log.status}
-                      </p>
-                      <p className="text-xs text-gray-500">{log.time}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+        </>
+      </div>
     </div>
   );
 };
