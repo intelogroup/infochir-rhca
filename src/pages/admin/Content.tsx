@@ -1,5 +1,6 @@
 
 import * as React from "react";
+import { useAdminSummary, fmt } from "@/hooks/use-admin-summary";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { PageHeader } from "@/components/ui/page-header";
@@ -34,7 +35,9 @@ import {
 } from "lucide-react";
 
 // Enhanced stats with modern card design and better visual hierarchy
-const ContentStats = () => (
+const ContentStats = () => {
+  const { data: summary } = useAdminSummary();
+  return (
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     <Card className="relative overflow-hidden border-0 shadow-sm bg-gradient-to-br from-blue-50 to-blue-100/50 hover:shadow-md transition-all duration-300">
       <CardHeader className="pb-3">
@@ -44,13 +47,12 @@ const ContentStats = () => (
           </div>
           <TrendingUp className="h-4 w-4 text-blue-500" />
         </div>
-        <CardTitle className="text-2xl font-bold text-blue-900">89</CardTitle>
+        <CardTitle className="text-2xl font-bold text-blue-900">{fmt(summary?.total_rhca_articles)}</CardTitle>
         <CardDescription className="text-blue-700 font-medium">Articles RHCA</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex items-center gap-2">
-          <Badge variant="default" className="bg-blue-500 text-white">+5 ce mois</Badge>
-          <span className="text-xs text-blue-600">↗ 5.9%</span>
+          <Badge variant="default" className="bg-blue-500 text-white">Publiés</Badge>
         </div>
       </CardContent>
     </Card>
@@ -63,13 +65,12 @@ const ContentStats = () => (
           </div>
           <TrendingUp className="h-4 w-4 text-green-500" />
         </div>
-        <CardTitle className="text-2xl font-bold text-green-900">158</CardTitle>
+        <CardTitle className="text-2xl font-bold text-green-900">{fmt(summary?.total_igm_articles)}</CardTitle>
         <CardDescription className="text-green-700 font-medium">Articles IGM</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex items-center gap-2">
-          <Badge variant="secondary" className="bg-green-100 text-green-700">+7 ce mois</Badge>
-          <span className="text-xs text-green-600">↗ 4.6%</span>
+          <Badge variant="secondary" className="bg-green-100 text-green-700">Publiés</Badge>
         </div>
       </CardContent>
     </Card>
@@ -82,7 +83,7 @@ const ContentStats = () => (
           </div>
           <Users className="h-4 w-4 text-purple-500" />
         </div>
-        <CardTitle className="text-2xl font-bold text-purple-900">3,456</CardTitle>
+        <CardTitle className="text-2xl font-bold text-purple-900">{fmt(summary?.total_index_medicus)}</CardTitle>
         <CardDescription className="text-purple-700 font-medium">Index Medicus</CardDescription>
       </CardHeader>
       <CardContent>
@@ -98,17 +99,18 @@ const ContentStats = () => (
           </div>
           <Clock className="h-4 w-4 text-orange-500" />
         </div>
-        <CardTitle className="text-2xl font-bold text-orange-900">12.4k</CardTitle>
-        <CardDescription className="text-orange-700 font-medium">Vues ce mois</CardDescription>
+        <CardTitle className="text-2xl font-bold text-orange-900">{fmt(summary?.total_views)}</CardTitle>
+        <CardDescription className="text-orange-700 font-medium">Vues totales</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex items-center gap-2">
-          <Badge variant="secondary" className="bg-orange-100 text-orange-700">+12% vs mois dernier</Badge>
+          <Badge variant="secondary" className="bg-orange-100 text-orange-700">Cumul</Badge>
         </div>
       </CardContent>
     </Card>
   </div>
-);
+  );
+};
 
 // Enhanced recent articles with better typography and spacing
 const RecentArticles = () => (

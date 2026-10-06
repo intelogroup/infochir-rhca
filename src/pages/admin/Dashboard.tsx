@@ -1,5 +1,6 @@
 
 import * as React from "react";
+import { useAdminSummary, fmt } from "@/hooks/use-admin-summary";
 import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -85,6 +86,7 @@ const RecentActivity = () => (
 );
 
 const Dashboard = () => {
+  const { data: summary } = useAdminSummary();
   return (
     <div className="space-y-6">
       <PageHeader 
@@ -113,33 +115,30 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
           title="Articles RHCA"
-          value="89"
+          value={fmt(summary?.total_rhca_articles)}
           description="Articles publiés"
           icon={FileText}
-          trend="+5 ce mois"
         />
         
         <StatsCard
           title="Articles IGM"
-          value="158"
+          value={fmt(summary?.total_igm_articles)}
           description="Numéros disponibles"
           icon={BookOpen}
-          trend="+7 ce mois"
         />
         
         <StatsCard
           title="Index Medicus"
-          value="3,456"
+          value={fmt(summary?.total_index_medicus)}
           description="Entrées référencées"
           icon={BarChart3}
         />
         
         <StatsCard
           title="Téléchargements"
-          value="8,921"
+          value={fmt(summary?.total_downloads)}
           description="Total des téléchargements"
           icon={Download}
-          trend="+15.3%"
         />
       </div>
 
