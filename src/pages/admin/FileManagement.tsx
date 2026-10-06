@@ -5,8 +5,6 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MultiFileUploader } from "@/components/pdf/MultiFileUploader";
-import { RHCABackfillPanel } from "@/components/admin/RHCABackfillPanel";
-import { IGMBackfillPanel } from "@/components/admin/IGMBackfillPanel";
 import { 
   FileText, 
   BookOpen, 
@@ -27,23 +25,17 @@ const FileManagement = () => {
     <div className="space-y-6">
       <PageHeader 
         title="Import & outils" 
-        description="Outils avancés : uploads par revue et remplissage des articles. Pour publier un numéro, utilisez la page Articles."
+        description="Outils avancés : uploads de fichiers par revue. Pour publier un numéro, utilisez la page Articles."
         backLink="/admin/articles"
       />
 
-      <Tabs defaultValue="backfill" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="backfill">Backfill</TabsTrigger>
+      <Tabs defaultValue="rhca" className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="rhca">RHCA</TabsTrigger>
           <TabsTrigger value="igm">IGM</TabsTrigger>
           <TabsTrigger value="index">Index Medicus</TabsTrigger>
           <TabsTrigger value="general">Général</TabsTrigger>
         </TabsList>
-
-        <TabsContent value="backfill" className="space-y-6">
-          <RHCABackfillPanel />
-          <IGMBackfillPanel />
-        </TabsContent>
 
         <TabsContent value="rhca" className="space-y-6">
 

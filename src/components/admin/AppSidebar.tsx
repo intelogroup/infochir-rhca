@@ -40,7 +40,7 @@ const mainMenuItems = [
 ];
 
 const advancedMenuItems = [
-  { title: "Import & outils", icon: FolderOpen, href: "/admin/files", description: "Uploads par revue, backfill" },
+  { title: "Import & outils", icon: FolderOpen, href: "/admin/files", description: "Uploads de fichiers par revue" },
   { title: "Index Medicus", icon: BookOpen, href: "/admin/index-medicus", description: "Entrées de l'index" },
   { title: "Paramètres", icon: Settings, href: "/admin/settings", description: "Configuration" },
   { title: "Debug", icon: Bug, href: "/admin/debug", description: "Diagnostic" },
