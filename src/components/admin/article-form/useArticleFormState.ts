@@ -21,7 +21,7 @@ export const useArticleFormState = ({ initialData, isEditing = false }: UseArtic
     resolver: zodResolver(articleFormSchema),
     defaultValues: {
       // Required fields
-      publicationType: (initialData?.publication_type as "RHCA" | "IGM" | "ADC" | "INDEX") || "RHCA",
+      publicationType: ((initialData?.publication_type ?? initialData?.source) as "RHCA" | "IGM" | "ADC" | "INDEX") || "RHCA",
       title: initialData?.title || "",
       abstract: initialData?.abstract || "",
       authors: initialData?.authors || [],
