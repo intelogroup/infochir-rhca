@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { ArticleGrid } from "@/components/index-medicus/ArticleGrid";
 
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, BookOpen, Info } from "lucide-react";
+import { ArrowLeft, BookOpen, FileText, Info } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Suspense, useState, useEffect } from "react";
@@ -52,6 +52,27 @@ const IndexMedicus = () => {
             description="Base de données bibliographique de la littérature médicale haïtienne."
             variant="brand"
           />
+        </div>
+
+        <div className="container max-w-[1920px] mx-auto px-3 sm:px-6 lg:px-8 pt-4 sm:pt-6">
+          <div className="bg-card rounded-lg border border-border p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex items-center gap-2">
+              <FileText className="h-4 w-4 text-primary flex-shrink-0" />
+              <span className="text-sm font-medium">Accès rapide aux fichiers</span>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2 sm:ml-auto w-full sm:w-auto">
+              <Button asChild variant="outline" size="sm" className="w-full sm:w-auto">
+                <a href="/docs/auteurs-index-medicus-2026-10-10.pdf" target="_blank" rel="noopener noreferrer">
+                  <FileText className="h-4 w-4" />
+                  Fichier AUTEURS · 10/10/26
+                </a>
+              </Button>
+              <Button variant="outline" size="sm" disabled className="w-full sm:w-auto">
+                <FileText className="h-4 w-4" />
+                Fichier ARTICLES · bientôt disponible
+              </Button>
+            </div>
+          </div>
         </div>
 
         <div className="container max-w-[1920px] mx-auto px-3 sm:px-6 lg:px-8 pb-8">
