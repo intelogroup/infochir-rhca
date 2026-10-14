@@ -187,8 +187,15 @@ export const ArticleActions: React.FC<ArticleActionsProps> = ({
       toast.success('Téléchargement réussi');
     } catch (err) {
       console.error(`[ArticleActions:ERROR] Error downloading file:`, err);
-      setError(`Erreur: ${err instanceof Error ? err.message : String(err)}`);
-      toast.error(`Erreur: ${err instanceof Error ? err.message : String(err)}`);
+      // A failed fetch rejects with a TypeError whose message is a raw
+      // browser string ("Load failed" on Safari, "Failed to fetch" on
+      // Chrome) — show a friendly connection message instead, so the
+      // reader knows the download can simply be retried.
+      const message = err instanceof TypeError
+        ? "Connexion interrompue. Vérifiez votre connexion internet, puis réessayez."
+        : `Erreur: ${err instanceof Error ? err.message : String(err)}`;
+      setError(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
