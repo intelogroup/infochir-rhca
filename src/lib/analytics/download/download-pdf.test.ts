@@ -172,6 +172,38 @@ describe("trackDownload (analytics capture never throws)", () => {
     expect(result).toBe(false);
   });
 
+  test("success event increments the download counter exactly once", async () => {
+    const result = await trackDownload({
+      document_id: "123e4567-e89b-12d3-a456-426614174000",
+      document_type: "article",
+      file_name: "paper.pdf",
+      status: "success",
+    });
+
+    expect(result).toBe(true);
+    const increments = rpcCalls.filter((c) => c.fn === "increment_count");
+    expect(increments).toHaveLength(1);
+    expect(increments[0].params).toEqual({
+      table_name: "articles",
+      column_name: "downloads",
+      row_id: "123e4567-e89b-12d3-a456-426614174000",
+    });
+  });
+
+  test("failed event is recorded as failed but does NOT increment the download counter", async () => {
+    const result = await trackDownload({
+      document_id: "123e4567-e89b-12d3-a456-426614174000",
+      document_type: "article",
+      file_name: "paper.pdf",
+      status: "failed",
+      error_details: "Load failed",
+    });
+
+    expect(result).toBe(true); // the event itself is still recorded
+    expect(rpcCalls.filter((c) => c.fn === "increment_count")).toHaveLength(0);
+    expect(trackedStatuses()).toEqual(["failed"]);
+  });
+
   test("insert fallback records the failure status and error details when the RPC is down", async () => {
     rpcError = new Error("rpc unavailable");
 

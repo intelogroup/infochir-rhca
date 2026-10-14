@@ -34,8 +34,10 @@ export const trackDownload = async (event: DownloadEvent): Promise<boolean> => {
     // Check if the document_id is a valid UUID
     const isValidId = isValidUuid(event.document_id);
     
-    // First increment the download count in the original table if it's a valid UUID
-    if (isValidId) {
+    // First increment the download count in the original table if it's a valid UUID.
+    // Only a successful download counts — a failed attempt is still logged as
+    // an event below, but it must not inflate the article's download counter.
+    if (isValidId && event.status === 'success') {
       try {
         await supabase.rpc('increment_count', {
           table_name: 'articles',
