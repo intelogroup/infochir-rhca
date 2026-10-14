@@ -31,6 +31,9 @@ export const handleMobileDownload = async (
       // Strategy 1: Try to create a downloadable blob (works best on most mobile browsers)
       try {
         const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`File not accessible: ${response.status}`);
+        }
         const blob = await response.blob();
         
         // For iOS Safari, we need to open in a new window due to restrictions
@@ -77,33 +80,12 @@ export const handleMobileDownload = async (
         onSuccess?.();
         return true;
       } catch (blobError) {
-        logger.error("Blob download failed, trying fallback", blobError);
-        
-        // Fallback: Open in new tab/window
-        if (isIOS) {
-          window.open(url, '_blank');
-          toast.success("PDF ouvert dans Safari", {
-            description: "Utilisez le bouton de partage pour télécharger"
-          });
-        } else {
-          // For Android, try direct download link
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = fileName;
-          link.target = '_blank';
-          link.rel = 'noopener noreferrer';
-          
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          
-          toast.success("Téléchargement initié", {
-            description: "Si ça ne fonctionne pas, le fichier s'ouvrira dans le navigateur"
-          });
-        }
-        
-        onSuccess?.();
-        return true;
+        // The file itself could not be retrieved (e.g. the connection
+        // dropped mid-download — Safari reports this as "Load failed").
+        // Do not fake success by opening the same unreachable URL: let the
+        // outer handler report the failure so the reader can retry.
+        logger.error("Blob download failed", blobError);
+        throw blobError;
       }
     } else {
       // Desktop fallback
@@ -125,7 +107,12 @@ export const handleMobileDownload = async (
     const errorMessage = error instanceof Error ? error.message : "Erreur de téléchargement";
     
     toast.error("Erreur de téléchargement", {
-      description: errorMessage
+      // A failed fetch rejects with a TypeError (network failure); other
+      // errors here are mostly "file not accessible" HTTP failures — the
+      // description must not blame the connection for those.
+      description: error instanceof TypeError
+        ? "La connexion a été interrompue. Vérifiez votre connexion internet, puis réessayez."
+        : "Le fichier n'a pas pu être récupéré. Veuillez réessayer."
     });
     
     onError?.(errorMessage);

@@ -100,19 +100,18 @@ export const PdfActions: React.FC<PdfActionsProps> = ({ article, pdfUrl }) => {
             console.error('Error updating download count:', error);
           }
         } catch (downloadError) {
+          // The fetch failed (e.g. the connection dropped mid-download —
+          // Safari reports this as "Load failed"). Do not fake success with
+          // a direct link to the same unreachable URL: tell the reader the
+          // connection was interrupted so they can retry.
           console.error('Desktop download failed:', downloadError);
-          
-          // Direct download fallback
-          const link = document.createElement('a');
-          link.href = pdfUrl;
-          link.download = fileName;
-          link.style.display = 'none';
-          
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          
-          toast.success("Téléchargement du PDF en cours...");
+          toast.error("Erreur lors du téléchargement", {
+            // TypeError = the fetch itself failed (network); anything else
+            // (e.g. an HTTP error status) gets the generic retry wording.
+            description: downloadError instanceof TypeError
+              ? "La connexion a été interrompue. Vérifiez votre connexion internet, puis réessayez."
+              : "Veuillez réessayer ou contactez le support"
+          });
         }
       }
     } catch (error) {

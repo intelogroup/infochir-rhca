@@ -54,61 +54,47 @@ export const downloadPDF = async ({
     
     console.log('Final download URL:', actualUrl);
     
-    // Enhanced desktop download logic with blob handling
-    try {
-      // Fetch the file as a blob for better desktop handling
-      const response = await fetch(actualUrl);
-      if (!response.ok) {
-        throw new Error(`File not accessible: ${response.status}`);
-      }
-      
-      // Get the file as a blob with proper MIME type
-      const blob = await response.blob();
-      const contentType = response.headers.get('content-type') || 'application/pdf';
-      
-      // Create a proper blob with PDF MIME type
-      const pdfBlob = new Blob([blob], { type: contentType });
-      
-      // Create object URL for the blob
-      const objectUrl = URL.createObjectURL(pdfBlob);
-      
-      // Create download link with proper attributes for desktop saving
-      const link = document.createElement('a');
-      link.href = objectUrl;
-      link.download = fileName; // This forces download instead of opening in browser
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      
-      // Add to DOM, click, and clean up
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      // Clean up the object URL after a short delay
-      setTimeout(() => {
-        URL.revokeObjectURL(objectUrl);
-      }, 1000);
-      
-      console.log('Desktop download triggered successfully for:', fileName);
-      
-    } catch (fetchError) {
-      console.warn('Blob download failed, falling back to direct link method:', fetchError);
-      
-      // Fallback to direct link method
-      const link = document.createElement('a');
-      link.href = actualUrl;
-      link.download = fileName;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      
-      // Force download attribute for desktop
-      link.setAttribute('download', fileName);
-      
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    // Fetch the file as a blob for better desktop handling.
+    // A failed fetch (e.g. the reader's connection drops mid-download —
+    // Safari reports this as "Load failed") propagates to the outer catch,
+    // which tracks the download as 'failed' and returns false so callers
+    // show their error state. There is deliberately no direct-link fallback
+    // here: pointing the browser at the same unreachable URL cannot succeed
+    // either, and reporting it as a success hid real failures.
+    const response = await fetch(actualUrl);
+    if (!response.ok) {
+      throw new Error(`File not accessible: ${response.status}`);
     }
-    
+
+    // Get the file as a blob with proper MIME type
+    const blob = await response.blob();
+    const contentType = response.headers.get('content-type') || 'application/pdf';
+
+    // Create a proper blob with PDF MIME type
+    const pdfBlob = new Blob([blob], { type: contentType });
+
+    // Create object URL for the blob
+    const objectUrl = URL.createObjectURL(pdfBlob);
+
+    // Create download link with proper attributes for desktop saving
+    const link = document.createElement('a');
+    link.href = objectUrl;
+    link.download = fileName; // This forces download instead of opening in browser
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+
+    // Add to DOM, click, and clean up
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Clean up the object URL after a short delay
+    setTimeout(() => {
+      URL.revokeObjectURL(objectUrl);
+    }, 1000);
+
+    console.log('Desktop download triggered successfully for:', fileName);
+
     // Track the download if tracking is enabled
     if (trackingEnabled) {
       await trackDownload({
