@@ -43,7 +43,27 @@
         api_host: '/ingest',
         ui_host: 'https://us.posthog.com',
         person_profiles: 'identified_only',
-        disable_session_recording: true
+        disable_session_recording: true,
+        before_send: function (event) {
+          // Drop exceptions from Netlify's injected metrics beacon
+          // (/.netlify/scripts/rum). Netlify serves it from this origin, so its
+          // frames look first-party, but the repo ships no such file and its
+          // "Failed to fetch" is beacon noise, not an application bug.
+          if (event && event.event === '$exception') {
+            var exceptions = (event.properties && event.properties.$exception_list) || [];
+            var fromNetlifyRum = exceptions.some(function (exception) {
+              var frames = (exception.stacktrace && exception.stacktrace.frames) || [];
+              return frames.some(function (frame) {
+                return typeof frame.filename === 'string' &&
+                  frame.filename.indexOf('/.netlify/scripts/rum') !== -1;
+              });
+            });
+            if (fromNetlifyRum) {
+              return null;
+            }
+          }
+          return event;
+        }
       });
     </script>
 </head>
