@@ -13,6 +13,7 @@ import { DocumentType } from "@/lib/analytics/download/statistics/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { OptimizedImageLoader } from "@/components/shared/OptimizedImageLoader";
 import { formatPublicationDate } from "./utils/dateFormat";
+import { canOpenChapter } from "./utils/chapterNavigation";
 
 const logger = createLogger('AtlasCard');
 
@@ -28,8 +29,21 @@ export const AtlasCard = ({ chapter }: AtlasCardProps) => {
   const [imageRetries, setImageRetries] = useState(0);
   const MAX_RETRIES = 2;
   
+  // En préparation placeholders and front-matter entries have no
+  // article page: their click goes nowhere instead of throwing on the
+  // detail route. Entries that carry a PDF (the Sommaire) open it.
+  const isClickable = canOpenChapter(chapter) || !!chapter.pdfUrl;
+
   const handleCardClick = () => {
-    navigate(`/adc/chapters/${chapter.id}`);
+    try {
+      if (canOpenChapter(chapter)) {
+        navigate(`/adc/chapters/${chapter.id}`);
+      } else if (chapter.pdfUrl) {
+        window.open(chapter.pdfUrl, '_blank');
+      }
+    } catch (error) {
+      logger.error(error);
+    }
   };
   
   const handleDownload = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -95,8 +109,8 @@ export const AtlasCard = ({ chapter }: AtlasCardProps) => {
   };
   
   return (
-    <Card 
-      className="overflow-hidden cursor-pointer hover:shadow-md transition-all flex flex-col h-full bg-card"
+    <Card
+      className={`overflow-hidden transition-all flex flex-col h-full bg-card ${isClickable ? "cursor-pointer hover:shadow-md" : "cursor-default"}`}
       onClick={handleCardClick}
     >
       <div className="relative h-40 overflow-hidden">

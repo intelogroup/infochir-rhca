@@ -82,3 +82,26 @@ describe("ADCH v2 — Addendum", () => {
     expect(addendum).toContain("Éthique en chirurgie");
   });
 });
+
+describe("ADCH — En préparation cards never throw", () => {
+  test("navigation guard only opens real article ids (UUIDs)", () => {
+    const nav = read("src/components/atlas/utils/chapterNavigation.ts");
+    expect(nav).toContain("export const isRealArticleId");
+    expect(nav).toContain("export const canOpenChapter");
+  });
+  test("card click goes nowhere for placeholders instead of navigating", () => {
+    const card = read("src/components/atlas/AtlasCard.tsx");
+    expect(card).toContain("canOpenChapter(chapter)");
+    expect(card).toContain("} else if (chapter.pdfUrl) {");
+  });
+  test("table of contents renders no link for placeholders", () => {
+    const toc = read("src/components/atlas/AtlasTableOfContents.tsx");
+    expect(toc).toContain("canOpenChapter(chapter) ? (");
+  });
+  test("article page shows a friendly state for synthetic or unknown ids", () => {
+    const page = read("src/pages/articles/ArticleDetail.tsx");
+    expect(page).toContain("isRealArticleId(id)");
+    expect(page).toContain("Ce chapitre est en préparation");
+    expect(page).toContain("PGRST116");
+  });
+});

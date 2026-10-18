@@ -10,6 +10,7 @@ import { useScrollToTop } from "@/hooks/useScrollToTop";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { formatDate } from "@/lib/utils";
 import { SEO, SITE_URL } from "@/components/seo/SEO";
+import { isRealArticleId } from "@/components/atlas/utils/chapterNavigation";
 
 const ArticleDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -19,6 +20,7 @@ const ArticleDetail = () => {
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     const fetchArticle = async () => {
@@ -28,6 +30,14 @@ const ArticleDetail = () => {
           throw new Error("Article ID is required");
         }
 
+        // Synthetic ids (En préparation placeholders, front matter)
+        // are not articles rows: querying the uuid column with one
+        // throws at the database. Show the friendly state instead.
+        if (!isRealArticleId(id)) {
+          setNotFound(true);
+          return;
+        }
+
         const { data, error } = await supabase
           .from("articles")
           .select("*")
@@ -35,11 +45,17 @@ const ArticleDetail = () => {
           .single();
 
         if (error) {
+          // No matching row is a "not published yet", not a failure.
+          if ((error as { code?: string }).code === "PGRST116") {
+            setNotFound(true);
+            return;
+          }
           throw error;
         }
 
         if (!data) {
-          throw new Error("Article not found");
+          setNotFound(true);
+          return;
         }
 
         // Map to Article type
@@ -211,6 +227,20 @@ const ArticleDetail = () => {
         {loading ? (
           <div className="flex flex-col items-center justify-center pt-16">
             <LoadingSpinner size="md" text="Chargement de l'article..." />
+          </div>
+        ) : notFound ? (
+          <div className="p-6 border border-border bg-muted/50 rounded-lg text-center">
+            <p className="font-medium">Ce chapitre est en préparation</p>
+            <p className="text-sm text-muted-foreground mt-2">
+              Il n'est pas encore publié. Revenez bientôt, ou parcourez les chapitres disponibles.
+            </p>
+            <Button
+              className="mt-4"
+              variant="outline"
+              onClick={() => navigate("/adc")}
+            >
+              Voir l'Atlas (ADCH)
+            </Button>
           </div>
         ) : error ? (
           <div className="p-6 border border-destructive/20 bg-destructive/10 rounded-lg text-center">

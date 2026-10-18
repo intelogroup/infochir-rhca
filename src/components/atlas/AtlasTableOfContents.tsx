@@ -4,6 +4,7 @@ import { useAtlasArticles } from "./hooks/useAtlasArticles";
 import type { AtlasChapter } from "./types";
 import { Link } from "react-router-dom";
 import { getFrontMatterOrder, isFrontMatterEntry } from "./utils/frontMatter";
+import { canOpenChapter } from "./utils/chapterNavigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Clock, AlertCircle, FileText } from "lucide-react";
@@ -99,14 +100,31 @@ export const AtlasTableOfContents = () => {
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <Link 
-                    to={`/adc/chapters/${chapter.id}`}
-                    className="block group-hover:text-secondary transition-colors"
-                  >
-                    <h5 className="text-sm font-medium text-foreground group-hover:text-secondary mb-1 leading-tight">
+                  {canOpenChapter(chapter) ? (
+                    <Link
+                      to={`/adc/chapters/${chapter.id}`}
+                      className="block group-hover:text-secondary transition-colors"
+                    >
+                      <h5 className="text-sm font-medium text-foreground group-hover:text-secondary mb-1 leading-tight">
+                        {formatTitle(chapter.title, chapter.chapterNumber)}
+                      </h5>
+                    </Link>
+                  ) : chapter.pdfUrl ? (
+                    <a
+                      href={chapter.pdfUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block group-hover:text-secondary transition-colors"
+                    >
+                      <h5 className="text-sm font-medium text-foreground group-hover:text-secondary mb-1 leading-tight">
+                        {formatTitle(chapter.title, chapter.chapterNumber)}
+                      </h5>
+                    </a>
+                  ) : (
+                    <h5 className="text-sm font-medium text-foreground mb-1 leading-tight">
                       {formatTitle(chapter.title, chapter.chapterNumber)}
                     </h5>
-                  </Link>
+                  )}
                   
                   <div className="flex items-center justify-between">
                     {getStatusBadge(chapter.status)}
