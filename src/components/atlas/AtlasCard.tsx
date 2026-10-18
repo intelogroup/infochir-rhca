@@ -12,6 +12,7 @@ import { downloadPDF } from "@/lib/analytics/download";
 import { DocumentType } from "@/lib/analytics/download/statistics/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { OptimizedImageLoader } from "@/components/shared/OptimizedImageLoader";
+import { formatPublicationDate } from "./utils/dateFormat";
 
 const logger = createLogger('AtlasCard');
 
@@ -128,7 +129,7 @@ export const AtlasCard = ({ chapter }: AtlasCardProps) => {
         {(chapter.status === 'coming' || chapter.status === 'coming-soon' || chapter.status === 'unavailable') && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
             <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 text-sm px-3 py-1">
-              Bientôt disponible
+              En préparation
             </Badge>
           </div>
         )}
@@ -155,10 +156,10 @@ export const AtlasCard = ({ chapter }: AtlasCardProps) => {
             {chapter.title}
           </h3>
           
-          {(chapter.lastUpdate || chapter.lastUpdated) && (
+          {formatPublicationDate(chapter.publicationDate) && (
             <div className="flex items-center text-xs text-muted-foreground mt-1">
               <Calendar className="h-3 w-3 mr-1" />
-              Mis à jour le {chapter.lastUpdated || chapter.lastUpdate}
+              Publié le {formatPublicationDate(chapter.publicationDate)}
             </div>
           )}
           

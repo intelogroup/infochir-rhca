@@ -8,6 +8,7 @@ import { AlertTriangle, Grid2X2, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SearchBar } from '@/components/shared/SearchBar';
 import { AtlasTableOfContents } from './AtlasTableOfContents';
+import { getFrontMatterOrder } from './utils/frontMatter';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export const ChaptersGrid = () => {
@@ -20,7 +21,8 @@ export const ChaptersGrid = () => {
     if (!chapters) return chapters;
     
     const getOrder = (chapter: AtlasChapter) => {
-      if (chapter.title?.toLowerCase().includes('introduction')) return 0;
+      const frontMatterOrder = getFrontMatterOrder(chapter.title);
+      if (frontMatterOrder !== null) return frontMatterOrder;
       const fromIssue = chapter.issue ? parseInt(chapter.issue, 10) : NaN;
       if (!isNaN(fromIssue)) return fromIssue;
       if (chapter.chapterNumber) return chapter.chapterNumber;

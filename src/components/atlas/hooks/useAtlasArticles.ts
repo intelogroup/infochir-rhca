@@ -4,6 +4,7 @@ import { supabase, getADCCoverUrl } from "@/integrations/supabase/client";
 import { generateAtlasImageAlternatives, findWorkingImageUrl } from "@/lib/image-validation";
 import type { AtlasChapter } from "../types";
 import { createMissingChapterPlaceholders, getCompleteChapterOrder } from "../utils/missingChapters";
+import { createFrontMatterEntries, getFrontMatterOrder } from "../utils/frontMatter";
 
 // Define the exact order of chapters (1-23)
 const CHAPTER_ORDER = [
@@ -110,15 +111,17 @@ export const useAtlasArticles = () => {
         })
       );
 
-      // Add missing chapter placeholders
+      // Add missing chapter placeholders and the front-matter entries
+      // (Sommaire + Références académiques des auteurs)
       const missingChapters = createMissingChapterPlaceholders();
-      const allChapters = [...chapters, ...missingChapters];
+      const allChapters = [...chapters, ...missingChapters, ...createFrontMatterEntries()];
       
       // Sort chapters by sequential order: Introduction (00), then chapters 01, 02, 03, etc.
       const sortedChapters = allChapters.sort((a, b) => {
         // Get chapter numbers from issue field, treating intro as 0
         const getChapterOrder = (chapter: AtlasChapter) => {
-          if (chapter.title?.toLowerCase().includes('introduction')) return 0;
+          const frontMatterOrder = getFrontMatterOrder(chapter.title);
+          if (frontMatterOrder !== null) return frontMatterOrder;
           if (chapter.issue) {
             const issueNum = parseInt(chapter.issue);
             return isNaN(issueNum) ? 999 : issueNum;

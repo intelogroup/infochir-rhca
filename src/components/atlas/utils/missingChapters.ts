@@ -1,8 +1,10 @@
 import { AtlasChapter } from '@/components/atlas/types';
 
-// All 24 official chapters now exist as database rows (published or "coming"),
-// so no client-side placeholders are needed.
-const MISSING_CHAPTERS: number[] = [];
+// Chapters with no `articles` row yet. The secretariat (ADCH v2,
+// 2026-10-17) asked for VII, IX, XII, XIX and XXIV to be shown as
+// "EN PREPARATION" slots, so these get client-side placeholders until
+// real rows (and files) exist for them.
+const MISSING_CHAPTERS: number[] = [7, 9, 12, 19, 24];
 
 // Official ADC taxonomy (Introduction, mise à jour août 2026): Tome I = ch. 1-14, Tome II = ch. 15-24
 const PLANNED_CHAPTERS: Partial<AtlasChapter>[] = [
@@ -24,7 +26,7 @@ const PLANNED_CHAPTERS: Partial<AtlasChapter>[] = [
   { chapterNumber: 16, title: "Ophtalmologie", specialty: "Ophtalmologie" },
   { chapterNumber: 17, title: "ORL – Maxillo-facial", specialty: "ORL – Maxillo-facial" },
   { chapterNumber: 18, title: "Vasculaire artériel – Anévrismes", specialty: "Chirurgie vasculaire" },
-  { chapterNumber: 19, title: "Vasculaire veineux et lymphatique", specialty: "Chirurgie vasculaire" },
+  { chapterNumber: 19, title: "Système vasculaire veineux et lymphatique", specialty: "Chirurgie vasculaire", status: 'coming-soon' },
   { chapterNumber: 20, title: "Chirurgie pédiatrique", specialty: "Chirurgie pédiatrique" },
   { chapterNumber: 21, title: "Urologie et appareil génital de l'homme", specialty: "Urologie" },
   { chapterNumber: 22, title: "Appareil génital de la femme", specialty: "Gynécologie chirurgicale" },
@@ -47,12 +49,12 @@ export const createMissingChapterPlaceholders = (): AtlasChapter[] => {
       category: plannedChapter?.specialty || 'Chirurgie Générale',
       chapterNumber,
       pageNumber: chapterNumber.toString(),
-      authors: ['Équipe ADC'],
-      author: 'Équipe ADC',
-      lastUpdate: new Date().toISOString(),
-      lastUpdated: new Date().toISOString(),
-      publicationDate: new Date().toISOString(),
-      abstract: `Chapitre ${chapterNumber} de l'Atlas Digital de Chirurgie. Ce contenu sera bientôt disponible et couvrira les aspects essentiels de ${plannedChapter?.specialty || 'la chirurgie'}.`,
+      authors: ['Équipe ADCH'],
+      author: 'Équipe ADCH',
+      lastUpdate: '',
+      lastUpdated: '',
+      publicationDate: '',
+      abstract: `Chapitre ${chapterNumber} de l'Atlas de Diagnostic Chirurgical en Haïti (ADCH). Ce contenu est en préparation et couvrira les aspects essentiels de ${plannedChapter?.specialty || 'la chirurgie'}.`,
       status: 'coming-soon' as const,
       tags: ['chirurgie', 'atlas', 'éducation médicale', 'haïti'],
       stats: {
