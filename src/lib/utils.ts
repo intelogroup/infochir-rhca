@@ -12,10 +12,16 @@ export function cn(...inputs: ClassValue[]) {
 export function formatDate(dateString: string) {
   try {
     const date = new Date(dateString);
+    // Publication dates are calendar dates stored at midnight UTC.
+    // Rendering them in the viewer's timezone shifts the day for
+    // anyone west of UTC (a chapter published on the 14th displayed
+    // as the 13th in Haiti and the Americas), so pin the render to
+    // UTC: the date shown is the date stored, everywhere.
     return new Intl.DateTimeFormat('fr-FR', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
+      timeZone: 'UTC',
     }).format(date);
   } catch (error) {
     console.error('Error formatting date:', error);

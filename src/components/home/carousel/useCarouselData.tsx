@@ -87,7 +87,10 @@ export const useCarouselData = () => {
           title: article.title,
           description: article.abstract,
           image: imageUrl,
-          date: new Date(article.publication_date).toLocaleDateString('fr-FR'),
+          // UTC-pinned like lib/utils formatDate: publication dates are
+          // calendar dates at midnight UTC; a local render moves them a
+          // day back for viewers west of UTC.
+          date: new Date(article.publication_date).toLocaleDateString('fr-FR', { timeZone: 'UTC' }),
           category: article.source,
           author: authorString,
           link: `/articles/${article.id}`,
