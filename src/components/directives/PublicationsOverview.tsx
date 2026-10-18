@@ -61,7 +61,7 @@ export const PublicationsOverview = () => {
               <FileText className="h-8 w-8 text-secondary" />
               <div>
                 <CardTitle className="text-lg">Atlas ADC</CardTitle>
-                <CardDescription>Atlas de Diagnostic Chirurgical</CardDescription>
+                <CardDescription>Atlas de Diagnostic Chirurgical en Haïti (ADCH)</CardDescription>
               </div>
             </div>
           </CardHeader>

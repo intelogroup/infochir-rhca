@@ -10,6 +10,7 @@ import { createLogger } from '@/lib/error-logger';
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb';
 import { Home, BookOpen } from 'lucide-react';
 import { ADCHeader } from '@/components/adc/ADCHeader';
+import { ADCAddendum } from '@/components/adc/ADCAddendum';
 import { ADCMission } from '@/components/adc/ADCMission';
 import { ADCSubmission } from '@/components/adc/ADCSubmission';
 import { ChaptersGrid } from '@/components/atlas/ChaptersGrid';
@@ -43,10 +44,10 @@ const ADC = () => {
   return (
     <MainLayout>
       <SEO
-        title="Atlas de Diagnostic Chirurgical | Info CHIR"
-        description="Atlas de diagnostic chirurgical : cas cliniques illustrés et chapitres de référence pour les professionnels de santé."
+        title="Atlas de Diagnostic Chirurgical en Haïti (ADCH) | Info CHIR"
+        description="Atlas de diagnostic chirurgical en Haïti (ADCH) : cas cliniques illustrés et chapitres de référence pour les professionnels de santé."
         path="/adc"
-      jsonLd={collectionPageSchema("Atlas de Diagnostic Chirurgical", "Chapitres et cas cliniques illustrés de l'Atlas de Diagnostic Chirurgical.", "/adc")}
+      jsonLd={collectionPageSchema("Atlas de Diagnostic Chirurgical en Haïti (ADCH)", "Chapitres et cas cliniques illustrés de l'Atlas de Diagnostic Chirurgical en Haïti (ADCH).", "/adc")}
       />
       <div className="min-h-screen bg-background pt-[15px]">
         <div className="container mx-auto px-3 sm:px-6 lg:px-8 py-4 lg:py-8">
@@ -77,7 +78,7 @@ const ADC = () => {
                   <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
                       <BookOpen className="h-5 w-5" />
-                      Table des matières - Atlas ADC
+                      Table des matières - Atlas ADCH
                     </DialogTitle>
                   </DialogHeader>
                   <div className="mt-4">
@@ -97,6 +98,7 @@ const ADC = () => {
             </ErrorBoundary>
           </section>
 
+          <ADCAddendum />
           <ADCMission />
           <ADCSubmission />
         </div>

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useAtlasArticles } from "./hooks/useAtlasArticles";
 import type { AtlasChapter } from "./types";
 import { Link } from "react-router-dom";
+import { getFrontMatterOrder, isFrontMatterEntry } from "./utils/frontMatter";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Clock, AlertCircle, FileText } from "lucide-react";
@@ -30,7 +31,8 @@ export const AtlasTableOfContents = () => {
 
   // Sort chapters: Introduction first, then by chapter/issue number
   const getOrder = (chapter: AtlasChapter) => {
-    if (chapter.title?.toLowerCase().includes('introduction')) return 0;
+    const frontMatterOrder = getFrontMatterOrder(chapter.title);
+    if (frontMatterOrder !== null) return frontMatterOrder;
     const fromIssue = chapter.issue ? parseInt(chapter.issue, 10) : NaN;
     if (!isNaN(fromIssue)) return fromIssue;
     if (chapter.chapterNumber) return chapter.chapterNumber;
@@ -57,21 +59,22 @@ export const AtlasTableOfContents = () => {
         return <Badge variant="success" className="text-xs">Disponible</Badge>;
       case 'coming-soon':
       case 'coming':
-        return <Badge variant="secondary" className="text-xs bg-yellow-100 text-yellow-700 hover:bg-yellow-100">Bientôt</Badge>;
+        return <Badge variant="secondary" className="text-xs bg-yellow-100 text-yellow-700 hover:bg-yellow-100">En préparation</Badge>;
       default:
-        return <Badge variant="secondary" className="text-xs bg-red-100 text-red-700 hover:bg-red-100">Indisponible</Badge>;
+        return <Badge variant="secondary" className="text-xs bg-red-100 text-red-700 hover:bg-red-100">Non disponible</Badge>;
     }
   };
 
   const formatTitle = (title: string, issueNumber?: number) => {
-    // Check if title already includes "Atlas de Diagnostic Chirurgical (ADC)"
+    // Check if title already carries the atlas prefix (rows in the database
+    // still use the pre-rename "Atlas de Diagnostic Chirurgical (ADC)" form)
     if (title.includes("Atlas de Diagnostic Chirurgical")) {
       return title;
     }
     
-    // Add the full ADC prefix if not present
+    // Add the full ADCH prefix if not present
     const chapterName = title;
-    return `Atlas de Diagnostic Chirurgical (ADC) - ${chapterName}`;
+    return `Atlas de Diagnostic Chirurgical en Haïti (ADCH) - ${chapterName}`;
   };
 
   return (
@@ -79,10 +82,10 @@ export const AtlasTableOfContents = () => {
       <div className="mb-4 p-3 bg-muted border border-border rounded-lg">
         <div className="flex items-center gap-2 mb-2">
           <FileText className="w-4 h-4 text-primary" />
-          <h4 className="text-sm font-medium text-blue-900">Atlas des Décisions Cliniques</h4>
+          <h4 className="text-sm font-medium text-blue-900">Atlas de Diagnostic Chirurgical en Haïti (ADCH)</h4>
         </div>
         <p className="text-xs text-primary">
-          {chapters.length} chapitre{chapters.length > 1 ? 's' : ''} au total · {chapters.filter(c => c.status === 'available').length} disponible{chapters.filter(c => c.status === 'available').length > 1 ? 's' : ''}
+          {chapters.filter(c => !isFrontMatterEntry(c)).length} chapitre{chapters.filter(c => !isFrontMatterEntry(c)).length > 1 ? 's' : ''} au total · {chapters.filter(c => !isFrontMatterEntry(c) && c.status === 'available').length} disponible{chapters.filter(c => !isFrontMatterEntry(c) && c.status === 'available').length > 1 ? 's' : ''}
         </p>
       </div>
 

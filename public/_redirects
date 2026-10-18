@@ -4,6 +4,9 @@
 http://info-chir.org/*    https://info-chir.org/:splat    301!
 http://www.info-chir.org/*    https://info-chir.org/:splat    301!
 
+# Legacy atlas URL printed in the ADCH chapter PDFs — send it to the atlas page
+/atlas.html    /adc    301
+
 # PostHog first-party proxy (ad-blocker resistant analytics; must precede SPA catch-all)
 /ingest/static/*  https://us-assets.i.posthog.com/static/:splat  200
 /ingest/*  https://us.i.posthog.com/:splat  200

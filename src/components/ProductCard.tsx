@@ -25,7 +25,7 @@ const DEFAULT_FEATURES: Record<string, string[]> = {
 const FULL_NAMES: Record<string, string> = {
   RHCA: "Revue Haïtienne de Chirurgie et d'Anesthésiologie",
   IGM: "Info Gazette Médicale",
-  "Atlas ADC": "Atlas de Diagnostic Chirurgical",
+  "Atlas ADC": "Atlas de Diagnostic Chirurgical en Haïti (ADCH)",
   "Index Medicus": "Index Medicus",
 };
 

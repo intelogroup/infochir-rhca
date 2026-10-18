@@ -8,6 +8,7 @@ import { AtlasChapter } from "../types";
 import { Calendar, User, ImageOff } from "lucide-react";
 import { ImageOptimizer } from "@/components/shared/ImageOptimizer";
 import { createLogger } from "@/lib/error-logger";
+import { formatPublicationDate } from "../utils/dateFormat";
 
 const logger = createLogger('ModalHeader');
 
@@ -91,10 +92,10 @@ export const ModalHeader = ({ chapter, category }: ModalHeaderProps) => {
         )}
         <h2 className="text-xl font-bold mb-2">{chapter.title}</h2>
         <div className="flex flex-wrap gap-3 text-xs">
-          {(chapter.lastUpdate || chapter.lastUpdated) && (
+          {formatPublicationDate(chapter.publicationDate) && (
             <div className="flex items-center gap-1">
               <Calendar className="w-3 h-3" />
-              <span>MàJ: {chapter.lastUpdated || chapter.lastUpdate}</span>
+              <span>Publié le {formatPublicationDate(chapter.publicationDate)}</span>
             </div>
           )}
           {(chapter.author || (chapter.authors && chapter.authors.length > 0)) && (

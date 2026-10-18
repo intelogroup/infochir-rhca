@@ -23,7 +23,7 @@ export const products = [
     href: "/adc",
     icon: BookOpen,
     logo: "/lovable-uploads/a7812203-b420-4326-b13c-95be74502a55.png",
-    fullName: "Atlas de Diagnostic Chirurgical"
+    fullName: "Atlas de Diagnostic Chirurgical en Haïti (ADCH)"
   },
   {
     title: "Index Medicus",
