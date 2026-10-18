@@ -50,9 +50,9 @@ describe("ADCH v2 — Sommaire and Références front matter", () => {
 });
 
 describe("ADCH v2 — EN PREPARATION chapter slots", () => {
-  test("missing chapters are exactly VII, IX, XII, XIII, XVII, XIX, XXIV", () => {
+  test("missing chapters are exactly VII, IX, XII, XVII, XIX, XXIV", () => {
     const missing = read("src/components/atlas/utils/missingChapters.ts");
-    expect(missing).toContain("const MISSING_CHAPTERS: number[] = [7, 9, 12, 13, 17, 19, 24];");
+    expect(missing).toContain("const MISSING_CHAPTERS: number[] = [7, 9, 12, 17, 19, 24];");
   });
 });
 

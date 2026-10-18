@@ -3,11 +3,12 @@ import { AtlasChapter } from '@/components/atlas/types';
 // Chapters with no `articles` row yet. The secretariat (ADCH v2,
 // 2026-10-17) asked for VII, IX, XII, XIX and XXIV to be shown as
 // "EN PREPARATION" slots, so these get client-side placeholders until
-// real rows (and files) exist for them. XIII (Brûlures) and XVII
-// (ORL-CMF) joined the list on 2026-10-18 at Jim's word: their files
-// exist nowhere reachable, so they show as En préparation too rather
-// than being silently absent from the atlas.
-const MISSING_CHAPTERS: number[] = [7, 9, 12, 13, 17, 19, 24];
+// real rows (and files) exist for them. XVII (ORL-CMF) joined the
+// list on 2026-10-18 at Jim's word: its file exists nowhere reachable,
+// so it shows as En préparation too rather than being silently absent
+// from the atlas. XIII (Brûlures) was on the list briefly the same
+// day, until the secretariat sent its file and the chapter published.
+const MISSING_CHAPTERS: number[] = [7, 9, 12, 17, 19, 24];
 
 // Official ADC taxonomy (Introduction, mise à jour août 2026): Tome I = ch. 1-14, Tome II = ch. 15-24
 const PLANNED_CHAPTERS: Partial<AtlasChapter>[] = [
