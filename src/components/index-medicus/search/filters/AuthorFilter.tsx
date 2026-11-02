@@ -43,7 +43,7 @@ export const AuthorFilter: React.FC<AuthorFilterProps> = ({
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              {availableAuthors.map(author => (
+              {availableAuthors.filter(author => author.trim() !== "").map(author => (
                 <SelectItem key={author} value={author}>
                   {author}
                 </SelectItem>

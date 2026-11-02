@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { getSessionId } from './session';
+import { isNetworkFetchError } from './network-errors';
 
 const MAX_ERRORS_PER_SESSION = 10;
 let reported = 0;
@@ -57,6 +58,9 @@ export const initErrorReporting = () => {
       typeof reason === 'string'
         ? reason
         : reason?.message ?? JSON.stringify(reason)?.slice(0, 500) ?? 'Unhandled rejection';
+    // Bare network fetch failures (incl. Netlify's RUM script phoning home
+    // on a flaky connection) are not application errors — do not record them.
+    if (isNetworkFetchError(message)) return;
     void reportError({
       errorType: 'unhandledrejection',
       message,
