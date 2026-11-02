@@ -6,15 +6,15 @@ import { toast } from "sonner";
 import { createLogger } from "@/lib/error-logger";
 
 const logger = createLogger('useArticlesQuery');
-const PAGE_SIZE = 10;
 
-export const useArticlesQuery = (page = 0, source?: ArticleSource, categoryFilter?: string) => {
+// Fetches the full set for a source. The collection is small (~130 rows), so
+// the grid filters, sorts and paginates client-side over the whole set —
+// server-side paging made the panel filters apply to one page only and left
+// the page count describing the unfiltered collection.
+export const useArticlesQuery = (source?: ArticleSource, categoryFilter?: string) => {
   return useQuery({
-    queryKey: ["articles", page, source, categoryFilter],
+    queryKey: ["articles", source, categoryFilter],
     queryFn: async () => {
-      const start = page * PAGE_SIZE;
-      const end = start + PAGE_SIZE - 1;
-
       try {
         // Create initial query
         let query = supabase
@@ -32,8 +32,7 @@ export const useArticlesQuery = (page = 0, source?: ArticleSource, categoryFilte
           query = query.ilike("category", `%${categoryFilter}%`);
         }
           
-        // Execute query with pagination
-        const { data, error, count } = await query.range(start, end);
+        const { data, error, count } = await query;
 
         if (error) {
           logger.error(error);
@@ -42,7 +41,7 @@ export const useArticlesQuery = (page = 0, source?: ArticleSource, categoryFilte
         }
 
         if (!data || data.length === 0) {
-          return { articles: [], totalPages: 0 };
+          return { articles: [], totalCount: 0 };
         }
 
         const articles: Article[] = data.map((item) => {
@@ -89,9 +88,7 @@ export const useArticlesQuery = (page = 0, source?: ArticleSource, categoryFilte
           };
         });
 
-        const totalPages = Math.ceil((count || 0) / PAGE_SIZE);
-
-        return { articles, totalPages };
+        return { articles, totalCount: count ?? articles.length };
       } catch (err) {
         logger.error(err);
         const errorMessage = err instanceof Error ? err.message : String(err);
@@ -105,7 +102,7 @@ export const useArticlesQuery = (page = 0, source?: ArticleSource, categoryFilte
         // Return empty state for network errors instead of failing completely
         if (errorMessage.includes('NetworkError') || errorMessage.includes('CORS') || 
             errorMessage.includes('AbortError')) {
-          return { articles: [], totalPages: 0 };
+          return { articles: [], totalCount: 0 };
         }
         
         throw err;

@@ -12,6 +12,9 @@ import { ViewToggle } from "./ViewToggle";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ArticleSource } from "./types";
 import { SourceFilter, SourceFilterType } from "./SourceFilter";
+import { getPaginationWindow } from "./utils/pagination";
+
+const PAGE_SIZE = 10;
 
 interface ArticleGridProps {
   viewMode?: "grid" | "table" | "list";
@@ -51,14 +54,10 @@ const ArticleGrid: FC<ArticleGridProps> = ({
 
   const querySource = source || getQuerySource(sourceFilter);
   const categoryFilter = getCategoryFilter(sourceFilter);
-  const { data, isLoading, error, refetch } = useArticlesQuery(currentPage, querySource, categoryFilter);
-  
-  // Fetch counts for all sources separately
-  const { data: allData } = useArticlesQuery(0, undefined, undefined);
-  const { data: adcData } = useArticlesQuery(0, 'ADC', undefined);
-  const { data: igmData } = useArticlesQuery(0, 'IGM', undefined);
-  const { data: rhcaData } = useArticlesQuery(0, 'RHCA', undefined);
-  const { data: indexArticlesData } = useArticlesQuery(0, 'INDEX', 'article');
+  const { data, isLoading, error, refetch } = useArticlesQuery(querySource, categoryFilter);
+
+  // One unfiltered fetch supplies the per-source counts for the filter bar.
+  const { data: allData } = useArticlesQuery(undefined, undefined);
   
   // Mark component as mounted
   useEffect(() => {
@@ -82,7 +81,6 @@ const ArticleGrid: FC<ArticleGridProps> = ({
   console.log('ArticleGrid rendering with viewMode:', viewMode, 'isMobile:', isMobile, 'sourceFilter:', sourceFilter, 'sortBy:', sortBy);
   
   const articles = data?.articles || [];
-  const totalPages = data?.totalPages || 0;
 
   const {
     searchTerm,
@@ -106,6 +104,11 @@ const ArticleGrid: FC<ArticleGridProps> = ({
     availableAuthors,
     articleStats
   } = useArticlesState(articles);
+
+  // Any filter change returns the reader to the first page of the new result set
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [searchTerm, selectedCategory, selectedSource, selectedTags, selectedAuthors, titleFilter, date, sourceFilter]);
 
   // Enhanced sorting with special Atlas (ADC) logic
   const sortedFilteredArticles = useMemo(() => {
@@ -146,13 +149,25 @@ const ArticleGrid: FC<ArticleGridProps> = ({
     return sorted;
   }, [filteredArticles, sortBy, sourceFilter, querySource]);
 
-  // Calculate article counts for the SourceFilter component using the separate queries
+  // Paginate the filtered, sorted set — the page count describes what the
+  // reader is actually looking at, not the unfiltered collection.
+  const { totalPages, safePage, start, end } = getPaginationWindow(
+    sortedFilteredArticles.length,
+    currentPage,
+    PAGE_SIZE
+  );
+  const pagedArticles = sortedFilteredArticles.slice(start, end);
+
+  // Per-source counts from the unfiltered set (true totals, not page lengths)
+  const allArticles = allData?.articles || [];
   const articleCounts = {
-    total: allData?.articles?.length || 0,
-    ADC: adcData?.articles?.length || 0,
-    IGM: igmData?.articles?.length || 0,
-    RHCA: rhcaData?.articles?.length || 0,
-    INDEX_ARTICLES: indexArticlesData?.articles?.length || 0
+    total: allArticles.length,
+    ADC: allArticles.filter(a => a.source === 'ADC').length,
+    IGM: allArticles.filter(a => a.source === 'IGM').length,
+    RHCA: allArticles.filter(a => a.source === 'RHCA').length,
+    INDEX_ARTICLES: allArticles.filter(a =>
+      a.source === 'INDEX' && a.category?.toLowerCase().includes('article')
+    ).length
   };
 
   const handleSearch = useCallback(async () => {
@@ -266,12 +281,12 @@ const ArticleGrid: FC<ArticleGridProps> = ({
       
       <ArticleContent
         viewMode={viewMode}
-        articles={sortedFilteredArticles}
+        articles={pagedArticles}
         isLoading={isLoading}
         error={error}
         onTagClick={handleTagClick}
         selectedTags={selectedTags}
-        currentPage={currentPage}
+        currentPage={safePage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
         onRefresh={handleRefresh}
