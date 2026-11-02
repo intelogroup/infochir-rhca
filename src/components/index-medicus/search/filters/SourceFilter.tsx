@@ -17,6 +17,10 @@ interface SourceFilterProps {
   disabled?: boolean;
 }
 
+// Radix Select forbids an empty-string item value; "" stays the app's
+// "all sources" state and is mapped to this sentinel at the Select edge.
+const ALL_VALUE = "__all__";
+
 export const SourceFilter: React.FC<SourceFilterProps> = ({
   selectedSource,
   setSelectedSource,
@@ -34,8 +38,8 @@ export const SourceFilter: React.FC<SourceFilterProps> = ({
         Source
       </label>
       <Select
-        value={selectedSource}
-        onValueChange={setSelectedSource}
+        value={selectedSource || ALL_VALUE}
+        onValueChange={(value) => setSelectedSource(value === ALL_VALUE ? "" : value)}
         disabled={disabled}
       >
         <SelectTrigger id="source-filter">
@@ -43,8 +47,8 @@ export const SourceFilter: React.FC<SourceFilterProps> = ({
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectItem value="">Toutes les sources</SelectItem>
-            {sources.map(source => (
+            <SelectItem value={ALL_VALUE}>Toutes les sources</SelectItem>
+            {sources.filter(source => source !== "").map(source => (
               <SelectItem key={source} value={source}>
                 {source} ({sourceStats[source] || 0})
               </SelectItem>

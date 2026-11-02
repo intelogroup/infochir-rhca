@@ -42,7 +42,7 @@ export const TagSelector: React.FC<TagSelectorProps> = ({
           <SelectContent>
             <SelectGroup>
               {availableTags
-                .filter(tag => !selectedTags.includes(tag))
+                .filter(tag => tag.trim() !== "" && !selectedTags.includes(tag))
                 .map(tag => (
                   <SelectItem key={tag} value={tag}>
                     {tag}

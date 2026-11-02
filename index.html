@@ -43,7 +43,23 @@
         api_host: '/ingest',
         ui_host: 'https://us.posthog.com',
         person_profiles: 'identified_only',
-        disable_session_recording: true
+        disable_session_recording: true,
+        before_send: function (event) {
+          // Drop bare network fetch failures (incl. Netlify's RUM script
+          // phoning home on a flaky connection): not application errors.
+          if (event && event.event === '$exception') {
+            var list = event.properties && event.properties.$exception_list;
+            var value = list && list[0] && list[0].value;
+            if (
+              value === 'Failed to fetch' ||
+              value === 'Load failed' ||
+              value === 'NetworkError when attempting to fetch resource.'
+            ) {
+              return null;
+            }
+          }
+          return event;
+        }
       });
     </script>
 </head>

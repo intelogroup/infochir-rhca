@@ -16,6 +16,10 @@ interface CategoryFilterProps {
   categoryStats: Record<string, number>;
 }
 
+// Radix Select forbids an empty-string item value; "" stays the app's
+// "all categories" state and is mapped to this sentinel at the Select edge.
+const ALL_VALUE = "__all__";
+
 export const CategoryFilter: React.FC<CategoryFilterProps> = ({
   selectedCategory,
   setSelectedCategory,
@@ -28,16 +32,16 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
         Catégorie
       </label>
       <Select
-        value={selectedCategory}
-        onValueChange={setSelectedCategory}
+        value={selectedCategory || ALL_VALUE}
+        onValueChange={(value) => setSelectedCategory(value === ALL_VALUE ? "" : value)}
       >
         <SelectTrigger id="category-filter">
           <SelectValue placeholder="Toutes les catégories" />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectItem value="">Toutes les catégories</SelectItem>
-            {categories.map(category => (
+            <SelectItem value={ALL_VALUE}>Toutes les catégories</SelectItem>
+            {categories.filter(category => category !== "").map(category => (
               <SelectItem key={category} value={category}>
                 {category} ({categoryStats[category] || 0})
               </SelectItem>
